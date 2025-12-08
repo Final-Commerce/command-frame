@@ -1,0 +1,79 @@
+.json-viewer {
+  background: #f8f9fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.json-viewer--error {
+  background: #fff5f5;
+  border-color: #feb2b2;
+}
+
+.json-viewer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f1f3f5;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.json-viewer--error .json-viewer__header {
+  background: #fee;
+  border-bottom-color: #feb2b2;
+}
+
+.json-viewer__title {
+  font-weight: 600;
+  font-size: 13px;
+  color: #24292e;
+}
+
+.json-viewer--error .json-viewer__title {
+  color: #c33;
+}
+
+.json-viewer__copy-btn {
+  background: #fff;
+  border: 1px solid #d1d5da;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #24292e;
+  transition: all 0.2s;
+}
+
+.json-viewer__copy-btn:hover {
+  background: #f6f8fa;
+  border-color: #0366d6;
+}
+
+.json-viewer__copy-btn:active {
+  background: #e1e4e8;
+}
+
+.json-viewer__content {
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #24292e;
+  background: #fff;
+}
+
+.json-viewer--error .json-viewer__content {
+  background: #fff;
+  color: #c33;
+}
+
+.json-viewer__content code {
+  font-family: inherit;
+  white-space: pre;
+  word-wrap: normal;
+}
+

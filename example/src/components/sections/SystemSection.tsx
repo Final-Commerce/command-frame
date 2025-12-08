@@ -1,0 +1,581 @@
+import { useState } from 'react';
+import { commands } from '@final-commerce/command-frame';
+import { CommandSection } from '../CommandSection';
+import { JsonViewer } from '../JsonViewer';
+import './Sections.css';
+
+interface SystemSectionProps {
+  isInIframe: boolean;
+}
+
+export function SystemSection({ isInIframe }: SystemSectionProps) {
+  // Navigation
+  const [pageId, setPageId] = useState<string>('');
+  const [goToPageLoading, setGoToPageLoading] = useState(false);
+  const [goToPageResponse, setGoToPageResponse] = useState<string>('');
+  const [goToHomeLoading, setGoToHomeLoading] = useState(false);
+  const [goToHomeResponse, setGoToHomeResponse] = useState<string>('');
+
+  // UI Actions
+  const [popupId, setPopupId] = useState<string>('');
+  const [openPopupLoading, setOpenPopupLoading] = useState(false);
+  const [openPopupResponse, setOpenPopupResponse] = useState<string>('');
+  const [slideOutId, setSlideOutId] = useState<string>('');
+  const [toggleSlideOutLoading, setToggleSlideOutLoading] = useState(false);
+  const [toggleSlideOutResponse, setToggleSlideOutResponse] = useState<string>('');
+  const [notificationMessage, setNotificationMessage] = useState<string>('Hello from iframe!');
+  const [showNotificationLoading, setShowNotificationLoading] = useState(false);
+  const [showNotificationResponse, setShowNotificationResponse] = useState<string>('');
+  const [confirmationMessage, setConfirmationMessage] = useState<string>('Are you sure?');
+  const [showConfirmationLoading, setShowConfirmationLoading] = useState(false);
+  const [showConfirmationResponse, setShowConfirmationResponse] = useState<string>('');
+
+  // Authentication
+  const [roleIds, setRoleIds] = useState<string>('');
+  const [authenticateLoading, setAuthenticateLoading] = useState(false);
+  const [authenticateResponse, setAuthenticateResponse] = useState<string>('');
+
+  // Customer Facing Display
+  const [cfdPageId, setCfdPageId] = useState<string>('');
+  const [updateCfdLoading, setUpdateCfdLoading] = useState(false);
+  const [updateCfdResponse, setUpdateCfdResponse] = useState<string>('');
+
+  // Switch User
+  const [switchUserMode, setSwitchUserMode] = useState<'dialog' | 'role' | 'specific'>('dialog');
+  const [switchUserRoleIds, setSwitchUserRoleIds] = useState<string>('');
+  const [switchUserId, setSwitchUserId] = useState<string>('');
+  const [switchUserLoading, setSwitchUserLoading] = useState(false);
+  const [switchUserResponse, setSwitchUserResponse] = useState<string>('');
+
+  const handleGoToPage = async () => {
+    if (!isInIframe) {
+      setGoToPageResponse('Error: Not running in iframe');
+      return;
+    }
+
+    if (!pageId) {
+      setGoToPageResponse('Error: Page ID is required');
+      return;
+    }
+
+    setGoToPageLoading(true);
+    setGoToPageResponse('');
+
+    try {
+      const result = await commands.goToPage({ pageId });
+      setGoToPageResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setGoToPageResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setGoToPageLoading(false);
+    }
+  };
+
+  const handleGoToHome = async () => {
+    if (!isInIframe) {
+      setGoToHomeResponse('Error: Not running in iframe');
+      return;
+    }
+
+    setGoToHomeLoading(true);
+    setGoToHomeResponse('');
+
+    try {
+      const result = await commands.goToStationHome();
+      setGoToHomeResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setGoToHomeResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setGoToHomeLoading(false);
+    }
+  };
+
+  const handleOpenCashDrawer = async () => {
+    if (!isInIframe) {
+      return;
+    }
+
+    try {
+      await commands.openCashDrawer();
+    } catch (error) {
+      console.error('Error opening cash drawer:', error);
+    }
+  };
+
+  const handleOpenPopup = async () => {
+    if (!isInIframe) {
+      setOpenPopupResponse('Error: Not running in iframe');
+      return;
+    }
+
+    if (!popupId) {
+      setOpenPopupResponse('Error: Popup ID is required');
+      return;
+    }
+
+    setOpenPopupLoading(true);
+    setOpenPopupResponse('');
+
+    try {
+      const result = await commands.openPopup({ popupId });
+      setOpenPopupResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setOpenPopupResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setOpenPopupLoading(false);
+    }
+  };
+
+  const handleToggleSlideOut = async () => {
+    if (!isInIframe) {
+      setToggleSlideOutResponse('Error: Not running in iframe');
+      return;
+    }
+
+    if (!slideOutId) {
+      setToggleSlideOutResponse('Error: Slide out ID is required');
+      return;
+    }
+
+    setToggleSlideOutLoading(true);
+    setToggleSlideOutResponse('');
+
+    try {
+      const result = await commands.toggleSlideOut({ slideOutId });
+      setToggleSlideOutResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setToggleSlideOutResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setToggleSlideOutLoading(false);
+    }
+  };
+
+  const handleShowNotification = async () => {
+    if (!isInIframe) {
+      setShowNotificationResponse('Error: Not running in iframe');
+      return;
+    }
+
+    if (!notificationMessage) {
+      setShowNotificationResponse('Error: Message is required');
+      return;
+    }
+
+    setShowNotificationLoading(true);
+    setShowNotificationResponse('');
+
+    try {
+      const result = await commands.showNotification({ message: notificationMessage });
+      setShowNotificationResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setShowNotificationResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setShowNotificationLoading(false);
+    }
+  };
+
+  const handleShowConfirmation = async () => {
+    if (!isInIframe) {
+      setShowConfirmationResponse('Error: Not running in iframe');
+      return;
+    }
+
+    if (!confirmationMessage) {
+      setShowConfirmationResponse('Error: Message is required');
+      return;
+    }
+
+    setShowConfirmationLoading(true);
+    setShowConfirmationResponse('');
+
+    try {
+      const result = await commands.showConfirmation({ message: confirmationMessage });
+      setShowConfirmationResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setShowConfirmationResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setShowConfirmationLoading(false);
+    }
+  };
+
+  const handleAuthenticateUser = async () => {
+    if (!isInIframe) {
+      setAuthenticateResponse('Error: Not running in iframe');
+      return;
+    }
+
+    if (!roleIds) {
+      setAuthenticateResponse('Error: Role IDs are required');
+      return;
+    }
+
+    setAuthenticateLoading(true);
+    setAuthenticateResponse('');
+
+    try {
+      const roleIdsArray = roleIds.split(',').map(id => id.trim()).filter(id => id);
+      const result = await commands.authenticateUser({ roleIds: roleIdsArray });
+      setAuthenticateResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setAuthenticateResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setAuthenticateLoading(false);
+    }
+  };
+
+  const handleUpdateCfd = async () => {
+    if (!isInIframe) {
+      setUpdateCfdResponse('Error: Not running in iframe');
+      return;
+    }
+
+    if (!cfdPageId) {
+      setUpdateCfdResponse('Error: Page ID is required');
+      return;
+    }
+
+    setUpdateCfdLoading(true);
+    setUpdateCfdResponse('');
+
+    try {
+      const result = await commands.updateCustomerFacingDisplay({ pageId: cfdPageId });
+      setUpdateCfdResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setUpdateCfdResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setUpdateCfdLoading(false);
+    }
+  };
+
+  const handleSwitchUser = async () => {
+    if (!isInIframe) {
+      setSwitchUserResponse('Error: Not running in iframe');
+      return;
+    }
+
+    setSwitchUserLoading(true);
+    setSwitchUserResponse('');
+
+    try {
+      let params: any = { mode: switchUserMode };
+      if (switchUserMode === 'role') {
+        if (!switchUserRoleIds) {
+          throw new Error('Role IDs are required for role mode');
+        }
+        params.roleIds = switchUserRoleIds.split(',').map(id => id.trim()).filter(id => id);
+      } else if (switchUserMode === 'specific') {
+        if (!switchUserId) {
+          throw new Error('User ID is required for specific mode');
+        }
+        params.userId = switchUserId;
+      }
+
+      const result = await commands.switchUser(params);
+      setSwitchUserResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setSwitchUserResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setSwitchUserLoading(false);
+    }
+  };
+
+  return (
+    <div className="section-content">
+      <CommandSection title="Go to Station Home">
+        <p className="section-description">
+          Navigates to the station home page.
+        </p>
+        <button
+          onClick={handleGoToHome}
+          disabled={goToHomeLoading}
+          className="btn btn--primary"
+        >
+          {goToHomeLoading ? 'Navigating...' : 'Go to Home'}
+        </button>
+        {goToHomeResponse && (
+          <JsonViewer
+            data={goToHomeResponse}
+            title={goToHomeResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Go to Page">
+        <p className="section-description">
+          Navigates to a specific page by page ID.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Page ID:</label>
+            <input
+              type="text"
+              value={pageId}
+              onChange={(e) => setPageId(e.target.value)}
+              placeholder="page-123"
+            />
+          </div>
+        </div>
+        <button
+          onClick={handleGoToPage}
+          disabled={goToPageLoading}
+          className="btn btn--primary"
+        >
+          {goToPageLoading ? 'Navigating...' : 'Go to Page'}
+        </button>
+        {goToPageResponse && (
+          <JsonViewer
+            data={goToPageResponse}
+            title={goToPageResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Open Cash Drawer">
+        <p className="section-description">
+          Opens the cash drawer (if connected).
+        </p>
+        <button
+          onClick={handleOpenCashDrawer}
+          className="btn btn--primary"
+        >
+          Open Cash Drawer
+        </button>
+      </CommandSection>
+
+      <CommandSection title="Open Popup">
+        <p className="section-description">
+          Opens a popup/modal by ID.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Popup ID:</label>
+            <input
+              type="text"
+              value={popupId}
+              onChange={(e) => setPopupId(e.target.value)}
+              placeholder="popup-123"
+            />
+          </div>
+        </div>
+        <button
+          onClick={handleOpenPopup}
+          disabled={openPopupLoading}
+          className="btn btn--primary"
+        >
+          {openPopupLoading ? 'Opening...' : 'Open Popup'}
+        </button>
+        {openPopupResponse && (
+          <JsonViewer
+            data={openPopupResponse}
+            title={openPopupResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Toggle Slide Out">
+        <p className="section-description">
+          Toggles a slide-out panel by ID.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Slide Out ID:</label>
+            <input
+              type="text"
+              value={slideOutId}
+              onChange={(e) => setSlideOutId(e.target.value)}
+              placeholder="slideout-123"
+            />
+          </div>
+        </div>
+        <button
+          onClick={handleToggleSlideOut}
+          disabled={toggleSlideOutLoading}
+          className="btn btn--primary"
+        >
+          {toggleSlideOutLoading ? 'Toggling...' : 'Toggle Slide Out'}
+        </button>
+        {toggleSlideOutResponse && (
+          <JsonViewer
+            data={toggleSlideOutResponse}
+            title={toggleSlideOutResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Show Notification">
+        <p className="section-description">
+          Shows a notification message to the user.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Message:</label>
+            <input
+              type="text"
+              value={notificationMessage}
+              onChange={(e) => setNotificationMessage(e.target.value)}
+              placeholder="Notification message"
+            />
+          </div>
+        </div>
+        <button
+          onClick={handleShowNotification}
+          disabled={showNotificationLoading}
+          className="btn btn--primary"
+        >
+          {showNotificationLoading ? 'Showing...' : 'Show Notification'}
+        </button>
+        {showNotificationResponse && (
+          <JsonViewer
+            data={showNotificationResponse}
+            title={showNotificationResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Show Confirmation">
+        <p className="section-description">
+          Shows a confirmation dialog to the user.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Message:</label>
+            <input
+              type="text"
+              value={confirmationMessage}
+              onChange={(e) => setConfirmationMessage(e.target.value)}
+              placeholder="Confirmation message"
+            />
+          </div>
+        </div>
+        <button
+          onClick={handleShowConfirmation}
+          disabled={showConfirmationLoading}
+          className="btn btn--primary"
+        >
+          {showConfirmationLoading ? 'Showing...' : 'Show Confirmation'}
+        </button>
+        {showConfirmationResponse && (
+          <JsonViewer
+            data={showConfirmationResponse}
+            title={showConfirmationResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Authenticate User">
+        <p className="section-description">
+          Triggers user authentication for specific roles.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Role IDs (comma-separated):</label>
+            <input
+              type="text"
+              value={roleIds}
+              onChange={(e) => setRoleIds(e.target.value)}
+              placeholder="role-123, role-456"
+            />
+          </div>
+        </div>
+        <button
+          onClick={handleAuthenticateUser}
+          disabled={authenticateLoading}
+          className="btn btn--primary"
+        >
+          {authenticateLoading ? 'Authenticating...' : 'Authenticate'}
+        </button>
+        {authenticateResponse && (
+          <JsonViewer
+            data={authenticateResponse}
+            title={authenticateResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Update Customer Facing Display">
+        <p className="section-description">
+          Updates the customer-facing display to show a specific page.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Page ID:</label>
+            <input
+              type="text"
+              value={cfdPageId}
+              onChange={(e) => setCfdPageId(e.target.value)}
+              placeholder="page-123"
+            />
+          </div>
+        </div>
+        <button
+          onClick={handleUpdateCfd}
+          disabled={updateCfdLoading}
+          className="btn btn--primary"
+        >
+          {updateCfdLoading ? 'Updating...' : 'Update CFD'}
+        </button>
+        {updateCfdResponse && (
+          <JsonViewer
+            data={updateCfdResponse}
+            title={updateCfdResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Switch User">
+        <p className="section-description">
+          Switches the current user to a different user.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Mode:</label>
+            <select
+              value={switchUserMode}
+              onChange={(e) => setSwitchUserMode(e.target.value as 'dialog' | 'role' | 'specific')}
+            >
+              <option value="dialog">Dialog (Select from all users)</option>
+              <option value="role">Role (Select from users with specific roles)</option>
+              <option value="specific">Specific (Switch to specific user)</option>
+            </select>
+          </div>
+          {switchUserMode === 'role' && (
+            <div className="form-field">
+              <label>Role IDs (comma-separated):</label>
+              <input
+                type="text"
+                value={switchUserRoleIds}
+                onChange={(e) => setSwitchUserRoleIds(e.target.value)}
+                placeholder="role-123, role-456"
+              />
+            </div>
+          )}
+          {switchUserMode === 'specific' && (
+            <div className="form-field">
+              <label>User ID:</label>
+              <input
+                type="text"
+                value={switchUserId}
+                onChange={(e) => setSwitchUserId(e.target.value)}
+                placeholder="user-123"
+              />
+            </div>
+          )}
+        </div>
+        <button
+          onClick={handleSwitchUser}
+          disabled={switchUserLoading}
+          className="btn btn--primary"
+        >
+          {switchUserLoading ? 'Switching...' : 'Switch User'}
+        </button>
+        {switchUserResponse && (
+          <JsonViewer
+            data={switchUserResponse}
+            title={switchUserResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+    </div>
+  );
+}
+

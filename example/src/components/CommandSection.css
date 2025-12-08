@@ -1,0 +1,23 @@
+.command-section {
+  background: #fff;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.command-section__title {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #24292e;
+  border-bottom: 2px solid #f1f3f5;
+  padding-bottom: 8px;
+}
+
+.command-section__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
