@@ -96,6 +96,10 @@ await command.addCartDiscount({
 const context = await command.getContext();
 console.log('Current user:', context.userId);
 console.log('Current company:', context.companyName);
+console.log('Full user object:', context.user);
+console.log('Full company object (without settings):', context.company);
+console.log('Full station object:', context.station);
+console.log('Full outlet object:', context.outlet);
 
 // Product Actions
 await command.addProductNote({ note: 'Customer requested extra packaging' });

@@ -38,6 +38,7 @@ export function EnvironmentSection({ isInIframe }: EnvironmentSectionProps) {
       <CommandSection title="Get Context">
         <p className="section-description">
           Get current environment/context information including user, company, device, station, outlet, and build details.
+          The response includes full objects for user, company (without settings), station, and outlet.
         </p>
         <button 
           onClick={handleGetContext} 
