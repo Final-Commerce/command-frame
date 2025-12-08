@@ -26,15 +26,15 @@ Triggers a webhook with the specified configuration.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Trigger a simple webhook
-await commands.triggerWebhook({
+await command.triggerWebhook({
   webhookUrl: 'https://example.com/webhook'
 });
 
 // Trigger a webhook with custom data
-await commands.triggerWebhook({
+await command.triggerWebhook({
   webhookUrl: 'https://example.com/webhook',
   payloadType: 'json',
   presetData: true,

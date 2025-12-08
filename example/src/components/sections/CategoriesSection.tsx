@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -24,7 +24,7 @@ export function CategoriesSection({ isInIframe }: CategoriesSectionProps) {
     setCategoriesError('');
 
     try {
-      const result = await commands.getCategories({});
+      const result = await command.getCategories({});
       
       if (result && typeof result === 'object') {
         if (result.categories && Array.isArray(result.categories)) {

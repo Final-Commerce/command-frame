@@ -25,11 +25,11 @@ Initiates a Vendara payment for the current cart.
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Pay with Vendara using cart total
-  const result = await commands.vendaraPayment();
+  const result = await command.vendaraPayment();
   console.log('Payment processed:', result);
   console.log('Order:', result.order);
   // Expected output:
@@ -47,7 +47,7 @@ try {
   // }
 
   // Pay with Vendara for a specific amount
-  await commands.vendaraPayment({
+  await command.vendaraPayment({
     amount: 50.00
   });
 

@@ -19,10 +19,10 @@ Toggles (opens/closes) a slide-out panel by ID.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Toggle a slide-out
-await commands.toggleSlideOut({
+await command.toggleSlideOut({
   slideOutId: 'slideout-123'
 });
 ```

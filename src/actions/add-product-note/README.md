@@ -19,10 +19,10 @@ Adds a note to the currently active product in the cart.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Add a note to the active product
-await commands.addProductNote({
+await command.addProductNote({
   note: 'Customer requested extra packaging'
 });
 ```

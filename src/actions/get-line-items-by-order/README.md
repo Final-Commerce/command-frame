@@ -27,11 +27,11 @@ Retrieves line items and custom sales from an order, along with calculated remai
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Get line items for a specific order
-  const result = await commands.getLineItemsByOrder({
+  const result = await command.getLineItemsByOrder({
     orderId: 'order-123'
   });
   console.log('Line items:', result);
@@ -65,7 +65,7 @@ try {
   // }
 
   // Get line items for the currently active order
-  const activeOrderItems = await commands.getLineItemsByOrder();
+  const activeOrderItems = await command.getLineItemsByOrder();
   console.log('Active order line items:', activeOrderItems);
 
 } catch (error) {
@@ -81,7 +81,7 @@ try {
 ```typescript
 // Example of error when no active order and no orderId
 try {
-  await commands.getLineItemsByOrder();
+  await command.getLineItemsByOrder();
 } catch (error) {
   console.error(error.message); // "No active order. Please provide an orderId or set an order as active."
 }

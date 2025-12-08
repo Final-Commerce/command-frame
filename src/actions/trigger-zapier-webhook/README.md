@@ -19,10 +19,10 @@ Triggers a Zapier webhook with the current context data.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Trigger a Zapier webhook
-await commands.triggerZapierWebhook({
+await command.triggerZapierWebhook({
   triggerUrl: 'https://hooks.zapier.com/hooks/catch/123456/abcdef'
 });
 ```

@@ -18,10 +18,10 @@ None
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Open the cash drawer
-await commands.openCashDrawer();
+await command.openCashDrawer();
 ```
 
 ## Notes

@@ -31,11 +31,11 @@ Retrieves a list of orders from the system with optional filtering, sorting, and
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Get all completed orders
-  const completedOrders = await commands.getOrders({
+  const completedOrders = await command.getOrders({
     status: 'completed',
     limit: 20,
     offset: 0
@@ -50,7 +50,7 @@ try {
   // }
 
   // Get orders for a specific customer
-  const customerOrders = await commands.getOrders({
+  const customerOrders = await command.getOrders({
     customerId: 'customer-123',
     sortBy: 'createdAt',
     sortDirection: 'descending'
@@ -58,14 +58,14 @@ try {
   console.log('Customer orders:', customerOrders);
 
   // Get parked orders
-  const parkedOrders = await commands.getOrders({
+  const parkedOrders = await command.getOrders({
     status: 'parked',
     limit: 10
   });
   console.log('Parked orders:', parkedOrders);
 
   // Search orders
-  const searchResults = await commands.getOrders({
+  const searchResults = await command.getOrders({
     searchValue: 'John Doe',
     limit: 10
   });
@@ -83,7 +83,7 @@ try {
 ```typescript
 // Example of error handling
 try {
-  await commands.getOrders({ limit: 10 });
+  await command.getOrders({ limit: 10 });
 } catch (error) {
   console.error(error.message); // "Failed to fetch orders: ..."
 }

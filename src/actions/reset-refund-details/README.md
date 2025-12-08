@@ -18,11 +18,11 @@ None.
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Clear all refund selections
-  const result = await commands.resetRefundDetails();
+  const result = await command.resetRefundDetails();
   console.log('Refund details reset:', result);
   // Expected output:
   // {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -52,7 +52,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
     setCustomSaleResponse('');
 
     try {
-      const result = await commands.addCustomSale({
+      const result = await command.addCustomSale({
         label: customSaleLabel,
         price: parseFloat(customSalePrice) || 0,
         applyTaxes: applyTaxes,
@@ -77,7 +77,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
     try {
       const quantity = parseFloat(addToCartQuantity) || 1;
-      const result = await commands.addProductToCart({
+      const result = await command.addProductToCart({
         quantity: quantity
       });
       
@@ -104,7 +104,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
     setAddCartDiscountResponse('');
 
     try {
-      const result = await commands.addCartDiscount({
+      const result = await command.addCartDiscount({
         amount: parseFloat(cartDiscountAmount) || 0,
         isPercent: cartDiscountIsPercent,
         label: cartDiscountLabel
@@ -281,7 +281,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             setAddOrderNoteLoading(true);
             setAddOrderNoteResponse('');
             try {
-              const result = await commands.addOrderNote({ note: orderNote });
+              const result = await command.addOrderNote({ note: orderNote });
               setAddOrderNoteResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setAddOrderNoteResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -357,7 +357,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             setAddCartFeeLoading(true);
             setAddCartFeeResponse('');
             try {
-              const result = await commands.addCartFee({
+              const result = await command.addCartFee({
                 amount: parseFloat(cartFeeAmount) || 0,
                 isPercent: cartFeeIsPercent,
                 label: cartFeeLabel,
@@ -397,7 +397,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             setClearCartLoading(true);
             setClearCartResponse('');
             try {
-              const result = await commands.clearCart();
+              const result = await command.clearCart();
               setClearCartResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setClearCartResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);

@@ -24,14 +24,14 @@ None. Uses current refund details from Redux state.
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // First, select items to refund (e.g., using selectAllRefundItems or other refund selection methods)
-  await commands.selectAllRefundItems();
+  await command.selectAllRefundItems();
 
   // Calculate the refund total
-  const result = await commands.calculateRefundTotal();
+  const result = await command.calculateRefundTotal();
   console.log('Refund total:', result);
   // Expected output:
   // {
@@ -59,7 +59,7 @@ try {
 ```typescript
 // Example of error when no refund details
 try {
-  await commands.calculateRefundTotal();
+  await command.calculateRefundTotal();
 } catch (error) {
   console.error(error.message); // "No refund details. Please select items to refund first."
 }

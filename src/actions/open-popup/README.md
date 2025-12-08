@@ -19,10 +19,10 @@ Opens a popup/modal by ID.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Open a popup
-await commands.openPopup({
+await command.openPopup({
   popupId: 'popup-123'
 });
 ```

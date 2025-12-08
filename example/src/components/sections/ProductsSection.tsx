@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -52,7 +52,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
     setProductsError('');
 
     try {
-      const result = await commands.getProducts({});
+      const result = await command.getProducts({});
       
       if (result && typeof result === 'object') {
         if (result.products && Array.isArray(result.products)) {
@@ -88,7 +88,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
     setVariantsError('');
 
     try {
-      const result = await commands.getProductVariants({
+      const result = await command.getProductVariants({
         productId: variantProductId
       });
       
@@ -123,7 +123,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
     setSetProductActiveResponse('');
 
     try {
-      const result = await commands.setProductActive({
+      const result = await command.setProductActive({
         variantId: variantId
       });
       
@@ -348,7 +348,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
             setAddProductNoteLoading(true);
             setAddProductNoteResponse('');
             try {
-              const result = await commands.addProductNote({ note: productNote });
+              const result = await command.addProductNote({ note: productNote });
               setAddProductNoteResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setAddProductNoteResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -427,7 +427,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
             setAddProductFeeLoading(true);
             setAddProductFeeResponse('');
             try {
-              const result = await commands.addProductFee({
+              const result = await command.addProductFee({
                 amount: parseFloat(productFeeAmount) || 0,
                 isPercent: productFeeIsPercent,
                 label: productFeeLabel,
@@ -492,7 +492,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
             setAdjustInventoryLoading(true);
             setAdjustInventoryResponse('');
             try {
-              const result = await commands.adjustInventory({
+              const result = await command.adjustInventory({
                 amount: inventoryAmount,
                 stockType: inventoryStockType
               });

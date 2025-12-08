@@ -19,10 +19,10 @@ Updates the customer-facing display to show a specific page.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Update customer facing display
-await commands.updateCustomerFacingDisplay({
+await command.updateCustomerFacingDisplay({
   pageId: 'page-123'
 });
 ```

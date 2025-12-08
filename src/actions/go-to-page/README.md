@@ -19,10 +19,10 @@ Navigates to a specific page in the application.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Navigate to a specific page
-await commands.goToPage({
+await command.goToPage({
   pageId: 'page-123'
 });
 ```

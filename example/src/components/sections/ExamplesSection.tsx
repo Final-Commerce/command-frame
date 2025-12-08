@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -22,7 +22,7 @@ export function ExamplesSection({ isInIframe }: ExamplesSectionProps) {
     setResponse('');
 
     try {
-      const result = await commands.exampleFunction({
+      const result = await command.exampleFunction({
         param1: 'Pram1 value',
         param2: 'Pram2 value',
         param3: 'Pram3 value',
@@ -40,7 +40,7 @@ export function ExamplesSection({ isInIframe }: ExamplesSectionProps) {
     <div className="section-content">
       <CommandSection title="Example Function">
         <p className="section-description">
-          This is an example function that demonstrates how to call commands from the iframe.
+          This is an example function that demonstrates how to call command from the iframe.
         </p>
         <button 
           onClick={handleCallAction} 

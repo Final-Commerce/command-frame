@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -47,7 +47,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
     setCustomersError('');
 
     try {
-      const result = await commands.getCustomers({});
+      const result = await command.getCustomers({});
       
       if (result && typeof result === 'object') {
         if (result.customers && Array.isArray(result.customers)) {
@@ -80,7 +80,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
     setAssignCustomerResponse('');
 
     try {
-      const result = await commands.assignCustomer({
+      const result = await command.assignCustomer({
         customerId: assignCustomerId
       });
       
@@ -102,7 +102,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
     setAddCustomerResponse('');
 
     try {
-      const result = await commands.addCustomer({
+      const result = await command.addCustomer({
         customer: newCustomer
       });
       
@@ -288,7 +288,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
             setAddCustomerNoteLoading(true);
             setAddCustomerNoteResponse('');
             try {
-              const result = await commands.addCustomerNote({
+              const result = await command.addCustomerNote({
                 customerId: customerNoteId,
                 note: customerNote
               });
@@ -325,7 +325,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
             setRemoveCustomerLoading(true);
             setRemoveCustomerResponse('');
             try {
-              const result = await commands.removeCustomerFromCart();
+              const result = await command.removeCustomerFromCart();
               setRemoveCustomerResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setRemoveCustomerResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);

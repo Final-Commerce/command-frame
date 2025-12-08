@@ -76,7 +76,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Examples
@@ -86,9 +86,9 @@ import { commands } from '@final-commerce/command-frame';
 Add a simple custom sale item without taxes:
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
-const result = await commands.addCustomSale({
+const result = await command.addCustomSale({
     label: 'Service Fee',
     price: 5.00
 });
@@ -101,7 +101,7 @@ console.log('Added:', result.label, 'for $', result.price);
 Add a custom sale item with taxes applied:
 
 ```typescript
-const result = await commands.addCustomSale({
+const result = await command.addCustomSale({
     label: 'Delivery Charge',
     price: 10.50,
     applyTaxes: true
@@ -113,7 +113,7 @@ const result = await commands.addCustomSale({
 Add a discount as a custom sale:
 
 ```typescript
-const result = await commands.addCustomSale({
+const result = await command.addCustomSale({
     label: 'Loyalty Discount',
     price: -5.00,  // Negative for discount
     applyTaxes: false
@@ -125,7 +125,7 @@ const result = await commands.addCustomSale({
 Provide price as a string (will be converted to number):
 
 ```typescript
-const result = await commands.addCustomSale({
+const result = await command.addCustomSale({
     label: 'Custom Item',
     price: '15.99',  // String format
     applyTaxes: true
@@ -138,7 +138,7 @@ Handle validation errors:
 
 ```typescript
 try {
-    const result = await commands.addCustomSale({
+    const result = await command.addCustomSale({
         label: '',  // Empty label
         price: 10
     });
@@ -160,7 +160,7 @@ Complete workflow with error handling:
 ```typescript
 async function addServiceFee(amount: number) {
     try {
-        const result = await commands.addCustomSale({
+        const result = await command.addCustomSale({
             label: 'Service Fee',
             price: amount,
             applyTaxes: true
@@ -198,14 +198,14 @@ The handler will throw errors in the following cases:
 
 ```typescript
 // Throws: "Parameters are required for addCustomSale"
-await commands.addCustomSale();
+await command.addCustomSale();
 ```
 
 ### Missing Label or Price
 
 ```typescript
 // Throws: "Label and price are required"
-await commands.addCustomSale({
+await command.addCustomSale({
     label: 'Fee'
     // Missing price
 });
@@ -215,7 +215,7 @@ await commands.addCustomSale({
 
 ```typescript
 try {
-    const result = await commands.addCustomSale({
+    const result = await command.addCustomSale({
         label: 'Test',
         price: 10
     });

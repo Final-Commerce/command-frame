@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -73,7 +73,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             setInitiateRefundLoading(true);
             setInitiateRefundResponse('');
             try {
-              const result = await commands.initiateRefund(refundOrderId ? { orderId: refundOrderId } : undefined);
+              const result = await command.initiateRefund(refundOrderId ? { orderId: refundOrderId } : undefined);
               setInitiateRefundResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setInitiateRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -131,7 +131,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
               const params: any = { limit: parseInt(refundsLimit) || 10 };
               if (refundsOrderId) params.orderId = refundsOrderId;
               
-              const result = await commands.getRefunds(params);
+              const result = await command.getRefunds(params);
               setGetRefundsResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setGetRefundsResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -177,7 +177,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             setGetLineItemsLoading(true);
             setGetLineItemsResponse('');
             try {
-              const result = await commands.getLineItemsByOrder(lineItemsOrderId ? { orderId: lineItemsOrderId } : undefined);
+              const result = await command.getLineItemsByOrder(lineItemsOrderId ? { orderId: lineItemsOrderId } : undefined);
               setGetLineItemsResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setGetLineItemsResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -237,7 +237,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             setSetStockActionLoading(true);
             setSetStockActionResponse('');
             try {
-              const result = await commands.setRefundStockAction({
+              const result = await command.setRefundStockAction({
                 itemKey: stockActionItemKey,
                 action: stockAction
               });
@@ -275,7 +275,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             setSelectAllLoading(true);
             setSelectAllResponse('');
             try {
-              const result = await commands.selectAllRefundItems();
+              const result = await command.selectAllRefundItems();
               setSelectAllResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setSelectAllResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -310,7 +310,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             setResetRefundLoading(true);
             setResetRefundResponse('');
             try {
-              const result = await commands.resetRefundDetails();
+              const result = await command.resetRefundDetails();
               setResetRefundResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setResetRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -345,7 +345,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             setCalculateRefundLoading(true);
             setCalculateRefundResponse('');
             try {
-              const result = await commands.calculateRefundTotal();
+              const result = await command.calculateRefundTotal();
               setCalculateRefundResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setCalculateRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -380,7 +380,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             setGetRemainingLoading(true);
             setGetRemainingResponse('');
             try {
-              const result = await commands.getRemainingRefundableQuantities();
+              const result = await command.getRemainingRefundableQuantities();
               setGetRemainingResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setGetRemainingResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -426,7 +426,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             setProcessRefundLoading(true);
             setProcessRefundResponse('');
             try {
-              const result = await commands.processPartialRefund(refundReason ? { reason: refundReason } : undefined);
+              const result = await command.processPartialRefund(refundReason ? { reason: refundReason } : undefined);
               setProcessRefundResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setProcessRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);

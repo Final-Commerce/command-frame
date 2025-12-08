@@ -19,10 +19,10 @@ Adds a note to the current order/cart.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Add a note to the order
-await commands.addOrderNote({
+await command.addOrderNote({
   note: 'Customer requested delivery by 3pm'
 });
 ```

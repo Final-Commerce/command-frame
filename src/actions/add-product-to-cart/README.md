@@ -62,7 +62,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Examples
@@ -72,15 +72,15 @@ import { commands } from '@final-commerce/command-frame';
 Add the active product to cart using its current quantity:
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // First, set a product as active
-await commands.setProductActive({
+await command.setProductActive({
     variantId: 'variant-id-123'
 });
 
 // Then add to cart with default quantity
-const result = await commands.addProductToCart();
+const result = await command.addProductToCart();
 
 console.log(`Added ${result.name} (quantity: ${result.quantity}) to cart`);
 ```
@@ -90,7 +90,7 @@ console.log(`Added ${result.name} (quantity: ${result.quantity}) to cart`);
 Add the active product to cart with a specific quantity:
 
 ```typescript
-const result = await commands.addProductToCart({
+const result = await command.addProductToCart({
     quantity: 3
 });
 
@@ -103,19 +103,19 @@ Typical workflow: Set product active, add discount, then add to cart:
 
 ```typescript
 // 1. Set product as active
-await commands.setProductActive({
+await command.setProductActive({
     variantId: 'variant-id-123'
 });
 
 // 2. Optionally add discount
-await commands.addProductDiscount({
+await command.addProductDiscount({
     amount: 10,
     isPercent: false,
     label: 'Promotion Discount'
 });
 
 // 3. Add to cart with quantity
-await commands.addProductToCart({
+await command.addProductToCart({
     quantity: 2
 });
 ```
@@ -126,18 +126,18 @@ Handle errors when no product is active:
 
 ```typescript
 try {
-    const result = await commands.addProductToCart({
+    const result = await command.addProductToCart({
         quantity: 1
     });
 } catch (error) {
     if (error.message.includes('No active product')) {
         console.error('Please set a product as active first');
         // Set a product as active
-        await commands.setProductActive({
+        await command.setProductActive({
             variantId: 'variant-id-123'
         });
         // Retry adding to cart
-        await commands.addProductToCart({
+        await command.addProductToCart({
             quantity: 1
         });
     } else {
@@ -193,7 +193,7 @@ The handler will throw errors in the following cases:
 
 ```typescript
 // Throws: "No active product. Please set a product as active first."
-await commands.addProductToCart();
+await command.addProductToCart();
 ```
 
 ## Validation Rules

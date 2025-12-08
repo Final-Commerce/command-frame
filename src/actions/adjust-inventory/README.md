@@ -25,22 +25,22 @@ Adjusts the inventory/stock level for the currently active product.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Add 10 units to inventory
-await commands.adjustInventory({
+await command.adjustInventory({
   amount: '10',
   stockType: 'add'
 });
 
 // Subtract 5 units from inventory
-await commands.adjustInventory({
+await command.adjustInventory({
   amount: '5',
   stockType: 'subtract'
 });
 
 // Set inventory to 50 units
-await commands.adjustInventory({
+await command.adjustInventory({
   amount: '50',
   stockType: 'set'
 });

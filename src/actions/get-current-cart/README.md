@@ -38,11 +38,11 @@ The cart object (`ActiveCart`) includes:
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Get the current cart
-  const result = await commands.getCurrentCart();
+  const result = await command.getCurrentCart();
   console.log('Current cart:', result.cart);
   console.log('Cart products:', result.cart.products);
   console.log('Cart total:', result.cart.total);

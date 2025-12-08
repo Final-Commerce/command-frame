@@ -19,10 +19,10 @@ Deletes a parked order from the system.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Delete a parked order
-await commands.deleteParkedOrder({
+await command.deleteParkedOrder({
   orderId: '691df9c6c478bada1fb23d31'
 });
 ```

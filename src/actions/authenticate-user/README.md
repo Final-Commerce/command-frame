@@ -19,10 +19,10 @@ Triggers user authentication for specific roles.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Authenticate user with specific roles
-await commands.authenticateUser({
+await command.authenticateUser({
   roleIds: ['role-123', 'role-456']
 });
 ```

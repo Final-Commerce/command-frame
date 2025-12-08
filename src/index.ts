@@ -57,8 +57,8 @@ import { getRemainingRefundableQuantities } from "./actions/get-remaining-refund
 import { processPartialRefund } from "./actions/process-partial-refund/action";
 import { getCurrentCart } from "./actions/get-current-cart/action";
 
-// Export actions as commands object
-export const commands = {
+// Export actions as command object
+export const command = {
     exampleFunction,
     getProducts,
     addCustomSale,

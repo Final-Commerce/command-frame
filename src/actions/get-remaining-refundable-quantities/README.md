@@ -20,11 +20,11 @@ None.
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Get remaining refundable quantities
-  const result = await commands.getRemainingRefundableQuantities();
+  const result = await command.getRemainingRefundableQuantities();
   console.log('Remaining quantities:', result);
   // Expected output:
   // {
@@ -46,7 +46,7 @@ try {
 ```typescript
 // Example of error when no active order
 try {
-  await commands.getRemainingRefundableQuantities();
+  await command.getRemainingRefundableQuantities();
 } catch (error) {
   console.error(error.message); // "No active order. Please set an order as active first."
 }

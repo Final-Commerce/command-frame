@@ -53,7 +53,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Examples
@@ -63,9 +63,9 @@ import { commands } from '@final-commerce/command-frame';
 Get all customers (up to 100):
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
-const result = await commands.getCustomers();
+const result = await command.getCustomers();
 console.log(result.customers);
 ```
 

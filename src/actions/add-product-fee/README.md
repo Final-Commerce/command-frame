@@ -26,17 +26,17 @@ Adds a fee to the currently active product. Supports both fixed amount and perce
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Add a fixed fee
-await commands.addProductFee({
+await command.addProductFee({
   amount: 5.00,
   label: 'Service Fee',
   applyTaxes: true
 });
 
 // Add a percentage-based fee
-await commands.addProductFee({
+await command.addProductFee({
   amount: 10,
   isPercent: true,
   label: 'Processing Fee'

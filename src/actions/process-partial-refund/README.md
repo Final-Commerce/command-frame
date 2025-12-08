@@ -23,14 +23,14 @@ Processes a partial refund based on the current refund selections in the refund 
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // First, select items to refund (e.g., using selectAllRefundItems or other refund selection methods)
-  await commands.selectAllRefundItems();
+  await command.selectAllRefundItems();
 
   // Process the partial refund
-  const result = await commands.processPartialRefund({
+  const result = await command.processPartialRefund({
     reason: 'Customer requested return'
   });
   console.log('Refund processed:', result);
@@ -55,7 +55,7 @@ try {
 ```typescript
 // Example of error when no items selected
 try {
-  await commands.processPartialRefund();
+  await command.processPartialRefund();
 } catch (error) {
   console.error(error.message); // "No items selected for refund. Please select items to refund first."
 }

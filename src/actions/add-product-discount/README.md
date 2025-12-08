@@ -79,7 +79,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Examples
@@ -89,15 +89,15 @@ import { commands } from '@final-commerce/command-frame';
 Add a fixed $10 discount to the active product:
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // First, set a product as active
-await commands.setProductActive({
+await command.setProductActive({
     variantId: 'variant-id-123'
 });
 
 // Then add a fixed discount
-const result = await commands.addProductDiscount({
+const result = await command.addProductDiscount({
     amount: 10,
     isPercent: false,
     label: 'Special Discount'
@@ -111,7 +111,7 @@ console.log(`Added $${result.amount} discount`);
 Add a 15% discount to the active product:
 
 ```typescript
-const result = await commands.addProductDiscount({
+const result = await command.addProductDiscount({
     amount: 15,
     isPercent: true,
     label: 'Holiday Sale'
@@ -125,7 +125,7 @@ console.log(`Added ${result.amount}% discount`);
 Add a discount with a descriptive label:
 
 ```typescript
-const result = await commands.addProductDiscount({
+const result = await command.addProductDiscount({
     amount: 5.50,
     isPercent: false,
     label: 'Employee Discount'
@@ -138,19 +138,19 @@ Typical workflow: Set product active, add discount, then add to cart:
 
 ```typescript
 // 1. Set product as active
-await commands.setProductActive({
+await command.setProductActive({
     variantId: 'variant-id-123'
 });
 
 // 2. Add discount
-await commands.addProductDiscount({
+await command.addProductDiscount({
     amount: 10,
     isPercent: false,
     label: 'Promotion Discount'
 });
 
 // 3. Add to cart
-await commands.addProductToCart({ quantity: 1 });
+await command.addProductToCart({ quantity: 1 });
 ```
 
 ### Error Handling
@@ -159,7 +159,7 @@ Handle errors when no product is active:
 
 ```typescript
 try {
-    const result = await commands.addProductDiscount({
+    const result = await command.addProductDiscount({
         amount: 10,
         isPercent: false
     });
@@ -167,11 +167,11 @@ try {
     if (error.message.includes('No active product')) {
         console.error('Please set a product as active first');
         // Set a product as active
-        await commands.setProductActive({
+        await command.setProductActive({
             variantId: 'variant-id-123'
         });
         // Retry adding discount
-        await commands.addProductDiscount({
+        await command.addProductDiscount({
             amount: 10,
             isPercent: false
         });
@@ -220,14 +220,14 @@ The handler will throw errors in the following cases:
 
 ```typescript
 // Throws: "Parameters are required for addProductDiscount"
-await commands.addProductDiscount();
+await command.addProductDiscount();
 ```
 
 ### Missing Amount
 
 ```typescript
 // Throws: "Discount amount is required"
-await commands.addProductDiscount({
+await command.addProductDiscount({
     isPercent: false
 });
 ```
@@ -236,7 +236,7 @@ await commands.addProductDiscount({
 
 ```typescript
 // Throws: "No active product. Please set a product as active first."
-await commands.addProductDiscount({
+await command.addProductDiscount({
     amount: 10,
     isPercent: false
 });

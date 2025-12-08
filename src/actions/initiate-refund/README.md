@@ -19,15 +19,15 @@ Opens the refund UI for the specified order or the currently active order.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Initiate refund for a specific order
-await commands.initiateRefund({
+await command.initiateRefund({
   orderId: '691df9c6c478bada1fb23d31'
 });
 
 // Initiate refund for the active order
-await commands.initiateRefund();
+await command.initiateRefund();
 ```
 
 ## Notes

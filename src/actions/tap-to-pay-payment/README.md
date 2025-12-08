@@ -25,11 +25,11 @@ Initiates a tap-to-pay payment for the current cart.
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Pay with tap to pay using cart total
-  const result = await commands.tapToPayPayment();
+  const result = await command.tapToPayPayment();
   console.log('Payment processed:', result);
   console.log('Order:', result.order);
   // Expected output:
@@ -47,7 +47,7 @@ try {
   // }
 
   // Pay with tap to pay for a specific amount
-  await commands.tapToPayPayment({
+  await command.tapToPayPayment({
     amount: 50.00
   });
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -38,7 +38,7 @@ export function IntegrationSection({ isInIframe }: IntegrationSectionProps) {
     setTriggerWebhookResponse('');
 
     try {
-      const result = await commands.triggerWebhook({
+      const result = await command.triggerWebhook({
         webhookUrl,
         publicKey: webhookPublicKey || undefined,
         presetData: webhookPresetData,
@@ -70,7 +70,7 @@ export function IntegrationSection({ isInIframe }: IntegrationSectionProps) {
     setTriggerZapierResponse('');
 
     try {
-      const result = await commands.triggerZapierWebhook({
+      const result = await command.triggerZapierWebhook({
         triggerUrl: zapierTriggerUrl
       });
       setTriggerZapierResponse(JSON.stringify(result, null, 2));

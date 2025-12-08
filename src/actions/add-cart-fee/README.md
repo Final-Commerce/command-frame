@@ -26,17 +26,17 @@ Adds a fee to the entire cart. Supports both fixed amount and percentage-based f
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Add a fixed fee
-await commands.addCartFee({
+await command.addCartFee({
   amount: 5.00,
   label: 'Service Fee',
   applyTaxes: true
 });
 
 // Add a percentage-based fee
-await commands.addCartFee({
+await command.addCartFee({
   amount: 10,
   isPercent: true,
   label: 'Processing Fee'

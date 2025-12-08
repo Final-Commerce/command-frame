@@ -89,7 +89,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Examples
@@ -99,9 +99,9 @@ import { commands } from '@final-commerce/command-frame';
 Retrieve all current environment information:
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
-const context = await commands.getContext();
+const context = await command.getContext();
 
 console.log('User ID:', context.userId);
 console.log('Company:', context.companyName);
@@ -114,7 +114,7 @@ console.log('Build:', context.buildName);
 Use context information to make decisions:
 
 ```typescript
-const context = await commands.getContext();
+const context = await command.getContext();
 
 if (context.companyId === 'specific-company-id') {
     // Do something specific for this company
@@ -134,7 +134,7 @@ if (context.outletId) {
 Log context information for debugging purposes:
 
 ```typescript
-const context = await commands.getContext();
+const context = await command.getContext();
 
 console.log('Current Environment:', {
     user: context.userId,
@@ -151,7 +151,7 @@ console.log('Current Environment:', {
 Validate that required context is available before proceeding:
 
 ```typescript
-const context = await commands.getContext();
+const context = await command.getContext();
 
 if (!context.userId) {
     throw new Error('User must be logged in');
@@ -174,7 +174,7 @@ Handle errors when getting context:
 
 ```typescript
 try {
-    const context = await commands.getContext();
+    const context = await command.getContext();
     // Use context
 } catch (error) {
     console.error('Failed to get context:', error);

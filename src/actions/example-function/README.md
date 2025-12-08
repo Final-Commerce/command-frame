@@ -1,6 +1,6 @@
 # exampleFunction
 
-**Note:** This is an example/template function for demonstration purposes. It shows the basic structure of how actions work in the commands-frame library.
+**Note:** This is an example/template function for demonstration purposes. It shows the basic structure of how actions work in the command-frame library.
 
 ## Overview
 
@@ -44,13 +44,13 @@ interface ExampleFunctionResponse {
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Example
 
 ```typescript
-const result = await commands.exampleFunction({
+const result = await command.exampleFunction({
     param1: 'value1',
     param2: 'value2',
     param3: 'value3'

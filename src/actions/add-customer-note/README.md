@@ -21,10 +21,10 @@ Adds a note to a customer's record.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Add a note to a customer
-await commands.addCustomerNote({
+await command.addCustomerNote({
   customerId: '691df9c6c478bada1fb23d31',
   note: 'Preferred delivery time: 2-4pm'
 });

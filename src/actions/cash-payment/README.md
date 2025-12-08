@@ -27,11 +27,11 @@ Initiates a cash payment for the current cart.
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Pay with cash using cart total
-  const result = await commands.cashPayment();
+  const result = await command.cashPayment();
   console.log('Payment processed:', result);
   console.log('Order:', result.order);
   // Expected output:
@@ -52,7 +52,7 @@ try {
   // }
 
   // Pay with cash for a specific amount with change calculator
-  await commands.cashPayment({
+  await command.cashPayment({
     amount: 50.00,
     openChangeCalculator: true
   });

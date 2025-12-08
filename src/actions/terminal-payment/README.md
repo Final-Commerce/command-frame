@@ -25,11 +25,11 @@ Initiates a terminal payment for the current cart.
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Pay with terminal using cart total
-  const result = await commands.terminalPayment();
+  const result = await command.terminalPayment();
   console.log('Payment processed:', result);
   console.log('Order:', result.order);
   // Expected output:
@@ -47,7 +47,7 @@ try {
   // }
 
   // Pay with terminal for a specific amount
-  await commands.terminalPayment({
+  await command.terminalPayment({
     amount: 50.00
   });
 

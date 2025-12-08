@@ -79,7 +79,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Examples
@@ -89,9 +89,9 @@ import { commands } from '@final-commerce/command-frame';
 Add a fixed $10 discount to the entire cart:
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
-const result = await commands.addCartDiscount({
+const result = await command.addCartDiscount({
     amount: 10,
     isPercent: false,
     label: 'Holiday Sale'
@@ -105,7 +105,7 @@ console.log(`Added $${result.amount} cart discount`);
 Add a 15% discount to the entire cart:
 
 ```typescript
-const result = await commands.addCartDiscount({
+const result = await command.addCartDiscount({
     amount: 15,
     isPercent: true,
     label: 'Bulk Discount'
@@ -119,7 +119,7 @@ console.log(`Added ${result.amount}% cart discount`);
 Add a discount with a descriptive label:
 
 ```typescript
-const result = await commands.addCartDiscount({
+const result = await command.addCartDiscount({
     amount: 5.50,
     isPercent: false,
     label: 'Loyalty Customer Discount'
@@ -132,25 +132,25 @@ Typical workflow: Add products to cart, then apply cart discount:
 
 ```typescript
 // 1. Set product as active and add to cart
-await commands.setProductActive({
+await command.setProductActive({
     variantId: 'variant-id-123'
 });
 
-await commands.addProductToCart({
+await command.addProductToCart({
     quantity: 2
 });
 
 // 2. Add another product
-await commands.setProductActive({
+await command.setProductActive({
     variantId: 'variant-id-456'
 });
 
-await commands.addProductToCart({
+await command.addProductToCart({
     quantity: 1
 });
 
 // 3. Apply cart discount
-await commands.addCartDiscount({
+await command.addCartDiscount({
     amount: 10,
     isPercent: false,
     label: 'Promotion Discount'
@@ -163,7 +163,7 @@ Handle validation errors:
 
 ```typescript
 try {
-    const result = await commands.addCartDiscount({
+    const result = await command.addCartDiscount({
         amount: 10,
         isPercent: false
     });
@@ -225,14 +225,14 @@ The handler will throw errors in the following cases:
 
 ```typescript
 // Throws: "Parameters are required for addCartDiscount"
-await commands.addCartDiscount();
+await command.addCartDiscount();
 ```
 
 ### Missing Amount
 
 ```typescript
 // Throws: "Discount amount is required"
-await commands.addCartDiscount({
+await command.addCartDiscount({
     isPercent: false
 });
 ```

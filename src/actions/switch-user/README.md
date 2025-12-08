@@ -26,21 +26,21 @@ Switches the current user to a different user.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Show dialog to select user
-await commands.switchUser({
+await command.switchUser({
   mode: 'dialog'
 });
 
 // Switch to user with specific roles
-await commands.switchUser({
+await command.switchUser({
   mode: 'role',
   roleIds: ['role-123', 'role-456']
 });
 
 // Switch to specific user
-await commands.switchUser({
+await command.switchUser({
   mode: 'specific',
   userId: 'user-123'
 });

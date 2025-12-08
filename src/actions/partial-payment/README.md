@@ -28,18 +28,18 @@ Initiates a partial/split payment for the current cart.
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Open the split payment UI
-  const result1 = await commands.partialPayment({
+  const result1 = await command.partialPayment({
     openUI: true
   });
   console.log('Split payment UI opened:', result1);
   // order will be null until final payment completes
 
   // Process a partial payment with a fixed amount
-  const result2 = await commands.partialPayment({
+  const result2 = await command.partialPayment({
     amount: 25.00,
     isPercent: false
   });
@@ -60,7 +60,7 @@ try {
   // }
 
   // Process a partial payment with a percentage
-  await commands.partialPayment({
+  await command.partialPayment({
     amount: 50,
     isPercent: true
   });

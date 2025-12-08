@@ -19,10 +19,10 @@ None
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Park the current order
-const result = await commands.parkOrder();
+const result = await command.parkOrder();
 console.log('Parked order:', result.order);
 // Expected output:
 // {

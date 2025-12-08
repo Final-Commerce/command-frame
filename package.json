@@ -26,7 +26,7 @@
         "final commerce",
         "finalpos",
         "final",
-        "commands",
+        "command",
         "frame"
     ],
     "author": "Final Commerce",
@@ -37,7 +37,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Final-Commerce/commands-frame.git"
+        "url": "git+https://github.com/Final-Commerce/command-frame.git"
     },
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^8.48.0",

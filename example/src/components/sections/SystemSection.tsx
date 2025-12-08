@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -62,7 +62,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
     setGoToPageResponse('');
 
     try {
-      const result = await commands.goToPage({ pageId });
+      const result = await command.goToPage({ pageId });
       setGoToPageResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setGoToPageResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -81,7 +81,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
     setGoToHomeResponse('');
 
     try {
-      const result = await commands.goToStationHome();
+      const result = await command.goToStationHome();
       setGoToHomeResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setGoToHomeResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -96,7 +96,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
     }
 
     try {
-      await commands.openCashDrawer();
+      await command.openCashDrawer();
     } catch (error) {
       console.error('Error opening cash drawer:', error);
     }
@@ -117,7 +117,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
     setOpenPopupResponse('');
 
     try {
-      const result = await commands.openPopup({ popupId });
+      const result = await command.openPopup({ popupId });
       setOpenPopupResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setOpenPopupResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -141,7 +141,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
     setToggleSlideOutResponse('');
 
     try {
-      const result = await commands.toggleSlideOut({ slideOutId });
+      const result = await command.toggleSlideOut({ slideOutId });
       setToggleSlideOutResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setToggleSlideOutResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -165,7 +165,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
     setShowNotificationResponse('');
 
     try {
-      const result = await commands.showNotification({ message: notificationMessage });
+      const result = await command.showNotification({ message: notificationMessage });
       setShowNotificationResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setShowNotificationResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -189,7 +189,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
     setShowConfirmationResponse('');
 
     try {
-      const result = await commands.showConfirmation({ message: confirmationMessage });
+      const result = await command.showConfirmation({ message: confirmationMessage });
       setShowConfirmationResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setShowConfirmationResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -214,7 +214,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
 
     try {
       const roleIdsArray = roleIds.split(',').map(id => id.trim()).filter(id => id);
-      const result = await commands.authenticateUser({ roleIds: roleIdsArray });
+      const result = await command.authenticateUser({ roleIds: roleIdsArray });
       setAuthenticateResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setAuthenticateResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -238,7 +238,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
     setUpdateCfdResponse('');
 
     try {
-      const result = await commands.updateCustomerFacingDisplay({ pageId: cfdPageId });
+      const result = await command.updateCustomerFacingDisplay({ pageId: cfdPageId });
       setUpdateCfdResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setUpdateCfdResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -270,7 +270,7 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
         params.userId = switchUserId;
       }
 
-      const result = await commands.switchUser(params);
+      const result = await command.switchUser(params);
       setSwitchUserResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setSwitchUserResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);

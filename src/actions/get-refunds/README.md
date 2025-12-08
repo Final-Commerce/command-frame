@@ -30,11 +30,11 @@ Retrieves a list of refunds from the system with optional filtering, sorting, an
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Get all refunds
-  const allRefunds = await commands.getRefunds({
+  const allRefunds = await command.getRefunds({
     limit: 20,
     offset: 0
   });
@@ -48,13 +48,13 @@ try {
   // }
 
   // Get refunds for a specific order
-  const orderRefunds = await commands.getRefunds({
+  const orderRefunds = await command.getRefunds({
     orderId: 'order-123'
   });
   console.log('Order refunds:', orderRefunds);
 
   // Get refunds for a specific session
-  const sessionRefunds = await commands.getRefunds({
+  const sessionRefunds = await command.getRefunds({
     sessionId: 'session-456',
     sortBy: 'createdAt',
     sortDirection: 'desc'
@@ -62,7 +62,7 @@ try {
   console.log('Session refunds:', sessionRefunds);
 
   // Get refunds for a specific outlet
-  const outletRefunds = await commands.getRefunds({
+  const outletRefunds = await command.getRefunds({
     outletId: 'outlet-789',
     limit: 10
   });
@@ -80,7 +80,7 @@ try {
 ```typescript
 // Example of error handling
 try {
-  await commands.getRefunds({ limit: 10 });
+  await command.getRefunds({ limit: 10 });
 } catch (error) {
   console.error(error.message); // "Failed to fetch refunds: ..."
 }

@@ -45,7 +45,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Examples
@@ -55,9 +55,9 @@ import { commands } from '@final-commerce/command-frame';
 Get all categories:
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
-const result = await commands.getCategories();
+const result = await command.getCategories();
 console.log(result.categories);
 ```
 

@@ -18,10 +18,10 @@ None
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Clear the cart
-await commands.clearCart();
+await command.clearCart();
 ```
 
 ## Error Handling

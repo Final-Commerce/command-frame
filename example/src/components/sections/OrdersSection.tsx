@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -47,7 +47,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
             setParkOrderLoading(true);
             setParkOrderResponse('');
             try {
-              const result = await commands.parkOrder();
+              const result = await command.parkOrder();
               setParkOrderResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setParkOrderResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -97,7 +97,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
             setResumeParkedOrderLoading(true);
             setResumeParkedOrderResponse('');
             try {
-              const result = await commands.resumeParkedOrder({ orderId: resumeOrderId });
+              const result = await command.resumeParkedOrder({ orderId: resumeOrderId });
               setResumeParkedOrderResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setResumeParkedOrderResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -147,7 +147,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
             setDeleteParkedOrderLoading(true);
             setDeleteParkedOrderResponse('');
             try {
-              const result = await commands.deleteParkedOrder({ orderId: deleteOrderId });
+              const result = await command.deleteParkedOrder({ orderId: deleteOrderId });
               setDeleteParkedOrderResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setDeleteParkedOrderResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -220,7 +220,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
               if (ordersStatus) params.status = ordersStatus;
               if (ordersCustomerId) params.customerId = ordersCustomerId;
               
-              const result = await commands.getOrders(params);
+              const result = await command.getOrders(params);
               setGetOrdersResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setGetOrdersResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);

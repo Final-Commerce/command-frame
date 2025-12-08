@@ -19,10 +19,10 @@ Shows a confirmation dialog to the user.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Show a confirmation dialog
-await commands.showConfirmation({
+await command.showConfirmation({
   message: 'Are you sure you want to proceed?'
 });
 ```

@@ -45,7 +45,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 ```
 
 ## Usage Examples
@@ -55,9 +55,9 @@ import { commands } from '@final-commerce/command-frame';
 Set a specific variant as the active product:
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
-const result = await commands.setProductActive({
+const result = await command.setProductActive({
     variantId: 'variant-id-123'
 });
 
@@ -70,7 +70,7 @@ Typical workflow: Get variants, set one as active, then add discount or add to c
 
 ```typescript
 // 1. Get variants for a product
-const variantsResult = await commands.getProductVariants({
+const variantsResult = await command.getProductVariants({
     productId: 'product-id-123'
 });
 
@@ -78,18 +78,18 @@ const variantsResult = await commands.getProductVariants({
 if (variantsResult.variants.length > 0) {
     const variantId = variantsResult.variants[0]._id || variantsResult.variants[0].id;
     
-    await commands.setProductActive({
+    await command.setProductActive({
         variantId: variantId
     });
     
     // 3. Now you can add discount or add to cart
-    await commands.addProductDiscount({
+    await command.addProductDiscount({
         amount: 10,
         isPercent: false,
         label: 'Special Discount'
     });
     
-    await commands.addProductToCart({ quantity: 2 });
+    await command.addProductToCart({ quantity: 2 });
 }
 ```
 
@@ -99,7 +99,7 @@ Handle errors when variant is not found:
 
 ```typescript
 try {
-    const result = await commands.setProductActive({
+    const result = await command.setProductActive({
         variantId: 'invalid-variant-id'
     });
 } catch (error) {
@@ -137,14 +137,14 @@ The handler will throw errors in the following cases:
 
 ```typescript
 // Throws: "Variant ID is required"
-await commands.setProductActive({});
+await command.setProductActive({});
 ```
 
 ### Variant Not Found
 
 ```typescript
 // Throws: "Variant with ID {variantId} not found"
-await commands.setProductActive({
+await command.setProductActive({
     variantId: 'non-existent-id'
 });
 ```

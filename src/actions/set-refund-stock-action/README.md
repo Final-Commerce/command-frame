@@ -25,11 +25,11 @@ Sets the stock handling option for a refunded line item (restock or mark as dama
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // First, get line items to find the item key
-  const lineItemsResult = await commands.getLineItemsByOrder({
+  const lineItemsResult = await command.getLineItemsByOrder({
     orderId: 'order-123'
   });
   
@@ -37,7 +37,7 @@ try {
   const itemKey = lineItemsResult.lineItems[0].key;
   
   // Set stock action to restock
-  const result = await commands.setRefundStockAction({
+  const result = await command.setRefundStockAction({
     itemKey: itemKey, // Use the 'key' field from getLineItemsByOrder
     action: 'RESTOCK'
   });
@@ -51,7 +51,7 @@ try {
   // }
 
   // Set stock action to mark as damaged
-  await commands.setRefundStockAction({
+  await command.setRefundStockAction({
     itemKey: itemKey,
     action: 'REFUND_DAMAGE'
   });
@@ -71,7 +71,7 @@ try {
 ```typescript
 // Example of error when action is invalid
 try {
-  await commands.setRefundStockAction({
+  await command.setRefundStockAction({
     itemKey: 'variant-id-123',
     action: 'INVALID' as any
   });

@@ -19,10 +19,10 @@ Shows a notification message to the user.
 ## Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 // Show a notification
-await commands.showNotification({
+await command.showNotification({
   message: 'Order completed successfully!'
 });
 ```

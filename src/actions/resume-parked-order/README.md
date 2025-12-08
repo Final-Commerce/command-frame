@@ -23,11 +23,11 @@ Resumes a parked order by loading it back into the cart. The order status is upd
 ## Example Usage
 
 ```typescript
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
 try {
   // Resume a parked order
-  const result = await commands.resumeParkedOrder({
+  const result = await command.resumeParkedOrder({
     orderId: 'order-id-123'
   });
   console.log('Resumed order:', result.order);
@@ -60,7 +60,7 @@ try {
 ```typescript
 // Example of error when order not found
 try {
-  await commands.resumeParkedOrder({
+  await command.resumeParkedOrder({
     orderId: 'invalid-order-id'
   });
 } catch (error) {

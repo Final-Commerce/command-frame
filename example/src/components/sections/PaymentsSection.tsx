@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -79,7 +79,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
               if (cashPaymentAmount) params.amount = parseFloat(cashPaymentAmount);
               if (openChangeCalculator) params.openChangeCalculator = true;
               
-              const result = await commands.cashPayment(Object.keys(params).length > 0 ? params : undefined);
+              const result = await command.cashPayment(Object.keys(params).length > 0 ? params : undefined);
               setCashPaymentResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setCashPaymentResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -126,7 +126,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
             setTapToPayLoading(true);
             setTapToPayResponse('');
             try {
-              const result = await commands.tapToPayPayment(tapToPayAmount ? { amount: parseFloat(tapToPayAmount) } : undefined);
+              const result = await command.tapToPayPayment(tapToPayAmount ? { amount: parseFloat(tapToPayAmount) } : undefined);
               setTapToPayResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setTapToPayResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -173,7 +173,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
             setTerminalLoading(true);
             setTerminalResponse('');
             try {
-              const result = await commands.terminalPayment(terminalAmount ? { amount: parseFloat(terminalAmount) } : undefined);
+              const result = await command.terminalPayment(terminalAmount ? { amount: parseFloat(terminalAmount) } : undefined);
               setTerminalResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setTerminalResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -220,7 +220,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
             setVendaraLoading(true);
             setVendaraResponse('');
             try {
-              const result = await commands.vendaraPayment(vendaraAmount ? { amount: parseFloat(vendaraAmount) } : undefined);
+              const result = await command.vendaraPayment(vendaraAmount ? { amount: parseFloat(vendaraAmount) } : undefined);
               setVendaraResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setVendaraResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -295,7 +295,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
             setPartialPaymentLoading(true);
             setPartialPaymentResponse('');
             try {
-              const result = await commands.partialPayment(
+              const result = await command.partialPayment(
                 partialPaymentOpenUI
                   ? { openUI: true }
                   : {

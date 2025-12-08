@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { commands } from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -24,7 +24,7 @@ export function EnvironmentSection({ isInIframe }: EnvironmentSectionProps) {
     setContextData(null);
 
     try {
-      const result = await commands.getContext();
+      const result = await command.getContext();
       setContextData(result);
     } catch (error) {
       setContextError(error instanceof Error ? error.message : 'Unknown error');
