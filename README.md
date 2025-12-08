@@ -31,6 +31,7 @@ The library provides a `command` namespace object containing all available actio
 - **[getProducts](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-products/README.md)** - Retrieve a list of products from the parent application
 - **[getCategories](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-categories/README.md)** - Retrieve a list of categories from the parent application
 - **[getProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-product-variants/README.md)** - Retrieve all variants for a specific product
+- **[getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)** - Retrieve a list of orders from the system with optional filtering, sorting, and pagination
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
 
 #### Product Actions
@@ -162,6 +163,10 @@ Retrieves a list of categories from the parent application's local database. Sup
 ### [getProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-product-variants/README.md)
 
 Retrieves all variants for a specific product from the parent application's local database. Useful for displaying variant options or selecting a specific variant.
+
+### [getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)
+
+Retrieves a list of orders from the system with optional filtering, sorting, and pagination. Supports filtering by status, customer ID, session ID, and text search.
 
 ### [addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)
 
@@ -361,6 +366,7 @@ import type {
     GetProductsParams, GetProductsResponse, GetProducts,
     GetCategoriesParams, GetCategoriesResponse, GetCategories,
     GetProductVariantsParams, GetProductVariantsResponse, GetProductVariants,
+    GetOrdersParams, GetOrdersResponse, GetOrders,
     GetContext, GetContextResponse,
     // Product Actions
     SetProductActiveParams, SetProductActiveResponse, SetProductActive,

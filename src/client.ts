@@ -1,5 +1,5 @@
 /**
- * Commands Frame Client for iframe communication
+ * Command Frame Client for iframe communication
  * Allows the iframe to call functions on the parent window via postMessage
  */
 
