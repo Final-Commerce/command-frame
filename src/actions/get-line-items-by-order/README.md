@@ -18,8 +18,8 @@ Retrieves line items and custom sales from an order, along with calculated remai
 | :----------------------------- | :------------------------ | :---------------------------------------- |
 | `success`                      | `boolean`                 | `true` if the line items were retrieved successfully. |
 | `orderId`                      | `string`                  | The ID of the order.                      |
-| `lineItems`                    | `LineItem[]`              | Array of line items in the order. Each line item includes a `key` field (internalId \|\| variantId \|\| productId) that should be used for refund operations. |
-| `customSales`                  | `CustomSale[]`            | Array of custom sales in the order.      |
+| `lineItems`                    | `CFLineItem[]`              | Array of line items in the order. Each line item includes a `key` field (internalId \|\| variantId \|\| productId) that should be used for refund operations. |
+| `customSales`                  | `CFCustomSale[]`            | Array of custom sales in the order.      |
 | `remainingQuantities`          | `Record<string, number>`  | Map of item keys to remaining refundable quantities. Keys match the `key` field from lineItems. |
 | `remainingCustomSalesQuantities` | `Record<string, number>`  | Map of custom sale IDs to remaining refundable quantities. |
 | `timestamp`                    | `string`                  | ISO date string of when the action occurred. |

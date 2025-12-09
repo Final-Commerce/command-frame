@@ -14,9 +14,7 @@ import {
     CFProductType,
     CFUserTypes,
     CFActiveCart,
-    CFActiveProduct,
     CFCategory,
-    CFProductVariant
 } from "../CommonTypes";
 
 // Asset Imports

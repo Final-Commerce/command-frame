@@ -32,7 +32,9 @@ The library provides a `command` namespace object containing all available actio
 - **[getCategories](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-categories/README.md)** - Retrieve a list of categories from the parent application
 - **[getProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-product-variants/README.md)** - Retrieve all variants for a specific product
 - **[getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)** - Retrieve a list of orders from the system with optional filtering, sorting, and pagination
+- **[getCurrentCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-cart/README.md)** - Retrieve the current cart object with all its contents
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
+- **[getFinalContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-final-context/README.md)** - Get final context information (project name)
 
 #### Product Actions
 - **[setProductActive](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-product-active/README.md)** - Set a product variant as the active product
@@ -51,7 +53,6 @@ The library provides a `command` namespace object containing all available actio
 - **[parkOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/park-order/README.md)** - Park (save) the current order for later retrieval
 - **[resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)** - Resume a previously parked order
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
-- **[reorderActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reorder-active-order/README.md)** - Reorder items from the currently active order into the cart
 - **[initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)** - Open the refund UI for an order
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Initiate a cash payment
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
@@ -76,6 +77,15 @@ The library provides a `command` namespace object containing all available actio
 - **[authenticateUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/authenticate-user/README.md)** - Trigger user authentication for specific roles
 - **[updateCustomerFacingDisplay](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-customer-facing-display/README.md)** - Update the customer-facing display to show a specific page
 - **[switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)** - Switch the current user to a different user
+
+#### Refund Actions
+- **[getLineItemsByOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-line-items-by-order/README.md)** - Retrieve line items and custom sales from an order for refund purposes
+- **[selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)** - Select all remaining refundable items for a full refund
+- **[resetRefundDetails](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reset-refund-details/README.md)** - Clear all refund selections
+- **[setRefundStockAction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-refund-stock-action/README.md)** - Set stock handling option (restock/damage) for a refunded item
+- **[calculateRefundTotal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/calculate-refund-total/README.md)** - Calculate refund total based on current selections
+- **[processPartialRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/process-partial-refund/README.md)** - Process a partial refund based on current selections
+- **[getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)** - Get remaining refundable quantities for items in the active order
 
 #### Integration Actions
 - **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
@@ -168,6 +178,10 @@ Retrieves all variants for a specific product from the parent application's loca
 
 Retrieves a list of orders from the system with optional filtering, sorting, and pagination. Supports filtering by status, customer ID, session ID, and text search.
 
+### [getCurrentCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-cart/README.md)
+
+Retrieves the current cart object with all its contents including products, custom sales, discounts, fees, totals, and customer information.
+
 ### [addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)
 
 Adds a custom sale item to the cart in the parent window. Useful for adding non-product items like service fees, discounts, or custom charges.
@@ -231,10 +245,6 @@ Resumes a previously parked order by loading it back into the cart.
 ### [deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)
 
 Deletes a parked order from the system.
-
-### [reorderActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reorder-active-order/README.md)
-
-Reorders the items from the currently active order into the cart. Products that are out of stock will not be added.
 
 ### [initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)
 
@@ -312,6 +322,36 @@ Updates the customer-facing display to show a specific page by page ID.
 
 Switches the current user to a different user. Supports three modes: dialog (select from all users), role (select from users with specific roles), or specific (switch to a specific user).
 
+### Refund Actions
+
+### [getLineItemsByOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-line-items-by-order/README.md)
+
+Retrieves line items and custom sales from an order, along with calculated remaining refundable quantities for each item.
+
+### [selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)
+
+Selects all remaining refundable items (line items, custom sales, cart fees, and tips) for a full refund.
+
+### [resetRefundDetails](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reset-refund-details/README.md)
+
+Clears all refund selections (quantities, custom sales, cart fees, tips, and stock actions).
+
+### [setRefundStockAction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-refund-stock-action/README.md)
+
+Sets the stock handling option for a refunded line item (restock or mark as damaged).
+
+### [calculateRefundTotal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/calculate-refund-total/README.md)
+
+Calculates and returns a preview of the refund total based on current refund selections, without processing the refund.
+
+### [processPartialRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/process-partial-refund/README.md)
+
+Processes a partial refund based on the current refund selections in the refund details state.
+
+### [getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)
+
+Gets the remaining refundable quantities for all line items and custom sales in the active order.
+
 ### Integration Actions
 
 ### [triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)
@@ -368,6 +408,8 @@ import type {
     GetProductVariantsParams, GetProductVariantsResponse, GetProductVariants,
     GetOrdersParams, GetOrdersResponse, GetOrders,
     GetContext, GetContextResponse,
+    GetFinalContext, GetFinalContextResponse,
+    GetCurrentCart, GetCurrentCartResponse,
     // Product Actions
     SetProductActiveParams, SetProductActiveResponse, SetProductActive,
     AddProductDiscountParams, AddProductDiscountResponse, AddProductDiscount,
@@ -384,7 +426,6 @@ import type {
     ParkOrderResponse, ParkOrder,
     ResumeParkedOrderParams, ResumeParkedOrderResponse, ResumeParkedOrder,
     DeleteParkedOrderParams, DeleteParkedOrderResponse, DeleteParkedOrder,
-    ReorderActiveOrderResponse, ReorderActiveOrder,
     InitiateRefundParams, InitiateRefundResponse, InitiateRefund,
     CashPaymentParams, CashPaymentResponse, CashPayment,
     TapToPayPaymentParams, TapToPayPaymentResponse, TapToPayPayment,
@@ -407,6 +448,14 @@ import type {
     AuthenticateUserParams, AuthenticateUserResponse, AuthenticateUser,
     UpdateCustomerFacingDisplayParams, UpdateCustomerFacingDisplayResponse, UpdateCustomerFacingDisplay,
     SwitchUserParams, SwitchUserResponse, SwitchUser,
+    // Refund Actions
+    GetLineItemsByOrderParams, GetLineItemsByOrderResponse, GetLineItemsByOrder,
+    SelectAllRefundItemsResponse, SelectAllRefundItems,
+    ResetRefundDetailsResponse, ResetRefundDetails,
+    SetRefundStockActionParams, SetRefundStockActionResponse, SetRefundStockAction,
+    CalculateRefundTotalResponse, CalculateRefundTotal,
+    ProcessPartialRefundParams, ProcessPartialRefundResponse, ProcessPartialRefund,
+    GetRemainingRefundableQuantitiesResponse, GetRemainingRefundableQuantities,
     // Integration Actions
     TriggerWebhookParams, TriggerWebhookResponse, TriggerWebhook,
     TriggerZapierWebhookParams, TriggerZapierWebhookResponse, TriggerZapierWebhook,

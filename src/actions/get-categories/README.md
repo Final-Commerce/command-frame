@@ -29,12 +29,12 @@ A query object to filter categories. The actual supported query operators depend
 
 ```typescript
 interface GetCategoriesResponse {
-    categories: any[];
+    categories: CFCategory[];
     timestamp: string;
 }
 ```
 
-#### `categories` (any[])
+#### `categories` (CFCategory[])
 
 Array of category objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB). See the [Real Data Examples](#real-data-examples) section below for actual category object structures.
 

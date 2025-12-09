@@ -13,7 +13,6 @@ This action takes no parameters.
 ```typescript
 interface GetContextResponse {
     userId: string | null;
-    userRoleId: string | null;
     companyId: string | null;
     companyName: string | null;
     deviceId: string | null;

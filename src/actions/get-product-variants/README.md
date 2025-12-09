@@ -22,13 +22,13 @@ The ID of the product to get variants for.
 
 ```typescript
 interface GetProductVariantsResponse {
-    variants: any[];
+    variants: CFProductVariant[];
     productId: string;
     timestamp: string;
 }
 ```
 
-#### `variants` (any[])
+#### `variants` (CFProductVariant[])
 
 Array of variant objects for the specified product. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB). See the [Real Data Examples](#real-data-examples) section below for actual variant object structures.
 

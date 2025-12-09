@@ -32,13 +32,13 @@ A query object to filter customers. The actual supported query operators depend 
 
 ```typescript
 interface GetCustomersResponse {
-    customers: any[];
+    customers: CFCustomer[];
     total?: number;
     timestamp: string;
 }
 ```
 
-#### `customers` (any[])
+#### `customers` (CFCustomer[])
 
 Array of customer objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB). See the [Real Data Examples](#real-data-examples) section below for actual customer object structures.
 

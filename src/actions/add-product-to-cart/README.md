@@ -8,15 +8,24 @@ Adds the currently active product to the cart in the parent application. The pro
 
 ```typescript
 interface AddProductToCartParams {
-    quantity?: number;  // Optional, default: active product's quantity or 1
+    productId?: string; // Optional, ID of product to add. If not provided, uses active product.
+    variantId?: string; // Optional, ID of variant to add. If not provided, uses active variant or first variant.
+    quantity?: number;  // Optional, default: 1
 }
 ```
+
+#### `productId` (optional)
+
+The ID of the specific product to add. If provided, the system will attempt to find this product. If not provided, the currently active product will be used.
+
+#### `variantId` (optional)
+
+The ID of the specific variant to add. If provided, the system will attempt to find this variant. If not provided, the system will use the active variant or default to the first variant.
 
 #### `quantity` (optional)
 
 The quantity of the product to add to the cart. If not provided:
-1. Uses the active product's current quantity
-2. If the active product has no quantity, defaults to 1
+1. Defaults to 1
 
 **Note:** If the product is already in the cart, the quantity will be added to the existing quantity (not replaced).
 
@@ -67,9 +76,9 @@ import { command } from '@final-commerce/command-frame';
 
 ## Usage Examples
 
-### Add Active Product to Cart (Default Quantity)
+### Add Active Product to Cart (Default)
 
-Add the active product to cart using its current quantity:
+Add the active product to cart using default quantity (1):
 
 ```typescript
 import { command } from '@final-commerce/command-frame';
@@ -79,19 +88,21 @@ await command.setProductActive({
     variantId: 'variant-id-123'
 });
 
-// Then add to cart with default quantity
+// Then add to cart
 const result = await command.addProductToCart();
 
 console.log(`Added ${result.name} (quantity: ${result.quantity}) to cart`);
 ```
 
-### Add with Specific Quantity
+### Add Specific Product by ID
 
-Add the active product to cart with a specific quantity:
+Add a specific product and variant directly without setting it active first:
 
 ```typescript
 const result = await command.addProductToCart({
-    quantity: 3
+    productId: 'prod_123',
+    variantId: 'var_456',
+    quantity: 2
 });
 
 console.log(`Added ${result.quantity} items to cart`);
@@ -122,27 +133,15 @@ await command.addProductToCart({
 
 ### Error Handling
 
-Handle errors when no product is active:
+Handle errors when product cannot be found:
 
 ```typescript
 try {
     const result = await command.addProductToCart({
-        quantity: 1
+        productId: 'invalid_id'
     });
 } catch (error) {
-    if (error.message.includes('No active product')) {
-        console.error('Please set a product as active first');
-        // Set a product as active
-        await command.setProductActive({
-            variantId: 'variant-id-123'
-        });
-        // Retry adding to cart
-        await command.addProductToCart({
-            quantity: 1
-        });
-    } else {
-        console.error('Failed to add product to cart:', error.message);
-    }
+    console.error('Failed to add product to cart:', error.message);
 }
 ```
 
@@ -150,17 +149,16 @@ try {
 
 When a product is added to the cart:
 
-1. The active product is validated (must exist)
-2. The quantity is determined (from parameter, active product, or default to 1)
-3. If a different quantity is specified, the active product's quantity is updated first
-4. The product is added to the cart with all its properties:
+1. The product is identified (either via params or active state)
+2. The quantity is determined (from parameter or default to 1)
+3. The product is added to the cart with all its properties:
    - Product ID and variant ID
    - Name, price, and images
    - Tax table information
    - Stock information
    - Any discounts that were applied
    - Quantity
-5. If the same variant is already in the cart, the quantities are combined
+4. If the same variant is already in the cart, the quantities are combined
 
 ## Quantity Handling
 
@@ -182,25 +180,25 @@ If the variant is already in the cart:
 
 ## Prerequisites
 
-- A product must be set as active using `setProductActive` before adding to cart
-- The active product must exist and be valid
+- A product must be identified either by ID parameters or by being set as active using `setProductActive`
+- The product must exist and be valid
 
 ## Error Handling
 
 The handler will throw errors in the following cases:
 
-### No Active Product
+### Product Not Found
 
 ```typescript
-// Throws: "No active product. Please set a product as active first."
-await command.addProductToCart();
+// Throws error if ID is invalid
+await command.addProductToCart({ productId: 'invalid' });
 ```
 
 ## Validation Rules
 
-- `quantity` is optional and defaults to the active product's quantity or 1
-- `quantity` should be a positive number (typically 1 or greater)
-- The handler will use the active product's quantity if no quantity is provided
+- `quantity` is optional and defaults to 1
+- `quantity` should be a positive number
+- `productId` and `variantId` are optional but recommended for direct adding
 
 ## Real Data Examples
 
@@ -221,16 +219,14 @@ await command.addProductToCart();
 
 ```json
 {
-  "quantity": 1
+  "productId": "prod_123",
+  "quantity": 2
 }
 ```
 
 ## Notes
 
-- The product must be set as active before adding to cart
 - Any discounts applied to the active product will be included when adding to cart
 - The product's current price (including any discounts) is used when adding to cart
 - Stock availability is considered when determining the quantity
 - If the product is already in the cart, quantities are combined (not replaced)
-- The active product state remains after adding to cart (you can add more or modify discounts)
-
