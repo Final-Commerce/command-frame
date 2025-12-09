@@ -34,12 +34,12 @@ A query object to filter products. The actual supported query operators depend o
 
 ```typescript
 interface GetProductsResponse {
-    products: any[];
+    products: CFProduct[];
     timestamp: string;
 }
 ```
 
-#### `products` (any[])
+#### `products` (CFProduct[])
 
 Array of product objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB). See the [Real Data Examples](#real-data-examples) section below for actual product and variant object structures.
 
