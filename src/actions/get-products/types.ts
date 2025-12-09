@@ -1,3 +1,5 @@
+import { CFProduct } from "../../CommonTypes";
+
 // Get Products Types
 export interface GetProductsParams {
     query?: {
@@ -17,7 +19,7 @@ export interface GetProductsParams {
 }
 
 export interface GetProductsResponse {
-    products: any[];
+    products: CFProduct[];
     timestamp: string;
 }
 

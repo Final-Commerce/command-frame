@@ -12,6 +12,7 @@ import { getRefunds } from "./actions/get-refunds/action";
 import { addCartDiscount } from "./actions/add-cart-discount/action";
 import { setProductActive } from "./actions/set-product-active/action";
 import { getContext } from "./actions/get-context/action";
+import { getFinalContext } from "./actions/get-final-context/action";
 import { addProductDiscount } from "./actions/add-product-discount/action";
 import { addProductToCart } from "./actions/add-product-to-cart/action";
 // Product Actions
@@ -251,6 +252,12 @@ export type {
     GetContext,
     GetContextResponse
 } from "./actions/get-context/types";
+
+export type {
+    GetFinalContext,
+    GetFinalContextResponse
+} from "./actions/get-final-context/types";
+
 // Product Actions
 export type {
     AddProductNote,

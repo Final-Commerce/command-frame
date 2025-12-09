@@ -1,3 +1,5 @@
+import { CFCustomer } from "../../CommonTypes";
+
 // Get Customers Types
 export interface GetCustomersParams {
     query?: {
@@ -15,7 +17,7 @@ export interface GetCustomersParams {
 }
 
 export interface GetCustomersResponse {
-    customers: any[];
+    customers: CFCustomer[];
     total?: number;
     timestamp: string;
 }

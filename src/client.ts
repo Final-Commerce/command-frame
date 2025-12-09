@@ -3,6 +3,8 @@
  * Allows the iframe to call functions on the parent window via postMessage
  */
 
+import { MOCK_REGISTRY } from "./demo/registry";
+
 export interface PostMessageRequest<T = any> {
     action: string;
     params?: T;
@@ -30,21 +32,35 @@ export class CommandFrameClient {
     private origin: string;
     private debug: boolean;
     private useGlobalDebug: boolean;
+    private mockMode: boolean;
 
-    constructor(options: { timeout?: number; origin?: string; debug?: boolean } = {}) {
+    constructor(options: { timeout?: number; origin?: string; debug?: boolean; mockMode?: boolean } = {}) {
         this.defaultTimeout = options.timeout || 60000;
         this.origin = options.origin || "*";
         this.debug = options.debug ?? false;
         this.useGlobalDebug = options.debug === undefined;
+        // Default to provided mockMode or false. Detection happens via getFinalContext.
+        this.mockMode = options.mockMode ?? false;
 
         if (typeof window !== 'undefined') {
             window.addEventListener("message", this.handleMessage.bind(this));
         }
 
+        // Auto-detect mock mode on initialization
+        this.getFinalContext().then((context) => {
+            if (!context) {
+                if (this.isDebugEnabled()) {
+                    console.warn("[ActionsClient] Environment detection failed (timeout or error). Switching to Mock Mode.");
+                }
+                this.mockMode = true;
+            }
+        });
+
         if (this.isDebugEnabled()) {
             console.log("[ActionsClient] Initialized", {
                 origin: this.origin,
-                debug: this.isDebugEnabled()
+                debug: this.isDebugEnabled(),
+                mockMode: this.mockMode
             });
         }
     }
@@ -57,6 +73,28 @@ export class CommandFrameClient {
     }
 
     async call<TParams = any, TResponse = any>(action: string, params?: TParams, timeout?: number): Promise<TResponse> {
+        // Mock Mode Handler
+        if (this.mockMode) {
+            if (this.isDebugEnabled()) {
+                console.log("[ActionsClient] Mock Call", { action, params });
+            }
+            const mockHandler = MOCK_REGISTRY[action as keyof typeof MOCK_REGISTRY];
+            if (mockHandler) {
+                // Simulate async delay
+                await new Promise(resolve => setTimeout(resolve, 100));
+                try {
+                    return await mockHandler(params) as TResponse;
+                } catch (error: any) {
+                    console.error(`[ActionsClient] Mock Error for ${action}:`, error);
+                    throw error;
+                }
+            } else {
+                console.warn(`[ActionsClient] No mock handler found for action: ${action}`);
+                throw new Error(`Mock handler not implemented for: ${action}`);
+            }
+        }
+
+        // Standard PostMessage Handler
         return new Promise((resolve, reject) => {
             const requestId = this.generateRequestId();
             const timeoutMs = timeout || this.defaultTimeout;
@@ -64,6 +102,7 @@ export class CommandFrameClient {
             const timeoutHandle = setTimeout(() => {
                 this.pendingRequests.delete(requestId);
                 const error = new Error(`PostMessage request timeout: ${action} (${timeoutMs}ms)`);
+                
                 if (this.isDebugEnabled()) {
                     console.error("[ActionsClient] Request timeout", {
                         requestId,
@@ -106,6 +145,33 @@ export class CommandFrameClient {
                     console.error("[ActionsClient] No parent window", error);
                 }
                 reject(error);
+            }
+        });
+    }
+
+    // Private check to determine environment
+    private getFinalContext(): Promise<any> {
+        return new Promise((resolve) => {
+            if (typeof window === 'undefined' || !window.parent || window.parent === window) return resolve(null);
+
+            const requestId = this.generateRequestId();
+            const timeout = setTimeout(() => {
+                this.pendingRequests.delete(requestId);
+                resolve(null);
+            }, 2000);
+
+            this.pendingRequests.set(requestId, {
+                resolve: (val) => { clearTimeout(timeout); resolve(val); },
+                reject: () => { clearTimeout(timeout); resolve(null); },
+                timeout
+            });
+
+            try {
+                window.parent.postMessage({ action: "getFinalContext", requestId }, this.origin);
+            } catch {
+                clearTimeout(timeout);
+                this.pendingRequests.delete(requestId);
+                resolve(null);
             }
         });
     }

@@ -1,3 +1,5 @@
+import { CFLineItem, CFCustomSale } from "../../CommonTypes";
+
 // Get Line Items By Order Types
 export interface GetLineItemsByOrderParams {
     orderId?: string; // If not provided, uses active order
@@ -6,8 +8,8 @@ export interface GetLineItemsByOrderParams {
 export interface GetLineItemsByOrderResponse {
     success: boolean;
     orderId: string;
-    lineItems: any[]; // LineItem[]
-    customSales: any[]; // CustomSale[]
+    lineItems: CFLineItem[]; // LineItem[]
+    customSales: CFCustomSale[]; // CustomSale[]
     remainingQuantities: Record<string, number>; // itemKey: remaining qty
     remainingCustomSalesQuantities: Record<string, number>; // customSaleId: remaining qty
     timestamp: string;

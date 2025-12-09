@@ -1,10 +1,12 @@
+import { CFProductVariant } from "../../CommonTypes";
+
 // Get Product Variants Types
 export interface GetProductVariantsParams {
     productId: string;
 }
 
 export interface GetProductVariantsResponse {
-    variants: any[];
+    variants: CFProductVariant[];
     productId: string;
     timestamp: string;
 }

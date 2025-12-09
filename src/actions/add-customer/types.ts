@@ -1,11 +1,13 @@
+import { CFCustomer } from "../../CommonTypes";
+
 // Add Customer Types
 export interface AddCustomerParams {
-    customer: Record<string, any>;
+    customer: Partial<CFCustomer>;
 }
 
 export interface AddCustomerResponse {
     success: boolean;
-    customer: any;
+    customer: CFCustomer;
     timestamp: string;
 }
 
