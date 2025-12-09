@@ -51,13 +51,13 @@ import { mockTriggerZapierWebhook } from "../actions/trigger-zapier-webhook/mock
 import { mockUpdateCustomerFacingDisplay } from "../actions/update-customer-facing-display/mock";
 import { mockVendaraPayment } from "../actions/vendara-payment/mock";
 
-import { commands } from "../index";
+import { command } from "../index";
 
 // Type for mock handler
 type MockHandler = (params?: any) => Promise<any>;
 
 // Derive Command Name type directly from the commands object keys to enforce exhaustiveness
-export type CommandName = keyof typeof commands;
+export type CommandName = keyof typeof command;
 
 export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
     "addCartDiscount": mockAddCartDiscount,
