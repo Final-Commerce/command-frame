@@ -5,29 +5,53 @@ import { CFActiveProduct } from "../../CommonTypes";
 export const mockAddProductToCart: AddProductToCart = async (params?: AddProductToCartParams): Promise<AddProductToCartResponse> => {
     console.log("[Mock] addProductToCart called", params);
     
-    // Simulate finding a product (just pick first one for demo if no params logic implemented)
-    // Ideally we would set an active product first via setProductActive then call this.
-    // For now, let's assume MOCK_PRODUCTS[0] is being added.
-    const product = MOCK_PRODUCTS[0];
+    const productId = params?.productId;
+    const variantId = params?.variantId;
     const quantity = params?.quantity || 1;
+
+    let product = MOCK_PRODUCTS[0]; // Default fallback
+
+    if (productId) {
+        const found = MOCK_PRODUCTS.find(p => p._id === productId);
+        if (found) {
+            product = found;
+        } else {
+            console.warn(`[Mock] Product with ID ${productId} not found, using default.`);
+        }
+    }
+
+    // Determine variant
+    let variant = product.variants[0];
+    if (variantId) {
+        const foundVariant = product.variants.find(v => v._id === variantId);
+        if (foundVariant) {
+            variant = foundVariant;
+        }
+    }
 
     // Add to MOCK_CART
     const activeProduct: CFActiveProduct = {
         ...product,
         id: product._id,
-        internalId: product._id + "_" + Date.now(),
-        variantId: product.variants[0]._id,
+        internalId: product._id + "_" + Date.now(), // unique ID for cart item
+        variantId: variant._id,
         quantity: quantity,
-        price: Number(product.price),
+        price: Number(variant.price),
         taxTableId: product.taxTable,
-        stock: 100,
+        stock: variant.inventory?.[0]?.stock || 0,
         images: product.images || [],
-        localQuantity: quantity
-    } as unknown as CFActiveProduct; // Casting for simplicity in mock
+        localQuantity: quantity,
+        sku: variant.sku,
+        attributes: variant.attributes.map(a => `${a.name}: ${a.value}`).join(", ")
+    } as unknown as CFActiveProduct;
 
     MOCK_CART.products.push(activeProduct);
-    MOCK_CART.total += activeProduct.price * quantity;
-    MOCK_CART.subtotal += activeProduct.price * quantity;
+    
+    // Recalculate totals
+    const lineTotal = activeProduct.price * quantity;
+    MOCK_CART.subtotal += lineTotal;
+    // Simple total calculation (ignoring taxes/fees for mock simplicity unless needed)
+    MOCK_CART.total += lineTotal; 
     MOCK_CART.amountToBeCharged = MOCK_CART.total;
     MOCK_CART.remainingBalance = MOCK_CART.total;
 
@@ -40,4 +64,3 @@ export const mockAddProductToCart: AddProductToCart = async (params?: AddProduct
         timestamp: new Date().toISOString()
     };
 };
-

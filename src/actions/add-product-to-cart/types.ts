@@ -1,5 +1,7 @@
 // Add Product To Cart Types
 export interface AddProductToCartParams {
+    productId?: string;
+    variantId?: string;
     quantity?: number;
 }
 
@@ -13,4 +15,3 @@ export interface AddProductToCartResponse {
 }
 
 export type AddProductToCart = (params?: AddProductToCartParams) => Promise<AddProductToCartResponse>;
-

@@ -466,7 +466,8 @@ export const MOCK_ORDER_1: CFActiveOrder = {
     balance: "0",
     user: MOCK_USER_LUIGI,
     outlet: MOCK_OUTLET_MAIN,
-    station: MOCK_STATION_1
+    station: MOCK_STATION_1,
+    createdAt: new Date().toISOString()
 };
 
 export const MOCK_ORDER_2: CFActiveOrder = {
@@ -513,7 +514,8 @@ export const MOCK_ORDER_2: CFActiveOrder = {
     balance: "0",
     user: MOCK_USER_MARIO,
     outlet: MOCK_OUTLET_MAIN,
-    station: MOCK_STATION_2
+    station: MOCK_STATION_2,
+    createdAt: new Date(Date.now() - 3600000).toISOString()
 };
 
 // --- EXPORT COLLECTIONS ---
@@ -574,4 +576,94 @@ export const resetMockCart = () => {
 // Helper to simulate safe JSON serialization
 export const safeSerialize = <T>(data: T): T => {
     return JSON.parse(JSON.stringify(data));
+};
+
+// Helper to create order from cart
+export const createOrderFromCart = (
+    paymentType: string,
+    amount: number | string,
+    processor: string = "cash"
+): CFActiveOrder => {
+    // Generate new Order ID
+    const orderId = `order_${Date.now()}`;
+    const receiptId = `receipt_${Date.now()}`;
+
+    // Map cart products to line items
+    const lineItems = MOCK_CART.products.map(p => {
+        // Find original product to get attributes/variants if needed
+        // For simplicity, we use what's in cart
+        return {
+            productId: p.id,
+            variantId: p.variantId,
+            name: p.name,
+            quantity: p.quantity,
+            price: String(p.price),
+            taxes: [],
+            discount: {
+                itemDiscount: { percentage: 0, amount: "0" },
+                cartDiscount: { percentage: 0, amount: "0" }
+            },
+            fee: { itemFee: { percentage: 0, amount: "0", tax: "0", taxTableId: "" } },
+            totalTax: "0",
+            total: (p.price * p.quantity).toFixed(2),
+            metadata: [],
+            image: p.images?.[0] || "",
+            sku: p.sku || "",
+            stock: 100, // Mock stock
+            attributes: p.attributes || ""
+        };
+    });
+
+    const totalStr = String(MOCK_CART.total.toFixed(2));
+    
+    const newOrder: CFActiveOrder = {
+        _id: orderId,
+        receiptId,
+        companyId: COMPANY_ID,
+        externalId: null,
+        status: "completed",
+        customer: MOCK_CART.customer ? (MOCK_CART.customer as CFCustomer) : null,
+        summary: {
+            total: totalStr,
+            subTotal: totalStr,
+            discountTotal: "0",
+            shippingTotal: "0",
+            totalTaxes: "0",
+            taxes: [],
+            isTaxInclusive: false
+        },
+        cartDiscount: MOCK_CART.discount ? { label: MOCK_CART.discount.label || "Discount", amount: "0", percentage: MOCK_CART.discount.value } : null,
+        cartFees: [],
+        paymentMethods: [
+            {
+                transactionId: `trans_${Date.now()}`,
+                paymentType,
+                amount: String(amount),
+                timestamp: new Date().toISOString(),
+                processor
+            }
+        ],
+        source: "pos",
+        posData: {
+            outlet: MOCK_OUTLET_MAIN.id,
+            station: MOCK_STATION_1._id,
+            employee: MOCK_USER_LUIGI.id
+        },
+        sessionId: `session_${Date.now()}`,
+        metadata: [],
+        billing: MOCK_CART.customer?.billing || null,
+        shipping: MOCK_CART.customer?.shipping || null,
+        lineItems,
+        customSales: [],
+        balance: "0",
+        user: MOCK_USER_LUIGI,
+        outlet: MOCK_OUTLET_MAIN,
+        station: MOCK_STATION_1,
+        createdAt: new Date().toISOString()
+    };
+
+    MOCK_ORDERS.push(newOrder);
+    resetMockCart();
+    
+    return newOrder;
 };
