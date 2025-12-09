@@ -14,6 +14,8 @@ export interface GetCustomersParams {
         // This is handled by the handler, not directly in query
         [key: string]: any;
     };
+    offset?: number;
+    limit?: number;
 }
 
 export interface GetCustomersResponse {

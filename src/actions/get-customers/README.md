@@ -17,6 +17,8 @@ interface GetCustomersParams {
         outletId?: string;
         [key: string]: any;
     };
+    offset?: number;
+    limit?: number;
 }
 ```
 
@@ -24,7 +26,15 @@ interface GetCustomersParams {
 
 A query object to filter customers. The actual supported query operators depend on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
 
-**Note:** The handler automatically excludes deleted customers and limits results to 100 items by default.
+#### `offset` (optional)
+
+The number of customers to skip before starting to return results. Defaults to `0` if not provided.
+
+#### `limit` (optional)
+
+The maximum number of customers to return. Defaults to `100` if not provided.
+
+**Note:** The handler automatically excludes deleted customers.
 
 ## Response
 
@@ -44,7 +54,7 @@ Array of customer objects matching the query. The actual structure may vary depe
 
 #### `total` (number, optional)
 
-Total number of customers matching the query (before pagination). This count includes all matching customers, not just those returned in the `customers` array (which is limited to 100 items).
+Total number of customers matching the query (before pagination). This count includes all matching customers, not just those returned in the `customers` array (which is limited by the `limit` parameter).
 
 #### `timestamp` (string)
 
@@ -60,13 +70,49 @@ import { command } from '@final-commerce/command-frame';
 
 ### Basic Query
 
-Get all customers (up to 100):
+Get all customers (up to 100 by default):
 
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomers();
 console.log(result.customers);
+```
+
+### Query with Pagination
+
+Get customers with custom offset and limit:
+
+```typescript
+import { command } from '@final-commerce/command-frame';
+
+// Get first 50 customers
+const firstPage = await command.getCustomers({
+    offset: 0,
+    limit: 50
+});
+
+// Get next 50 customers
+const secondPage = await command.getCustomers({
+    offset: 50,
+    limit: 50
+});
+```
+
+### Query with Filtering and Pagination
+
+Get customers matching a query with pagination:
+
+```typescript
+import { command } from '@final-commerce/command-frame';
+
+const result = await command.getCustomers({
+    query: {
+        email: { $regex: '@gmail.com', $options: 'i' }
+    },
+    offset: 0,
+    limit: 25
+});
 ```
 
 ## Real Data Examples
@@ -186,6 +232,7 @@ If the query fails or no customers are found, the handler returns an empty array
 
 ## Notes
 
-- Results are limited to 100 customers per request
+- Results are limited by the `limit` parameter (defaults to 100 if not provided)
+- Use `offset` and `limit` for pagination
 - Deleted customers (`isDeleted: true`) are automatically excluded
 
