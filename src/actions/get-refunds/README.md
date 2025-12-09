@@ -23,7 +23,7 @@ Retrieves a list of refunds from the system with optional filtering, sorting, an
 | Field       | Type      | Description                               |
 | :---------- | :-------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the refunds were retrieved successfully. |
-| `refunds`   | `any[]`   | Array of refund objects.                  |
+| `refunds`   | `CFRefundItem[]`   | Array of refund objects.                  |
 | `total`     | `number`  | Total number of refunds matching the query. |
 | `timestamp` | `string`  | ISO date string of when the action occurred. |
 

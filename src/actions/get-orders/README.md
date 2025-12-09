@@ -24,7 +24,7 @@ Retrieves a list of orders from the system with optional filtering, sorting, and
 | Field       | Type      | Description                               |
 | :---------- | :-------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the orders were retrieved successfully. |
-| `orders`    | `any[]`   | Array of order objects.                   |
+| `orders`    | `CFOrder[]` | Array of order objects.                   |
 | `total`     | `number`  | Total number of orders matching the query. |
 | `timestamp` | `string`  | ISO date string of when the action occurred. |
 
