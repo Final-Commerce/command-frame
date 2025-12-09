@@ -25,6 +25,12 @@ Retrieves a list of orders from the system with optional filtering, sorting, and
 | :---------- | :-------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the orders were retrieved successfully. |
 | `orders`    | `CFOrder[]` | Array of order objects.                   |
+
+**Tip:** You can import the `CFOrder` type directly from the library:
+```typescript
+import { type CFOrder } from '@final-commerce/command-frame';
+```
+
 | `total`     | `number`  | Total number of orders matching the query. |
 | `timestamp` | `string`  | ISO date string of when the action occurred. |
 

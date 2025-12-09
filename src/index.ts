@@ -75,6 +75,7 @@ export const command = {
     addProductToCart,
     addCartDiscount,
     getContext,
+    getFinalContext,
     // Product Actions
     addProductNote,
     addProductFee,
@@ -403,6 +404,9 @@ export type {
     TriggerZapierWebhookParams,
     TriggerZapierWebhookResponse
 } from "./actions/trigger-zapier-webhook/types";
+
+// Export Common Types
+export * from "./CommonTypes";
 
 // Export client
 export { commandFrameClient, CommandFrameClient } from "./client";
