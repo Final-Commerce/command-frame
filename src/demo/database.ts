@@ -454,7 +454,7 @@ export const MOCK_ORDER_1: CFActiveOrder = {
     },
     sessionId: "sess_1",
     metadata: [],
-    billing: MOCK_CUSTOMER_1.billing,
+    billing: MOCK_CUSTOMER_1.billing || null,
     shipping: null,
     lineItems: [
         createLineItem(MOCK_PRODUCT_GARLIC, 0, 1), // 9.00
@@ -598,8 +598,8 @@ export const createOrderFromCart = (
             price: String(p.price),
             taxes: [],
             discount: {
-                itemDiscount: { percentage: 0, amount: "0" },
-                cartDiscount: { percentage: 0, amount: "0" }
+                itemDiscount: { percentage: 0, amount: "0", const: "0" },
+                cartDiscount: { percentage: 0, amount: "0", const: "0" }
             },
             fee: { itemFee: { percentage: 0, amount: "0", tax: "0", taxTableId: "" } },
             totalTax: "0",

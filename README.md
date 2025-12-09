@@ -474,7 +474,7 @@ import type {
 } from '@final-commerce/command-frame';
 ```
 
-**Note:** The library exports useful types like `CFProduct`, `CFActiveCart`, `CFCustomer`, etc., so you don't need to manually extract them from response types. These can be imported directly from the package.
+**Note:** The library exports useful types like `CFProduct`, `CFActiveCart`, `CFCustomer`, etc., we recommend using them in your code to type args for components displaying Products/ Customers / Variations / Orders etc
 
 ## License
 

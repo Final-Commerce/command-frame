@@ -188,6 +188,8 @@ export interface CFCustomer {
     notes?: CFCustomerNote[];
     billing: CFAddress | null;
     shipping: CFAddress | null;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface CFActiveCustomer extends CFCustomer {
@@ -262,6 +264,7 @@ export interface CFPosDataItem {
 export interface CFDiscountDetail {
     percentage: number;
     amount: string;
+    const?: string;
 }
 
 export interface CFFeeDetail {
