@@ -52,8 +52,11 @@ const result = await command.exampleFunction({
 // Get products
 const products = await command.getProducts({});
 
-// Get customers
-const customers = await command.getCustomers({});
+// Get customers (with pagination)
+const customers = await command.getCustomers({
+    offset: 0,
+    limit: 100
+});
 
 // Get categories
 const categories = await command.getCategories({});

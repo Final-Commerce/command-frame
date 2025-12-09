@@ -12,6 +12,9 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
   const [customers, setCustomers] = useState<any[]>([]);
   const [customersLoading, setCustomersLoading] = useState(false);
   const [customersError, setCustomersError] = useState<string>('');
+  const [offset, setOffset] = useState<number>(0);
+  const [limit, setLimit] = useState<number>(100);
+  const [total, setTotal] = useState<number | undefined>(undefined);
   
   const [assignCustomerId, setAssignCustomerId] = useState<string>('');
   const [assignCustomerLoading, setAssignCustomerLoading] = useState(false);
@@ -21,7 +24,10 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
     firstName: 'John',
     lastName: 'Doe',
     email: 'john.doe@example.com',
-    phone: '1234567890'
+    phone: '1234567890',
+    companyId: '', // Will be set from context if available
+    billing: null as any,
+    shipping: null as any
   });
   const [addCustomerLoading, setAddCustomerLoading] = useState(false);
   const [addCustomerResponse, setAddCustomerResponse] = useState<string>('');
@@ -47,11 +53,15 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
     setCustomersError('');
 
     try {
-      const result = await command.getCustomers({});
+      const result = await command.getCustomers({
+        offset: offset,
+        limit: limit
+      });
       
       if (result && typeof result === 'object') {
         if (result.customers && Array.isArray(result.customers)) {
           setCustomers(result.customers);
+          setTotal(result.total);
         } else {
           setCustomersError(`Invalid response format. Expected customers array, got: ${JSON.stringify(result).substring(0, 100)}`);
         }
@@ -102,8 +112,22 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
     setAddCustomerResponse('');
 
     try {
+      // Get companyId from context if not already set
+      let customerData = { ...newCustomer };
+      if (!customerData.companyId) {
+        try {
+          const context = await command.getContext();
+          if (context?.companyId) {
+            customerData.companyId = context.companyId;
+          }
+        } catch (error) {
+          // If context fetch fails, continue without companyId
+          console.warn('Could not fetch context for companyId:', error);
+        }
+      }
+
       const result = await command.addCustomer({
-        customer: newCustomer
+        customer: customerData
       });
       
       setAddCustomerResponse(JSON.stringify(result, null, 2));
@@ -117,6 +141,30 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
   return (
     <div className="section-content">
       <CommandSection title="Get Customers">
+        <div className="form-group">
+          <div className="form-grid">
+            <div className="form-group">
+              <label className="form-label">Offset:</label>
+              <input
+                type="number"
+                value={offset}
+                onChange={(e) => setOffset(parseInt(e.target.value) || 0)}
+                className="form-input"
+                min="0"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Limit:</label>
+              <input
+                type="number"
+                value={limit}
+                onChange={(e) => setLimit(parseInt(e.target.value) || 100)}
+                className="form-input"
+                min="1"
+              />
+            </div>
+          </div>
+        </div>
         <button 
           onClick={handleGetCustomers} 
           disabled={customersLoading}
@@ -127,6 +175,12 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
         
         {customersError && (
           <JsonViewer data={customersError} title="Error" />
+        )}
+        
+        {total !== undefined && (
+          <p className="section-description">
+            Showing {customers.length} of {total} customers (offset: {offset}, limit: {limit})
+          </p>
         )}
         
         {customers.length > 0 && (
