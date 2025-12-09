@@ -1,3 +1,5 @@
+import { CFRefundItem } from "../../CommonTypes";
+
 // Get Refunds Types
 export interface GetRefundsParams {
     orderId?: string;
@@ -11,7 +13,7 @@ export interface GetRefundsParams {
 
 export interface GetRefundsResponse {
     success: boolean;
-    refunds: any[];
+    refunds: CFRefundItem[];
     total: number;
     timestamp: string;
 }

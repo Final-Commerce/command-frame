@@ -1,3 +1,5 @@
+import { CFOrder } from "../../CommonTypes";
+
 // Resume Parked Order Types
 export interface ResumeParkedOrderParams {
     orderId: string;
@@ -5,7 +7,7 @@ export interface ResumeParkedOrderParams {
 
 export interface ResumeParkedOrderResponse {
     success: boolean;
-    order: any; // ActiveOrder
+    order: CFOrder; // ActiveOrder
     timestamp: string;
 }
 

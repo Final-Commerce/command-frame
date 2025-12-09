@@ -1,3 +1,5 @@
+import { CFCustomer } from "../../CommonTypes";
+
 // Assign Customer Types
 export interface AssignCustomerParams {
     customerId: string;
@@ -5,7 +7,7 @@ export interface AssignCustomerParams {
 
 export interface AssignCustomerResponse {
     success: boolean;
-    customer: any;
+    customer: CFCustomer;
     timestamp: string;
 }
 

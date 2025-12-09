@@ -1,3 +1,5 @@
+import { CFOrder } from "../../CommonTypes";
+
 // Get Orders Types
 export interface GetOrdersParams {
     status?: string; // e.g., 'completed', 'parked', 'refunded', 'partial-refund'
@@ -12,7 +14,7 @@ export interface GetOrdersParams {
 
 export interface GetOrdersResponse {
     success: boolean;
-    orders: any[];
+    orders: CFOrder[];
     total: number;
     timestamp: string;
 }

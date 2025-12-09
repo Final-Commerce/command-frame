@@ -1,3 +1,5 @@
+import { CFRefundedLineItem, CFRefundedCustomSale } from "../../CommonTypes";
+
 // Calculate Refund Total Types
 export interface CalculateRefundTotalResponse {
     success: boolean;
@@ -6,8 +8,8 @@ export interface CalculateRefundTotalResponse {
         tax: string;
         total: string;
     };
-    refundedLineItems: any[]; // RefundedLineItem[]
-    refundedCustomSales: any[]; // RefundedCustomSale[]
+    refundedLineItems: CFRefundedLineItem[]; // RefundedLineItem[]
+    refundedCustomSales: CFRefundedCustomSale[]; // RefundedCustomSale[]
     timestamp: string;
 }
 

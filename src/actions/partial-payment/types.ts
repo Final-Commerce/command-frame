@@ -1,3 +1,5 @@
+import { CFOrder } from "../../CommonTypes";
+
 // Partial Payment Types
 export interface PartialPaymentParams {
     amount?: number;
@@ -10,7 +12,7 @@ export interface PartialPaymentResponse {
     amount?: number;
     isPercent?: boolean;
     openUI: boolean;
-    order: any | null; // ActiveOrder | null (null for split payments until final payment)
+    order: CFOrder | null; // ActiveOrder | null (null for split payments until final payment)
     timestamp: string;
 }
 

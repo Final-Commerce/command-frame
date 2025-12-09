@@ -1,3 +1,5 @@
+import { CFProduct, CFCustomer } from "./CommonTypes";
+
 // Example Function Types
 export interface ExampleFunctionParams {
     param1?: string;
@@ -24,7 +26,7 @@ export interface GetProductsParams {
 }
 
 export interface GetProductsResponse {
-    products: any[];
+    products: CFProduct[];
     timestamp: string;
 }
 
@@ -53,7 +55,7 @@ export interface GetCustomersParams {
 }
 
 export interface GetCustomersResponse {
-    customers: any[];
+    customers: CFCustomer[];
     total?: number;
     timestamp: string;
 }
@@ -67,7 +69,7 @@ export interface AssignCustomerParams {
 
 export interface AssignCustomerResponse {
     success: boolean;
-    customer: any;
+    customer: CFCustomer;
     timestamp: string;
 }
 
@@ -75,12 +77,12 @@ export type AssignCustomer = (params: AssignCustomerParams) => Promise<AssignCus
 
 // Add Customer Types
 export interface AddCustomerParams {
-    customer: Record<string, any>;
+    customer: Partial<CFCustomer>;
 }
 
 export interface AddCustomerResponse {
     success: boolean;
-    customer: any;
+    customer: CFCustomer;
     timestamp: string;
 }
 

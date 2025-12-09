@@ -1,7 +1,9 @@
+import { CFActiveCart } from "../../CommonTypes";
+
 // Get Current Cart Types
 export interface GetCurrentCartResponse {
     success: boolean;
-    cart: any; // ActiveCart
+    cart: CFActiveCart; // ActiveCart
     timestamp: string;
 }
 

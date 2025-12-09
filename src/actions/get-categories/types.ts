@@ -1,3 +1,5 @@
+import { CFCategory } from "../../CommonTypes";
+
 // Get Categories Types
 export interface GetCategoriesParams {
     query?: {
@@ -12,7 +14,7 @@ export interface GetCategoriesParams {
 }
 
 export interface GetCategoriesResponse {
-    categories: any[];
+    categories: CFCategory[];
     timestamp: string;
 }
 

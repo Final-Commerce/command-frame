@@ -1,7 +1,9 @@
+import { CFOrder } from "../../CommonTypes";
+
 // Park Order Types
 export interface ParkOrderResponse {
     success: boolean;
-    order: any; // ActiveOrder
+    order: CFOrder; // ActiveOrder
     timestamp: string;
 }
 

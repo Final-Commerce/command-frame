@@ -1,3 +1,5 @@
+import { CFOrder } from "../../CommonTypes";
+
 // Cash Payment Types
 export interface CashPaymentParams {
     amount?: number;
@@ -9,7 +11,7 @@ export interface CashPaymentResponse {
     amount: number;
     openChangeCalculator: boolean;
     paymentType: string;
-    order: any | null; // ActiveOrder | null
+    order: CFOrder | null; // ActiveOrder | null
     timestamp: string;
 }
 
