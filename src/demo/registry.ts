@@ -56,7 +56,6 @@ import { command } from "../index";
 // Type for mock handler
 type MockHandler = (params?: any) => Promise<any>;
 
-// Derive Command Name type directly from the commands object keys to enforce exhaustiveness
 export type CommandName = keyof typeof command;
 
 export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
