@@ -8,16 +8,11 @@ export const mockAddCustomer: AddCustomer = async (params?: AddCustomerParams): 
     if (!params?.customer) throw new Error("Customer data required");
 
     const newCustomer: CFCustomer = {
+        ...params.customer,
         _id: "new_mock_cust_" + Date.now(),
-        companyId: "mock_company_id",
-        email: params.customer.email || "",
-        firstName: params.customer.firstName || "",
-        lastName: params.customer.lastName || "",
-        phone: params.customer.phone,
-        billing: null,
-        shipping: null,
-        ...params.customer
-    } as CFCustomer;
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
 
     MOCK_CUSTOMERS.push(newCustomer);
 
@@ -27,4 +22,3 @@ export const mockAddCustomer: AddCustomer = async (params?: AddCustomerParams): 
         timestamp: new Date().toISOString()
     };
 };
-

@@ -50,7 +50,14 @@ interface GetCustomersResponse {
 
 #### `customers` (CFCustomer[])
 
-Array of customer objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB). See the [Real Data Examples](#real-data-examples) section below for actual customer object structures.
+Array of customer objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
+
+**Tip:** You can import the `CFCustomer` type directly from the library:
+```typescript
+import { type CFCustomer } from '@final-commerce/command-frame';
+```
+
+See the [Real Data Examples](#real-data-examples) section below for actual customer object structures.
 
 #### `total` (number, optional)
 

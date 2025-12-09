@@ -41,7 +41,14 @@ interface GetProductsResponse {
 
 #### `products` (CFProduct[])
 
-Array of product objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB). See the [Real Data Examples](#real-data-examples) section below for actual product and variant object structures.
+Array of product objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
+
+**Tip:** You can import `CFProduct` and `CFProductVariant` types directly from the library:
+```typescript
+import { type CFProduct, type CFProductVariant } from '@final-commerce/command-frame';
+```
+
+See the [Real Data Examples](#real-data-examples) section below for actual product and variant object structures.
 
 #### `timestamp` (string)
 

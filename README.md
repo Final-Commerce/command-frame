@@ -460,11 +460,21 @@ import type {
     TriggerWebhookParams, TriggerWebhookResponse, TriggerWebhook,
     TriggerZapierWebhookParams, TriggerZapierWebhookResponse, TriggerZapierWebhook,
     // Reference
-    ExampleFunctionParams, ExampleFunctionResponse, ExampleFunction
+    ExampleFunctionParams, ExampleFunctionResponse, ExampleFunction,
+    // Common Types (Directly exported)
+    CFProduct, CFProductVariant, CFProductType,
+    CFCustomer, CFActiveCustomer, CFCustomerNote,
+    CFOrder, CFActiveOrder, CFActiveCart,
+    CFActiveProduct, CFActiveCustomSales,
+    CFLineItem, CFCustomSale,
+    CFDiscount, CFCustomFee, CFTax,
+    CFAddress, CFMetadataItem,
+    CFActiveUser, CFActiveOutlet, CFActiveStation,
+    CFContext
 } from '@final-commerce/command-frame';
 ```
 
-**Note:** Entity data (customers, products) is returned as `any[]` or `any` to allow flexibility between different database implementations (MongoDB/mongoose vs LokiJS/IndexedDB). For detailed entity structures, refer to the action-specific documentation in the [Actions Documentation](#actions-documentation) section.
+**Note:** The library exports useful types like `CFProduct`, `CFActiveCart`, `CFCustomer`, etc., we recommend using them in your code to type args for components displaying Products/ Customers / Variations / Orders etc
 
 ## License
 

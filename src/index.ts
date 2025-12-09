@@ -404,6 +404,9 @@ export type {
     TriggerZapierWebhookResponse
 } from "./actions/trigger-zapier-webhook/types";
 
+// Export Common Types
+export * from "./CommonTypes";
+
 // Export client
 export { commandFrameClient, CommandFrameClient } from "./client";
 export type { PostMessageRequest, PostMessageResponse } from "./client";
