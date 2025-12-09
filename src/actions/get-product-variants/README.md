@@ -30,7 +30,14 @@ interface GetProductVariantsResponse {
 
 #### `variants` (CFProductVariant[])
 
-Array of variant objects for the specified product. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB). See the [Real Data Examples](#real-data-examples) section below for actual variant object structures.
+Array of variant objects for the specified product. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
+
+**Tip:** You can import the `CFProductVariant` type directly from the library:
+```typescript
+import { type CFProductVariant } from '@final-commerce/command-frame';
+```
+
+See the [Real Data Examples](#real-data-examples) section below for actual variant object structures.
 
 #### `productId` (string)
 
