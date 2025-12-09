@@ -1,6 +1,6 @@
 {
     "name": "@final-commerce/command-frame",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Commands Frame library",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
         "package.json"
     ],
     "scripts": {
-        "build": "tsc",
+        "build": "tsc && mkdir -p dist/demo/assets && cp -R src/demo/assets/ dist/demo/assets/",
         "build:clean": "rm -rf dist && npm run build",
         "dev": "tsc --watch",
         "prepublishOnly": "npm run build",
