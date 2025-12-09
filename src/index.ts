@@ -75,7 +75,6 @@ export const command = {
     addProductToCart,
     addCartDiscount,
     getContext,
-    getFinalContext,
     // Product Actions
     addProductNote,
     addProductFee,
