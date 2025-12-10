@@ -10,7 +10,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@final-commerce/command-frame": "file:..",
+    "@final-commerce/command-frame": "^0.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
