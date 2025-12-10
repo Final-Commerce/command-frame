@@ -11,7 +11,7 @@
         "package.json"
     ],
     "scripts": {
-        "build": "tsc && mkdir -p dist/demo/assets && cp -R src/demo/assets/ dist/demo/assets/",
+        "build": "tsc",
         "build:clean": "rm -rf dist && npm run build",
         "dev": "tsc --watch",
         "prepublishOnly": "npm run build",
