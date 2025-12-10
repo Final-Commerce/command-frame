@@ -410,3 +410,13 @@ export * from "./CommonTypes";
 // Export client
 export { commandFrameClient, CommandFrameClient } from "./client";
 export type { PostMessageRequest, PostMessageResponse } from "./client";
+
+// Export Pub/Sub
+export { topics } from "./pubsub";
+export type {
+    TopicDefinition,
+    TopicEvent,
+    TopicEventType,
+    TopicSubscriptionCallback,
+    TopicSubscription
+} from "./pubsub/types";
