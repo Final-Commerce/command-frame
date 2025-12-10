@@ -11,6 +11,7 @@ import { RefundsSection } from './components/sections/RefundsSection';
 import { PaymentsSection } from './components/sections/PaymentsSection';
 import { SystemSection } from './components/sections/SystemSection';
 import { IntegrationSection } from './components/sections/IntegrationSection';
+import { EventsSection } from './components/sections/EventsSection';
 import { ExamplesSection } from './components/sections/ExamplesSection';
 
 function App() {
@@ -39,6 +40,8 @@ function App() {
         return <SystemSection isInIframe={isInIframe} />;
       case 'integration':
         return <IntegrationSection isInIframe={isInIframe} />;
+      case 'events':
+        return <EventsSection isInIframe={isInIframe} />;
       case 'examples':
         return <ExamplesSection isInIframe={isInIframe} />;
       default:
@@ -61,7 +64,7 @@ function App() {
         </div>
         <div className="app__content">
           {renderSection()}
-          </div>
+        </div>
       </div>
     </div>
   );

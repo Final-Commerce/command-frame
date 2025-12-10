@@ -12,6 +12,7 @@ export type SectionId =
   | 'payments'
   | 'system'
   | 'integration'
+  | 'events'
   | 'examples';
 
 interface SidebarProps {
@@ -36,6 +37,7 @@ const sections: Section[] = [
   { id: 'payments', label: 'Payments' },
   { id: 'system', label: 'System' },
   { id: 'integration', label: 'Integration' },
+  { id: 'events', label: 'Events' },
   { id: 'examples', label: 'Examples' },
 ];
 
