@@ -146,6 +146,342 @@ console.log('Current build:', context.buildName);
 
 For complete usage examples and detailed parameter descriptions, see the documentation for each action in the [Actions Documentation](#actions-documentation) section.
 
+## Pub/Sub System
+
+The library includes a pub/sub system that allows iframe apps to subscribe to topics and receive events published by the host application (Render).
+
+### Quick Start - Pub/Sub
+
+```typescript
+import { topics } from '@final-commerce/command-frame';
+
+// Get available topics
+const availableTopics = await topics.getTopics();
+console.log('Available topics:', availableTopics);
+
+// Subscribe to a topic with a callback
+const subscriptionId = topics.subscribe('customers', (event) => {
+  if (event.type === 'customer-created') {
+    console.log('New customer created:', event.data);
+    // Handle the event
+  }
+});
+
+// Later, unsubscribe when done
+topics.unsubscribe('customers', subscriptionId);
+```
+
+### Pub/Sub API
+
+#### `topics.getTopics()`
+
+Retrieves the list of available topics from the host application.
+
+**Returns:** `Promise<TopicDefinition[]>`
+
+**Example:**
+```typescript
+const topics = await topics.getTopics();
+topics.forEach(topic => {
+  console.log(`Topic: ${topic.name} (${topic.id})`);
+  console.log(`Event types: ${topic.eventTypes.map(et => et.id).join(', ')}`);
+});
+```
+
+#### `topics.subscribe(topic, callback)`
+
+Subscribes to a topic and receives events via the callback function.
+
+**Parameters:**
+- `topic: string` - The topic ID to subscribe to
+- `callback: (event: TopicEvent) => void` - Function called when an event is received
+
+**Returns:** `string` - Subscription ID (use this to unsubscribe)
+
+**Example:**
+```typescript
+const subscriptionId = topics.subscribe('customers', (event) => {
+  console.log('Received event:', event.type);
+  console.log('Event data:', event.data);
+  console.log('Timestamp:', event.timestamp);
+});
+```
+
+#### `topics.unsubscribe(topic, subscriptionId)`
+
+Unsubscribes from a topic using the subscription ID returned from `subscribe()`.
+
+**Parameters:**
+- `topic: string` - The topic ID
+- `subscriptionId: string` - The subscription ID returned from `subscribe()`
+
+**Returns:** `boolean` - `true` if successfully unsubscribed
+
+**Example:**
+```typescript
+const success = topics.unsubscribe('customers', subscriptionId);
+```
+
+#### `topics.unsubscribeAll(topic)`
+
+Unsubscribes all callbacks for a specific topic.
+
+**Parameters:**
+- `topic: string` - The topic ID
+
+**Returns:** `number` - Number of subscriptions removed
+
+**Example:**
+```typescript
+const removed = topics.unsubscribeAll('customers');
+console.log(`Removed ${removed} subscriptions`);
+```
+
+### Topic and Event Types
+
+```typescript
+interface TopicDefinition {
+  id: string;
+  name: string;
+  description?: string;
+  eventTypes: TopicEventType[];
+}
+
+interface TopicEvent<T = any> {
+  topic: string;
+  type: string;
+  data: T;
+  timestamp: string;
+}
+```
+
+### Example: React Component with Pub/Sub
+
+```typescript
+import { useEffect, useState } from 'react';
+import { topics, type TopicEvent } from '@final-commerce/command-frame';
+
+function CustomerEvents() {
+  const [events, setEvents] = useState<TopicEvent[]>([]);
+
+  useEffect(() => {
+    // Subscribe on mount
+    const subscriptionId = topics.subscribe('customers', (event) => {
+      if (event.type === 'customer-created') {
+        setEvents(prev => [event, ...prev]);
+      }
+    });
+
+    // Unsubscribe on unmount
+    return () => {
+      topics.unsubscribe('customers', subscriptionId);
+    };
+  }, []);
+
+  return (
+    <div>
+      <h2>Customer Events ({events.length})</h2>
+      {events.map((event, index) => (
+        <div key={index}>
+          <p>Type: {event.type}</p>
+          <pre>{JSON.stringify(event.data, null, 2)}</pre>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Available Topics
+
+#### Customers Topic (`customers`)
+
+The customers topic provides events related to customer lifecycle and cart assignment.
+
+**Event Types:**
+
+1. **`customer-created`** - Fired when a new customer is created
+   - **Event Data:**
+     ```typescript
+     {
+       customer: {
+         _id: string;
+         companyId: string;
+         email: string;
+         firstName: string;
+         lastName: string;
+         phone?: string;
+         tags?: string[];
+         metadata?: Record<string, string>[];
+         notes?: CustomerNote[];
+         billing: Address | null;
+         shipping: Address | null;
+         createdAt: string;
+         updatedAt: string;
+         // ... other customer fields
+       }
+     }
+     ```
+
+2. **`customer-updated`** - Fired when a customer's information is updated
+   - **Event Data:**
+     ```typescript
+     {
+       customer: {
+         // Updated customer object with all fields
+       }
+     }
+     ```
+
+3. **`customer-note-added`** - Fired when a note is added to a customer
+   - **Event Data:**
+     ```typescript
+     {
+       customer: {
+         // Customer object with updated notes array
+       },
+       note: {
+         createdAt: string;
+         message: string;
+       }
+     }
+     ```
+
+4. **`customer-note-deleted`** - Fired when a note is deleted from a customer
+   - **Event Data:**
+     ```typescript
+     {
+       customer: {
+         // Customer object with updated notes array
+       },
+       note: {
+         createdAt: string;
+         message: string;
+       }
+     }
+     ```
+
+5. **`customer-assigned`** - Fired when a customer is assigned to the cart
+   - **Event Data:**
+     ```typescript
+     {
+       customer: {
+         // Full customer object
+       }
+     }
+     ```
+
+6. **`customer-unassigned`** - Fired when a customer is unassigned from the cart
+   - **Event Data:**
+     ```typescript
+     {
+       customer: {
+         // Full customer object (before removal)
+       }
+     }
+     ```
+
+**Example: Subscribing to Customer Events**
+
+```typescript
+import { topics, type TopicEvent } from '@final-commerce/command-frame';
+
+// Subscribe to all customer events
+const subscriptionId = topics.subscribe('customers', (event: TopicEvent) => {
+  switch (event.type) {
+    case 'customer-created':
+      console.log('New customer created:', event.data.customer);
+      // Update your customer list, show notification, etc.
+      break;
+    
+    case 'customer-updated':
+      console.log('Customer updated:', event.data.customer);
+      // Refresh customer details in your UI
+      break;
+    
+    case 'customer-note-added':
+      console.log('Note added to customer:', event.data.customer._id);
+      console.log('Note:', event.data.note);
+      // Update customer notes display
+      break;
+    
+    case 'customer-note-deleted':
+      console.log('Note deleted from customer:', event.data.customer._id);
+      // Update customer notes display
+      break;
+    
+    case 'customer-assigned':
+      console.log('Customer assigned to cart:', event.data.customer);
+      // Update cart UI to show customer info
+      break;
+    
+    case 'customer-unassigned':
+      console.log('Customer unassigned from cart:', event.data.customer);
+      // Clear customer info from cart UI
+      break;
+  }
+});
+
+// Later, unsubscribe
+topics.unsubscribe('customers', subscriptionId);
+```
+
+**Example: Filtering Specific Event Types**
+
+```typescript
+import { topics, type TopicEvent } from '@final-commerce/command-frame';
+
+// Only listen for customer assignment/unassignment
+const subscriptionId = topics.subscribe('customers', (event: TopicEvent) => {
+  if (event.type === 'customer-assigned' || event.type === 'customer-unassigned') {
+    console.log(`Customer ${event.type}:`, event.data.customer);
+    // Update your cart UI accordingly
+  }
+});
+```
+
+### Host Application (Render) - Publishing Events
+
+In the Render application, use the `topicPublisher` to publish events:
+
+```typescript
+import { topicPublisher } from '@render/command-frame';
+
+// When a customer is created
+topicPublisher.publish('customers', 'customer-created', {
+  customer: newCustomer
+});
+
+// When a customer is updated
+topicPublisher.publish('customers', 'customer-updated', {
+  customer: updatedCustomer
+});
+
+// When a note is added to a customer
+topicPublisher.publish('customers', 'customer-note-added', {
+  customer: updatedCustomer,
+  note: newNote
+});
+
+// When a note is deleted from a customer
+topicPublisher.publish('customers', 'customer-note-deleted', {
+  customer: updatedCustomer,
+  note: deletedNote
+});
+
+// When a customer is assigned to the cart
+topicPublisher.publish('customers', 'customer-assigned', {
+  customer: customer
+});
+
+// When a customer is unassigned from the cart
+topicPublisher.publish('customers', 'customer-unassigned', {
+  customer: customer
+});
+```
+
+The host application must register topics before they can be used. Topics are registered automatically when the `TopicPublisher` is initialized. See the Render application's pub/sub implementation for details on topic registration.
+
 ## Actions Documentation
 
 Each action has detailed documentation with complete parameter descriptions, response structures, and multiple usage examples:
