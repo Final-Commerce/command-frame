@@ -17,18 +17,20 @@ import {
     CFCategory,
 } from "../CommonTypes";
 
-// Asset Imports
-import logo from "./assets/logo.png";
-import basilAlmondImg from "./assets/basil-almond-paste.png";
-import beerImg from "./assets/beer-paste.png";
-import beetImg from "./assets/beet-paste.png";
-import caramelizedImg from "./assets/caramelized-paste.png";
-import garlicOnionImg from "./assets/garlic-onion-paste.png";
-import garlicImg from "./assets/garlic-paste.png";
-import gingerLimeImg from "./assets/ginger-lime-paste.png";
-import lemonImg from "./assets/lemon-paste.png";
-import redPepperImg from "./assets/red-pepper-paste.png";
-import roastedTomatoImg from "./assets/roasted-tomato-paste.png";
+// Asset Imports - Using Remote URLs to avoid build complexity with asset copying
+const ASSETS_BASE_URL = "https://raw.githubusercontent.com/Final-Commerce/command-frame/refs/heads/main/src/demo/assets";
+
+const logo = `${ASSETS_BASE_URL}/logo.png`;
+const basilAlmondImg = `${ASSETS_BASE_URL}/basil-almond-paste.png`;
+const beerImg = `${ASSETS_BASE_URL}/beer-paste.png`;
+const beetImg = `${ASSETS_BASE_URL}/beet-paste.png`;
+const caramelizedImg = `${ASSETS_BASE_URL}/caramelized-paste.png`;
+const garlicOnionImg = `${ASSETS_BASE_URL}/garlic-onion-paste.png`;
+const garlicImg = `${ASSETS_BASE_URL}/garlic-paste.png`;
+const gingerLimeImg = `${ASSETS_BASE_URL}/ginger-lime-paste.png`;
+const lemonImg = `${ASSETS_BASE_URL}/lemon-paste.png`;
+const redPepperImg = `${ASSETS_BASE_URL}/red-pepper-paste.png`;
+const roastedTomatoImg = `${ASSETS_BASE_URL}/roasted-tomato-paste.png`;
 
 // --- COMPANY ---
 export const MOCK_COMPANY: CFActiveCompany = {
