@@ -14,7 +14,8 @@ This package is available on the public NPM registry.
 
 - [API Overview](#api-overview)
 - [Quick Start](#quick-start)
-- [Actions Documentation](#actions-documentation)
+- [Commands Documentation](#commands-documentation)
+- [Pub/Sub System](#pubsub-system)
 - [Examples](#examples)
 - [Debugging](#debugging)
 - [Type Safety](#type-safety)
@@ -22,9 +23,9 @@ This package is available on the public NPM registry.
 
 ## API Overview
 
-The library provides a `command` namespace object containing all available actions. Each action is a typed function that communicates with the parent window via postMessage.
+The library provides a `command` namespace object containing all available commands. Each command is a typed function that communicates with the parent window via postMessage.
 
-### Available Actions
+### Available Commands
 
 #### Data Retrieval
 - **[getCustomers](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-customers/README.md)** - Retrieve a list of customers from the parent application
@@ -94,7 +95,7 @@ The library provides a `command` namespace object containing all available actio
 #### Reference
 - **[exampleFunction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/example-function/README.md)** - Example/template function (for reference only)
 
-For detailed documentation on each action, including parameter descriptions, response structures, and usage examples, see the [Actions Documentation](#actions-documentation) section below.
+For detailed documentation on each command, including parameter descriptions, response structures, and usage examples, see the [Commands Documentation](#commands-documentation) section below.
 
 ## Quick Start
 
@@ -144,347 +145,12 @@ console.log('Current company:', context.companyName);
 console.log('Current build:', context.buildName);
 ```
 
-For complete usage examples and detailed parameter descriptions, see the documentation for each action in the [Actions Documentation](#actions-documentation) section.
+For complete usage examples and detailed parameter descriptions, see the documentation for each command in the [Commands Documentation](#commands-documentation) section.
 
-## Pub/Sub System
 
-The library includes a pub/sub system that allows iframe apps to subscribe to topics and receive events published by the host application (Render).
+## Commands Documentation
 
-### Quick Start - Pub/Sub
-
-```typescript
-import { topics } from '@final-commerce/command-frame';
-
-// Get available topics
-const availableTopics = await topics.getTopics();
-console.log('Available topics:', availableTopics);
-
-// Subscribe to a topic with a callback
-const subscriptionId = topics.subscribe('customers', (event) => {
-  if (event.type === 'customer-created') {
-    console.log('New customer created:', event.data);
-    // Handle the event
-  }
-});
-
-// Later, unsubscribe when done
-topics.unsubscribe('customers', subscriptionId);
-```
-
-### Pub/Sub API
-
-#### `topics.getTopics()`
-
-Retrieves the list of available topics from the host application.
-
-**Returns:** `Promise<TopicDefinition[]>`
-
-**Example:**
-```typescript
-const topics = await topics.getTopics();
-topics.forEach(topic => {
-  console.log(`Topic: ${topic.name} (${topic.id})`);
-  console.log(`Event types: ${topic.eventTypes.map(et => et.id).join(', ')}`);
-});
-```
-
-#### `topics.subscribe(topic, callback)`
-
-Subscribes to a topic and receives events via the callback function.
-
-**Parameters:**
-- `topic: string` - The topic ID to subscribe to
-- `callback: (event: TopicEvent) => void` - Function called when an event is received
-
-**Returns:** `string` - Subscription ID (use this to unsubscribe)
-
-**Example:**
-```typescript
-const subscriptionId = topics.subscribe('customers', (event) => {
-  console.log('Received event:', event.type);
-  console.log('Event data:', event.data);
-  console.log('Timestamp:', event.timestamp);
-});
-```
-
-#### `topics.unsubscribe(topic, subscriptionId)`
-
-Unsubscribes from a topic using the subscription ID returned from `subscribe()`.
-
-**Parameters:**
-- `topic: string` - The topic ID
-- `subscriptionId: string` - The subscription ID returned from `subscribe()`
-
-**Returns:** `boolean` - `true` if successfully unsubscribed
-
-**Example:**
-```typescript
-const success = topics.unsubscribe('customers', subscriptionId);
-```
-
-#### `topics.unsubscribeAll(topic)`
-
-Unsubscribes all callbacks for a specific topic.
-
-**Parameters:**
-- `topic: string` - The topic ID
-
-**Returns:** `number` - Number of subscriptions removed
-
-**Example:**
-```typescript
-const removed = topics.unsubscribeAll('customers');
-console.log(`Removed ${removed} subscriptions`);
-```
-
-### Topic and Event Types
-
-```typescript
-interface TopicDefinition {
-  id: string;
-  name: string;
-  description?: string;
-  eventTypes: TopicEventType[];
-}
-
-interface TopicEvent<T = any> {
-  topic: string;
-  type: string;
-  data: T;
-  timestamp: string;
-}
-```
-
-### Example: React Component with Pub/Sub
-
-```typescript
-import { useEffect, useState } from 'react';
-import { topics, type TopicEvent } from '@final-commerce/command-frame';
-
-function CustomerEvents() {
-  const [events, setEvents] = useState<TopicEvent[]>([]);
-
-  useEffect(() => {
-    // Subscribe on mount
-    const subscriptionId = topics.subscribe('customers', (event) => {
-      if (event.type === 'customer-created') {
-        setEvents(prev => [event, ...prev]);
-      }
-    });
-
-    // Unsubscribe on unmount
-    return () => {
-      topics.unsubscribe('customers', subscriptionId);
-    };
-  }, []);
-
-  return (
-    <div>
-      <h2>Customer Events ({events.length})</h2>
-      {events.map((event, index) => (
-        <div key={index}>
-          <p>Type: {event.type}</p>
-          <pre>{JSON.stringify(event.data, null, 2)}</pre>
-        </div>
-      ))}
-    </div>
-  );
-}
-```
-
-### Available Topics
-
-#### Customers Topic (`customers`)
-
-The customers topic provides events related to customer lifecycle and cart assignment.
-
-**Event Types:**
-
-1. **`customer-created`** - Fired when a new customer is created
-   - **Event Data:**
-     ```typescript
-     {
-       customer: {
-         _id: string;
-         companyId: string;
-         email: string;
-         firstName: string;
-         lastName: string;
-         phone?: string;
-         tags?: string[];
-         metadata?: Record<string, string>[];
-         notes?: CustomerNote[];
-         billing: Address | null;
-         shipping: Address | null;
-         createdAt: string;
-         updatedAt: string;
-         // ... other customer fields
-       }
-     }
-     ```
-
-2. **`customer-updated`** - Fired when a customer's information is updated
-   - **Event Data:**
-     ```typescript
-     {
-       customer: {
-         // Updated customer object with all fields
-       }
-     }
-     ```
-
-3. **`customer-note-added`** - Fired when a note is added to a customer
-   - **Event Data:**
-     ```typescript
-     {
-       customer: {
-         // Customer object with updated notes array
-       },
-       note: {
-         createdAt: string;
-         message: string;
-       }
-     }
-     ```
-
-4. **`customer-note-deleted`** - Fired when a note is deleted from a customer
-   - **Event Data:**
-     ```typescript
-     {
-       customer: {
-         // Customer object with updated notes array
-       },
-       note: {
-         createdAt: string;
-         message: string;
-       }
-     }
-     ```
-
-5. **`customer-assigned`** - Fired when a customer is assigned to the cart
-   - **Event Data:**
-     ```typescript
-     {
-       customer: {
-         // Full customer object
-       }
-     }
-     ```
-
-6. **`customer-unassigned`** - Fired when a customer is unassigned from the cart
-   - **Event Data:**
-     ```typescript
-     {
-       customer: {
-         // Full customer object (before removal)
-       }
-     }
-     ```
-
-**Example: Subscribing to Customer Events**
-
-```typescript
-import { topics, type TopicEvent } from '@final-commerce/command-frame';
-
-// Subscribe to all customer events
-const subscriptionId = topics.subscribe('customers', (event: TopicEvent) => {
-  switch (event.type) {
-    case 'customer-created':
-      console.log('New customer created:', event.data.customer);
-      // Update your customer list, show notification, etc.
-      break;
-    
-    case 'customer-updated':
-      console.log('Customer updated:', event.data.customer);
-      // Refresh customer details in your UI
-      break;
-    
-    case 'customer-note-added':
-      console.log('Note added to customer:', event.data.customer._id);
-      console.log('Note:', event.data.note);
-      // Update customer notes display
-      break;
-    
-    case 'customer-note-deleted':
-      console.log('Note deleted from customer:', event.data.customer._id);
-      // Update customer notes display
-      break;
-    
-    case 'customer-assigned':
-      console.log('Customer assigned to cart:', event.data.customer);
-      // Update cart UI to show customer info
-      break;
-    
-    case 'customer-unassigned':
-      console.log('Customer unassigned from cart:', event.data.customer);
-      // Clear customer info from cart UI
-      break;
-  }
-});
-
-// Later, unsubscribe
-topics.unsubscribe('customers', subscriptionId);
-```
-
-**Example: Filtering Specific Event Types**
-
-```typescript
-import { topics, type TopicEvent } from '@final-commerce/command-frame';
-
-// Only listen for customer assignment/unassignment
-const subscriptionId = topics.subscribe('customers', (event: TopicEvent) => {
-  if (event.type === 'customer-assigned' || event.type === 'customer-unassigned') {
-    console.log(`Customer ${event.type}:`, event.data.customer);
-    // Update your cart UI accordingly
-  }
-});
-```
-
-### Host Application (Render) - Publishing Events
-
-In the Render application, use the `topicPublisher` to publish events:
-
-```typescript
-import { topicPublisher } from '@render/command-frame';
-
-// When a customer is created
-topicPublisher.publish('customers', 'customer-created', {
-  customer: newCustomer
-});
-
-// When a customer is updated
-topicPublisher.publish('customers', 'customer-updated', {
-  customer: updatedCustomer
-});
-
-// When a note is added to a customer
-topicPublisher.publish('customers', 'customer-note-added', {
-  customer: updatedCustomer,
-  note: newNote
-});
-
-// When a note is deleted from a customer
-topicPublisher.publish('customers', 'customer-note-deleted', {
-  customer: updatedCustomer,
-  note: deletedNote
-});
-
-// When a customer is assigned to the cart
-topicPublisher.publish('customers', 'customer-assigned', {
-  customer: customer
-});
-
-// When a customer is unassigned from the cart
-topicPublisher.publish('customers', 'customer-unassigned', {
-  customer: customer
-});
-```
-
-The host application must register topics before they can be used. Topics are registered automatically when the `TopicPublisher` is initialized. See the Render application's pub/sub implementation for details on topic registration.
-
-## Actions Documentation
-
-Each action has detailed documentation with complete parameter descriptions, response structures, and multiple usage examples:
+Each command has detailed documentation with complete parameter descriptions, response structures, and multiple usage examples:
 
 ### [getCustomers](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-customers/README.md)
 
@@ -702,7 +368,55 @@ Triggers a Zapier webhook with the current context data (cart, customer, order, 
 
 ### [exampleFunction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/example-function/README.md)
 
-An example/template function for reference. See the documentation for the structure to follow when creating new actions.
+An example/template function for reference. See the documentation for the structure to follow when creating new commands.
+
+## Pub/Sub System
+
+The library includes a pub/sub system that allows iframe apps to subscribe to topics and receive events published by the host application (Render).
+
+### Available Topics
+
+#### Customer Events
+- **[customers](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/customers/README.md)** - Customer lifecycle events
+  - `customer-created` - Fired when a new customer is created
+  - `customer-updated` - Fired when a customer's information is updated
+  - `customer-note-added` - Fired when a note is added to a customer
+  - `customer-note-deleted` - Fired when a note is deleted from a customer
+  - `customer-assigned` - Fired when a customer is assigned to the cart
+  - `customer-unassigned` - Fired when a customer is unassigned from the cart
+
+#### Order Events
+- **[orders](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/orders/README.md)** - Order lifecycle events
+  - `order-created` - Fired when a new order is created
+  - `order-updated` - Fired when an order is updated
+
+#### Refund Events
+- **[refunds](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/refunds/README.md)** - Refund lifecycle events
+  - `refund-created` - Fired when a refund is created
+  - `refund-updated` - Fired when a refund is updated
+
+#### Product Events
+- **[products](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/products/README.md)** - Product sync events
+  - `product-created` - Fired when a product is created
+  - `product-updated` - Fired when a product is updated
+
+#### Cart Events
+- **[cart](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/cart/README.md)** - Cart operation events
+  - `cart-created` - Fired when a cart is created
+  - `customer-assigned` - Fired when a customer is assigned to the cart
+  - `product-added` - Fired when a product is added to the cart
+  - `product-deleted` - Fired when a product is removed from the cart
+  - `cart-discount-added` - Fired when a discount is added to the cart
+  - `cart-discount-removed` - Fired when a discount is removed from the cart
+  - `cart-fee-added` - Fired when a fee is added to the cart
+  - `cart-fee-removed` - Fired when a fee is removed from the cart
+
+#### Payment Events
+- **[payments](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/payments/README.md)** - Payment processing events
+  - `payment-done` - Fired when a payment is successfully completed
+  - `payment-err` - Fired when a payment fails
+
+For detailed documentation on each topic and its events, including payload structures and usage examples, see the [Pub/Sub Documentation](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/README.md).
 
 ## Examples
 
@@ -733,7 +447,7 @@ This will log all postMessage communication to the console, including:
 
 ## Type Safety
 
-All actions are fully typed with TypeScript. Import types for use in your code:
+All commands are fully typed with TypeScript. Import types for use in your code:
 
 ```typescript
 import type {
