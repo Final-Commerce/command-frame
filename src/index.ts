@@ -412,7 +412,7 @@ export { commandFrameClient, CommandFrameClient } from "./client";
 export type { PostMessageRequest, PostMessageResponse } from "./client";
 
 // Export Pub/Sub
-export { topics } from "./pubsub";
+export { topics } from "./pubsub/topic";
 export type {
     TopicDefinition,
     TopicEvent,
@@ -420,3 +420,27 @@ export type {
     TopicSubscriptionCallback,
     TopicSubscription
 } from "./pubsub/types";
+
+// Export Pub/Sub Topics
+export { customersTopic } from "./pubsub/topics/customers";
+
+// Export Pub/Sub Event Types
+export type {
+    // Customer event payloads
+    CustomerCreatedPayload,
+    CustomerUpdatedPayload,
+    CustomerNoteAddedPayload,
+    CustomerNoteDeletedPayload,
+    CustomerAssignedPayload,
+    CustomerUnassignedPayload,
+    // Customer event types
+    CustomerCreatedEvent,
+    CustomerUpdatedEvent,
+    CustomerNoteAddedEvent,
+    CustomerNoteDeletedEvent,
+    CustomerAssignedEvent,
+    CustomerUnassignedEvent,
+    // Customer topic union types
+    CustomersEventType,
+    CustomersEventPayload
+} from "./pubsub/topics/customers/types";
