@@ -14,16 +14,20 @@ interface ReceivedEvent {
   receivedAt: string;
 }
 
+interface TopicSubscription {
+  topicId: string;
+  subscriptionId: string;
+}
+
 export function EventsSection({ isInIframe }: EventsSectionProps) {
   const [availableTopics, setAvailableTopics] = useState<TopicDefinition[]>([]);
   const [topicsLoading, setTopicsLoading] = useState(false);
   const [topicsError, setTopicsError] = useState<string>('');
 
   const [selectedTopic, setSelectedTopic] = useState<string>('customers');
-  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscriptions, setSubscriptions] = useState<Map<string, string>>(new Map());
   const eventIdCounter = useRef(0);
-  const subscriptionCallbackRef = useRef<((event: TopicEvent) => void) | null>(null);
+  const subscriptionCallbacksRef = useRef<Map<string, (event: TopicEvent) => void>>(new Map());
 
   // Load events from localStorage on mount
   const loadEventsFromStorage = (): ReceivedEvent[] => {
@@ -86,27 +90,29 @@ export function EventsSection({ isInIframe }: EventsSectionProps) {
     }
   }, [receivedEvents]);
 
-  // Restore subscription when component remounts (only once)
+  // Restore subscriptions when component remounts (only once)
   const hasRestoredRef = useRef(false);
   useEffect(() => {
     if (hasRestoredRef.current) return; // Only restore once
     hasRestoredRef.current = true;
 
-    const storedSubscription = localStorage.getItem('command-frame-subscription');
-    if (storedSubscription && isInIframe && !isSubscribed) {
+    const storedSubscriptions = localStorage.getItem('command-frame-subscriptions');
+    if (storedSubscriptions && isInIframe) {
       try {
-        const { topic } = JSON.parse(storedSubscription);
-        if (topic) {
-          setSelectedTopic(topic);
-          // Create and restore subscription
-          const callback = createEventCallback();
-          subscriptionCallbackRef.current = callback;
-          const subId = topics.subscribe(topic, callback);
-          setSubscriptionId(subId);
-          setIsSubscribed(true);
+        const parsed: TopicSubscription[] = JSON.parse(storedSubscriptions);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const restoredSubs = new Map<string, string>();
+          parsed.forEach(({ topicId, subscriptionId }) => {
+            // Create and restore subscription
+            const callback = createEventCallback();
+            subscriptionCallbacksRef.current.set(topicId, callback);
+            const subId = topics.subscribe(topicId, callback);
+            restoredSubs.set(topicId, subId);
+          });
+          setSubscriptions(restoredSubs);
         }
       } catch (error) {
-        console.error('Error restoring subscription:', error);
+        console.error('Error restoring subscriptions:', error);
       }
     }
   }, [isInIframe]); // Only run once on mount
@@ -179,72 +185,90 @@ export function EventsSection({ isInIframe }: EventsSectionProps) {
     }
   };
 
-  const handleSubscribe = () => {
+  const handleSubscribe = (topicId: string) => {
     if (!isInIframe) {
       alert('Error: Not running in iframe');
       return;
     }
 
-    if (!selectedTopic) {
+    if (!topicId) {
       alert('Error: Please select a topic');
       return;
     }
 
-    // Prevent duplicate subscriptions
-    if (isSubscribed && subscriptionId) {
-      // If already subscribed to the same topic, don't subscribe again
-      const storedSubscription = localStorage.getItem('command-frame-subscription');
-      if (storedSubscription) {
-        try {
-          const { topic: storedTopic } = JSON.parse(storedSubscription);
-          if (storedTopic === selectedTopic) {
-            console.log('Already subscribed to this topic');
-            return;
-          }
-        } catch (error) {
-          // Continue with unsubscribe
-        }
-      }
-      // Unsubscribe from previous topic first
-      topics.unsubscribe(selectedTopic, subscriptionId);
+    // Check if already subscribed to this topic
+    if (subscriptions.has(topicId)) {
+      return; // Already subscribed
     }
 
     // Create callback that persists across component unmounts
     const callback = createEventCallback();
-    subscriptionCallbackRef.current = callback;
+    subscriptionCallbacksRef.current.set(topicId, callback);
 
     // Subscribe to topic
-    const subId = topics.subscribe(selectedTopic, callback);
+    const subId = topics.subscribe(topicId, callback);
 
-    setSubscriptionId(subId);
-    setIsSubscribed(true);
+    // Update subscriptions state
+    const newSubscriptions = new Map(subscriptions);
+    newSubscriptions.set(topicId, subId);
+    setSubscriptions(newSubscriptions);
 
-    // Save subscription info to localStorage
+    // Save subscriptions to localStorage
     try {
-      localStorage.setItem('command-frame-subscription', JSON.stringify({
-        topic: selectedTopic,
-        subscriptionId: subId
+      const subscriptionsArray: TopicSubscription[] = Array.from(newSubscriptions.entries()).map(([topicId, subscriptionId]) => ({
+        topicId,
+        subscriptionId
       }));
+      localStorage.setItem('command-frame-subscriptions', JSON.stringify(subscriptionsArray));
     } catch (error) {
-      console.error('Error saving subscription to localStorage:', error);
+      console.error('Error saving subscriptions to localStorage:', error);
     }
   };
 
-  const handleUnsubscribe = () => {
-    if (subscriptionId && selectedTopic) {
-      topics.unsubscribe(selectedTopic, subscriptionId);
-      setSubscriptionId(null);
-      setIsSubscribed(false);
-      // Remove subscription from localStorage
-      localStorage.removeItem('command-frame-subscription');
+  const handleUnsubscribe = (topicId: string) => {
+    const subscriptionId = subscriptions.get(topicId);
+    if (subscriptionId) {
+      topics.unsubscribe(topicId, subscriptionId);
+      
+      // Update subscriptions state
+      const newSubscriptions = new Map(subscriptions);
+      newSubscriptions.delete(topicId);
+      setSubscriptions(newSubscriptions);
+      
+      // Remove callback reference
+      subscriptionCallbacksRef.current.delete(topicId);
+
+      // Save subscriptions to localStorage
+      try {
+        const subscriptionsArray: TopicSubscription[] = Array.from(newSubscriptions.entries()).map(([topicId, subscriptionId]) => ({
+          topicId,
+          subscriptionId
+        }));
+        if (subscriptionsArray.length > 0) {
+          localStorage.setItem('command-frame-subscriptions', JSON.stringify(subscriptionsArray));
+        } else {
+          localStorage.removeItem('command-frame-subscriptions');
+        }
+      } catch (error) {
+        console.error('Error saving subscriptions to localStorage:', error);
+      }
     }
+  };
+
+  const handleUnsubscribeAll = () => {
+    // Unsubscribe from all topics
+    subscriptions.forEach((subscriptionId, topicId) => {
+      topics.unsubscribe(topicId, subscriptionId);
+    });
+    
+    setSubscriptions(new Map());
+    subscriptionCallbacksRef.current.clear();
+    localStorage.removeItem('command-frame-subscriptions');
   };
 
   const handleClearEvents = () => {
     setReceivedEvents([]);
   };
-
-  const selectedTopicDefinition = availableTopics.find(t => t.id === selectedTopic);
 
   return (
     <div className="section-content">
@@ -290,74 +314,89 @@ export function EventsSection({ isInIframe }: EventsSectionProps) {
         )}
       </CommandSection>
 
-      <CommandSection title="Subscribe to Topic">
-        <div className="form-group">
-          <label className="form-label">Select Topic:</label>
-          <select
-            value={selectedTopic}
-            onChange={(e) => {
-              // Unsubscribe from current topic if subscribed
-              if (isSubscribed && subscriptionId) {
-                topics.unsubscribe(selectedTopic, subscriptionId);
-                setSubscriptionId(null);
-                setIsSubscribed(false);
-              }
-              setSelectedTopic(e.target.value);
-              setReceivedEvents([]);
-            }}
-            className="form-input"
-            disabled={isSubscribed}
-          >
-            {availableTopics.length > 0 ? (
-              availableTopics.map(topic => (
-                <option key={topic.id} value={topic.id}>
-                  {topic.name} ({topic.id})
-                </option>
-              ))
-            ) : (
-              <option value="customers">customers (default)</option>
-            )}
-          </select>
-        </div>
-
-        {selectedTopicDefinition && (
-          <div className="form-group">
-            <label className="form-label">Event Types:</label>
-            <div className="event-types-list">
-              {selectedTopicDefinition.eventTypes.map(eventType => (
-                <div key={eventType.id} className="event-type-item">
-                  <strong>{eventType.id}</strong>
-                  {eventType.description && (
-                    <span className="event-type-desc"> - {eventType.description}</span>
+      <CommandSection title="Subscribe to Topics">
+        {availableTopics.length > 0 ? (
+          <div className="topics-subscription-list">
+            {availableTopics.map(topic => {
+              const isSubscribed = subscriptions.has(topic.id);
+              return (
+                <div key={topic.id} className="topic-subscription-item">
+                  <div className="topic-subscription-header">
+                    <div className="topic-info">
+                      <strong>{topic.name}</strong>
+                      <span className="topic-id">({topic.id})</span>
+                      {topic.description && (
+                        <span className="topic-description"> - {topic.description}</span>
+                      )}
+                    </div>
+                    <div className="topic-actions">
+                      {isSubscribed ? (
+                        <button 
+                          onClick={() => handleUnsubscribe(topic.id)} 
+                          className="btn btn--small btn--danger"
+                        >
+                          Unsubscribe
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => handleSubscribe(topic.id)} 
+                          className="btn btn--small btn--primary"
+                        >
+                          Subscribe
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {isSubscribed && (
+                    <div className="subscription-status">
+                      <span className="status-indicator status-indicator--active"></span>
+                      <span>Subscribed</span>
+                    </div>
                   )}
+                  <div className="event-types-list">
+                    {topic.eventTypes.map(eventType => (
+                      <div key={eventType.id} className="event-type-item">
+                        <strong>{eventType.id}</strong>
+                        {eventType.description && (
+                          <span className="event-type-desc"> - {eventType.description}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="section-description">
+            Click "Get Topics" to load available topics.
+          </p>
+        )}
+
+        {subscriptions.size > 0 && (
+          <div className="button-group" style={{ marginTop: '1rem' }}>
+            <button 
+              onClick={handleUnsubscribeAll} 
+              className="btn btn--danger"
+            >
+              Unsubscribe All ({subscriptions.size})
+            </button>
           </div>
         )}
 
-        <div className="button-group">
-          {!isSubscribed ? (
-            <button 
-              onClick={handleSubscribe} 
-              className="btn btn--primary"
-            >
-              Subscribe
-            </button>
-          ) : (
-            <button 
-              onClick={handleUnsubscribe} 
-              className="btn btn--danger"
-            >
-              Unsubscribe
-            </button>
-          )}
-        </div>
-
-        {isSubscribed && (
-          <div className="subscription-status">
-            <span className="status-indicator status-indicator--active"></span>
-            <span>Subscribed to: {selectedTopic}</span>
+        {subscriptions.size > 0 && (
+          <div className="subscription-summary">
+            <strong>Active Subscriptions ({subscriptions.size}):</strong>
+            <div className="subscribed-topics-list">
+              {Array.from(subscriptions.keys()).map(topicId => {
+                const topic = availableTopics.find(t => t.id === topicId);
+                return (
+                  <span key={topicId} className="subscribed-topic-badge">
+                    {topic?.name || topicId}
+                  </span>
+                );
+              })}
+            </div>
           </div>
         )}
       </CommandSection>

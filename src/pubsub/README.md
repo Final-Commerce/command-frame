@@ -24,6 +24,11 @@ topics.unsubscribe('customers', subscriptionId);
 | Topic | Description | Events | Documentation |
 |-------|-------------|--------|---------------|
 | [customers](./topics/customers/README.md) | Customer lifecycle events | 6 events | [View Details](./topics/customers/README.md) |
+| [orders](./topics/orders/README.md) | Order lifecycle events | 2 events | [View Details](./topics/orders/README.md) |
+| [refunds](./topics/refunds/README.md) | Refund lifecycle events | 2 events | [View Details](./topics/refunds/README.md) |
+| [products](./topics/products/README.md) | Product sync events | 2 events | [View Details](./topics/products/README.md) |
+| [cart](./topics/cart/README.md) | Cart operation events | 8 events | [View Details](./topics/cart/README.md) |
+| [payments](./topics/payments/README.md) | Payment processing events | 2 events | [View Details](./topics/payments/README.md) |
 
 ## API Reference
 
@@ -198,4 +203,9 @@ interface TopicEventType {
 For detailed documentation on each topic and its events, see:
 
 - [Customers Topic](./topics/customers/README.md)
+- [Orders Topic](./topics/orders/README.md)
+- [Refunds Topic](./topics/refunds/README.md)
+- [Products Topic](./topics/products/README.md)
+- [Cart Topic](./topics/cart/README.md)
+- [Payments Topic](./topics/payments/README.md)
 
