@@ -430,7 +430,7 @@ export function EventsSection({ isInIframe }: EventsSectionProps) {
                   </span>
                 </div>
                 <JsonViewer 
-                  data={JSON.stringify(receivedEvent.event.data, null, 2)} 
+                  data={JSON.stringify(receivedEvent.event, null, 2)} 
                   title="Event Data"
                 />
               </div>
