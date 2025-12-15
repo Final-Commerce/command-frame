@@ -10,7 +10,6 @@ import { getProductVariants } from "./actions/get-product-variants/action";
 import { getOrders } from "./actions/get-orders/action";
 import { getRefunds } from "./actions/get-refunds/action";
 import { addCartDiscount } from "./actions/add-cart-discount/action";
-import { setProductActive } from "./actions/set-product-active/action";
 import { getContext } from "./actions/get-context/action";
 import { getFinalContext } from "./actions/get-final-context/action";
 import { addProductDiscount } from "./actions/add-product-discount/action";
@@ -70,11 +69,11 @@ export const command = {
     getProductVariants,
     getOrders,
     getRefunds,
-    setProductActive,
     addProductDiscount,
     addProductToCart,
     addCartDiscount,
     getContext,
+    getFinalContext,
     // Product Actions
     addProductNote,
     addProductFee,
@@ -226,12 +225,6 @@ export type {
     GetCurrentCart,
     GetCurrentCartResponse
 } from "./actions/get-current-cart/types";
-
-export type {
-    SetProductActive,
-    SetProductActiveParams,
-    SetProductActiveResponse
-} from "./actions/set-product-active/types";
 
 export type {
     AddProductDiscount,
