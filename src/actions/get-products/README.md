@@ -19,6 +19,8 @@ interface GetProductsParams {
         externalId?: string;
         [key: string]: any;
     };
+    offset?: number;
+    limit?: number;
 }
 ```
 
@@ -26,7 +28,15 @@ interface GetProductsParams {
 
 A query object to filter products. The actual supported query operators depend on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
 
-**Note:** The handler automatically excludes deleted products and limits results to 100 items by default.
+#### `offset` (optional)
+
+The number of items to skip. Defaults to 0.
+
+#### `limit` (optional)
+
+The maximum number of items to return. Defaults to 100.
+
+**Note:** The handler automatically excludes deleted products.
 
 ## Response
 
@@ -64,13 +74,36 @@ import { command } from '@final-commerce/command-frame';
 
 ### Basic Query
 
-Get all products (up to 100):
+Get all products (up to default limit of 100):
 
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getProducts();
 console.log(result.products);
+```
+
+### With Pagination
+
+Get 50 products starting from index 0:
+
+```typescript
+const result = await command.getProducts({
+    limit: 50,
+    offset: 0
+});
+```
+
+### Filtered Query
+
+Get products by name (case-insensitive regex):
+
+```typescript
+const result = await command.getProducts({
+    query: {
+        name: { $regex: 'coffee', $options: 'i' }
+    }
+});
 ```
 
 ## Real Data Examples
@@ -179,7 +212,6 @@ If the query fails or no products are found, the handler returns an empty array:
 
 ## Notes
 
-- Results are limited to 100 products per request
+- Results are limited to 100 products per request by default
 - Deleted products (`isDeleted: true`) are automatically excluded
 - Variants may be included in the response depending on the handler implementation
-
