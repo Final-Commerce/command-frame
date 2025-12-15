@@ -2,6 +2,7 @@
 export interface AdjustInventoryParams {
     amount: string;
     stockType: 'add' | 'subtract' | 'set';
+    variantId?: string;
 }
 
 export interface AdjustInventoryResponse {
@@ -13,4 +14,3 @@ export interface AdjustInventoryResponse {
 }
 
 export type AdjustInventory = (params?: AdjustInventoryParams) => Promise<AdjustInventoryResponse>;
-

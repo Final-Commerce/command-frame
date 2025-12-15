@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { command } from '@final-commerce/command-frame';
+import { command, TriggerWebhookPresetType } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -42,7 +42,7 @@ export function IntegrationSection({ isInIframe }: IntegrationSectionProps) {
         webhookUrl,
         publicKey: webhookPublicKey || undefined,
         presetData: webhookPresetData,
-        presetType: webhookPresetType || undefined,
+        presetType: (webhookPresetType as TriggerWebhookPresetType) || undefined,
         isCustomHook: webhookIsCustomHook,
         customHookData: webhookCustomHookData || undefined,
         payloadType: webhookPayloadType,

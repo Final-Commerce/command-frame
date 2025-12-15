@@ -1,38 +1,37 @@
 # addProductNote
 
-Adds a note to the currently active product in the cart.
+Adds a note to a specific product line item in the cart.
 
 ## Parameters
 
-- `note` (string, required): The note text to add to the product
-
-## Response
+### `AddProductNoteParams`
 
 ```typescript
-{
-  success: boolean;
-  note: string;
-  timestamp: string;
+interface AddProductNoteParams {
+    note: string;          // Required
+    cartItemId: string;    // Required: The internalId of the cart item to modify
 }
 ```
 
-## Usage
+#### `cartItemId` (required)
+
+The unique `internalId` of the item in the cart you wish to modify. This ID is returned in the response of `addProductToCart` or `getCurrentCart`.
+
+#### `note` (required)
+
+The text of the note to add.
+
+## Usage Example
 
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
-// Add a note to the active product
+// 1. Add product and get its ID
+const { internalId } = await command.addProductToCart({ variantId: 'v123' });
+
+// 2. Add note to that specific item
 await command.addProductNote({
-  note: 'Customer requested extra packaging'
+    cartItemId: internalId,
+    note: 'Extra spicy'
 });
 ```
-
-## Requirements
-
-- A product must be set as active using `setProductActive` before adding a note
-
-## Error Handling
-
-- Throws an error if parameters are missing
-- Throws an error if no product is currently active
-

@@ -24,7 +24,6 @@ export function EventsSection({ isInIframe }: EventsSectionProps) {
   const [topicsLoading, setTopicsLoading] = useState(false);
   const [topicsError, setTopicsError] = useState<string>('');
 
-  const [selectedTopic, setSelectedTopic] = useState<string>('customers');
   const [subscriptions, setSubscriptions] = useState<Map<string, string>>(new Map());
   const eventIdCounter = useRef(0);
   const subscriptionCallbacksRef = useRef<Map<string, (event: TopicEvent) => void>>(new Map());
@@ -102,7 +101,7 @@ export function EventsSection({ isInIframe }: EventsSectionProps) {
         const parsed: TopicSubscription[] = JSON.parse(storedSubscriptions);
         if (Array.isArray(parsed) && parsed.length > 0) {
           const restoredSubs = new Map<string, string>();
-          parsed.forEach(({ topicId, subscriptionId }) => {
+          parsed.forEach(({ topicId }) => {
             // Create and restore subscription
             const callback = createEventCallback();
             subscriptionCallbacksRef.current.set(topicId, callback);

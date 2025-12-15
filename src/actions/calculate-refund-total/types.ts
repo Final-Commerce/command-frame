@@ -1,6 +1,10 @@
 import { CFRefundedLineItem, CFRefundedCustomSale } from "../../CommonTypes";
 
 // Calculate Refund Total Types
+export interface CalculateRefundTotalParams {
+    orderId?: string;
+}
+
 export interface CalculateRefundTotalResponse {
     success: boolean;
     summary: {
@@ -13,5 +17,4 @@ export interface CalculateRefundTotalResponse {
     timestamp: string;
 }
 
-export type CalculateRefundTotal = () => Promise<CalculateRefundTotalResponse>;
-
+export type CalculateRefundTotal = (params?: CalculateRefundTotalParams) => Promise<CalculateRefundTotalResponse>;

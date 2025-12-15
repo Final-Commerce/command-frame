@@ -6,7 +6,7 @@ export const mockAddProductNote: AddProductNote = async (params?: AddProductNote
     return {
         success: true,
         note: params?.note || "",
+        cartItemId: params?.cartItemId,
         timestamp: new Date().toISOString()
     };
 };
-

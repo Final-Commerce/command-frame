@@ -8,7 +8,7 @@ export const mockAddProductDiscount: AddProductDiscount = async (params?: AddPro
         amount: params?.amount || 0,
         isPercent: params?.isPercent || false,
         label: params?.label || "",
+        cartItemId: params?.cartItemId,
         timestamp: new Date().toISOString()
     };
 };
-

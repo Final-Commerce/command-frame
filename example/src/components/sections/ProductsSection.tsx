@@ -19,8 +19,6 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
   const [variantProductId, setVariantProductId] = useState<string>('');
   
   const [variantId, setVariantId] = useState<string>('');
-  const [setProductActiveLoading, setSetProductActiveLoading] = useState(false);
-  const [setProductActiveResponse, setSetProductActiveResponse] = useState<string>('');
 
   // Product Note
   const [productNote, setProductNote] = useState<string>('');
@@ -108,32 +106,6 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
     }
   };
 
-  const handleSetProductActive = async () => {
-    if (!isInIframe) {
-      setSetProductActiveResponse('Error: Not running in iframe');
-      return;
-    }
-
-    if (!variantId) {
-      setSetProductActiveResponse('Error: Please enter a variant ID');
-      return;
-    }
-
-    setSetProductActiveLoading(true);
-    setSetProductActiveResponse('');
-
-    try {
-      const result = await command.setProductActive({
-        variantId: variantId
-      });
-      
-      setSetProductActiveResponse(JSON.stringify(result, null, 2));
-    } catch (error) {
-      setSetProductActiveResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setSetProductActiveLoading(false);
-    }
-  };
 
   const getProductPrice = (product: any): string => {
     if (product.variants && product.variants.length > 0) {
@@ -293,7 +265,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
         )}
       </CommandSection>
 
-      <CommandSection title="Set Product Active">
+      <CommandSection title="Selected Variant">
+        <p className="section-description">
+          Select a variant from the table above or enter an ID manually to use for actions below.
+        </p>
         <div className="form-group">
           <label className="form-label">Variant ID:</label>
           <input
@@ -304,25 +279,11 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
             placeholder="Enter Variant ID"
           />
         </div>
-        <button 
-          onClick={handleSetProductActive} 
-          disabled={setProductActiveLoading}
-          className="btn btn--primary"
-        >
-          {setProductActiveLoading ? 'Setting...' : 'Set Active'}
-        </button>
-        
-        {setProductActiveResponse && (
-          <JsonViewer 
-            data={setProductActiveResponse} 
-            title={setProductActiveResponse.startsWith('Error') ? 'Error' : 'Success'} 
-          />
-        )}
       </CommandSection>
 
-      <CommandSection title="Add Product Note">
+      <CommandSection title="Add Product to Cart with Note">
         <p className="section-description">
-          Adds a note to the currently active product. Requires a product to be set as active first.
+          Adds the selected variant to cart with a note attached.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -341,6 +302,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
               setAddProductNoteResponse('Error: Not running in iframe');
               return;
             }
+            if (!variantId) {
+              setAddProductNoteResponse('Error: Variant ID is required');
+              return;
+            }
             if (!productNote) {
               setAddProductNoteResponse('Error: Note is required');
               return;
@@ -348,7 +313,11 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
             setAddProductNoteLoading(true);
             setAddProductNoteResponse('');
             try {
-              const result = await command.addProductNote({ note: productNote });
+              const result = await command.addProductToCart({ 
+                variantId,
+                quantity: 1,
+                notes: productNote 
+              });
               setAddProductNoteResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setAddProductNoteResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -359,7 +328,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
           disabled={addProductNoteLoading}
           className="btn btn--primary"
         >
-          {addProductNoteLoading ? 'Adding...' : 'Add Note'}
+          {addProductNoteLoading ? 'Adding...' : 'Add to Cart with Note'}
         </button>
         {addProductNoteResponse && (
           <JsonViewer
@@ -369,9 +338,9 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
         )}
       </CommandSection>
 
-      <CommandSection title="Add Product Fee">
+      <CommandSection title="Add Product to Cart with Fee">
         <p className="section-description">
-          Adds a fee to the currently active product. Requires a product to be set as active first.
+          Adds the selected variant to cart with a fee attached.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -420,6 +389,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
               setAddProductFeeResponse('Error: Not running in iframe');
               return;
             }
+            if (!variantId) {
+              setAddProductFeeResponse('Error: Variant ID is required');
+              return;
+            }
             if (!productFeeAmount) {
               setAddProductFeeResponse('Error: Amount is required');
               return;
@@ -427,11 +400,15 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
             setAddProductFeeLoading(true);
             setAddProductFeeResponse('');
             try {
-              const result = await command.addProductFee({
-                amount: parseFloat(productFeeAmount) || 0,
-                isPercent: productFeeIsPercent,
-                label: productFeeLabel,
-                applyTaxes: productFeeApplyTaxes
+              const result = await command.addProductToCart({
+                variantId,
+                quantity: 1,
+                fees: [{
+                  amount: parseFloat(productFeeAmount) || 0,
+                  isPercent: productFeeIsPercent,
+                  label: productFeeLabel,
+                  applyTaxes: productFeeApplyTaxes
+                }]
               });
               setAddProductFeeResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -443,7 +420,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
           disabled={addProductFeeLoading}
           className="btn btn--primary"
         >
-          {addProductFeeLoading ? 'Adding...' : 'Add Fee'}
+          {addProductFeeLoading ? 'Adding...' : 'Add to Cart with Fee'}
         </button>
         {addProductFeeResponse && (
           <JsonViewer
@@ -455,7 +432,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
 
       <CommandSection title="Adjust Inventory">
         <p className="section-description">
-          Adjusts the inventory/stock level for the currently active product. Requires a product to be set as active first.
+          Adjusts the inventory/stock level for the selected variant.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -485,6 +462,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
               setAdjustInventoryResponse('Error: Not running in iframe');
               return;
             }
+            if (!variantId) {
+              setAdjustInventoryResponse('Error: Variant ID is required');
+              return;
+            }
             if (!inventoryAmount) {
               setAdjustInventoryResponse('Error: Amount is required');
               return;
@@ -493,6 +474,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
             setAdjustInventoryResponse('');
             try {
               const result = await command.adjustInventory({
+                variantId,
                 amount: inventoryAmount,
                 stockType: inventoryStockType
               });

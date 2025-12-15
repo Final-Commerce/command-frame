@@ -1,6 +1,6 @@
 # adjustInventory
 
-Adjusts the inventory/stock level for the currently active product.
+Adjusts the inventory/stock level for a specific product variant.
 
 ## Parameters
 
@@ -9,6 +9,7 @@ Adjusts the inventory/stock level for the currently active product.
   - `'add'`: Add stock (increases inventory)
   - `'subtract'`: Subtract stock (decreases inventory)
   - `'set'`: Set stock to a specific value (recount)
+- `variantId` (string, optional): The ID of the product variant to adjust.
 
 ## Response
 
@@ -27,34 +28,31 @@ Adjusts the inventory/stock level for the currently active product.
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
-// Add 10 units to inventory
+// Add 10 units to inventory for a specific variant
 await command.adjustInventory({
   amount: '10',
-  stockType: 'add'
+  stockType: 'add',
+  variantId: 'variant-123'
 });
 
 // Subtract 5 units from inventory
 await command.adjustInventory({
   amount: '5',
-  stockType: 'subtract'
+  stockType: 'subtract',
+  variantId: 'variant-123'
 });
 
 // Set inventory to 50 units
 await command.adjustInventory({
   amount: '50',
-  stockType: 'set'
+  stockType: 'set',
+  variantId: 'variant-123'
 });
 ```
-
-## Requirements
-
-- A product must be set as active using `setProductActive` before adjusting inventory
-- The product must have inventory tracking enabled
 
 ## Error Handling
 
 - Throws an error if parameters are missing
-- Throws an error if no product is currently active
+- Throws an error if `variantId` is not provided (and no active product context exists)
 - Throws an error if subtracting would result in negative stock
 - Throws an error if the API call fails
-

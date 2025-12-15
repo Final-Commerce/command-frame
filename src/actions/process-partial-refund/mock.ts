@@ -5,8 +5,7 @@ export const mockProcessPartialRefund: ProcessPartialRefund = async (params?: Pr
     
     return {
         success: true,
-        refundId: "mock_refund_id",
+        refundId: 'mock_refund_' + Date.now(),
         timestamp: new Date().toISOString()
     };
 };
-

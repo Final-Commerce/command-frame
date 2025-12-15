@@ -3,6 +3,7 @@ export interface AddProductDiscountParams {
     amount: number;
     isPercent?: boolean;
     label?: string;
+    cartItemId?: string;
 }
 
 export interface AddProductDiscountResponse {
@@ -10,8 +11,8 @@ export interface AddProductDiscountResponse {
     amount: number;
     isPercent: boolean;
     label: string;
+    cartItemId?: string;
     timestamp: string;
 }
 
 export type AddProductDiscount = (params?: AddProductDiscountParams) => Promise<AddProductDiscountResponse>;
-
