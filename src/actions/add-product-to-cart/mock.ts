@@ -31,6 +31,13 @@ export const mockAddProductToCart: AddProductToCart = async (params?: AddProduct
 
     // Add to MOCK_CART
     const internalId = product._id + "_" + Date.now();
+    
+    // Process optional fields for mock
+    let note = undefined;
+    if (params?.notes) {
+        note = Array.isArray(params.notes) ? params.notes.join(", ") : params.notes;
+    }
+
     const activeProduct: CFActiveProduct = {
         ...product,
         id: product._id,
@@ -43,7 +50,9 @@ export const mockAddProductToCart: AddProductToCart = async (params?: AddProduct
         images: product.images || [],
         localQuantity: quantity,
         sku: variant.sku,
-        attributes: variant.attributes.map(a => `${a.name}: ${a.value}`).join(", ")
+        attributes: variant.attributes.map(a => `${a.name}: ${a.value}`).join(", "),
+        note: note
+        // discount/fee could be added here to mock object if CFActiveProduct supports it
     } as unknown as CFActiveProduct;
 
     MOCK_CART.products.push(activeProduct);

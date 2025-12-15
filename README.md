@@ -38,12 +38,11 @@ The library provides a `command` namespace object containing all available comma
 - **[getFinalContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-final-context/README.md)** - Get final context information (project name)
 
 #### Product Actions
-- **[setProductActive](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-product-active/README.md)** - Set a product variant as the active product
-- **[addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)** - Add a discount to the currently active product
-- **[addProductToCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-to-cart/README.md)** - Add the currently active product to the cart
-- **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to the currently active product
-- **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to the currently active product
-- **[adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)** - Adjust inventory/stock level for the currently active product
+- **[addProductToCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-to-cart/README.md)** - Add a product to the cart with optional discounts, fees, and notes
+- **[addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)** - Add a discount to a specific product in the cart (using `cartItemId`)
+- **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `cartItemId`)
+- **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `cartItemId`)
+- **[adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)** - Adjust inventory/stock level for a specific product variant
 
 #### Order Actions
 - **[addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)** - Add a custom sale item to the cart
@@ -116,19 +115,24 @@ const variants = await command.getProductVariants({
     productId: '691df9c6c478bada1fb23d31'
 });
 
-// Set a variant as active, add discount, then add to cart
-await command.setProductActive({
-    variantId: '691df9c6c478bada1fb23d55'
+// Add product to cart with optional discounts and fees
+const addedProduct = await command.addProductToCart({
+    variantId: '691df9c6c478bada1fb23d55',
+    quantity: 1,
+    discounts: [{
+        amount: 10,
+        isPercent: false,
+        label: 'Discount'
+    }],
+    notes: 'No onions'
 });
 
+// Add a discount to the specific item just added (if you didn't add it during creation)
 await command.addProductDiscount({
-    amount: 10,
-    isPercent: false,
-    label: 'Discount'
-});
-
-await command.addProductToCart({
-    quantity: 1
+    cartItemId: addedProduct.internalId,
+    amount: 5,
+    isPercent: true,
+    label: 'Extra 5% Off'
 });
 
 // Add cart discount
@@ -188,17 +192,13 @@ Retrieves the current cart object with all its contents including products, cust
 
 Adds a custom sale item to the cart in the parent window. Useful for adding non-product items like service fees, discounts, or custom charges.
 
-### [setProductActive](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-product-active/README.md)
+### [addProductToCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-to-cart/README.md)
 
-Sets a product variant as the active product in the parent application. Required before adding discounts or adding products to cart.
+Adds a product to the cart. Supports specifying quantity, applying discounts, fees, and notes in a single atomic operation.
 
 ### [addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)
 
-Adds a discount to the currently active product. Supports both fixed amount and percentage discounts. The product must be set as active first.
-
-### [addProductToCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-to-cart/README.md)
-
-Adds the currently active product to the cart. Supports specifying quantity. The product must be set as active first.
+Adds a discount to a specific product in the cart (identified by `cartItemId`). Supports both fixed amount and percentage discounts.
 
 ### [addCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-discount/README.md)
 
@@ -212,15 +212,15 @@ Retrieves the current environment/context information from the parent applicatio
 
 ### [addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)
 
-Adds a note to the currently active product in the cart. Requires a product to be set as active first.
+Adds a note to a specific product in the cart (identified by `cartItemId`).
 
 ### [addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)
 
-Adds a fee to the currently active product. Supports both fixed amount and percentage-based fees. Requires a product to be set as active first.
+Adds a fee to a specific product in the cart (identified by `cartItemId`). Supports both fixed amount and percentage-based fees.
 
 ### [adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)
 
-Adjusts the inventory/stock level for the currently active product. Supports adding, subtracting, or setting stock to a specific value.
+Adjusts the inventory/stock level for a specific product variant. Supports adding, subtracting, or setting stock to a specific value.
 
 ### Order Actions
 
@@ -461,7 +461,6 @@ import type {
     GetFinalContext, GetFinalContextResponse,
     GetCurrentCart, GetCurrentCartResponse,
     // Product Actions
-    SetProductActiveParams, SetProductActiveResponse, SetProductActive,
     AddProductDiscountParams, AddProductDiscountResponse, AddProductDiscount,
     AddProductToCartParams, AddProductToCartResponse, AddProductToCart,
     AddProductNoteParams, AddProductNoteResponse, AddProductNote,
@@ -500,12 +499,12 @@ import type {
     SwitchUserParams, SwitchUserResponse, SwitchUser,
     // Refund Actions
     GetLineItemsByOrderParams, GetLineItemsByOrderResponse, GetLineItemsByOrder,
-    SelectAllRefundItemsResponse, SelectAllRefundItems,
+    SelectAllRefundItemsParams, SelectAllRefundItemsResponse, SelectAllRefundItems,
     ResetRefundDetailsResponse, ResetRefundDetails,
     SetRefundStockActionParams, SetRefundStockActionResponse, SetRefundStockAction,
     CalculateRefundTotalResponse, CalculateRefundTotal,
     ProcessPartialRefundParams, ProcessPartialRefundResponse, ProcessPartialRefund,
-    GetRemainingRefundableQuantitiesResponse, GetRemainingRefundableQuantities,
+    GetRemainingRefundableQuantitiesParams, GetRemainingRefundableQuantitiesResponse, GetRemainingRefundableQuantities,
     // Integration Actions
     TriggerWebhookParams, TriggerWebhookResponse, TriggerWebhook,
     TriggerZapierWebhookParams, TriggerZapierWebhookResponse, TriggerZapierWebhook,

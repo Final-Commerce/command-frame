@@ -1,54 +1,53 @@
 # addProductFee
 
-Adds a fee to the currently active product. Supports both fixed amount and percentage-based fees.
+Adds a fee to a specific product line item in the cart.
 
 ## Parameters
 
-- `amount` (number, required): The fee amount (as a fixed value or percentage)
-- `isPercent` (boolean, optional): Whether the amount is a percentage (default: false)
-- `label` (string, optional): Label for the fee (default: 'Fee')
-- `applyTaxes` (boolean, optional): Whether to apply taxes to the fee (default: false)
-- `taxTableId` (string, optional): Tax table ID to use if taxes are applied
-
-## Response
+### `AddProductFeeParams`
 
 ```typescript
-{
-  success: boolean;
-  amount: number;
-  isPercent: boolean;
-  label: string;
-  applyTaxes: boolean;
-  timestamp: string;
+interface AddProductFeeParams {
+    amount: number;        // Required
+    cartItemId: string;    // Required: The internalId of the cart item to modify
+    isPercent?: boolean;   // Optional, default: false
+    label?: string;        // Optional, default: "Fee"
+    applyTaxes?: boolean;  // Optional, default: false
 }
 ```
 
-## Usage
+#### `cartItemId` (required)
+
+The unique `internalId` of the item in the cart you wish to modify. This ID is returned in the response of `addProductToCart` or `getCurrentCart`.
+
+#### `amount` (required)
+
+The fee amount.
+
+#### `isPercent` (optional)
+
+Whether the fee is a percentage of the item price.
+
+#### `label` (optional)
+
+Label for the fee.
+
+#### `applyTaxes` (optional)
+
+Whether taxes should be calculated on this fee.
+
+## Usage Example
 
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
-// Add a fixed fee
-await command.addProductFee({
-  amount: 5.00,
-  label: 'Service Fee',
-  applyTaxes: true
-});
+// 1. Add product and get its ID
+const { internalId } = await command.addProductToCart({ variantId: 'v123' });
 
-// Add a percentage-based fee
+// 2. Add fee to that specific item
 await command.addProductFee({
-  amount: 10,
-  isPercent: true,
-  label: 'Processing Fee'
+    cartItemId: internalId,
+    amount: 2.00,
+    label: 'Recycling Fee'
 });
 ```
-
-## Requirements
-
-- A product must be set as active using `setProductActive` before adding a fee
-
-## Error Handling
-
-- Throws an error if parameters are missing
-- Throws an error if no product is currently active
-
