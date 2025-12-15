@@ -3,7 +3,6 @@ import type { AddProductDiscountParams } from "../add-product-discount/types";
 import type { AddProductFeeParams } from "../add-product-fee/types";
 
 export interface AddProductToCartParams {
-    productId?: string;
     variantId?: string;
     quantity?: number;
     discounts?: AddProductDiscountParams[];
