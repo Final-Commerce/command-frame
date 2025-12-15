@@ -9,7 +9,7 @@ export const mockAddProductFee: AddProductFee = async (params?: AddProductFeePar
         isPercent: params?.isPercent || false,
         label: params?.label || "",
         applyTaxes: params?.applyTaxes || false,
+        cartItemId: params?.cartItemId,
         timestamp: new Date().toISOString()
     };
 };
-

@@ -1,7 +1,9 @@
-import { SelectAllRefundItems, SelectAllRefundItemsResponse } from "./types";
+import { SelectAllRefundItems, SelectAllRefundItemsParams, SelectAllRefundItemsResponse } from "./types";
 
-export const mockSelectAllRefundItems: SelectAllRefundItems = async (): Promise<SelectAllRefundItemsResponse> => {
-    console.log("[Mock] selectAllRefundItems called");
+export const mockSelectAllRefundItems: SelectAllRefundItems = async (
+    _params?: SelectAllRefundItemsParams
+): Promise<SelectAllRefundItemsResponse> => {
+    console.log("[Mock] selectAllRefundItems called", _params);
     
     return {
         success: true,
@@ -9,4 +11,3 @@ export const mockSelectAllRefundItems: SelectAllRefundItems = async (): Promise<
         timestamp: new Date().toISOString()
     };
 };
-

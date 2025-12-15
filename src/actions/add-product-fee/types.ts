@@ -5,6 +5,7 @@ export interface AddProductFeeParams {
     label?: string;
     applyTaxes?: boolean;
     taxTableId?: string;
+    cartItemId?: string;
 }
 
 export interface AddProductFeeResponse {
@@ -13,8 +14,8 @@ export interface AddProductFeeResponse {
     isPercent: boolean;
     label: string;
     applyTaxes: boolean;
+    cartItemId?: string;
     timestamp: string;
 }
 
 export type AddProductFee = (params?: AddProductFeeParams) => Promise<AddProductFeeResponse>;
-

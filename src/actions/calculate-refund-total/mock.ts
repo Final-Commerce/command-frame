@@ -1,7 +1,9 @@
-import { CalculateRefundTotal, CalculateRefundTotalResponse } from "./types";
+import { CalculateRefundTotal, CalculateRefundTotalParams, CalculateRefundTotalResponse } from "./types";
 
-export const mockCalculateRefundTotal: CalculateRefundTotal = async (): Promise<CalculateRefundTotalResponse> => {
-    console.log("[Mock] calculateRefundTotal called");
+export const mockCalculateRefundTotal: CalculateRefundTotal = async (
+    _params?: CalculateRefundTotalParams
+): Promise<CalculateRefundTotalResponse> => {
+    console.log("[Mock] calculateRefundTotal called", _params);
     
     return {
         success: true,
@@ -15,4 +17,3 @@ export const mockCalculateRefundTotal: CalculateRefundTotal = async (): Promise<
         timestamp: new Date().toISOString()
     };
 };
-

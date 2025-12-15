@@ -1,4 +1,8 @@
 // Get Remaining Refundable Quantities Types
+export interface GetRemainingRefundableQuantitiesParams {
+    orderId?: string;
+}
+
 export interface GetRemainingRefundableQuantitiesResponse {
     success: boolean;
     lineItems: Record<string, number>; // itemKey: remaining qty
@@ -6,5 +10,4 @@ export interface GetRemainingRefundableQuantitiesResponse {
     timestamp: string;
 }
 
-export type GetRemainingRefundableQuantities = () => Promise<GetRemainingRefundableQuantitiesResponse>;
-
+export type GetRemainingRefundableQuantities = (params?: GetRemainingRefundableQuantitiesParams) => Promise<GetRemainingRefundableQuantitiesResponse>;

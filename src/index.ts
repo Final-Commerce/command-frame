@@ -195,6 +195,7 @@ export type {
 
 export type {
     SelectAllRefundItems,
+    SelectAllRefundItemsParams,
     SelectAllRefundItemsResponse
 } from "./actions/select-all-refund-items/types";
 
@@ -205,11 +206,13 @@ export type {
 
 export type {
     CalculateRefundTotal,
+    CalculateRefundTotalParams,
     CalculateRefundTotalResponse
 } from "./actions/calculate-refund-total/types";
 
 export type {
     GetRemainingRefundableQuantities,
+    GetRemainingRefundableQuantitiesParams,
     GetRemainingRefundableQuantitiesResponse
 } from "./actions/get-remaining-refundable-quantities/types";
 
@@ -395,6 +398,7 @@ export type {
 // Integration Actions
 export type {
     TriggerWebhook,
+    TriggerWebhookPresetType,
     TriggerWebhookParams,
     TriggerWebhookResponse
 } from "./actions/trigger-webhook/types";

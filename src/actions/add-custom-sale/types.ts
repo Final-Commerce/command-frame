@@ -7,6 +7,7 @@ export interface AddCustomSaleParams {
 
 export interface AddCustomSaleResponse {
     success: boolean;
+    customSaleId: string;
     label: string;
     price: number;
     applyTaxes: boolean;
@@ -14,4 +15,3 @@ export interface AddCustomSaleResponse {
 }
 
 export type AddCustomSale = (params?: AddCustomSaleParams) => Promise<AddCustomSaleResponse>;
-

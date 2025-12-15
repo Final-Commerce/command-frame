@@ -30,10 +30,11 @@ export const mockAddProductToCart: AddProductToCart = async (params?: AddProduct
     }
 
     // Add to MOCK_CART
+    const internalId = product._id + "_" + Date.now();
     const activeProduct: CFActiveProduct = {
         ...product,
         id: product._id,
-        internalId: product._id + "_" + Date.now(), // unique ID for cart item
+        internalId: internalId, // unique ID for cart item
         variantId: variant._id,
         quantity: quantity,
         price: Number(variant.price),
@@ -59,6 +60,7 @@ export const mockAddProductToCart: AddProductToCart = async (params?: AddProduct
         success: true,
         productId: activeProduct.id,
         variantId: activeProduct.variantId,
+        internalId: activeProduct.internalId,
         name: activeProduct.name,
         quantity: quantity,
         timestamp: new Date().toISOString()
