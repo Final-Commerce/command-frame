@@ -38,7 +38,6 @@ import { mockRemoveCustomerFromCart } from "../actions/remove-customer-from-cart
 import { mockResetRefundDetails } from "../actions/reset-refund-details/mock";
 import { mockResumeParkedOrder } from "../actions/resume-parked-order/mock";
 import { mockSelectAllRefundItems } from "../actions/select-all-refund-items/mock";
-import { mockSetProductActive } from "../actions/set-product-active/mock";
 import { mockSetRefundStockAction } from "../actions/set-refund-stock-action/mock";
 import { mockShowConfirmation } from "../actions/show-confirmation/mock";
 import { mockShowNotification } from "../actions/show-notification/mock";
@@ -51,6 +50,7 @@ import { mockTriggerZapierWebhook } from "../actions/trigger-zapier-webhook/mock
 import { mockUpdateCustomerFacingDisplay } from "../actions/update-customer-facing-display/mock";
 import { mockVendaraPayment } from "../actions/vendara-payment/mock";
 
+import { mockGetFinalContext } from "../actions/get-final-context/mock";
 import { command } from "../index";
 
 // Type for mock handler
@@ -99,7 +99,6 @@ export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
     "resetRefundDetails": mockResetRefundDetails,
     "resumeParkedOrder": mockResumeParkedOrder,
     "selectAllRefundItems": mockSelectAllRefundItems,
-    "setProductActive": mockSetProductActive,
     "setRefundStockAction": mockSetRefundStockAction,
     "showConfirmation": mockShowConfirmation,
     "showNotification": mockShowNotification,
@@ -111,4 +110,5 @@ export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
     "triggerZapierWebhook": mockTriggerZapierWebhook,
     "updateCustomerFacingDisplay": mockUpdateCustomerFacingDisplay,
     "vendaraPayment": mockVendaraPayment,
+    "getFinalContext": mockGetFinalContext,
 };

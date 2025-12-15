@@ -18,6 +18,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
   const [addToCartLoading, setAddToCartLoading] = useState(false);
   const [addToCartResponse, setAddToCartResponse] = useState<string>('');
   const [addToCartQuantity, setAddToCartQuantity] = useState<string>('1');
+  const [addToCartVariantId, setAddToCartVariantId] = useState<string>('');
   
   const [cartDiscountAmount, setCartDiscountAmount] = useState<string>('10');
   const [cartDiscountIsPercent, setCartDiscountIsPercent] = useState<boolean>(false);
@@ -78,7 +79,8 @@ export function CartSection({ isInIframe }: CartSectionProps) {
     try {
       const quantity = parseFloat(addToCartQuantity) || 1;
       const result = await command.addProductToCart({
-        quantity: quantity
+        quantity: quantity,
+        variantId: addToCartVariantId
       });
       
       setAddToCartResponse(JSON.stringify(result, null, 2));
@@ -172,11 +174,20 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       </CommandSection>
 
       {/* Add Product to Cart */}
-      <CommandSection title="Add Active Product to Cart">
+      <CommandSection title="Add Product to Cart">
         <p className="section-description">
-          Adds the currently active product to the cart. The active product must be set first using "Set Product Active" command.
+          Adds a product to the cart. Requires a Variant ID.
         </p>
         <div className="form-group">
+          <div className="form-field">
+            <label>Variant ID:</label>
+            <input
+              type="text"
+              value={addToCartVariantId}
+              onChange={(e) => setAddToCartVariantId(e.target.value)}
+              placeholder="Variant ID"
+            />
+          </div>
           <div className="form-field">
             <label>Quantity:</label>
             <input
