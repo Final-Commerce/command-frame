@@ -5,27 +5,22 @@ import { CFActiveProduct } from "../../CommonTypes";
 export const mockAddProductToCart: AddProductToCart = async (params?: AddProductToCartParams): Promise<AddProductToCartResponse> => {
     console.log("[Mock] addProductToCart called", params);
     
-    const productId = params?.productId;
     const variantId = params?.variantId;
     const quantity = params?.quantity || 1;
 
     let product = MOCK_PRODUCTS[0]; // Default fallback
-
-    if (productId) {
-        const found = MOCK_PRODUCTS.find(p => p._id === productId);
-        if (found) {
-            product = found;
-        } else {
-            console.warn(`[Mock] Product with ID ${productId} not found, using default.`);
-        }
-    }
-
-    // Determine variant
     let variant = product.variants[0];
+
+    // Determine variant and product from variantId
     if (variantId) {
-        const foundVariant = product.variants.find(v => v._id === variantId);
-        if (foundVariant) {
-            variant = foundVariant;
+        // Search through all products to find the one containing this variant
+        for (const p of MOCK_PRODUCTS) {
+            const foundVariant = p.variants.find(v => v._id === variantId);
+            if (foundVariant) {
+                product = p;
+                variant = foundVariant;
+                break;
+            }
         }
     }
 
