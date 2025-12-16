@@ -3,6 +3,7 @@ export interface AddCustomSaleParams {
     label: string;
     price: number | string;
     applyTaxes?: boolean;
+    taxTableId?: string;
 }
 
 export interface AddCustomSaleResponse {

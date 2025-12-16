@@ -5,6 +5,7 @@ export interface AdjustInventoryParams {
     /** 'add' (increase), 'subtract' (decrease), or 'set' (recount). */
     stockType: 'add' | 'subtract' | 'set';
     variantId?: string;
+    productId?: string;
 }
 
 export interface AdjustInventoryResponse {
