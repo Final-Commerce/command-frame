@@ -11,6 +11,10 @@ import type {
 } from "./types";
 
 export const cashPayment: CashPayment = async (params?: CashPaymentParams): Promise<CashPaymentResponse> => {
-    return await commandFrameClient.call<CashPaymentParams, CashPaymentResponse>("cashPayment", params);
+    const finalParams: CashPaymentParams = {
+        ...params,
+        openChangeCalculator: params?.openChangeCalculator ?? true
+    };
+    return await commandFrameClient.call<CashPaymentParams, CashPaymentResponse>("cashPayment", finalParams);
 };
 

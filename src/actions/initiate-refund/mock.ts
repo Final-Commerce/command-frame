@@ -3,6 +3,8 @@ import { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from "./
 export const mockInitiateRefund: InitiateRefund = async (params?: InitiateRefundParams): Promise<InitiateRefundResponse> => {
     console.log("[Mock] initiateRefund called", params);
     
+    window.alert(`Demo: Initiating Refund for Order: ${params?.orderId || "Current Active Order"}\n(Refund UI would open here)`);
+
     return {
         success: true,
         orderId: params?.orderId || "mock_order_id",

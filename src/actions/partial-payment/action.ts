@@ -11,6 +11,10 @@ import type {
 } from "./types";
 
 export const partialPayment: PartialPayment = async (params?: PartialPaymentParams): Promise<PartialPaymentResponse> => {
-    return await commandFrameClient.call<PartialPaymentParams, PartialPaymentResponse>("partialPayment", params);
+    const finalParams: PartialPaymentParams = {
+        ...params,
+        openUI: params?.openUI ?? true
+    };
+    return await commandFrameClient.call<PartialPaymentParams, PartialPaymentResponse>("partialPayment", finalParams);
 };
 

@@ -11,6 +11,8 @@ export const mockAssignCustomer: AssignCustomer = async (params: AssignCustomerP
 
     MOCK_CART.customer = customer;
 
+    window.alert(`Demo: Customer Assigned to Cart\nName: ${customer.firstName} ${customer.lastName}`);
+
     return {
         success: true,
         customer,
