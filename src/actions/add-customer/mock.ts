@@ -16,6 +16,8 @@ export const mockAddCustomer: AddCustomer = async (params?: AddCustomerParams): 
 
     MOCK_CUSTOMERS.push(newCustomer);
 
+    window.alert(`Demo: Customer Created!\nName: ${newCustomer.firstName} ${newCustomer.lastName}\nEmail: ${newCustomer.email}`);
+
     return {
         success: true,
         customer: newCustomer,

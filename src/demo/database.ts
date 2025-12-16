@@ -542,6 +542,7 @@ export const MOCK_PRODUCTS = [
     MOCK_PRODUCT_ROASTED_TOMATO
 ];
 export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2];
+export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [];
 
 // Compatibility Exports
 export const MOCK_USER = MOCK_USERS[0];

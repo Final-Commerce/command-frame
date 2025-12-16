@@ -3,7 +3,12 @@ import { ShowConfirmation, ShowConfirmationParams, ShowConfirmationResponse } fr
 export const mockShowConfirmation: ShowConfirmation = async (params?: ShowConfirmationParams): Promise<ShowConfirmationResponse> => {
     console.log("[Mock] showConfirmation called", params);
     
-    // Simulate user confirming
+    const confirmed = window.confirm(`Confirmation Required:\n${params?.message || "Are you sure?"}`);
+
+    if (!confirmed) {
+        throw new Error("User cancelled confirmation");
+    }
+
     return {
         success: true,
         message: params?.message || "",
