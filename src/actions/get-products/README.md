@@ -116,11 +116,53 @@ const result = await command.getProducts({
     {
       "_id": "691df9c6c478bada1fb23d31",
       "name": "Final Coffee ",
+      "description": "Premium roasted coffee beans",
+      "shortDescription": "Best coffee in town",
       "productType": "variable",
       "source": "standalone",
       "companyId": "691df9c4c478bada1fb23bff",
       "minPrice": "10.00",
       "maxPrice": "10.00",
+      "taxTable": "tax_standard",
+      "categories": {
+        "name": "Beverages",
+        "externalId": "cat_beverages"
+      },
+      "attributes": [
+        {
+          "name": "Size",
+          "values": ["Regular", "Large"]
+        }
+      ],
+      "tags": ["hot", "drink"],
+      "supplier": "Coffee Co.",
+      "sku": "COFFEE-MAIN",
+      "variants": [
+        {
+          "_id": "691df9c6c478bada1fb23d55",
+          "productId": "691df9c6c478bada1fb23d31",
+          "price": "10.00",
+          "salePrice": "0",
+          "isOnSale": false,
+          "sku": "COFFEE-1",
+          "manageStock": true,
+          "externalId": "ext_coffee_1",
+          "inventory": [
+            {
+              "warehouse": "main",
+              "outletId": "outlet_1",
+              "stock": 100
+            }
+          ],
+          "attributes": [
+            {
+              "name": "Size",
+              "value": "Regular"
+            }
+          ],
+          "isDeleted": false
+        }
+      ],
       "isDeleted": false,
       "createdAt": "2024-12-03T10:00:00.000Z",
       "updatedAt": "2024-12-03T10:00:00.000Z"
@@ -133,6 +175,15 @@ const result = await command.getProducts({
       "companyId": "691df9c4c478bada1fb23bff",
       "minPrice": "20.00",
       "maxPrice": "20.00",
+      "variants": [
+        {
+          "_id": "691df9c6c478bada1fb23d56",
+          "productId": "691df9c6c478bada1fb23d32",
+          "price": "20.00",
+          "sku": "SHIRT-1",
+          "isDeleted": false
+        }
+      ],
       "isDeleted": false,
       "createdAt": "2024-12-03T10:00:00.000Z",
       "updatedAt": "2024-12-03T10:00:00.000Z"
@@ -145,6 +196,22 @@ const result = await command.getProducts({
       "companyId": "691df9c4c478bada1fb23bff",
       "minPrice": "23.00",
       "maxPrice": "42.00",
+      "variants": [
+        {
+          "_id": "691df9c6c478bada1fb23d57",
+          "productId": "691df9c6c478bada1fb23d33",
+          "price": "23.00",
+          "sku": "JUICE-S",
+          "isDeleted": false
+        },
+        {
+          "_id": "691df9c6c478bada1fb23d58",
+          "productId": "691df9c6c478bada1fb23d33",
+          "price": "42.00",
+          "sku": "JUICE-L",
+          "isDeleted": false
+        }
+      ],
       "isDeleted": false,
       "createdAt": "2024-12-03T10:00:00.000Z",
       "updatedAt": "2024-12-03T10:00:00.000Z"
@@ -160,21 +227,63 @@ const result = await command.getProducts({
 {
   "_id": "691df9c6c478bada1fb23d31",
   "name": "Final Coffee ",
+  "description": "Premium roasted coffee beans",
+  "shortDescription": "Best coffee in town",
   "productType": "variable",
   "source": "standalone",
   "companyId": "691df9c4c478bada1fb23bff",
   "minPrice": "10.00",
   "maxPrice": "10.00",
+  "taxTable": "tax_standard",
   "images": [
     "https://storage.googleapis.com/attachments-dev-1/67e3f8092d38e6eb3c4cbbc6/1759858638421_CoffeSwagShop-600x600.png"
   ],
+  "categories": {
+    "name": "Beverages",
+    "externalId": "cat_beverages"
+  },
+  "attributes": [
+    {
+      "name": "Size",
+      "values": ["Regular", "Large"]
+    }
+  ],
+  "tags": ["hot", "drink"],
+  "supplier": "Coffee Co.",
+  "sku": "COFFEE-MAIN",
   "variants": [
     {
       "_id": "691df9c6c478bada1fb23d55",
       "productId": "691df9c6c478bada1fb23d31",
       "price": "10.00",
+      "salePrice": "0",
+      "isOnSale": false,
+      "barcode": "123456789",
+      "costPrice": "5.00",
+      "manageStock": true,
+      "externalId": "ext_coffee_1",
+      "inventory": [
+        {
+          "warehouse": "main",
+          "outletId": "outlet_1",
+          "stock": 100
+        }
+      ],
+      "allowBackorder": false,
       "images": [
         "https://storage.googleapis.com/attachments-dev-1/67e3f8092d38e6eb3c4cbbc6/1759858638421_CoffeSwagShop-600x600.png"
+      ],
+      "attributes": [
+        {
+          "name": "Size",
+          "value": "Regular"
+        }
+      ],
+      "metadata": [
+        {
+          "key": "roast_level",
+          "value": "medium"
+        }
       ],
       "isDeleted": false,
       "createdAt": "2024-12-03T10:00:00.000Z",
@@ -214,4 +323,4 @@ If the query fails or no products are found, the handler returns an empty array:
 
 - Results are limited to 100 products per request by default
 - Deleted products (`isDeleted: true`) are automatically excluded
-- Variants may be included in the response depending on the handler implementation
+- Variants are included in the response
