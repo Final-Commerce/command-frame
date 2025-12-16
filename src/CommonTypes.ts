@@ -142,7 +142,6 @@ export interface CFProduct {
 
     minPrice?: string;
     maxPrice?: string;
-    price?: string;
     status?: string;
     isDeleted?: boolean;
 }
