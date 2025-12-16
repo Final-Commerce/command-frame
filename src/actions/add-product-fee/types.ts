@@ -1,8 +1,11 @@
 // Add Product Fee Types
 export interface AddProductFeeParams {
     amount: number;
+    /** Defaults to `false`. */
     isPercent?: boolean;
+    /** Defaults to "Fee". */
     label?: string;
+    /** Defaults to `false`. */
     applyTaxes?: boolean;
     taxTableId?: string;
     cartItemId?: string;

@@ -2,7 +2,9 @@ import { CFOrder } from "../../CommonTypes";
 
 // Cash Payment Types
 export interface CashPaymentParams {
+    /** If not provided, uses the cart total. */
     amount?: number;
+    /** Defaults to false. */
     openChangeCalculator?: boolean;
 }
 

@@ -2,7 +2,8 @@ import { CFLineItem, CFCustomSale } from "../../CommonTypes";
 
 // Get Line Items By Order Types
 export interface GetLineItemsByOrderParams {
-    orderId?: string; // If not provided, uses active order
+    /** If not provided, uses the currently active order. */
+    orderId?: string;
 }
 
 export interface GetLineItemsByOrderResponse {

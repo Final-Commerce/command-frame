@@ -1,6 +1,8 @@
 // Adjust Inventory Types
 export interface AdjustInventoryParams {
+    /** String to preserve precision. */
     amount: string;
+    /** 'add' (increase), 'subtract' (decrease), or 'set' (recount). */
     stockType: 'add' | 'subtract' | 'set';
     variantId?: string;
 }

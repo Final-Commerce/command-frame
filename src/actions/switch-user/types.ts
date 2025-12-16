@@ -1,7 +1,9 @@
 // Switch User Types
 export interface SwitchUserParams {
     mode: 'dialog' | 'role' | 'specific';
+    /** Required if mode is 'role'. */
     roleIds?: string[];
+    /** Required if mode is 'specific'. */
     userId?: string;
 }
 

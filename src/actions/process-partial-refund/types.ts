@@ -1,9 +1,13 @@
 // Process Partial Refund Types
 export interface ProcessPartialRefundParams {
-    reason?: string; // Optional refund reason
-    orderId?: string; // Optional: specify which order to refund (sets it as active)
+    /** Optional refund reason. */
+    reason?: string;
+    /** Optional: specify which order to refund (sets it as active). */
+    orderId?: string;
+    /** Optional items to refund. */
     items?: {
-        itemKey: string; // internalId or variantId or customSaleId
+        /** internalId or variantId or customSaleId. */
+        itemKey: string;
         quantity: number;
         type?: 'product' | 'customSale' | 'fee' | 'tip'; // Optional type hint
     }[];

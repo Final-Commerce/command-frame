@@ -2,6 +2,7 @@ import { CFOrder } from "../../CommonTypes";
 
 // Vendara Payment Types
 export interface VendaraPaymentParams {
+    /** If not provided, uses the cart total. */
     amount?: number;
 }
 

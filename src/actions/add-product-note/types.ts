@@ -1,6 +1,7 @@
 // Add Product Note Types
 export interface AddProductNoteParams {
     note: string;
+    /** The internalId of the cart item to modify. If not provided, it may attempt to modify the active product context. */
     cartItemId?: string;
 }
 

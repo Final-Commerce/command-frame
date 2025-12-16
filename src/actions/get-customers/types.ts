@@ -2,6 +2,7 @@ import { CFCustomer } from "../../CommonTypes";
 
 // Get Customers Types
 export interface GetCustomersParams {
+    /** MongoDB-like query object. */
     query?: {
         // MongoDB query fields
         email?: string | { $regex?: string; $options?: string };
@@ -14,7 +15,9 @@ export interface GetCustomersParams {
         // This is handled by the handler, not directly in query
         [key: string]: any;
     };
+    /** Defaults to 0. */
     offset?: number;
+    /** Defaults to 100. */
     limit?: number;
 }
 

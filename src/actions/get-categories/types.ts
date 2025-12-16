@@ -2,6 +2,7 @@ import { CFCategory } from "../../CommonTypes";
 
 // Get Categories Types
 export interface GetCategoriesParams {
+    /** MongoDB-like query object. */
     query?: {
         // MongoDB query fields
         name?: string | { $regex?: string; $options?: string };
