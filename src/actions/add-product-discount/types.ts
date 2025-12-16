@@ -1,7 +1,10 @@
 // Add Product Discount Types
 export interface AddProductDiscountParams {
+    /** The discount amount. If isPercent is true, this is a percentage. */
     amount: number;
+    /** Defaults to `false`. */
     isPercent?: boolean;
+    /** Defaults to "Discount". */
     label?: string;
     cartItemId?: string;
 }

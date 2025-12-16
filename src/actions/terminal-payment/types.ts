@@ -2,6 +2,7 @@ import { CFOrder } from "../../CommonTypes";
 
 // Terminal Payment Types
 export interface TerminalPaymentParams {
+    /** If not provided, uses the cart total. */
     amount?: number;
 }
 

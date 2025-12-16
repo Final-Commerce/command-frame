@@ -2,8 +2,11 @@ import { CFOrder } from "../../CommonTypes";
 
 // Partial Payment Types
 export interface PartialPaymentParams {
+    /** The payment amount (required if openUI is false). */
     amount?: number;
+    /** Defaults to false. */
     isPercent?: boolean;
+    /** If true, opens the split payment UI. */
     openUI?: boolean;
 }
 

@@ -2,13 +2,18 @@ import { CFOrder } from "../../CommonTypes";
 
 // Get Orders Types
 export interface GetOrdersParams {
-    status?: string; // e.g., 'completed', 'parked', 'refunded', 'partial-refund'
+    /** e.g. 'completed', 'parked', 'refunded'. */
+    status?: string;
     customerId?: string;
     sessionId?: string;
+    /** Default: 50. */
     limit?: number;
+    /** Default: 0. */
     offset?: number;
     searchValue?: string;
-    sortBy?: string; // e.g., 'createdAt', 'total', 'receiptId'
+    /** Default: 'createdAt'. */
+    sortBy?: string;
+    /** Default: 'descending'. */
     sortDirection?: 'ascending' | 'descending';
 }
 

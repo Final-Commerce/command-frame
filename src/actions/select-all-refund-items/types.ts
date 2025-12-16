@@ -1,5 +1,6 @@
 // Select All Refund Items Types
 export interface SelectAllRefundItemsParams {
+    /** Optional. Sets specific order as active before selecting. */
     orderId?: string;
 }
 

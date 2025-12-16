@@ -2,6 +2,7 @@ import { CFOrder } from "../../CommonTypes";
 
 // Tap to Pay Payment Types
 export interface TapToPayPaymentParams {
+    /** If not provided, uses the cart total. */
     amount?: number;
 }
 

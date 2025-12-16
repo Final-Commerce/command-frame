@@ -1,8 +1,12 @@
 // Add Cart Fee Types
 export interface AddCartFeeParams {
+    /** The fee amount. If isPercent is true, this is a percentage. */
     amount: number;
+    /** Defaults to `false`. */
     isPercent?: boolean;
+    /** Defaults to "Fee". */
     label?: string;
+    /** Defaults to `false`. */
     applyTaxes?: boolean;
     taxTableId?: string;
 }

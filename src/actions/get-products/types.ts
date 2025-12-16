@@ -2,6 +2,7 @@ import { CFProduct } from "../../CommonTypes";
 
 // Get Products Types
 export interface GetProductsParams {
+    /** MongoDB-like query object. */
     query?: {
         // MongoDB query fields
         name?: string | { $regex?: string; $options?: string };
@@ -16,7 +17,9 @@ export interface GetProductsParams {
         // This is handled by the handler, not directly in query
         [key: string]: any;
     };
+    /** Defaults to 0. */
     offset?: number;
+    /** Defaults to 100. */
     limit?: number;
 }
 
