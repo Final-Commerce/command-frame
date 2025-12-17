@@ -6,7 +6,6 @@ import { getCustomers } from "./actions/get-customers/action";
 import { assignCustomer } from "./actions/assign-customer/action";
 import { addCustomer } from "./actions/add-customer/action";
 import { getCategories } from "./actions/get-categories/action";
-import { getProductVariants } from "./actions/get-product-variants/action";
 import { getOrders } from "./actions/get-orders/action";
 import { getRefunds } from "./actions/get-refunds/action";
 import { addCartDiscount } from "./actions/add-cart-discount/action";
@@ -39,13 +38,11 @@ import { openCashDrawer } from "./actions/open-cash-drawer/action";
 import { showNotification } from "./actions/show-notification/action";
 import { showConfirmation } from "./actions/show-confirmation/action";
 import { authenticateUser } from "./actions/authenticate-user/action";
-import { updateCustomerFacingDisplay } from "./actions/update-customer-facing-display/action";
 import { partialPayment } from "./actions/partial-payment/action";
 import { switchUser } from "./actions/switch-user/action";
 // Integration Actions
 import { triggerWebhook } from "./actions/trigger-webhook/action";
 import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
-import { getLineItemsByOrder } from "./actions/get-line-items-by-order/action";
 import { setRefundStockAction } from "./actions/set-refund-stock-action/action";
 import { selectAllRefundItems } from "./actions/select-all-refund-items/action";
 import { resetRefundDetails } from "./actions/reset-refund-details/action";
@@ -63,7 +60,6 @@ export const command = {
     assignCustomer,
     addCustomer,
     getCategories,
-    getProductVariants,
     getOrders,
     getRefunds,
     addProductDiscount,
@@ -96,14 +92,12 @@ export const command = {
     showNotification,
     showConfirmation,
     authenticateUser,
-    updateCustomerFacingDisplay,
     partialPayment,
     switchUser,
     // Integration Actions
     triggerWebhook,
     triggerZapierWebhook,
     // Refund Actions
-    getLineItemsByOrder,
     setRefundStockAction,
     selectAllRefundItems,
     resetRefundDetails,
@@ -157,12 +151,6 @@ export type {
 } from "./actions/get-categories/types";
 
 export type {
-    GetProductVariants,
-    GetProductVariantsParams,
-    GetProductVariantsResponse
-} from "./actions/get-product-variants/types";
-
-export type {
     GetOrders,
     GetOrdersParams,
     GetOrdersResponse
@@ -173,12 +161,6 @@ export type {
     GetRefundsParams,
     GetRefundsResponse
 } from "./actions/get-refunds/types";
-
-export type {
-    GetLineItemsByOrder,
-    GetLineItemsByOrderParams,
-    GetLineItemsByOrderResponse
-} from "./actions/get-line-items-by-order/types";
 
 export type {
     SetRefundStockAction,
@@ -352,11 +334,6 @@ export type {
     AuthenticateUserParams,
     AuthenticateUserResponse
 } from "./actions/authenticate-user/types";
-export type {
-    UpdateCustomerFacingDisplay,
-    UpdateCustomerFacingDisplayParams,
-    UpdateCustomerFacingDisplayResponse
-} from "./actions/update-customer-facing-display/types";
 export type {
     PartialPayment,
     PartialPaymentParams,

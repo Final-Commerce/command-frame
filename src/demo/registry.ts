@@ -20,9 +20,7 @@ import { mockGetCategories } from "../actions/get-categories/mock";
 import { mockGetContext } from "../actions/get-context/mock";
 import { mockGetCurrentCart } from "../actions/get-current-cart/mock";
 import { mockGetCustomers } from "../actions/get-customers/mock";
-import { mockGetLineItemsByOrder } from "../actions/get-line-items-by-order/mock";
 import { mockGetOrders } from "../actions/get-orders/mock";
-import { mockGetProductVariants } from "../actions/get-product-variants/mock";
 import { mockGetProducts } from "../actions/get-products/mock";
 import { mockGetRefunds } from "../actions/get-refunds/mock";
 import { mockGetRemainingRefundableQuantities } from "../actions/get-remaining-refundable-quantities/mock";
@@ -44,7 +42,6 @@ import { mockTapToPayPayment } from "../actions/tap-to-pay-payment/mock";
 import { mockTerminalPayment } from "../actions/terminal-payment/mock";
 import { mockTriggerWebhook } from "../actions/trigger-webhook/mock";
 import { mockTriggerZapierWebhook } from "../actions/trigger-zapier-webhook/mock";
-import { mockUpdateCustomerFacingDisplay } from "../actions/update-customer-facing-display/mock";
 import { mockVendaraPayment } from "../actions/vendara-payment/mock";
 
 import { mockGetFinalContext } from "../actions/get-final-context/mock";
@@ -78,9 +75,7 @@ export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
     "getContext": mockGetContext,
     "getCurrentCart": mockGetCurrentCart,
     "getCustomers": mockGetCustomers,
-    "getLineItemsByOrder": mockGetLineItemsByOrder,
     "getOrders": mockGetOrders,
-    "getProductVariants": mockGetProductVariants,
     "getProducts": mockGetProducts,
     "getRefunds": mockGetRefunds,
     "getRemainingRefundableQuantities": mockGetRemainingRefundableQuantities,
@@ -102,7 +97,6 @@ export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
     "terminalPayment": mockTerminalPayment,
     "triggerWebhook": mockTriggerWebhook,
     "triggerZapierWebhook": mockTriggerZapierWebhook,
-    "updateCustomerFacingDisplay": mockUpdateCustomerFacingDisplay,
     "vendaraPayment": mockVendaraPayment,
     "getFinalContext": mockGetFinalContext,
 };

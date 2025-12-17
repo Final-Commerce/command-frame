@@ -21,9 +21,9 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
   const [getRefundsResponse, setGetRefundsResponse] = useState<string>('');
 
   // Get Line Items By Order
-  const [lineItemsOrderId, setLineItemsOrderId] = useState<string>('');
-  const [getLineItemsLoading, setGetLineItemsLoading] = useState(false);
-  const [getLineItemsResponse, setGetLineItemsResponse] = useState<string>('');
+  // const [lineItemsOrderId, setLineItemsOrderId] = useState<string>('');
+  // const [getLineItemsLoading, setGetLineItemsLoading] = useState(false);
+  // const [getLineItemsResponse, setGetLineItemsResponse] = useState<string>('');
 
   // Set Refund Stock Action
   const [stockActionItemKey, setStockActionItemKey] = useState<string>('');
@@ -152,53 +152,6 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
         )}
       </CommandSection>
 
-      {/* Get Line Items By Order */}
-      <CommandSection title="Get Line Items By Order">
-        <p className="section-description">
-          Retrieves line items and custom sales from an order with remaining refundable quantities.
-        </p>
-        <div className="form-group">
-          <div className="form-field">
-            <label>Order ID (optional):</label>
-            <input
-              type="text"
-              value={lineItemsOrderId}
-              onChange={(e) => setLineItemsOrderId(e.target.value)}
-              placeholder="Leave empty to use active order"
-            />
-          </div>
-        </div>
-        <button
-          onClick={async () => {
-            if (!isInIframe) {
-              setGetLineItemsResponse('Error: Not running in iframe');
-              return;
-            }
-            setGetLineItemsLoading(true);
-            setGetLineItemsResponse('');
-            try {
-              const result = await command.getLineItemsByOrder(lineItemsOrderId ? { orderId: lineItemsOrderId } : undefined);
-              setGetLineItemsResponse(JSON.stringify(result, null, 2));
-            } catch (error) {
-              setGetLineItemsResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-            } finally {
-              setGetLineItemsLoading(false);
-            }
-          }}
-          disabled={getLineItemsLoading}
-          className="btn btn--primary"
-        >
-          {getLineItemsLoading ? 'Loading...' : 'Get Line Items'}
-        </button>
-        {getLineItemsResponse && (
-          <JsonViewer
-            data={getLineItemsResponse}
-            title={getLineItemsResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
-        )}
-      </CommandSection>
-
-      {/* Set Refund Stock Action */}
       <CommandSection title="Set Refund Stock Action">
         <p className="section-description">
           Sets the stock handling option for a refunded item (restock or mark as damaged). Use the <code>key</code> field from the <code>getLineItemsByOrder</code> response (or <code>internalId</code>/<code>variantId</code>).

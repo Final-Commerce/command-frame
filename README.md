@@ -31,7 +31,6 @@ The library provides a `command` namespace object containing all available comma
 - **[getCustomers](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-customers/README.md)** - Retrieve a list of customers from the parent application
 - **[getProducts](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-products/README.md)** - Retrieve a list of products from the parent application
 - **[getCategories](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-categories/README.md)** - Retrieve a list of categories from the parent application
-- **[getProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-product-variants/README.md)** - Retrieve all variants for a specific product
 - **[getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)** - Retrieve a list of orders from the system with optional filtering, sorting, and pagination
 - **[getCurrentCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-cart/README.md)** - Retrieve the current cart object with all its contents
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
@@ -72,11 +71,9 @@ The library provides a `command` namespace object containing all available comma
 - **[showNotification](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-notification/README.md)** - Show a notification message
 - **[showConfirmation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-confirmation/README.md)** - Show a confirmation dialog
 - **[authenticateUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/authenticate-user/README.md)** - Trigger user authentication for specific roles
-- **[updateCustomerFacingDisplay](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-customer-facing-display/README.md)** - Update the customer-facing display to show a specific page
 - **[switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)** - Switch the current user to a different user
 
 #### Refund Actions
-- **[getLineItemsByOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-line-items-by-order/README.md)** - Retrieve line items and custom sales from an order for refund purposes
 - **[selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)** - Select all remaining refundable items for a full refund
 - **[resetRefundDetails](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reset-refund-details/README.md)** - Clear all refund selections
 - **[setRefundStockAction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-refund-stock-action/README.md)** - Set stock handling option (restock/damage) for a refunded item
@@ -106,11 +103,6 @@ const customers = await command.getCustomers();
 
 // Get categories from parent window
 const categories = await command.getCategories();
-
-// Get variants for a product
-const variants = await command.getProductVariants({
-    productId: '691df9c6c478bada1fb23d31'
-});
 
 // Add product to cart with optional discounts and fees
 const addedProduct = await command.addProductToCart({
@@ -172,10 +164,6 @@ Assigns an existing customer to the current active session/cart. The customer mu
 ### [getCategories](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-categories/README.md)
 
 Retrieves a list of categories from the parent application's local database. Supports filtering by name, parent ID, and external ID.
-
-### [getProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-product-variants/README.md)
-
-Retrieves all variants for a specific product from the parent application's local database. Useful for displaying variant options or selecting a specific variant.
 
 ### [getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)
 
@@ -301,19 +289,11 @@ Shows a confirmation dialog to the user. The actual promise resolution (accept/d
 
 Triggers user authentication for specific roles. Shows an authentication dialog in the parent application.
 
-### [updateCustomerFacingDisplay](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-customer-facing-display/README.md)
-
-Updates the customer-facing display to show a specific page by page ID.
-
 ### [switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)
 
 Switches the current user to a different user. Supports three modes: dialog (select from all users), role (select from users with specific roles), or specific (switch to a specific user).
 
 ### Refund Actions
-
-### [getLineItemsByOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-line-items-by-order/README.md)
-
-Retrieves line items and custom sales from an order, along with calculated remaining refundable quantities for each item.
 
 ### [selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)
 
@@ -440,7 +420,6 @@ import type {
     GetCustomersParams, GetCustomersResponse, GetCustomers,
     GetProductsParams, GetProductsResponse, GetProducts,
     GetCategoriesParams, GetCategoriesResponse, GetCategories,
-    GetProductVariantsParams, GetProductVariantsResponse, GetProductVariants,
     GetOrdersParams, GetOrdersResponse, GetOrders,
     GetContext, GetContextResponse,
     GetFinalContext, GetFinalContextResponse,
@@ -477,10 +456,8 @@ import type {
     ShowNotificationParams, ShowNotificationResponse, ShowNotification,
     ShowConfirmationParams, ShowConfirmationResponse, ShowConfirmation,
     AuthenticateUserParams, AuthenticateUserResponse, AuthenticateUser,
-    UpdateCustomerFacingDisplayParams, UpdateCustomerFacingDisplayResponse, UpdateCustomerFacingDisplay,
     SwitchUserParams, SwitchUserResponse, SwitchUser,
     // Refund Actions
-    GetLineItemsByOrderParams, GetLineItemsByOrderResponse, GetLineItemsByOrder,
     SelectAllRefundItemsParams, SelectAllRefundItemsResponse, SelectAllRefundItems,
     ResetRefundDetailsResponse, ResetRefundDetails,
     SetRefundStockActionParams, SetRefundStockActionResponse, SetRefundStockAction,

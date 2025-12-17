@@ -27,9 +27,9 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
   const [authenticateResponse, setAuthenticateResponse] = useState<string>('');
 
   // Customer Facing Display
-  const [cfdPageId, setCfdPageId] = useState<string>('');
-  const [updateCfdLoading, setUpdateCfdLoading] = useState(false);
-  const [updateCfdResponse, setUpdateCfdResponse] = useState<string>('');
+  // const [cfdPageId, setCfdPageId] = useState<string>('');
+  // const [updateCfdLoading, setUpdateCfdLoading] = useState(false);
+  // const [updateCfdResponse, setUpdateCfdResponse] = useState<string>('');
 
   // Switch User
   const [switchUserMode, setSwitchUserMode] = useState<'dialog' | 'role' | 'specific'>('dialog');
@@ -139,30 +139,6 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
       setAuthenticateResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setAuthenticateLoading(false);
-    }
-  };
-
-  const handleUpdateCfd = async () => {
-    if (!isInIframe) {
-      setUpdateCfdResponse('Error: Not running in iframe');
-      return;
-    }
-
-    if (!cfdPageId) {
-      setUpdateCfdResponse('Error: Page ID is required');
-      return;
-    }
-
-    setUpdateCfdLoading(true);
-    setUpdateCfdResponse('');
-
-    try {
-      const result = await command.updateCustomerFacingDisplay({ pageId: cfdPageId });
-      setUpdateCfdResponse(JSON.stringify(result, null, 2));
-    } catch (error) {
-      setUpdateCfdResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setUpdateCfdLoading(false);
     }
   };
 
@@ -317,36 +293,6 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
           <JsonViewer
             data={authenticateResponse}
             title={authenticateResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
-        )}
-      </CommandSection>
-
-      <CommandSection title="Update Customer Facing Display">
-        <p className="section-description">
-          Updates the customer-facing display to show a specific page.
-        </p>
-        <div className="form-group">
-          <div className="form-field">
-            <label>Page ID:</label>
-            <input
-              type="text"
-              value={cfdPageId}
-              onChange={(e) => setCfdPageId(e.target.value)}
-              placeholder="page-123"
-            />
-          </div>
-        </div>
-        <button
-          onClick={handleUpdateCfd}
-          disabled={updateCfdLoading}
-          className="btn btn--primary"
-        >
-          {updateCfdLoading ? 'Updating...' : 'Update CFD'}
-        </button>
-        {updateCfdResponse && (
-          <JsonViewer
-            data={updateCfdResponse}
-            title={updateCfdResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>
