@@ -42,19 +42,24 @@ export class CommandFrameClient {
         // Default to provided mockMode or false. Detection happens via getFinalContext.
         this.mockMode = options.mockMode ?? false;
 
-        if (typeof window !== 'undefined') {
-            window.addEventListener("message", this.handleMessage.bind(this));
-        }
-
-        // Auto-detect mock mode on initialization
-        this.getFinalContext().then((context) => {
-            if (!context) {
-                if (this.isDebugEnabled()) {
-                    console.warn("[ActionsClient] Environment detection failed (timeout or error). Switching to Mock Mode.");
-                }
-                this.mockMode = true;
+        // Immediate check for standalone environment to enable mock mode synchronously
+        // This prevents race conditions where calls happen before async detection finishes
+        if (typeof window !== 'undefined' && window.parent === window) {
+            this.mockMode = true;
+            if (this.isDebugEnabled()) {
+                console.log("[ActionsClient] Standalone environment detected (window.parent === window). Mock Mode enabled immediately.");
             }
-        });
+        } else {
+             // Only run async detection if NOT definitely standalone
+            this.getFinalContext().then((context) => {
+                if (!context) {
+                    if (this.isDebugEnabled()) {
+                        console.warn("[ActionsClient] Environment detection failed (timeout or error). Switching to Mock Mode.");
+                    }
+                    this.mockMode = true;
+                }
+            });
+        }
 
         if (this.isDebugEnabled()) {
             console.log("[ActionsClient] Initialized", {
