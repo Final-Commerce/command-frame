@@ -10,19 +10,10 @@ interface SystemSectionProps {
 
 export function SystemSection({ isInIframe }: SystemSectionProps) {
   // Navigation
-  const [pageId, setPageId] = useState<string>('');
-  const [goToPageLoading, setGoToPageLoading] = useState(false);
-  const [goToPageResponse, setGoToPageResponse] = useState<string>('');
   const [goToHomeLoading, setGoToHomeLoading] = useState(false);
   const [goToHomeResponse, setGoToHomeResponse] = useState<string>('');
 
   // UI Actions
-  const [popupId, setPopupId] = useState<string>('');
-  const [openPopupLoading, setOpenPopupLoading] = useState(false);
-  const [openPopupResponse, setOpenPopupResponse] = useState<string>('');
-  const [slideOutId, setSlideOutId] = useState<string>('');
-  const [toggleSlideOutLoading, setToggleSlideOutLoading] = useState(false);
-  const [toggleSlideOutResponse, setToggleSlideOutResponse] = useState<string>('');
   const [notificationMessage, setNotificationMessage] = useState<string>('Hello from iframe!');
   const [showNotificationLoading, setShowNotificationLoading] = useState(false);
   const [showNotificationResponse, setShowNotificationResponse] = useState<string>('');
@@ -46,30 +37,6 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
   const [switchUserId, setSwitchUserId] = useState<string>('');
   const [switchUserLoading, setSwitchUserLoading] = useState(false);
   const [switchUserResponse, setSwitchUserResponse] = useState<string>('');
-
-  const handleGoToPage = async () => {
-    if (!isInIframe) {
-      setGoToPageResponse('Error: Not running in iframe');
-      return;
-    }
-
-    if (!pageId) {
-      setGoToPageResponse('Error: Page ID is required');
-      return;
-    }
-
-    setGoToPageLoading(true);
-    setGoToPageResponse('');
-
-    try {
-      const result = await command.goToPage({ pageId });
-      setGoToPageResponse(JSON.stringify(result, null, 2));
-    } catch (error) {
-      setGoToPageResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setGoToPageLoading(false);
-    }
-  };
 
   const handleGoToHome = async () => {
     if (!isInIframe) {
@@ -99,54 +66,6 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
       await command.openCashDrawer();
     } catch (error) {
       console.error('Error opening cash drawer:', error);
-    }
-  };
-
-  const handleOpenPopup = async () => {
-    if (!isInIframe) {
-      setOpenPopupResponse('Error: Not running in iframe');
-      return;
-    }
-
-    if (!popupId) {
-      setOpenPopupResponse('Error: Popup ID is required');
-      return;
-    }
-
-    setOpenPopupLoading(true);
-    setOpenPopupResponse('');
-
-    try {
-      const result = await command.openPopup({ popupId });
-      setOpenPopupResponse(JSON.stringify(result, null, 2));
-    } catch (error) {
-      setOpenPopupResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setOpenPopupLoading(false);
-    }
-  };
-
-  const handleToggleSlideOut = async () => {
-    if (!isInIframe) {
-      setToggleSlideOutResponse('Error: Not running in iframe');
-      return;
-    }
-
-    if (!slideOutId) {
-      setToggleSlideOutResponse('Error: Slide out ID is required');
-      return;
-    }
-
-    setToggleSlideOutLoading(true);
-    setToggleSlideOutResponse('');
-
-    try {
-      const result = await command.toggleSlideOut({ slideOutId });
-      setToggleSlideOutResponse(JSON.stringify(result, null, 2));
-    } catch (error) {
-      setToggleSlideOutResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setToggleSlideOutLoading(false);
     }
   };
 
@@ -300,36 +219,6 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
         )}
       </CommandSection>
 
-      <CommandSection title="Go to Page">
-        <p className="section-description">
-          Navigates to a specific page by page ID.
-        </p>
-        <div className="form-group">
-          <div className="form-field">
-            <label>Page ID:</label>
-            <input
-              type="text"
-              value={pageId}
-              onChange={(e) => setPageId(e.target.value)}
-              placeholder="page-123"
-            />
-          </div>
-        </div>
-        <button
-          onClick={handleGoToPage}
-          disabled={goToPageLoading}
-          className="btn btn--primary"
-        >
-          {goToPageLoading ? 'Navigating...' : 'Go to Page'}
-        </button>
-        {goToPageResponse && (
-          <JsonViewer
-            data={goToPageResponse}
-            title={goToPageResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
-        )}
-      </CommandSection>
-
       <CommandSection title="Open Cash Drawer">
         <p className="section-description">
           Opens the cash drawer (if connected).
@@ -340,66 +229,6 @@ export function SystemSection({ isInIframe }: SystemSectionProps) {
         >
           Open Cash Drawer
         </button>
-      </CommandSection>
-
-      <CommandSection title="Open Popup">
-        <p className="section-description">
-          Opens a popup/modal by ID.
-        </p>
-        <div className="form-group">
-          <div className="form-field">
-            <label>Popup ID:</label>
-            <input
-              type="text"
-              value={popupId}
-              onChange={(e) => setPopupId(e.target.value)}
-              placeholder="popup-123"
-            />
-          </div>
-        </div>
-        <button
-          onClick={handleOpenPopup}
-          disabled={openPopupLoading}
-          className="btn btn--primary"
-        >
-          {openPopupLoading ? 'Opening...' : 'Open Popup'}
-        </button>
-        {openPopupResponse && (
-          <JsonViewer
-            data={openPopupResponse}
-            title={openPopupResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
-        )}
-      </CommandSection>
-
-      <CommandSection title="Toggle Slide Out">
-        <p className="section-description">
-          Toggles a slide-out panel by ID.
-        </p>
-        <div className="form-group">
-          <div className="form-field">
-            <label>Slide Out ID:</label>
-            <input
-              type="text"
-              value={slideOutId}
-              onChange={(e) => setSlideOutId(e.target.value)}
-              placeholder="slideout-123"
-            />
-          </div>
-        </div>
-        <button
-          onClick={handleToggleSlideOut}
-          disabled={toggleSlideOutLoading}
-          className="btn btn--primary"
-        >
-          {toggleSlideOutLoading ? 'Toggling...' : 'Toggle Slide Out'}
-        </button>
-        {toggleSlideOutResponse && (
-          <JsonViewer
-            data={toggleSlideOutResponse}
-            title={toggleSlideOutResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
-        )}
       </CommandSection>
 
       <CommandSection title="Show Notification">
