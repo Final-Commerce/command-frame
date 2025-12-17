@@ -26,11 +26,9 @@ import { mockGetProductVariants } from "../actions/get-product-variants/mock";
 import { mockGetProducts } from "../actions/get-products/mock";
 import { mockGetRefunds } from "../actions/get-refunds/mock";
 import { mockGetRemainingRefundableQuantities } from "../actions/get-remaining-refundable-quantities/mock";
-import { mockGoToPage } from "../actions/go-to-page/mock";
 import { mockGoToStationHome } from "../actions/go-to-station-home/mock";
 import { mockInitiateRefund } from "../actions/initiate-refund/mock";
 import { mockOpenCashDrawer } from "../actions/open-cash-drawer/mock";
-import { mockOpenPopup } from "../actions/open-popup/mock";
 import { mockParkOrder } from "../actions/park-order/mock";
 import { mockPartialPayment } from "../actions/partial-payment/mock";
 import { mockProcessPartialRefund } from "../actions/process-partial-refund/mock";
@@ -44,7 +42,6 @@ import { mockShowNotification } from "../actions/show-notification/mock";
 import { mockSwitchUser } from "../actions/switch-user/mock";
 import { mockTapToPayPayment } from "../actions/tap-to-pay-payment/mock";
 import { mockTerminalPayment } from "../actions/terminal-payment/mock";
-import { mockToggleSlideOut } from "../actions/toggle-slide-out/mock";
 import { mockTriggerWebhook } from "../actions/trigger-webhook/mock";
 import { mockTriggerZapierWebhook } from "../actions/trigger-zapier-webhook/mock";
 import { mockUpdateCustomerFacingDisplay } from "../actions/update-customer-facing-display/mock";
@@ -87,11 +84,9 @@ export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
     "getProducts": mockGetProducts,
     "getRefunds": mockGetRefunds,
     "getRemainingRefundableQuantities": mockGetRemainingRefundableQuantities,
-    "goToPage": mockGoToPage,
     "goToStationHome": mockGoToStationHome,
     "initiateRefund": mockInitiateRefund,
     "openCashDrawer": mockOpenCashDrawer,
-    "openPopup": mockOpenPopup,
     "parkOrder": mockParkOrder,
     "partialPayment": mockPartialPayment,
     "processPartialRefund": mockProcessPartialRefund,
@@ -105,7 +100,6 @@ export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
     "switchUser": mockSwitchUser,
     "tapToPayPayment": mockTapToPayPayment,
     "terminalPayment": mockTerminalPayment,
-    "toggleSlideOut": mockToggleSlideOut,
     "triggerWebhook": mockTriggerWebhook,
     "triggerZapierWebhook": mockTriggerZapierWebhook,
     "updateCustomerFacingDisplay": mockUpdateCustomerFacingDisplay,

@@ -68,11 +68,8 @@ The library provides a `command` namespace object containing all available comma
 
 #### System Actions
 - **[goToStationHome](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-station-home/README.md)** - Navigate to the station home page
-- **[goToPage](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-page/README.md)** - Navigate to a specific page
 - **[openCashDrawer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-cash-drawer/README.md)** - Open the cash drawer
-- **[openPopup](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-popup/README.md)** - Open a popup/modal by ID
 - **[showNotification](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-notification/README.md)** - Show a notification message
-- **[toggleSlideOut](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/toggle-slide-out/README.md)** - Toggle a slide-out panel
 - **[showConfirmation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-confirmation/README.md)** - Show a confirmation dialog
 - **[authenticateUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/authenticate-user/README.md)** - Trigger user authentication for specific roles
 - **[updateCustomerFacingDisplay](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-customer-facing-display/README.md)** - Update the customer-facing display to show a specific page
@@ -288,25 +285,13 @@ Removes the currently assigned customer from the cart.
 
 Navigates to the station home page.
 
-### [goToPage](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-page/README.md)
-
-Navigates to a specific page in the application by page ID.
-
 ### [openCashDrawer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-cash-drawer/README.md)
 
 Opens the cash drawer (if connected to a compatible device).
 
-### [openPopup](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-popup/README.md)
-
-Opens a popup/modal by ID. If the popup is already open, calling this will close it (toggle behavior).
-
 ### [showNotification](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-notification/README.md)
 
 Shows a notification message to the user.
-
-### [toggleSlideOut](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/toggle-slide-out/README.md)
-
-Toggles (opens/closes) a slide-out panel by ID.
 
 ### [showConfirmation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-confirmation/README.md)
 
@@ -488,11 +473,8 @@ import type {
     RemoveCustomerFromCartResponse, RemoveCustomerFromCart,
     // System Actions
     GoToStationHomeResponse, GoToStationHome,
-    GoToPageParams, GoToPageResponse, GoToPage,
     OpenCashDrawerResponse, OpenCashDrawer,
-    OpenPopupParams, OpenPopupResponse, OpenPopup,
     ShowNotificationParams, ShowNotificationResponse, ShowNotification,
-    ToggleSlideOutParams, ToggleSlideOutResponse, ToggleSlideOut,
     ShowConfirmationParams, ShowConfirmationResponse, ShowConfirmation,
     AuthenticateUserParams, AuthenticateUserResponse, AuthenticateUser,
     UpdateCustomerFacingDisplayParams, UpdateCustomerFacingDisplayResponse, UpdateCustomerFacingDisplay,

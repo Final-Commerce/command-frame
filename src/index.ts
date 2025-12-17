@@ -35,11 +35,8 @@ import { addCustomerNote } from "./actions/add-customer-note/action";
 import { removeCustomerFromCart } from "./actions/remove-customer-from-cart/action";
 // System Actions
 import { goToStationHome } from "./actions/go-to-station-home/action";
-import { goToPage } from "./actions/go-to-page/action";
 import { openCashDrawer } from "./actions/open-cash-drawer/action";
-import { openPopup } from "./actions/open-popup/action";
 import { showNotification } from "./actions/show-notification/action";
-import { toggleSlideOut } from "./actions/toggle-slide-out/action";
 import { showConfirmation } from "./actions/show-confirmation/action";
 import { authenticateUser } from "./actions/authenticate-user/action";
 import { updateCustomerFacingDisplay } from "./actions/update-customer-facing-display/action";
@@ -95,11 +92,8 @@ export const command = {
     removeCustomerFromCart,
     // System Actions
     goToStationHome,
-    goToPage,
     openCashDrawer,
-    openPopup,
     showNotification,
-    toggleSlideOut,
     showConfirmation,
     authenticateUser,
     updateCustomerFacingDisplay,
@@ -340,29 +334,14 @@ export type {
     GoToStationHomeResponse
 } from "./actions/go-to-station-home/types";
 export type {
-    GoToPage,
-    GoToPageParams,
-    GoToPageResponse
-} from "./actions/go-to-page/types";
-export type {
     OpenCashDrawer,
     OpenCashDrawerResponse
 } from "./actions/open-cash-drawer/types";
-export type {
-    OpenPopup,
-    OpenPopupParams,
-    OpenPopupResponse
-} from "./actions/open-popup/types";
 export type {
     ShowNotification,
     ShowNotificationParams,
     ShowNotificationResponse
 } from "./actions/show-notification/types";
-export type {
-    ToggleSlideOut,
-    ToggleSlideOutParams,
-    ToggleSlideOutResponse
-} from "./actions/toggle-slide-out/types";
 export type {
     ShowConfirmation,
     ShowConfirmationParams,
