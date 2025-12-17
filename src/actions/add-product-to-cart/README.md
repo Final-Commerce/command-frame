@@ -8,7 +8,7 @@ Adds a product to the cart in the parent application. This atomic action handles
 
 ```typescript
 interface AddProductToCartParams {
-    variantId: string;           // Optional but recommended, ID of variant to add.
+    variantId: string;           // ID of variant to add.
     quantity?: number;           // Optional, default: 1
     discounts?: AddProductDiscountParams[]; // Optional array of discounts to apply immediately
     fees?: AddProductFeeParams[];           // Optional array of fees to apply immediately
@@ -16,7 +16,7 @@ interface AddProductToCartParams {
 }
 ```
 
-#### `variantId` (optional but recommended)
+#### `variantId` (required)
 
 The ID of the specific variant to add.
 
