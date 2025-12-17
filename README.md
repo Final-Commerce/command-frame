@@ -31,7 +31,6 @@ The library provides a `command` namespace object containing all available comma
 - **[getCustomers](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-customers/README.md)** - Retrieve a list of customers from the parent application
 - **[getProducts](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-products/README.md)** - Retrieve a list of products from the parent application
 - **[getCategories](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-categories/README.md)** - Retrieve a list of categories from the parent application
-- **[getProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-product-variants/README.md)** - Retrieve all variants for a specific product
 - **[getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)** - Retrieve a list of orders from the system with optional filtering, sorting, and pagination
 - **[getCurrentCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-cart/README.md)** - Retrieve the current cart object with all its contents
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
@@ -39,9 +38,9 @@ The library provides a `command` namespace object containing all available comma
 
 #### Product Actions
 - **[addProductToCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-to-cart/README.md)** - Add a product to the cart with optional discounts, fees, and notes
-- **[addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)** - Add a discount to a specific product in the cart (using `cartItemId`)
-- **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `cartItemId`)
-- **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `cartItemId`)
+- **[addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)** - Add a discount to a specific product in the cart (using `internalId`)
+- **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `internalId`)
+- **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `internalId`)
 - **[adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)** - Adjust inventory/stock level for a specific product variant
 
 #### Order Actions
@@ -68,18 +67,13 @@ The library provides a `command` namespace object containing all available comma
 
 #### System Actions
 - **[goToStationHome](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-station-home/README.md)** - Navigate to the station home page
-- **[goToPage](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-page/README.md)** - Navigate to a specific page
 - **[openCashDrawer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-cash-drawer/README.md)** - Open the cash drawer
-- **[openPopup](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-popup/README.md)** - Open a popup/modal by ID
 - **[showNotification](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-notification/README.md)** - Show a notification message
-- **[toggleSlideOut](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/toggle-slide-out/README.md)** - Toggle a slide-out panel
 - **[showConfirmation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-confirmation/README.md)** - Show a confirmation dialog
 - **[authenticateUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/authenticate-user/README.md)** - Trigger user authentication for specific roles
-- **[updateCustomerFacingDisplay](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-customer-facing-display/README.md)** - Update the customer-facing display to show a specific page
 - **[switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)** - Switch the current user to a different user
 
 #### Refund Actions
-- **[getLineItemsByOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-line-items-by-order/README.md)** - Retrieve line items and custom sales from an order for refund purposes
 - **[selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)** - Select all remaining refundable items for a full refund
 - **[resetRefundDetails](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reset-refund-details/README.md)** - Clear all refund selections
 - **[setRefundStockAction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-refund-stock-action/README.md)** - Set stock handling option (restock/damage) for a refunded item
@@ -110,11 +104,6 @@ const customers = await command.getCustomers();
 // Get categories from parent window
 const categories = await command.getCategories();
 
-// Get variants for a product
-const variants = await command.getProductVariants({
-    productId: '691df9c6c478bada1fb23d31'
-});
-
 // Add product to cart with optional discounts and fees
 const addedProduct = await command.addProductToCart({
     variantId: '691df9c6c478bada1fb23d55',
@@ -129,7 +118,7 @@ const addedProduct = await command.addProductToCart({
 
 // Add a discount to the specific item just added (if you didn't add it during creation)
 await command.addProductDiscount({
-    cartItemId: addedProduct.internalId,
+    internalId: addedProduct.internalId,
     amount: 5,
     isPercent: true,
     label: 'Extra 5% Off'
@@ -176,10 +165,6 @@ Assigns an existing customer to the current active session/cart. The customer mu
 
 Retrieves a list of categories from the parent application's local database. Supports filtering by name, parent ID, and external ID.
 
-### [getProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-product-variants/README.md)
-
-Retrieves all variants for a specific product from the parent application's local database. Useful for displaying variant options or selecting a specific variant.
-
 ### [getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)
 
 Retrieves a list of orders from the system with optional filtering, sorting, and pagination. Supports filtering by status, customer ID, session ID, and text search.
@@ -198,7 +183,7 @@ Adds a product to the cart. Supports specifying quantity, applying discounts, fe
 
 ### [addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)
 
-Adds a discount to a specific product in the cart (identified by `cartItemId`). Supports both fixed amount and percentage discounts.
+Adds a discount to a specific product in the cart (identified by `internalId`). Supports both fixed amount and percentage discounts.
 
 ### [addCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-discount/README.md)
 
@@ -212,11 +197,11 @@ Retrieves the current environment/context information from the parent applicatio
 
 ### [addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)
 
-Adds a note to a specific product in the cart (identified by `cartItemId`).
+Adds a note to a specific product in the cart (identified by `internalId`).
 
 ### [addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)
 
-Adds a fee to a specific product in the cart (identified by `cartItemId`). Supports both fixed amount and percentage-based fees.
+Adds a fee to a specific product in the cart (identified by `internalId`). Supports both fixed amount and percentage-based fees.
 
 ### [adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)
 
@@ -288,25 +273,13 @@ Removes the currently assigned customer from the cart.
 
 Navigates to the station home page.
 
-### [goToPage](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-page/README.md)
-
-Navigates to a specific page in the application by page ID.
-
 ### [openCashDrawer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-cash-drawer/README.md)
 
 Opens the cash drawer (if connected to a compatible device).
 
-### [openPopup](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-popup/README.md)
-
-Opens a popup/modal by ID. If the popup is already open, calling this will close it (toggle behavior).
-
 ### [showNotification](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-notification/README.md)
 
 Shows a notification message to the user.
-
-### [toggleSlideOut](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/toggle-slide-out/README.md)
-
-Toggles (opens/closes) a slide-out panel by ID.
 
 ### [showConfirmation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-confirmation/README.md)
 
@@ -316,19 +289,11 @@ Shows a confirmation dialog to the user. The actual promise resolution (accept/d
 
 Triggers user authentication for specific roles. Shows an authentication dialog in the parent application.
 
-### [updateCustomerFacingDisplay](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-customer-facing-display/README.md)
-
-Updates the customer-facing display to show a specific page by page ID.
-
 ### [switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)
 
 Switches the current user to a different user. Supports three modes: dialog (select from all users), role (select from users with specific roles), or specific (switch to a specific user).
 
 ### Refund Actions
-
-### [getLineItemsByOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-line-items-by-order/README.md)
-
-Retrieves line items and custom sales from an order, along with calculated remaining refundable quantities for each item.
 
 ### [selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)
 
@@ -455,7 +420,6 @@ import type {
     GetCustomersParams, GetCustomersResponse, GetCustomers,
     GetProductsParams, GetProductsResponse, GetProducts,
     GetCategoriesParams, GetCategoriesResponse, GetCategories,
-    GetProductVariantsParams, GetProductVariantsResponse, GetProductVariants,
     GetOrdersParams, GetOrdersResponse, GetOrders,
     GetContext, GetContextResponse,
     GetFinalContext, GetFinalContextResponse,
@@ -488,17 +452,12 @@ import type {
     RemoveCustomerFromCartResponse, RemoveCustomerFromCart,
     // System Actions
     GoToStationHomeResponse, GoToStationHome,
-    GoToPageParams, GoToPageResponse, GoToPage,
     OpenCashDrawerResponse, OpenCashDrawer,
-    OpenPopupParams, OpenPopupResponse, OpenPopup,
     ShowNotificationParams, ShowNotificationResponse, ShowNotification,
-    ToggleSlideOutParams, ToggleSlideOutResponse, ToggleSlideOut,
     ShowConfirmationParams, ShowConfirmationResponse, ShowConfirmation,
     AuthenticateUserParams, AuthenticateUserResponse, AuthenticateUser,
-    UpdateCustomerFacingDisplayParams, UpdateCustomerFacingDisplayResponse, UpdateCustomerFacingDisplay,
     SwitchUserParams, SwitchUserResponse, SwitchUser,
     // Refund Actions
-    GetLineItemsByOrderParams, GetLineItemsByOrderResponse, GetLineItemsByOrder,
     SelectAllRefundItemsParams, SelectAllRefundItemsResponse, SelectAllRefundItems,
     ResetRefundDetailsResponse, ResetRefundDetails,
     SetRefundStockActionParams, SetRefundStockActionResponse, SetRefundStockAction,

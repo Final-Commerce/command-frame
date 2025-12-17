@@ -1,4 +1,4 @@
-# updateCustomerFacingDisplay
+update-customer-facing-display# updateCustomerFacingDisplay
 
 Updates the customer-facing display to show a specific page.
 

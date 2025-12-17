@@ -1,14 +1,14 @@
 // Add Product Note Types
 export interface AddProductNoteParams {
     note: string;
-    /** The internalId of the cart item to modify. If not provided, it may attempt to modify the active product context. */
-    cartItemId?: string;
+    /** The unique identifier for a specific line item in the cart. If not provided, it may attempt to modify the active product context. */
+    internalId?: string;
 }
 
 export interface AddProductNoteResponse {
     success: boolean;
     note: string;
-    cartItemId?: string;
+    internalId?: string;
     timestamp: string;
 }
 

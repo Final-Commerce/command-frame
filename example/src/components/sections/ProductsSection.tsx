@@ -14,11 +14,12 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
   const [productsError, setProductsError] = useState<string>('');
   
   const [variants, setVariants] = useState<any[]>([]);
-  const [variantsLoading, setVariantsLoading] = useState(false);
-  const [variantsError, setVariantsError] = useState<string>('');
-  const [variantProductId, setVariantProductId] = useState<string>('');
-  
+  // const [variantsLoading, setVariantsLoading] = useState(false);
+  // const [variantsError, setVariantsError] = useState<string>('');
   const [variantId, setVariantId] = useState<string>('');
+
+  const [addProductLoading, setAddProductLoading] = useState(false);
+  const [addProductResponse, setAddProductResponse] = useState<string>('');
 
   // Product Note
   const [productNote, setProductNote] = useState<string>('');
@@ -70,42 +71,18 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
     }
   };
 
-  const handleGetProductVariants = async () => {
-    if (!isInIframe) {
-      setVariantsError('Error: Not running in iframe');
-      return;
-    }
-
-    if (!variantProductId) {
-      setVariantsError('Error: Please enter a product ID');
-      return;
-    }
-
-    setVariantsLoading(true);
-    setVariants([]);
-    setVariantsError('');
-
-    try {
-      const result = await command.getProductVariants({
-        productId: variantProductId
-      });
-      
-      if (result && typeof result === 'object') {
-        if (result.variants && Array.isArray(result.variants)) {
-          setVariants(result.variants);
-        } else {
-          setVariantsError(`Invalid response format. Expected variants array, got: ${JSON.stringify(result).substring(0, 100)}`);
-        }
+  const handleProductSelect = (product: any) => {
+    const productId = product._id || product.id;
+    if (productId) {
+      // setVariantProductId(productId);
+      // Automatically show variants from the product object
+      if (product.variants && Array.isArray(product.variants)) {
+        setVariants(product.variants);
       } else {
-        setVariantsError('Invalid response format: result is not an object');
+        setVariants([]);
       }
-    } catch (error) {
-      setVariantsError(error instanceof Error ? error.message : 'Unknown error');
-    } finally {
-      setVariantsLoading(false);
     }
   };
-
 
   const getProductPrice = (product: any): string => {
     if (product.variants && product.variants.length > 0) {
@@ -164,11 +141,7 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
                   return (
                     <tr 
                       key={productId || index}
-                      onClick={() => {
-                        if (productId) {
-                          setVariantProductId(productId);
-                        }
-                      }}
+                      onClick={() => handleProductSelect(product)}
                       className="data-table__row--clickable"
                     >
                       <td>
@@ -200,30 +173,12 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
         )}
       </CommandSection>
 
-      <CommandSection title="Get Product Variants">
-        <div className="form-group">
-          <label className="form-label">Product ID:</label>
-          <input
-            type="text"
-            value={variantProductId}
-            onChange={(e) => setVariantProductId(e.target.value)}
-            className="form-input"
-            placeholder="Enter Product ID"
-          />
-        </div>
-        <button 
-          onClick={handleGetProductVariants} 
-          disabled={variantsLoading}
-          className="btn btn--primary"
-        >
-          {variantsLoading ? 'Loading...' : 'Get Variants'}
-        </button>
+      <CommandSection title="Product Variants (Select from list above)">
+        <p className="section-description">
+          Click on a product in the table above to see its variants.
+        </p>
         
-        {variantsError && (
-          <JsonViewer data={variantsError} title="Error" />
-        )}
-        
-        {variants.length > 0 && (
+        {variants.length > 0 ? (
           <div className="data-table-wrapper">
             <table className="data-table">
               <thead>
@@ -262,6 +217,8 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
               <strong>Total: {variants.length} variants</strong>
             </div>
           </div>
+        ) : (
+          <p className="no-data-message">Select a product to view variants</p>
         )}
       </CommandSection>
 
@@ -279,6 +236,47 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
             placeholder="Enter Variant ID"
           />
         </div>
+      </CommandSection>
+
+      <CommandSection title="Add Product to Cart">
+        <p className="section-description">
+          Adds the selected variant to cart (simple add).
+        </p>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setAddProductResponse('Error: Not running in iframe');
+              return;
+            }
+            if (!variantId) {
+              setAddProductResponse('Error: Variant ID is required');
+              return;
+            }
+            setAddProductLoading(true);
+            setAddProductResponse('');
+            try {
+              const result = await command.addProductToCart({ 
+                variantId,
+                quantity: 1
+              });
+              setAddProductResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setAddProductResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setAddProductLoading(false);
+            }
+          }}
+          disabled={addProductLoading}
+          className="btn btn--primary"
+        >
+          {addProductLoading ? 'Adding...' : 'Add to Cart'}
+        </button>
+        {addProductResponse && (
+          <JsonViewer
+            data={addProductResponse}
+            title={addProductResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
       </CommandSection>
 
       <CommandSection title="Add Product to Cart with Note">
