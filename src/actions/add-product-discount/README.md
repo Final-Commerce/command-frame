@@ -9,15 +9,15 @@ Adds a discount to a specific product line item in the cart.
 ```typescript
 interface AddProductDiscountParams {
     amount: number;        // Required
-    cartItemId: string;    // Required: The internalId of the cart item to modify
+    internalId: string;    // Required: The internalId of the cart item to modify
     isPercent?: boolean;   // Optional, default: false
     label?: string;        // Optional, default: "Discount"
 }
 ```
 
-#### `cartItemId` (required)
+#### `internalId` (required)
 
-The unique `internalId` of the item in the cart you wish to modify. This ID is returned in the response of `addProductToCart` or `getCurrentCart`.
+The unique `internalId` of the line item in the cart. This ID is returned in the response of `addProductToCart` or `getCurrentCart`.
 
 #### `amount` (required)
 
@@ -43,7 +43,7 @@ const { internalId } = await command.addProductToCart({ variantId: 'v123' });
 
 // 2. Add discount to that specific item
 await command.addProductDiscount({
-    cartItemId: internalId,
+    internalId: internalId,
     amount: 20,
     isPercent: true,
     label: 'Flash Sale'

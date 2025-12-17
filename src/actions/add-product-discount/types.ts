@@ -6,7 +6,8 @@ export interface AddProductDiscountParams {
     isPercent?: boolean;
     /** Defaults to "Discount". */
     label?: string;
-    cartItemId?: string;
+    /** The unique identifier for a specific line item in the cart. */
+    internalId?: string;
 }
 
 export interface AddProductDiscountResponse {
@@ -14,7 +15,7 @@ export interface AddProductDiscountResponse {
     amount: number;
     isPercent: boolean;
     label: string;
-    cartItemId?: string;
+    internalId?: string;
     timestamp: string;
 }
 

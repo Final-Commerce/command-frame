@@ -19,6 +19,7 @@ export interface AddProductToCartResponse {
     success: boolean;
     productId: string;
     variantId: string;
+    /** The unique identifier for the specific item instance added to the cart. */
     internalId: string;
     name: string;
     quantity: number;

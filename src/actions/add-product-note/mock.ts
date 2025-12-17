@@ -4,8 +4,8 @@ import { MOCK_CART } from "../../demo/database";
 export const mockAddProductNote: AddProductNote = async (params?: AddProductNoteParams): Promise<AddProductNoteResponse> => {
     console.log("[Mock] addProductNote called", params);
     
-    if (params?.note && params.cartItemId) {
-        const item = MOCK_CART.products.find(p => p.internalId === params.cartItemId);
+    if (params?.note && params.internalId) {
+        const item = MOCK_CART.products.find(p => p.internalId === params.internalId);
         if (item) {
             item.note = params.note;
         }
@@ -17,7 +17,7 @@ export const mockAddProductNote: AddProductNote = async (params?: AddProductNote
     return {
         success: true,
         note: params?.note || "",
-        cartItemId: params?.cartItemId,
+        internalId: params?.internalId,
         timestamp: new Date().toISOString()
     };
 };

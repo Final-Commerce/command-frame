@@ -45,7 +45,7 @@ interface AddProductToCartResponse {
     success: boolean;
     productId: string;
     variantId: string;
-    internalId: string; // The unique ID of the line item in the cart (use this for future updates like adding fees/notes)
+    internalId: string; // The unique ID of the line item in the cart
     name: string;
     quantity: number;
     timestamp: string;
@@ -54,7 +54,7 @@ interface AddProductToCartResponse {
 
 #### `internalId` (string)
 
-This is the unique identifier for the specific item instance added to the cart. **Important:** You should store this ID if you plan to modify this specific line item later (e.g., to add more notes or fees specifically to this item) using commands like `addProductNote({ cartItemId: internalId, ... })`.
+This is the unique identifier for the specific item instance added to the cart.
 
 ## Usage Examples
 

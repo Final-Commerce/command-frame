@@ -6,8 +6,8 @@ export const mockAddProductFee: AddProductFee = async (params?: AddProductFeePar
     
     if (params) {
         let item = null;
-        if (params.cartItemId) {
-            item = MOCK_CART.products.find(p => p.internalId === params.cartItemId);
+        if (params.internalId) {
+            item = MOCK_CART.products.find(p => p.internalId === params.internalId);
         } else if (MOCK_CART.products.length > 0) {
             item = MOCK_CART.products[MOCK_CART.products.length - 1];
         }
@@ -28,7 +28,7 @@ export const mockAddProductFee: AddProductFee = async (params?: AddProductFeePar
         isPercent: params?.isPercent || false,
         label: params?.label || "",
         applyTaxes: params?.applyTaxes || false,
-        cartItemId: params?.cartItemId,
+        internalId: params?.internalId,
         timestamp: new Date().toISOString()
     };
 };

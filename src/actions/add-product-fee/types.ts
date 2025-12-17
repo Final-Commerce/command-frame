@@ -8,7 +8,8 @@ export interface AddProductFeeParams {
     /** Defaults to `false`. */
     applyTaxes?: boolean;
     taxTableId?: string;
-    cartItemId?: string;
+    /** The unique identifier for a specific line item in the cart. */
+    internalId?: string;
 }
 
 export interface AddProductFeeResponse {
@@ -17,7 +18,7 @@ export interface AddProductFeeResponse {
     isPercent: boolean;
     label: string;
     applyTaxes: boolean;
-    cartItemId?: string;
+    internalId?: string;
     timestamp: string;
 }
 

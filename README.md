@@ -39,9 +39,9 @@ The library provides a `command` namespace object containing all available comma
 
 #### Product Actions
 - **[addProductToCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-to-cart/README.md)** - Add a product to the cart with optional discounts, fees, and notes
-- **[addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)** - Add a discount to a specific product in the cart (using `cartItemId`)
-- **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `cartItemId`)
-- **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `cartItemId`)
+- **[addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)** - Add a discount to a specific product in the cart (using `internalId`)
+- **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `internalId`)
+- **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `internalId`)
 - **[adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)** - Adjust inventory/stock level for a specific product variant
 
 #### Order Actions
@@ -129,7 +129,7 @@ const addedProduct = await command.addProductToCart({
 
 // Add a discount to the specific item just added (if you didn't add it during creation)
 await command.addProductDiscount({
-    cartItemId: addedProduct.internalId,
+    internalId: addedProduct.internalId,
     amount: 5,
     isPercent: true,
     label: 'Extra 5% Off'
@@ -198,7 +198,7 @@ Adds a product to the cart. Supports specifying quantity, applying discounts, fe
 
 ### [addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)
 
-Adds a discount to a specific product in the cart (identified by `cartItemId`). Supports both fixed amount and percentage discounts.
+Adds a discount to a specific product in the cart (identified by `internalId`). Supports both fixed amount and percentage discounts.
 
 ### [addCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-discount/README.md)
 
@@ -212,11 +212,11 @@ Retrieves the current environment/context information from the parent applicatio
 
 ### [addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)
 
-Adds a note to a specific product in the cart (identified by `cartItemId`).
+Adds a note to a specific product in the cart (identified by `internalId`).
 
 ### [addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)
 
-Adds a fee to a specific product in the cart (identified by `cartItemId`). Supports both fixed amount and percentage-based fees.
+Adds a fee to a specific product in the cart (identified by `internalId`). Supports both fixed amount and percentage-based fees.
 
 ### [adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)
 

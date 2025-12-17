@@ -6,8 +6,8 @@ export const mockAddProductDiscount: AddProductDiscount = async (params?: AddPro
     
     if (params && (params.amount > 0 || params.amount < 0)) { // Allow 0 to clear discount if logic permits
         let item = null;
-        if (params.cartItemId) {
-            item = MOCK_CART.products.find(p => p.internalId === params.cartItemId);
+        if (params.internalId) {
+            item = MOCK_CART.products.find(p => p.internalId === params.internalId);
         } else if (MOCK_CART.products.length > 0) {
             item = MOCK_CART.products[MOCK_CART.products.length - 1];
         }
@@ -29,7 +29,7 @@ export const mockAddProductDiscount: AddProductDiscount = async (params?: AddPro
         amount: params?.amount || 0,
         isPercent: params?.isPercent || false,
         label: params?.label || "",
-        cartItemId: params?.cartItemId,
+        internalId: params?.internalId,
         timestamp: new Date().toISOString()
     };
 };
