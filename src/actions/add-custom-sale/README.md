@@ -9,7 +9,7 @@ Adds a custom sale item to the cart in the parent window. This is useful for add
 ```typescript
 interface AddCustomSaleParams {
     label: string;           // Required
-    price: number | string; // Required
+    price: number | string; // Required. Price in major currency units (e.g. 10.50), not cents.
     applyTaxes?: boolean;   // Optional, default: false
 }
 ```
@@ -26,7 +26,7 @@ The label or name for the custom sale item. This will be displayed in the cart.
 
 #### `price` (required)
 
-The price of the custom sale item. Can be provided as:
+The price of the custom sale item in major currency units (e.g., Dollars). **Do not use cents.** Can be provided as:
 - A number (e.g., `10.50`)
 - A string (e.g., `"10.50"`)
 

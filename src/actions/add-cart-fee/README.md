@@ -4,7 +4,7 @@ Adds a fee to the entire cart. Supports both fixed amount and percentage-based f
 
 ## Parameters
 
-- `amount` (number, required): The fee amount (as a fixed value or percentage)
+- `amount` (number, required): The fee amount (as a fixed value in major currency units or percentage). **Do not use cents.**
 - `isPercent` (boolean, optional): Whether the amount is a percentage (default: false)
 - `label` (string, optional): Label for the fee (default: 'Fee')
 - `applyTaxes` (boolean, optional): Whether to apply taxes to the fee (default: false)

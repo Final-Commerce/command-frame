@@ -8,7 +8,7 @@ Adds a fee to a specific product line item in the cart.
 
 ```typescript
 interface AddProductFeeParams {
-    amount: number;        // Required
+    amount: number;        // Required. Amount in major currency units (e.g. 2.50), not cents.
     internalId: string;    // Required: The internalId of the cart item to modify
     isPercent?: boolean;   // Optional, default: false
     label?: string;        // Optional, default: "Fee"
@@ -22,7 +22,7 @@ The unique `internalId` of the line item in the cart. This ID is returned in the
 
 #### `amount` (required)
 
-The fee amount.
+The fee amount in major currency units (e.g., Dollars). **Do not use cents.**
 
 #### `isPercent` (optional)
 

@@ -8,7 +8,7 @@ Adds a discount to the entire cart in the parent application. Cart discounts app
 
 ```typescript
 interface AddCartDiscountParams {
-    amount: number;        // Required
+    amount: number;        // Required. Amount in major currency units (e.g., Dollars), not cents.
     isPercent?: boolean;   // Optional, default: false
     label?: string;        // Optional, default: "Discount"
 }
@@ -18,8 +18,8 @@ interface AddCartDiscountParams {
 
 The discount amount. The interpretation depends on the `isPercent` flag:
 
-- If `isPercent` is `false` (default): The amount is a fixed dollar value (e.g., `10` = $10.00 discount)
-- If `isPercent` is `true`: The amount is a percentage value (e.g., `10` = 10% discount)
+- If `isPercent` is `false` (default): The amount is a fixed dollar value in major units (e.g., `10.50` = $10.50 discount). **Do not use cents.**
+- If `isPercent` is `true`: The amount is a percentage value (e.g., `10` = 10% discount).
 
 **Examples:**
 - Fixed amount: `amount: 5.50` with `isPercent: false` → $5.50 discount

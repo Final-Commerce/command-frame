@@ -1,5 +1,6 @@
 // Add Product Fee Types
 export interface AddProductFeeParams {
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: number;
     /** Defaults to `false`. */
     isPercent?: boolean;
@@ -14,6 +15,7 @@ export interface AddProductFeeParams {
 
 export interface AddProductFeeResponse {
     success: boolean;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: number;
     isPercent: boolean;
     label: string;

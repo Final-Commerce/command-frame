@@ -2,7 +2,7 @@ import { CFOrder } from "../../CommonTypes";
 
 // Cash Payment Types
 export interface CashPaymentParams {
-    /** If not provided, uses the cart total. */
+    /** If not provided, uses the cart total. Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount?: number;
     /** Defaults to false. */
     openChangeCalculator?: boolean;
@@ -10,6 +10,7 @@ export interface CashPaymentParams {
 
 export interface CashPaymentResponse {
     success: boolean;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: number;
     openChangeCalculator: boolean;
     paymentType: string;

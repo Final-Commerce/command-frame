@@ -8,7 +8,7 @@ Initiates a cash payment for the current cart.
 
 | Parameter              | Type      | Required | Description                                                              |
 | :--------------------- | :-------- | :------- | :----------------------------------------------------------------------- |
-| `amount`               | `number`  | `false`  | The payment amount. If not provided, uses the cart total.                |
+| `amount`               | `number`  | `false`  | The payment amount in major currency units (e.g. 25.50). **Do not use cents.** If not provided, uses the cart total. |
 | `openChangeCalculator` | `boolean` | `false`  | Whether to open the change calculator UI.                                |
 
 ## Response
@@ -18,7 +18,7 @@ Initiates a cash payment for the current cart.
 | Field                | Type     | Description                               |
 | :------------------- | :------- | :---------------------------------------- |
 | `success`            | `boolean` | `true` if the payment was initiated successfully. |
-| `amount`             | `number`  | The payment amount.                       |
+| `amount`             | `number`  | The payment amount in major currency units. |
 | `openChangeCalculator` | `boolean` | Whether the change calculator was opened. |
 | `paymentType`        | `string`  | The payment type ('cash').                |
 | `order`              | `ActiveOrder \| null` | The created order object after payment processing. May be null if order creation is delayed. |

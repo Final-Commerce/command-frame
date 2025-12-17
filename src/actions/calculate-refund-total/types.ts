@@ -9,8 +9,11 @@ export interface CalculateRefundTotalParams {
 export interface CalculateRefundTotalResponse {
     success: boolean;
     summary: {
+        /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
         subtotal: string;
+        /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
         tax: string;
+        /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
         total: string;
     };
     refundedLineItems: CFRefundedLineItem[]; // RefundedLineItem[]

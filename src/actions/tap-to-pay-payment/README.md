@@ -8,7 +8,7 @@ Initiates a tap-to-pay payment for the current cart.
 
 | Parameter | Type     | Required | Description                                                              |
 | :-------- | :------- | :------- | :----------------------------------------------------------------------- |
-| `amount`  | `number` | `false`  | The payment amount. If not provided, uses the cart total.                |
+| `amount`  | `number` | `false`  | The payment amount in major currency units (e.g. 25.50). **Do not use cents.** If not provided, uses the cart total. |
 
 ## Response
 
@@ -17,7 +17,7 @@ Initiates a tap-to-pay payment for the current cart.
 | Field       | Type     | Description                               |
 | :---------- | :------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the payment was initiated successfully. |
-| `amount`    | `number \| null` | The payment amount.                       |
+| `amount`    | `number \| null` | The payment amount in major currency units. |
 | `paymentType` | `string` | The payment type ('tapToPay').            |
 | `order`     | `ActiveOrder \| null` | The created order object after payment processing. May be null if order creation is delayed. |
 | `timestamp` | `string` | ISO date string of when the action occurred. |

@@ -9,7 +9,7 @@ Initiates a partial/split payment for the current cart.
 | Parameter  | Type      | Required | Description                                                              |
 | :--------- | :-------- | :------- | :----------------------------------------------------------------------- |
 | `openUI`   | `boolean` | `false`  | If true, opens the split payment UI. If false, processes the payment with the specified amount. |
-| `amount`   | `number`  | `false`  | The payment amount (required if openUI is false).                        |
+| `amount`   | `number`  | `false`  | The payment amount in major currency units (e.g. 25.50), not cents (required if openUI is false). |
 | `isPercent` | `boolean` | `false`  | Whether the amount is a percentage (default: false).                      |
 
 ## Response
@@ -19,7 +19,7 @@ Initiates a partial/split payment for the current cart.
 | Field       | Type     | Description                               |
 | :---------- | :------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the payment was processed successfully. |
-| `amount`    | `number \| undefined` | The payment amount (undefined if openUI is true). |
+| `amount`    | `number \| undefined` | The payment amount in major currency units (undefined if openUI is true). |
 | `isPercent` | `boolean \| undefined` | Whether the amount is a percentage (undefined if openUI is true). |
 | `openUI`    | `boolean` | Whether the split payment UI was opened. |
 | `order`     | `ActiveOrder \| null` | The created order object after payment processing. May be null for split payments until the final payment completes the order. |

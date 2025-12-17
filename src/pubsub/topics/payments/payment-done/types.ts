@@ -7,6 +7,7 @@ import type { TopicEvent } from "../../../types";
 export interface PaymentDonePayload {
     payment: CFPaymentMethod;
     order: CFOrder;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
 }
 

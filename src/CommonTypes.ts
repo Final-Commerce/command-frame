@@ -23,6 +23,7 @@ export enum CFUserTypes {
 export interface CFActiveEntity {}
 
 export interface CFDiscount {
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     value: number;
     label?: string;
     isPercent?: boolean;
@@ -30,6 +31,7 @@ export interface CFDiscount {
 
 export interface CFCustomFee {
     label: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: number;
     isPercent: boolean;
     applyTaxes: boolean;
@@ -58,6 +60,7 @@ export interface CFTax {
     id: string;
     name: string;
     percentage: number;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
     taxTableName: string;
     taxTableId: string;
@@ -96,10 +99,13 @@ export interface CFCategory {
 // Product Interfaces
 export interface CFProductVariant {
     sku: string;
+    /** Price in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     price: string;
+    /** Price in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     salePrice: string;
     isOnSale: boolean;
     barcode?: string;
+    /** Price in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     costPrice?: string;
     manageStock: boolean;
     externalId: string;
@@ -140,7 +146,9 @@ export interface CFProduct {
     productType: CFProductType;
     variants: CFProductVariant[];
 
+    /** Price in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     minPrice?: string;
+    /** Price in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     maxPrice?: string;
     status?: string;
     isDeleted?: boolean;
@@ -154,6 +162,7 @@ export interface CFActiveProduct extends CFActiveEntity {
     variantId: string;
     name: string;
     sku: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     price: number;
     images: string[];
     taxTableId: string;
@@ -197,15 +206,21 @@ export interface CFActiveCustomer extends CFCustomer {
 
 // Order & Cart Interfaces
 export interface CFTip {
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
     percentage: number;
 }
 
 export interface CFSummary {
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     discountTotal: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     shippingTotal?: string | null;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     total: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     totalTaxes: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     subTotal: string;
     taxes: CFTax[];
     tip?: CFTip | null;
@@ -214,6 +229,7 @@ export interface CFSummary {
 
 export interface CFCartDiscountItem {
     label: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
     percentage: number;
 }
@@ -221,20 +237,24 @@ export interface CFCartDiscountItem {
 export interface CFCartFeeItem {
     id: string;
     label: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
     percentage: number;
     taxTableId?: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     tax?: string;
     taxName: string;
 }
 
 export interface CFTipPayment {
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
     tipTo: string;
     percentage: number;
 }
 
 export interface CFRefundedTipPayment {
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
     percentage: number;
     transactionId: string;
@@ -244,12 +264,15 @@ export interface CFRefundedTipPayment {
 export interface CFPaymentMethod {
     transactionId: string;
     paymentType: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
     timestamp: string;
     processor: string;
     saleId?: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     change?: string | null;
     tip?: CFTipPayment | null;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     cashRounding?: number;
     emv?: string | null;
 }
@@ -262,13 +285,16 @@ export interface CFPosDataItem {
 
 export interface CFDiscountDetail {
     percentage: number;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
     const?: string;
 }
 
 export interface CFFeeDetail {
     percentage: number;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amount: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     tax: string;
     taxTableId: string;
 }
@@ -290,11 +316,14 @@ export interface CFLineItem {
     internalId?: string;
     name: string;
     quantity: number;
+    /** Price in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     price: string;
     taxes: CFTax[];
     discount: CFDiscountLineItem;
     fee: CFFeeLineItem;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     totalTax: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     total: string;
     metadata: CFMetadataItem[];
     image: string;
@@ -310,10 +339,13 @@ export interface CFLineItem {
 export interface CFCustomSale {
     customSaleId: string;
     name: string;
+    /** Price in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     price: string;
     quantity: number;
     applyTaxes: boolean;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     total: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     totalTax: string;
     taxes: CFTax[];
     discount: {
@@ -321,9 +353,11 @@ export interface CFCustomSale {
     };
     fee: {
         cartFee: {
+            /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
             amount: string;
             label: string;
             percentage: number;
+            /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
             tax: string;
             taxTableId: string;
         };
@@ -338,10 +372,13 @@ export interface CFRefundedLineItem {
     internalId?: string;
     name: string;
     quantity: number;
+    /** Price in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     price: string;
     taxes: CFTax[];
     discount: CFDiscountLineItem;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     totalTax: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     total: string;
     image: string;
     sku: string;
@@ -364,6 +401,7 @@ export interface CFRefundItem {
     timestamp: string | undefined;
     summary?: CFSummary;
     refundPayment: CFPaymentMethod[];
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     balance?: string;
     receiptId?: string;
     currency?: string;
@@ -393,6 +431,7 @@ export interface CFOrder {
     lineItems: CFLineItem[];
     customSales: CFCustomSale[];
     refund?: CFRefundItem[];
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     balance: string;
     signature?: string | null;
 }
@@ -466,24 +505,32 @@ export interface CFActiveCustomSales {
     applyTaxes: boolean;
     taxTableId?: string;
     quantity: number;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     price: number;
     discount?: any;
     fee?: any;
 }
 
 export interface CFActiveCart extends CFActiveEntity {
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     tax?: number;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     total: number;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     subtotal: number;
     discount?: CFDiscount;
     customFee?: CFCustomFee[];
     products: CFActiveProduct[];
     customSales?: CFActiveCustomSales[];
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     remainingBalance?: number;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     amountToBeCharged: number;
     customer?: Partial<CFCustomer | null> | null;
     orderNotes?: string;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     cartTotal?: number;
+    /** Amount in major currency units (e.g., Dollars, Euros). Do not use minor units (e.g., cents). */
     orderTotal?: number;
     orderId?: string;
 }
