@@ -200,6 +200,22 @@ export const MOCK_CATEGORY_BASIC: CFCategory = {
     parentId: "cat_pastes"
 };
 
+export const MOCK_CATEGORY_VEGAN: CFCategory = {
+    _id: "cat_vegan",
+    name: "Vegan",
+    externalId: "ext_cat_vegan",
+    companyId: COMPANY_ID,
+    parentId: null
+};
+
+export const MOCK_CATEGORY_SPICY: CFCategory = {
+    _id: "cat_spicy",
+    name: "Spicy",
+    externalId: "ext_cat_spicy",
+    companyId: COMPANY_ID,
+    parentId: null
+};
+
 // --- PRODUCTS ---
 const createInventory = (stock: number) => [{ warehouse: "main", outletId: MOCK_OUTLET_MAIN.id, stock }];
 
@@ -209,7 +225,7 @@ const createSimpleProduct = (
     name: string,
     price: string,
     image: string,
-    category: CFCategory,
+    categories: CFCategory[],
     description: string
 ): CFProduct => {
     const sku = `SKU-${id.toUpperCase()}`;
@@ -226,7 +242,8 @@ const createSimpleProduct = (
         taxTable: "tax_standard",
         description,
         images: [image],
-        categories: { name: category.name, externalId: category.externalId },
+        // Render stores product categories as an array of category IDs
+        categories: categories.map(c => c._id),
         attributes: [],
         variants: [
             {
@@ -251,7 +268,7 @@ const createVariableProduct = (
     basePrice: string,
     largePrice: string,
     image: string,
-    category: CFCategory,
+    categories: CFCategory[],
     description: string
 ): CFProduct => {
     const skuBase = `SKU-${id.toUpperCase()}`;
@@ -268,7 +285,8 @@ const createVariableProduct = (
         taxTable: "tax_standard",
         description,
         images: [image],
-        categories: { name: category.name, externalId: category.externalId },
+        // Render stores product categories as an array of category IDs
+        categories: categories.map(c => c._id),
         attributes: [{ name: "Size", values: ["Small", "Large"] }],
         variants: [
             {
@@ -302,7 +320,7 @@ export const MOCK_PRODUCT_BASIL_ALMOND = createSimpleProduct(
     "Basil Almond Paste",
     "12.00",
     basilAlmondImg,
-    MOCK_CATEGORY_SPECIALTY,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
     "A rich blend of fresh basil and roasted almonds."
 );
 
@@ -312,7 +330,7 @@ export const MOCK_PRODUCT_BEER = createVariableProduct(
     "15.00",
     "25.00",
     beerImg,
-    MOCK_CATEGORY_SPECIALTY,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY],
     "Unique paste infused with dark lager."
 );
 
@@ -321,7 +339,7 @@ export const MOCK_PRODUCT_BEET = createSimpleProduct(
     "Beet Paste",
     "10.00",
     beetImg,
-    MOCK_CATEGORY_BASIC,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Earthy and sweet beet paste, perfect for salads."
 );
 
@@ -331,7 +349,7 @@ export const MOCK_PRODUCT_CARAMELIZED = createVariableProduct(
     "14.00",
     "22.00",
     caramelizedImg,
-    MOCK_CATEGORY_SPECIALTY,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
     "Slow-cooked caramelized onion paste."
 );
 
@@ -341,7 +359,7 @@ export const MOCK_PRODUCT_GARLIC_ONION = createVariableProduct(
     "11.00",
     "18.00",
     garlicOnionImg,
-    MOCK_CATEGORY_BASIC,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Classic savory base for any dish."
 );
 
@@ -350,7 +368,7 @@ export const MOCK_PRODUCT_GARLIC = createSimpleProduct(
     "Garlic Paste",
     "9.00",
     garlicImg,
-    MOCK_CATEGORY_BASIC,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Pure, intense garlic paste."
 );
 
@@ -360,7 +378,7 @@ export const MOCK_PRODUCT_GINGER_LIME = createVariableProduct(
     "13.00",
     "20.00",
     gingerLimeImg,
-    MOCK_CATEGORY_SPECIALTY,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_SPICY, MOCK_CATEGORY_VEGAN],
     "Zesty and spicy, great for asian cuisine."
 );
 
@@ -369,7 +387,7 @@ export const MOCK_PRODUCT_LEMON = createSimpleProduct(
     "Lemon Paste",
     "10.50",
     lemonImg,
-    MOCK_CATEGORY_BASIC,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Bright citrus flavor concentrate."
 );
 
@@ -379,7 +397,7 @@ export const MOCK_PRODUCT_RED_PEPPER = createVariableProduct(
     "12.50",
     "19.00",
     redPepperImg,
-    MOCK_CATEGORY_BASIC,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_SPICY, MOCK_CATEGORY_VEGAN],
     "Roasted red peppers with a hint of spice."
 );
 
@@ -389,8 +407,45 @@ export const MOCK_PRODUCT_ROASTED_TOMATO = createVariableProduct(
     "11.50",
     "18.50",
     roastedTomatoImg,
-    MOCK_CATEGORY_BASIC,
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Deep, umami-rich tomato flavor."
+);
+
+export const MOCK_PRODUCT_MINT_LEMON = createSimpleProduct(
+    "prod_mint_lemon",
+    "Mint Lemon Paste",
+    "12.00",
+    lemonImg, // Reusing lemon image for now
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
+    "Refreshing mint and lemon blend."
+);
+
+export const MOCK_PRODUCT_CHILI_GARLIC = createVariableProduct(
+    "prod_chili_garlic",
+    "Chili Garlic Paste",
+    "10.50",
+    "16.50",
+    redPepperImg, // Reusing red pepper image
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_SPICY, MOCK_CATEGORY_VEGAN],
+    "Spicy garlic paste with chili flakes."
+);
+
+export const MOCK_PRODUCT_HABANERO = createSimpleProduct(
+    "prod_habanero",
+    "Habanero Paste",
+    "14.00",
+    redPepperImg, // Reusing red pepper image
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPICY, MOCK_CATEGORY_VEGAN],
+    "Extremely spicy habanero concentrate."
+);
+
+export const MOCK_PRODUCT_BLACK_GARLIC = createSimpleProduct(
+    "prod_black_garlic",
+    "Black Garlic Paste",
+    "18.00",
+    garlicImg, // Reusing garlic image
+    [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
+    "Fermented black garlic paste, sweet and savory."
 );
 
 // --- ORDERS ---
@@ -528,7 +583,13 @@ export const MOCK_CUSTOMERS = [
     MOCK_CUSTOMER_4,
     MOCK_CUSTOMER_5
 ];
-export const MOCK_CATEGORIES = [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_BASIC];
+export const MOCK_CATEGORIES = [
+    MOCK_CATEGORY_PASTES, 
+    MOCK_CATEGORY_SPECIALTY, 
+    MOCK_CATEGORY_BASIC,
+    MOCK_CATEGORY_VEGAN,
+    MOCK_CATEGORY_SPICY
+];
 export const MOCK_PRODUCTS = [
     MOCK_PRODUCT_BASIL_ALMOND,
     MOCK_PRODUCT_BEER,
@@ -539,7 +600,11 @@ export const MOCK_PRODUCTS = [
     MOCK_PRODUCT_GINGER_LIME,
     MOCK_PRODUCT_LEMON,
     MOCK_PRODUCT_RED_PEPPER,
-    MOCK_PRODUCT_ROASTED_TOMATO
+    MOCK_PRODUCT_ROASTED_TOMATO,
+    MOCK_PRODUCT_MINT_LEMON,
+    MOCK_PRODUCT_CHILI_GARLIC,
+    MOCK_PRODUCT_HABANERO,
+    MOCK_PRODUCT_BLACK_GARLIC
 ];
 export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2];
 export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [];

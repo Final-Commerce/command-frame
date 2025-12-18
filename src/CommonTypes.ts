@@ -64,9 +64,9 @@ export interface CFTax {
 }
 
 export interface CFInventory {
-    warehouse: string;
     outletId: string;
     stock?: number | null;
+    _id?: string;
 }
 
 export interface CFCustomerNote {
@@ -102,7 +102,7 @@ export interface CFProductVariant {
     barcode?: string;
     costPrice?: string;
     manageStock: boolean;
-    externalId: string;
+    externalId?: string;
     inventory?: CFInventory[];
     allowBackorder?: boolean;
     images?: string[];
@@ -120,16 +120,13 @@ export interface CFProductVariant {
 export interface CFProduct {
     _id: string;
     companyId?: string;
-    externalId: string;
+    externalId?: string;
     taxTable: string;
     name: string;
     description?: string;
     shortDescription?: string;
     images?: string[];
-    categories: {
-        name: string;
-        externalId: string;
-    };
+    categories: string[];
     attributes: {
         name: string;
         values: string[];
