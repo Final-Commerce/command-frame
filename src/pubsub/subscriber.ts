@@ -9,6 +9,7 @@ import type {
     TopicSubscription,
     TopicSubscriptionCallback
 } from "./types";
+import { mockSubscribeToTopic } from "../demo/database";
 
 /**
  * Internal message types for pub/sub communication
@@ -36,11 +37,21 @@ export class TopicSubscriber {
     private useGlobalDebug: boolean;
     private boundHandleMessage: (event: MessageEvent) => void;
     private subscriptionIdCounter: number = 0;
+    private mockMode: boolean = false;
+    private detectionTimeout: any;
 
     constructor(options: { origin?: string; debug?: boolean } = {}) {
         this.origin = options.origin || "*";
         this.debug = options.debug ?? false;
         this.useGlobalDebug = options.debug === undefined;
+
+        // Detect standalone mode (no parent iframe)
+        if (typeof window !== 'undefined' && (!window.parent || window.parent === window)) {
+            this.mockMode = true;
+            if (this.isDebugEnabled()) {
+                console.log("[TopicSubscriber] Mock Mode enabled (standalone mode detected)");
+            }
+        }
 
         // Store bound handler for cleanup
         this.boundHandleMessage = this.handleMessage.bind(this);
@@ -49,15 +60,44 @@ export class TopicSubscriber {
             window.addEventListener("message", this.boundHandleMessage);
         }
 
-        // Request topics list on initialization
-        this.requestTopics();
+        // Initialize connection detection
+        if (!this.mockMode) {
+            this.initDetection();
+            this.requestTopics();
+        }
 
         if (this.isDebugEnabled()) {
             console.log("[TopicSubscriber] Initialized", {
                 origin: this.origin,
-                debug: this.isDebugEnabled()
+                debug: this.isDebugEnabled(),
+                mockMode: this.mockMode
             });
         }
+    }
+
+    private initDetection() {
+        // If we don't receive any message from parent within 2 seconds, switch to mock mode
+        this.detectionTimeout = setTimeout(() => {
+            if (this.isDebugEnabled()) {
+                console.warn("[TopicSubscriber] Connection timeout. Switching to Mock Mode.");
+            }
+            this.switchToMockMode();
+        }, 2000);
+    }
+
+    private switchToMockMode() {
+        if (this.mockMode) return;
+        this.mockMode = true;
+
+        // Migrate existing subscriptions to mock system
+        this.subscriptions.forEach((subs, topic) => {
+            subs.forEach(sub => {
+                if (this.isDebugEnabled()) {
+                    console.log("[TopicSubscriber] Migrating subscription to mock system", { topic, id: sub.id });
+                }
+                mockSubscribeToTopic(topic, sub.callback);
+            });
+        });
     }
 
     private isDebugEnabled(): boolean {
@@ -104,13 +144,19 @@ export class TopicSubscriber {
 
         this.subscriptions.get(topic)!.push(subscription);
 
-        // Notify host about the subscription
-        this.notifySubscription(topic, true);
+        // In mock mode, also register with the mock event system
+        if (this.mockMode) {
+            mockSubscribeToTopic(topic, callback as TopicSubscriptionCallback);
+        } else {
+            // Notify host about the subscription (only in real mode)
+            this.notifySubscription(topic, true);
+        }
 
         if (this.isDebugEnabled()) {
             console.log("[TopicSubscriber] Subscribed to topic", {
                 topic,
                 subscriptionId,
+                mockMode: this.mockMode,
                 totalSubscriptions: this.subscriptions.get(topic)!.length
             });
         }
@@ -223,6 +269,12 @@ export class TopicSubscriber {
         }
 
         const data = event.data;
+
+        // Clear detection timeout on first valid message from parent
+        if (this.detectionTimeout && data && (data.type === "pubsub-event" || data.type === "pubsub-topics-list")) {
+            clearTimeout(this.detectionTimeout);
+            this.detectionTimeout = undefined;
+        }
 
         // Handle topic event
         if (data && data.type === "pubsub-event") {
