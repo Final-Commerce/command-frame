@@ -3,8 +3,6 @@
  * Allows the iframe to call functions on the parent window via postMessage
  */
 
-import { MOCK_REGISTRY } from "./demo/registry";
-
 export interface PostMessageRequest<T = any> {
     action: string;
     params?: T;
@@ -17,6 +15,9 @@ export interface PostMessageResponse<T = any> {
     data?: T;
     error?: string;
 }
+
+// Define a common mock handler type
+export type MockHandler = (params?: any) => Promise<any>;
 
 export class CommandFrameClient {
     private pendingRequests: Map<
@@ -33,14 +34,24 @@ export class CommandFrameClient {
     private debug: boolean;
     private useGlobalDebug: boolean;
     private mockMode: boolean;
+    // Use the specific MockHandler type instead of a generic Record
+    private mockRegistry: Record<string, MockHandler>;
 
-    constructor(options: { timeout?: number; origin?: string; debug?: boolean; mockMode?: boolean } = {}) {
+    constructor(options: { 
+        timeout?: number; 
+        origin?: string; 
+        debug?: boolean; 
+        mockMode?: boolean;
+        // Accept any record of handlers as long as they return a Promise
+        mockRegistry?: Record<string, MockHandler>;
+    } = {}) {
         this.defaultTimeout = options.timeout || 60000;
         this.origin = options.origin || "*";
         this.debug = options.debug ?? false;
         this.useGlobalDebug = options.debug === undefined;
         // Default to provided mockMode or false. Detection happens via getFinalContext.
         this.mockMode = options.mockMode ?? false;
+        this.mockRegistry = options.mockRegistry || {};
 
         if (typeof window !== 'undefined') {
             window.addEventListener("message", this.handleMessage.bind(this));
@@ -78,7 +89,7 @@ export class CommandFrameClient {
             if (this.isDebugEnabled()) {
                 console.log("[ActionsClient] Mock Call", { action, params });
             }
-            const mockHandler = MOCK_REGISTRY[action as keyof typeof MOCK_REGISTRY];
+            const mockHandler = this.mockRegistry[action];
             if (mockHandler) {
                 // Simulate async delay
                 await new Promise(resolve => setTimeout(resolve, 100));
