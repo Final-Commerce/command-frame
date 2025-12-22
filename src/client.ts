@@ -53,12 +53,21 @@ export class CommandFrameClient {
         this.mockMode = options.mockMode ?? false;
         this.mockRegistry = options.mockRegistry || {};
 
+        // If running standalone (no parent window), force Mock Mode immediately
+        // This prevents the 2s delay and ensures immediate response in dev/standalone mode
+        if (typeof window !== 'undefined' && (!window.parent || window.parent === window)) {
+            if (this.isDebugEnabled()) {
+                console.log("[ActionsClient] Standalone mode detected. Enabling Mock Mode immediately.");
+            }
+            this.mockMode = true;
+        }
+
         if (typeof window !== 'undefined') {
             window.addEventListener("message", this.handleMessage.bind(this));
         }
 
         // Auto-detect mock mode on initialization
-        this.getFinalContext().then((context) => {
+        this.detectContext().then((context) => {
             if (!context) {
                 if (this.isDebugEnabled()) {
                     console.warn("[ActionsClient] Environment detection failed (timeout or error). Switching to Mock Mode.");
@@ -74,6 +83,19 @@ export class CommandFrameClient {
                 mockMode: this.mockMode
             });
         }
+
+        // Return a Proxy to enable dynamic method calls
+        // This allows client.getProducts() to map to client.call('getProducts')
+        return new Proxy(this, {
+            get: (target, prop: string) => {
+                // If the property exists on the instance, return it
+                if (prop in target) {
+                    return (target as any)[prop];
+                }
+                // Otherwise, assume it's an action name and return a wrapper function
+                return (params?: any) => target.call(prop, params);
+            }
+        });
     }
 
     private isDebugEnabled(): boolean {
@@ -161,7 +183,7 @@ export class CommandFrameClient {
     }
 
     // Private check to determine environment
-    private getFinalContext(): Promise<any> {
+    private detectContext(): Promise<any> {
         return new Promise((resolve) => {
             if (typeof window === 'undefined' || !window.parent || window.parent === window) return resolve(null);
 
