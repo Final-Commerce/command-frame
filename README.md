@@ -81,6 +81,9 @@ The library provides a `command` namespace object containing all available comma
 - **[processPartialRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/process-partial-refund/README.md)** - Process a partial refund based on current selections
 - **[getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)** - Get remaining refundable quantities for items in the active order
 
+#### Custom Table Actions
+- **[getCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-tables/README.md)** - Get all available Custom Tables
+
 #### Integration Actions
 - **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
 - **[triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)** - Trigger a Zapier webhook with the current context data

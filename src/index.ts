@@ -50,6 +50,9 @@ import { calculateRefundTotal } from "./actions/calculate-refund-total/action";
 import { getRemainingRefundableQuantities } from "./actions/get-remaining-refundable-quantities/action";
 import { processPartialRefund } from "./actions/process-partial-refund/action";
 import { getCurrentCart } from "./actions/get-current-cart/action";
+// Custom Tables Actions
+import { getCustomTables } from "./actions/get-custom-tables/action";
+import { getCustomTableFields } from "./actions/get-custom-table-fields/action";
 
 // Export actions as command object
 export const command = {
@@ -104,7 +107,10 @@ export const command = {
     calculateRefundTotal,
     getRemainingRefundableQuantities,
     processPartialRefund,
-    getCurrentCart
+    getCurrentCart,
+    // Custom Tables Actions
+    getCustomTables,
+    getCustomTableFields,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -464,3 +470,15 @@ export type {
     PaymentsEventType,
     PaymentsEventPayload
 } from "./pubsub/topics/payments/types";
+
+// Export Custom Tables Types
+export type {
+    GetCustomTables,
+    GetCustomTablesResponse
+} from "./actions/get-custom-tables/types";
+
+export type {
+    GetCustomTableFields,
+    GetCustomTableFieldsParams,
+    GetCustomTableFieldsResponse
+} from "./actions/get-custom-table-fields/types";

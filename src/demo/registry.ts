@@ -43,6 +43,8 @@ import { mockTerminalPayment } from "../actions/terminal-payment/mock";
 import { mockTriggerWebhook } from "../actions/trigger-webhook/mock";
 import { mockTriggerZapierWebhook } from "../actions/trigger-zapier-webhook/mock";
 import { mockVendaraPayment } from "../actions/vendara-payment/mock";
+import { mockGetCustomTables } from "../actions/get-custom-tables/mock";
+import { mockGetCustomTableFields } from "../actions/get-custom-table-fields/mock";
 
 import { mockGetFinalContext } from "../actions/get-final-context/mock";
 import { command } from "../index";
@@ -99,4 +101,6 @@ export const MOCK_REGISTRY: Record<CommandName, MockHandler> = {
     "triggerZapierWebhook": mockTriggerZapierWebhook,
     "vendaraPayment": mockVendaraPayment,
     "getFinalContext": mockGetFinalContext,
+    "getCustomTables": mockGetCustomTables,
+    "getCustomTableFields": mockGetCustomTableFields,
 };
