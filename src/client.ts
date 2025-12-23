@@ -3,8 +3,6 @@
  * Allows the iframe to call functions on the parent window via postMessage
  */
 
-import { MOCK_REGISTRY } from "./demo/registry";
-
 export interface PostMessageRequest<T = any> {
     action: string;
     params?: T;
@@ -17,6 +15,9 @@ export interface PostMessageResponse<T = any> {
     data?: T;
     error?: string;
 }
+
+// Define a common mock handler type
+export type MockHandler = (params?: any) => Promise<any>;
 
 export class CommandFrameClient {
     private pendingRequests: Map<
@@ -33,21 +34,40 @@ export class CommandFrameClient {
     private debug: boolean;
     private useGlobalDebug: boolean;
     private mockMode: boolean;
+    // Use the specific MockHandler type instead of a generic Record
+    private mockRegistry: Record<string, MockHandler>;
 
-    constructor(options: { timeout?: number; origin?: string; debug?: boolean; mockMode?: boolean } = {}) {
+    constructor(options: { 
+        timeout?: number; 
+        origin?: string; 
+        debug?: boolean; 
+        mockMode?: boolean;
+        // Accept any record of handlers as long as they return a Promise
+        mockRegistry?: Record<string, MockHandler>;
+    } = {}) {
         this.defaultTimeout = options.timeout || 60000;
         this.origin = options.origin || "*";
         this.debug = options.debug ?? false;
         this.useGlobalDebug = options.debug === undefined;
         // Default to provided mockMode or false. Detection happens via getFinalContext.
         this.mockMode = options.mockMode ?? false;
+        this.mockRegistry = options.mockRegistry || {};
+
+        // If running standalone (no parent window), force Mock Mode immediately
+        // This prevents the 2s delay and ensures immediate response in dev/standalone mode
+        if (typeof window !== 'undefined' && (!window.parent || window.parent === window)) {
+            if (this.isDebugEnabled()) {
+                console.log("[ActionsClient] Standalone mode detected. Enabling Mock Mode immediately.");
+            }
+            this.mockMode = true;
+        }
 
         if (typeof window !== 'undefined') {
             window.addEventListener("message", this.handleMessage.bind(this));
         }
 
         // Auto-detect mock mode on initialization
-        this.getFinalContext().then((context) => {
+        this.detectContext().then((context) => {
             if (!context) {
                 if (this.isDebugEnabled()) {
                     console.warn("[ActionsClient] Environment detection failed (timeout or error). Switching to Mock Mode.");
@@ -63,6 +83,19 @@ export class CommandFrameClient {
                 mockMode: this.mockMode
             });
         }
+
+        // Return a Proxy to enable dynamic method calls
+        // This allows client.getProducts() to map to client.call('getProducts')
+        return new Proxy(this, {
+            get: (target, prop: string) => {
+                // If the property exists on the instance, return it
+                if (prop in target) {
+                    return (target as any)[prop];
+                }
+                // Otherwise, assume it's an action name and return a wrapper function
+                return (params?: any) => target.call(prop, params);
+            }
+        });
     }
 
     private isDebugEnabled(): boolean {
@@ -78,7 +111,7 @@ export class CommandFrameClient {
             if (this.isDebugEnabled()) {
                 console.log("[ActionsClient] Mock Call", { action, params });
             }
-            const mockHandler = MOCK_REGISTRY[action as keyof typeof MOCK_REGISTRY];
+            const mockHandler = this.mockRegistry[action];
             if (mockHandler) {
                 // Simulate async delay
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -150,7 +183,7 @@ export class CommandFrameClient {
     }
 
     // Private check to determine environment
-    private getFinalContext(): Promise<any> {
+    private detectContext(): Promise<any> {
         return new Promise((resolve) => {
             if (typeof window === 'undefined' || !window.parent || window.parent === window) return resolve(null);
 

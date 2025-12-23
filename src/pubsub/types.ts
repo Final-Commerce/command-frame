@@ -46,3 +46,13 @@ export interface TopicSubscription {
     callback: TopicSubscriptionCallback;
 }
 
+export interface TopicRegistration {
+    definition: TopicDefinition;
+    subscribers: {
+        iframeWindow: Window;
+        topic: string;
+        subscribedAt: number;
+        subscriptionCount: number;
+    }[];
+}
+

@@ -1,5 +1,5 @@
 import { AddProductToCart, AddProductToCartParams, AddProductToCartResponse } from "./types";
-import { MOCK_CART, MOCK_PRODUCTS } from "../../demo/database";
+import { MOCK_CART, MOCK_PRODUCTS, mockPublishEvent } from "../../demo/database";
 import { CFActiveProduct } from "../../CommonTypes";
 
 export const mockAddProductToCart: AddProductToCart = async (params?: AddProductToCartParams): Promise<AddProductToCartResponse> => {
@@ -59,6 +59,9 @@ export const mockAddProductToCart: AddProductToCart = async (params?: AddProduct
     MOCK_CART.total += lineTotal; 
     MOCK_CART.amountToBeCharged = MOCK_CART.total;
     MOCK_CART.remainingBalance = MOCK_CART.total;
+
+    // Publish cart event to simulate real behavior
+    mockPublishEvent('cart', 'product-added', { product: activeProduct });
 
     return {
         success: true,

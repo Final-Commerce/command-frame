@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { command } from '@final-commerce/command-frame';
+import { renderClient as command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -8,16 +8,16 @@ interface CategoriesSectionProps {
   isInIframe: boolean;
 }
 
-export function CategoriesSection({ isInIframe }: CategoriesSectionProps) {
+export function CategoriesSection({ isInIframe: _ }: CategoriesSectionProps) {
   const [categories, setCategories] = useState<any[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [categoriesError, setCategoriesError] = useState<string>('');
 
   const handleGetCategories = async () => {
-    if (!isInIframe) {
-      setCategoriesError('Error: Not running in iframe');
-      return;
-    }
+    // if (!isInIframe) {
+    //   setCategoriesError('Error: Not running in iframe');
+    //   return;
+    // }
 
     setCategoriesLoading(true);
     setCategories([]);

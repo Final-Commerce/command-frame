@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { command, TriggerWebhookPresetType } from '@final-commerce/command-frame';
+import { renderClient as command, TriggerWebhookPresetType } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
