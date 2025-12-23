@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { command } from '@final-commerce/command-frame';
+import { renderClient as command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { command } from '@final-commerce/command-frame';
+import { renderClient as command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -8,7 +8,7 @@ interface ProductsSectionProps {
   isInIframe: boolean;
 }
 
-export function ProductsSection({ isInIframe }: ProductsSectionProps) {
+export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [productsError, setProductsError] = useState<string>('');
@@ -41,10 +41,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
   const [adjustInventoryResponse, setAdjustInventoryResponse] = useState<string>('');
 
   const handleGetProducts = async () => {
-    if (!isInIframe) {
-      setProductsError('Error: Not running in iframe');
-      return;
-    }
+    // if (!isInIframe) {
+    //   setProductsError('Error: Not running in iframe');
+    //   return;
+    // }
 
     setProductsLoading(true);
     setProducts([]);
@@ -244,10 +244,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
         </p>
         <button
           onClick={async () => {
-            if (!isInIframe) {
-              setAddProductResponse('Error: Not running in iframe');
-              return;
-            }
+            // if (!isInIframe) {
+            //   setAddProductResponse('Error: Not running in iframe');
+            //   return;
+            // }
             if (!variantId) {
               setAddProductResponse('Error: Variant ID is required');
               return;
@@ -296,10 +296,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
         </div>
         <button
           onClick={async () => {
-            if (!isInIframe) {
-              setAddProductNoteResponse('Error: Not running in iframe');
-              return;
-            }
+            // if (!isInIframe) {
+            //   setAddProductNoteResponse('Error: Not running in iframe');
+            //   return;
+            // }
             if (!variantId) {
               setAddProductNoteResponse('Error: Variant ID is required');
               return;
@@ -383,10 +383,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
         </div>
         <button
           onClick={async () => {
-            if (!isInIframe) {
-              setAddProductFeeResponse('Error: Not running in iframe');
-              return;
-            }
+            // if (!isInIframe) {
+            //   setAddProductFeeResponse('Error: Not running in iframe');
+            //   return;
+            // }
             if (!variantId) {
               setAddProductFeeResponse('Error: Variant ID is required');
               return;
@@ -456,10 +456,10 @@ export function ProductsSection({ isInIframe }: ProductsSectionProps) {
         </div>
         <button
           onClick={async () => {
-            if (!isInIframe) {
-              setAdjustInventoryResponse('Error: Not running in iframe');
-              return;
-            }
+            // if (!isInIframe) {
+            //   setAdjustInventoryResponse('Error: Not running in iframe');
+            //   return;
+            // }
             if (!variantId) {
               setAdjustInventoryResponse('Error: Variant ID is required');
               return;
