@@ -3,23 +3,30 @@ import type { PostMessageRequest, PostMessageResponse } from "./client";
 export type ActionHandler<TParams = any, TResponse = any> = (params: TParams) => Promise<TResponse> | TResponse;
 export type ActionHandlers = Map<string, ActionHandler>;
 
-export class CommandFrameProvider {
+export class CommandFrameProvider<TActions extends object = any> {
     private handlers: ActionHandlers = new Map();
     private origin: string;
     private debug: boolean;
     private destroyed: boolean = false;
     private boundHandleMessage: (event: MessageEvent<PostMessageRequest>) => void;
 
-    constructor(options: { origin?: string; debug?: boolean } = {}) {
+    constructor(actions?: TActions, options: { origin?: string; debug?: boolean } = {}) {
         this.origin = options.origin || "*";
         this.debug = options.debug || false;
 
-        // Store bound handler to allow proper cleanup
         this.boundHandleMessage = this.handleMessage.bind(this);
 
-        // Listen for messages from iframe
         if (typeof window !== "undefined") {
             window.addEventListener("message", this.boundHandleMessage);
+        }
+
+        if (actions) {
+            (Object.keys(actions) as Array<keyof TActions & string>).forEach((actionName) => {
+                const handler = (actions as any)[actionName];
+                if (typeof handler === "function") {
+                    this.register(actionName, handler);
+                }
+            });
         }
 
         if (this.debug) {
