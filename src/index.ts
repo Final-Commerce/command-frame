@@ -366,6 +366,16 @@ export type {
 // Export Common Types
 export * from "./CommonTypes";
 
+// Export Provider
+export { CommandFrameProvider } from "./provider";
+export type { ActionHandler, ActionHandlers } from "./provider";
+
+// Export Render Project
+export * from "./projects/render";
+
+// Export Manage Project
+export * from "./projects/manage";
+
 // Export client
 export { commandFrameClient, CommandFrameClient } from "./client";
 export type { PostMessageRequest, PostMessageResponse } from "./client";

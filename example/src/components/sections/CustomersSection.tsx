@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { command } from '@final-commerce/command-frame';
+import { renderClient as command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -8,7 +8,7 @@ interface CustomersSectionProps {
   isInIframe: boolean;
 }
 
-export function CustomersSection({ isInIframe }: CustomersSectionProps) {
+export function CustomersSection({ isInIframe: _ }: CustomersSectionProps) {
   const [customers, setCustomers] = useState<any[]>([]);
   const [customersLoading, setCustomersLoading] = useState(false);
   const [customersError, setCustomersError] = useState<string>('');
@@ -43,10 +43,10 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
   const [removeCustomerResponse, setRemoveCustomerResponse] = useState<string>('');
 
   const handleGetCustomers = async () => {
-    if (!isInIframe) {
-      setCustomersError('Error: Not running in iframe');
-      return;
-    }
+    // if (!isInIframe) {
+    //   setCustomersError('Error: Not running in iframe');
+    //   return;
+    // }
 
     setCustomersLoading(true);
     setCustomers([]);
@@ -76,10 +76,10 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
   };
 
   const handleAssignCustomer = async () => {
-    if (!isInIframe) {
-      setAssignCustomerResponse('Error: Not running in iframe');
-      return;
-    }
+    // if (!isInIframe) {
+    //   setAssignCustomerResponse('Error: Not running in iframe');
+    //   return;
+    // }
 
     if (!assignCustomerId) {
       setAssignCustomerResponse('Error: Please enter a customer ID');
@@ -103,10 +103,10 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
   };
 
   const handleAddCustomer = async () => {
-    if (!isInIframe) {
-      setAddCustomerResponse('Error: Not running in iframe');
-      return;
-    }
+    // if (!isInIframe) {
+    //   setAddCustomerResponse('Error: Not running in iframe');
+    //   return;
+    // }
 
     setAddCustomerLoading(true);
     setAddCustomerResponse('');
@@ -327,10 +327,10 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
         </div>
         <button
           onClick={async () => {
-            if (!isInIframe) {
-              setAddCustomerNoteResponse('Error: Not running in iframe');
-              return;
-            }
+            // if (!isInIframe) {
+            //   setAddCustomerNoteResponse('Error: Not running in iframe');
+            //   return;
+            // }
             if (!customerNoteId) {
               setAddCustomerNoteResponse('Error: Customer ID is required');
               return;
@@ -372,10 +372,10 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
         </p>
         <button
           onClick={async () => {
-            if (!isInIframe) {
-              setRemoveCustomerResponse('Error: Not running in iframe');
-              return;
-            }
+            // if (!isInIframe) {
+            //   setRemoveCustomerResponse('Error: Not running in iframe');
+            //   return;
+            // }
             setRemoveCustomerLoading(true);
             setRemoveCustomerResponse('');
             try {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { command } from '@final-commerce/command-frame';
+import { renderClient as command } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -8,16 +8,16 @@ interface EnvironmentSectionProps {
   isInIframe: boolean;
 }
 
-export function EnvironmentSection({ isInIframe }: EnvironmentSectionProps) {
+export function EnvironmentSection({ isInIframe: _ }: EnvironmentSectionProps) {
   const [contextData, setContextData] = useState<any>(null);
   const [contextLoading, setContextLoading] = useState(false);
   const [contextError, setContextError] = useState<string>('');
 
   const handleGetContext = async () => {
-    if (!isInIframe) {
-      setContextError('Error: Not running in iframe');
-      return;
-    }
+    // if (!isInIframe) {
+    //   setContextError('Error: Not running in iframe');
+    //   return;
+    // }
 
     setContextLoading(true);
     setContextError('');

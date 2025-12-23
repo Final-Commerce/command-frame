@@ -1,5 +1,5 @@
 import { CashPayment, CashPaymentParams, CashPaymentResponse } from "./types";
-import { createOrderFromCart, MOCK_CART } from "../../demo/database";
+import { createOrderFromCart, MOCK_CART, mockPublishEvent } from "../../demo/database";
 
 export const mockCashPayment: CashPayment = async (params?: CashPaymentParams): Promise<CashPaymentResponse> => {
     console.log("[Mock] cashPayment called", params);
@@ -44,6 +44,9 @@ export const mockCashPayment: CashPayment = async (params?: CashPaymentParams): 
     }
 
     const order = createOrderFromCart("cash", amount, "cash");
+    
+    // Publish payment-done event
+    mockPublishEvent('payments', 'payment-done', { order });
 
     return {
         success: true,

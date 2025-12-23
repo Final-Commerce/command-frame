@@ -644,6 +644,35 @@ export const safeSerialize = <T>(data: T): T => {
     return JSON.parse(JSON.stringify(data));
 };
 
+// Mock Event Emitter for pub/sub simulation in mock mode
+type MockEventCallback = (event: any) => void;
+const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
+
+export const mockPublishEvent = (topic: string, eventType: string, data: any) => {
+    const subscribers = mockTopicSubscribers[topic] || [];
+    const event = {
+        topic,
+        type: eventType,
+        data,
+        timestamp: new Date().toISOString()
+    };
+    
+    subscribers.forEach(callback => {
+        try {
+            callback(event);
+        } catch (error) {
+            console.error(`[Mock] Error in topic callback for ${topic}:`, error);
+        }
+    });
+};
+
+export const mockSubscribeToTopic = (topic: string, callback: MockEventCallback) => {
+    if (!mockTopicSubscribers[topic]) {
+        mockTopicSubscribers[topic] = [];
+    }
+    mockTopicSubscribers[topic].push(callback);
+};
+
 // Helper to create order from cart
 export const createOrderFromCart = (
     paymentType: string,
@@ -730,6 +759,9 @@ export const createOrderFromCart = (
 
     MOCK_ORDERS.push(newOrder);
     resetMockCart();
+    
+    // Publish cart-created event after cart is reset (simulates new empty cart)
+    mockPublishEvent('cart', 'cart-created', {});
     
     return newOrder;
 };

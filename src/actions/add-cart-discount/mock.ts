@@ -1,5 +1,5 @@
 import { AddCartDiscount, AddCartDiscountParams, AddCartDiscountResponse } from "./types";
-import { MOCK_CART } from "../../demo/database";
+import { MOCK_CART, mockPublishEvent } from "../../demo/database";
 
 export const mockAddCartDiscount: AddCartDiscount = async (params?: AddCartDiscountParams): Promise<AddCartDiscountResponse> => {
     console.log("[Mock] addCartDiscount called", params);
@@ -18,6 +18,11 @@ export const mockAddCartDiscount: AddCartDiscount = async (params?: AddCartDisco
         }
         MOCK_CART.amountToBeCharged = MOCK_CART.total;
         MOCK_CART.remainingBalance = MOCK_CART.total;
+        
+        // Publish cart-discount-added event
+        mockPublishEvent('cart', 'cart-discount-added', { 
+            discount: MOCK_CART.discount 
+        });
     }
 
     return {
