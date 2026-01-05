@@ -12,3 +12,9 @@ import type {
 export const getCustomTables: GetCustomTables = async (): Promise<GetCustomTablesResponse> => {
     return await commandFrameClient.call<undefined, GetCustomTablesResponse>("getCustomTables");
 };
+
+
+// getCustomTableData(tableName, query, offset, limit) - return data from custom table
+// addCustomTableData(tableName, data) - add data to custom table
+// updateCustomTableData(tableName, query, data) - update data in custom table
+// deleteCustomTableData(tableName, query) - delete data from custom table

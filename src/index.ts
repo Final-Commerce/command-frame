@@ -492,3 +492,21 @@ export type {
     GetCustomTableFieldsParams,
     GetCustomTableFieldsResponse
 } from "./actions/get-custom-table-fields/types";
+
+export type {
+    GetCustomTableData,
+    GetCustomTableDataParams,
+    GetCustomTableDataResponse
+} from "./actions/get-custom-table-data/types";
+
+export type {
+    UpsertCustomTableData,
+    UpsertCustomTableDataParams,
+    UpsertCustomTableDataResponse
+} from "./actions/upsert-custom-table-data/types"
+
+export type {
+    DeleteCustomTableData,
+    DeleteCustomTableDataParams,
+    DeleteCustomTableDataResponse
+} from "./actions/delete-custom-table-data/types";
