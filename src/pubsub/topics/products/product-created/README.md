@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a new product is synced/created in the local database.
+Published when a new product is synced/created in the local database.
 
 ## Event Type
 

@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a note is deleted from a customer's record.
+Published when a note is deleted from a customer's record.
 
 ## Event Type
 

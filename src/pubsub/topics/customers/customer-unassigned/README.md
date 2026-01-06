@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a customer is unassigned from the current cart/session.
+Published when a customer is unassigned from the current cart/session.
 
 ## Event Type
 

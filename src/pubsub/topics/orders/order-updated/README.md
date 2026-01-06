@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when an order's information is updated in the system.
+Published when an order's information is updated in the system.
 
 ## Event Type
 

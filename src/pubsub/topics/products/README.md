@@ -14,8 +14,8 @@ The `products` topic provides events related to product lifecycle. Subscribe to 
 
 | Event | Description | Documentation |
 |-------|-------------|---------------|
-| [product-created](./product-created/README.md) | Fired when a new product is synced/created | [View Details](./product-created/README.md) |
-| [product-updated](./product-updated/README.md) | Fired when a product is synced/updated | [View Details](./product-updated/README.md) |
+| [product-created](./product-created/README.md) | Published when a new product is synced/created | [View Details](./product-created/README.md) |
+| [product-updated](./product-updated/README.md) | Published when a product is synced/updated | [View Details](./product-updated/README.md) |
 
 ## Quick Start
 

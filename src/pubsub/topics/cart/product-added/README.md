@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a product is added to the cart.
+Published when a product is added to the cart.
 
 ## Event Type
 

@@ -13,12 +13,12 @@ export const paymentsTopic: TopicDefinition = {
         {
             id: "payment-done",
             name: "Payment Done",
-            description: "Fired when a payment is successfully completed"
+            description: "Published when a payment is successfully completed"
         },
         {
             id: "payment-err",
             name: "Payment Error",
-            description: "Fired when a payment error occurs"
+            description: "Published when a payment error occurs"
         }
     ]
 };

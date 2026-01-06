@@ -13,12 +13,12 @@ export const ordersTopic: TopicDefinition = {
         {
             id: "order-created",
             name: "Order Created",
-            description: "Fired when a new order is created"
+            description: "Published when a new order is created"
         },
         {
             id: "order-updated",
             name: "Order Updated",
-            description: "Fired when an order is updated"
+            description: "Published when an order is updated"
         }
     ]
 };

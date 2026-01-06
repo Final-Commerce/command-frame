@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a fee is added to the cart.
+Published when a fee is added to the cart.
 
 ## Event Type
 

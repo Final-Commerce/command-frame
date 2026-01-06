@@ -14,12 +14,12 @@ The `customers` topic provides events related to customer lifecycle and cart ass
 
 | Event | Description | Documentation |
 |-------|-------------|---------------|
-| [customer-created](./customer-created/README.md) | Fired when a new customer is created | [View Details](./customer-created/README.md) |
-| [customer-updated](./customer-updated/README.md) | Fired when a customer's information is updated | [View Details](./customer-updated/README.md) |
-| [customer-note-added](./customer-note-added/README.md) | Fired when a note is added to a customer | [View Details](./customer-note-added/README.md) |
-| [customer-note-deleted](./customer-note-deleted/README.md) | Fired when a note is deleted from a customer | [View Details](./customer-note-deleted/README.md) |
-| [customer-assigned](./customer-assigned/README.md) | Fired when a customer is assigned to the cart | [View Details](./customer-assigned/README.md) |
-| [customer-unassigned](./customer-unassigned/README.md) | Fired when a customer is unassigned from the cart | [View Details](./customer-unassigned/README.md) |
+| [customer-created](./customer-created/README.md) | Published when a new customer is created | [View Details](./customer-created/README.md) |
+| [customer-updated](./customer-updated/README.md) | Published when a customer's information is updated | [View Details](./customer-updated/README.md) |
+| [customer-note-added](./customer-note-added/README.md) | Published when a note is added to a customer | [View Details](./customer-note-added/README.md) |
+| [customer-note-deleted](./customer-note-deleted/README.md) | Published when a note is deleted from a customer | [View Details](./customer-note-deleted/README.md) |
+| [customer-assigned](./customer-assigned/README.md) | Published when a customer is assigned to the cart | [View Details](./customer-assigned/README.md) |
+| [customer-unassigned](./customer-unassigned/README.md) | Published when a customer is unassigned from the cart | [View Details](./customer-unassigned/README.md) |
 
 ## Quick Start
 

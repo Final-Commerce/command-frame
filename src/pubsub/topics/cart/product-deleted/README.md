@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a product is removed from the cart.
+Published when a product is removed from the cart.
 
 ## Event Type
 

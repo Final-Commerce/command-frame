@@ -13,12 +13,12 @@ export const refundsTopic: TopicDefinition = {
         {
             id: "refund-created",
             name: "Refund Created",
-            description: "Fired when a new refund is created"
+            description: "Published when a new refund is created"
         },
         {
             id: "refund-updated",
             name: "Refund Updated",
-            description: "Fired when a refund is updated"
+            description: "Published when a refund is updated"
         }
     ]
 };

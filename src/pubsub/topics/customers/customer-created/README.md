@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a new customer is created in the system.
+Published when a new customer is created in the system.
 
 ## Event Type
 

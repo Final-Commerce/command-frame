@@ -7,7 +7,6 @@ import { assignCustomer } from "./actions/assign-customer/action";
 import { addCustomer } from "./actions/add-customer/action";
 import { getCategories } from "./actions/get-categories/action";
 import { getOrders } from "./actions/get-orders/action";
-import { getRefunds } from "./actions/get-refunds/action";
 import { addCartDiscount } from "./actions/add-cart-discount/action";
 import { getContext } from "./actions/get-context/action";
 import { getFinalContext } from "./actions/get-final-context/action";
@@ -20,11 +19,11 @@ import { adjustInventory } from "./actions/adjust-inventory/action";
 // Order Actions
 import { addOrderNote } from "./actions/add-order-note/action";
 import { addCartFee } from "./actions/add-cart-fee/action";
+import { getCurrentCart } from "./actions/get-current-cart/action";
 import { clearCart } from "./actions/clear-cart/action";
 import { parkOrder } from "./actions/park-order/action";
 import { resumeParkedOrder } from "./actions/resume-parked-order/action";
 import { deleteParkedOrder } from "./actions/delete-parked-order/action";
-import { initiateRefund } from "./actions/initiate-refund/action";
 import { cashPayment } from "./actions/cash-payment/action";
 import { tapToPayPayment } from "./actions/tap-to-pay-payment/action";
 import { terminalPayment } from "./actions/terminal-payment/action";
@@ -43,13 +42,16 @@ import { switchUser } from "./actions/switch-user/action";
 // Integration Actions
 import { triggerWebhook } from "./actions/trigger-webhook/action";
 import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
+
+// Refund Actions
+import { getRefunds } from "./actions/get-refunds/action";
+import { initiateRefund } from "./actions/initiate-refund/action";
 import { setRefundStockAction } from "./actions/set-refund-stock-action/action";
 import { selectAllRefundItems } from "./actions/select-all-refund-items/action";
 import { resetRefundDetails } from "./actions/reset-refund-details/action";
 import { calculateRefundTotal } from "./actions/calculate-refund-total/action";
 import { getRemainingRefundableQuantities } from "./actions/get-remaining-refundable-quantities/action";
 import { processPartialRefund } from "./actions/process-partial-refund/action";
-import { getCurrentCart } from "./actions/get-current-cart/action";
 
 // Export actions as command object
 export const command = {
@@ -74,11 +76,11 @@ export const command = {
     // Order Actions
     addOrderNote,
     addCartFee,
+    getCurrentCart,
     clearCart,
     parkOrder,
     resumeParkedOrder,
     deleteParkedOrder,
-    initiateRefund,
     cashPayment,
     tapToPayPayment,
     terminalPayment,
@@ -98,13 +100,13 @@ export const command = {
     triggerWebhook,
     triggerZapierWebhook,
     // Refund Actions
+    initiateRefund,
     setRefundStockAction,
     selectAllRefundItems,
     resetRefundDetails,
     calculateRefundTotal,
     getRemainingRefundableQuantities,
     processPartialRefund,
-    getCurrentCart
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -196,6 +198,12 @@ export type {
     ProcessPartialRefundParams,
     ProcessPartialRefundResponse
 } from "./actions/process-partial-refund/types";
+// Refund Actions
+export type {
+    InitiateRefund,
+    InitiateRefundParams,
+    InitiateRefundResponse
+} from "./actions/initiate-refund/types";
 
 export type {
     GetCurrentCart,
@@ -275,11 +283,6 @@ export type {
     DeleteParkedOrderParams,
     DeleteParkedOrderResponse
 } from "./actions/delete-parked-order/types";
-export type {
-    InitiateRefund,
-    InitiateRefundParams,
-    InitiateRefundResponse
-} from "./actions/initiate-refund/types";
 export type {
     CashPayment,
     CashPaymentParams,

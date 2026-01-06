@@ -52,7 +52,6 @@ The library provides a `command` namespace object containing all available comma
 - **[parkOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/park-order/README.md)** - Park (save) the current order for later retrieval
 - **[resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)** - Resume a previously parked order
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
-- **[initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)** - Open the refund UI for an order
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Initiate a cash payment
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
@@ -74,6 +73,7 @@ The library provides a `command` namespace object containing all available comma
 - **[switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)** - Switch the current user to a different user
 
 #### Refund Actions
+- **[initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)** - Open the refund UI for an order
 - **[selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)** - Select all remaining refundable items for a full refund
 - **[resetRefundDetails](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reset-refund-details/README.md)** - Clear all refund selections
 - **[setRefundStockAction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-refund-stock-action/README.md)** - Set stock handling option (restock/damage) for a refunded item
@@ -233,10 +233,6 @@ Resumes a previously parked order by loading it back into the cart.
 
 Deletes a parked order from the system.
 
-### [initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)
-
-Opens the refund UI for the specified order or the currently active order.
-
 ### [cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)
 
 Initiates a cash payment for the current cart. Opens the cash payment UI if change calculation is enabled.
@@ -295,6 +291,10 @@ Switches the current user to a different user. Supports three modes: dialog (sel
 
 ### Refund Actions
 
+### [initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)
+
+Opens the refund UI for the specified order or the currently active order.
+
 ### [selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)
 
 Selects all remaining refundable items (line items, custom sales, cart fees, and tips) for a full refund.
@@ -343,43 +343,43 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
 
 #### Customer Events
 - **[customers](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/customers/README.md)** - Customer lifecycle events
-  - `customer-created` - Fired when a new customer is created
-  - `customer-updated` - Fired when a customer's information is updated
-  - `customer-note-added` - Fired when a note is added to a customer
-  - `customer-note-deleted` - Fired when a note is deleted from a customer
-  - `customer-assigned` - Fired when a customer is assigned to the cart
-  - `customer-unassigned` - Fired when a customer is unassigned from the cart
+  - `customer-created` - Published when a new customer is created
+  - `customer-updated` - Published when a customer's information is updated
+  - `customer-note-added` - Published when a note is added to a customer
+  - `customer-note-deleted` - Published when a note is deleted from a customer
+  - `customer-assigned` - Published when a customer is assigned to the cart
+  - `customer-unassigned` - Published when a customer is unassigned from the cart
 
 #### Order Events
 - **[orders](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/orders/README.md)** - Order lifecycle events
-  - `order-created` - Fired when a new order is created
-  - `order-updated` - Fired when an order is updated
+  - `order-created` - Published when a new order is created
+  - `order-updated` - Published when an order is updated
 
 #### Refund Events
 - **[refunds](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/refunds/README.md)** - Refund lifecycle events
-  - `refund-created` - Fired when a refund is created
-  - `refund-updated` - Fired when a refund is updated
+  - `refund-created` - Published when a refund is created
+  - `refund-updated` - Published when a refund is updated
 
 #### Product Events
 - **[products](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/products/README.md)** - Product sync events
-  - `product-created` - Fired when a product is created
-  - `product-updated` - Fired when a product is updated
+  - `product-created` - Published when a product is created
+  - `product-updated` - Published when a product is updated
 
 #### Cart Events
 - **[cart](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/cart/README.md)** - Cart operation events
-  - `cart-created` - Fired when a cart is created
-  - `customer-assigned` - Fired when a customer is assigned to the cart
-  - `product-added` - Fired when a product is added to the cart
-  - `product-deleted` - Fired when a product is removed from the cart
-  - `cart-discount-added` - Fired when a discount is added to the cart
-  - `cart-discount-removed` - Fired when a discount is removed from the cart
-  - `cart-fee-added` - Fired when a fee is added to the cart
-  - `cart-fee-removed` - Fired when a fee is removed from the cart
+  - `cart-created` - Published when a cart is created
+  - `customer-assigned` - Published when a customer is assigned to the cart
+  - `product-added` - Published when a product is added to the cart
+  - `product-deleted` - Published when a product is removed from the cart
+  - `cart-discount-added` - Published when a discount is added to the cart
+  - `cart-discount-removed` - Published when a discount is removed from the cart
+  - `cart-fee-added` - Published when a fee is added to the cart
+  - `cart-fee-removed` - Published when a fee is removed from the cart
 
 #### Payment Events
 - **[payments](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/payments/README.md)** - Payment processing events
-  - `payment-done` - Fired when a payment is successfully completed
-  - `payment-err` - Fired when a payment fails
+  - `payment-done` - Published when a payment is successfully completed
+  - `payment-err` - Published when a payment fails
 
 For detailed documentation on each topic and its events, including payload structures and usage examples, see the [Pub/Sub Documentation](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/README.md).
 
@@ -439,7 +439,6 @@ import type {
     ParkOrderResponse, ParkOrder,
     ResumeParkedOrderParams, ResumeParkedOrderResponse, ResumeParkedOrder,
     DeleteParkedOrderParams, DeleteParkedOrderResponse, DeleteParkedOrder,
-    InitiateRefundParams, InitiateRefundResponse, InitiateRefund,
     CashPaymentParams, CashPaymentResponse, CashPayment,
     TapToPayPaymentParams, TapToPayPaymentResponse, TapToPayPayment,
     TerminalPaymentParams, TerminalPaymentResponse, TerminalPayment,
@@ -458,6 +457,7 @@ import type {
     AuthenticateUserParams, AuthenticateUserResponse, AuthenticateUser,
     SwitchUserParams, SwitchUserResponse, SwitchUser,
     // Refund Actions
+    InitiateRefundParams, InitiateRefundResponse, InitiateRefund,
     SelectAllRefundItemsParams, SelectAllRefundItemsResponse, SelectAllRefundItems,
     ResetRefundDetailsResponse, ResetRefundDetails,
     SetRefundStockActionParams, SetRefundStockActionResponse, SetRefundStockAction,
