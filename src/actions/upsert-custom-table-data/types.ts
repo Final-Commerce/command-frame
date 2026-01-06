@@ -9,4 +9,4 @@ export interface UpsertCustomTableDataParams<T = any> {
     data: T;
 }
 
-export type UpsertCustomTableData = <T = any>(params?: UpsertCustomTableDataParams) => Promise<UpsertCustomTableDataResponse<T>>;
+export type UpsertCustomTableData = <T = any>(params?: UpsertCustomTableDataParams<T>) => Promise<UpsertCustomTableDataResponse<T>>;
