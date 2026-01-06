@@ -360,36 +360,6 @@ export type {
     TriggerZapierWebhookResponse
 } from "./actions/trigger-zapier-webhook/types";
 
-// Custom Tables Actions
-export type {
-    GetCustomTables,
-    GetCustomTablesResponse
-} from "./actions/get-custom-tables/types";
-
-export type {
-    GetCustomTableFields,
-    GetCustomTableFieldsParams,
-    GetCustomTableFieldsResponse
-} from "./actions/get-custom-table-fields/types";
-
-export type {
-    GetCustomTableData,
-    GetCustomTableDataParams,
-    GetCustomTableDataResponse
-} from "./actions/get-custom-table-data/types";
-
-export type {
-    UpsertCustomTableData,
-    UpsertCustomTableDataParams,
-    UpsertCustomTableDataResponse
-} from "./actions/upsert-custom-table-data/types"
-
-export type {
-    DeleteCustomTableData,
-    DeleteCustomTableDataParams,
-    DeleteCustomTableDataResponse
-} from "./actions/delete-custom-table-data/types";
-
 // Export Common Types
 export * from "./CommonTypes";
 
@@ -408,7 +378,7 @@ export { commandFrameClient, CommandFrameClient } from "./client";
 export type { PostMessageRequest, PostMessageResponse } from "./client";
 
 // Export Pub/Sub
-export { topics } from "./pubsub/topic";
+export { topics } from "./pubsub/topics";
 export type {
     TopicDefinition,
     TopicEvent,
