@@ -360,6 +360,36 @@ export type {
     TriggerZapierWebhookResponse
 } from "./actions/trigger-zapier-webhook/types";
 
+// Custom Tables Actions
+export type {
+    GetCustomTables,
+    GetCustomTablesResponse
+} from "./actions/get-custom-tables/types";
+
+export type {
+    GetCustomTableFields,
+    GetCustomTableFieldsParams,
+    GetCustomTableFieldsResponse
+} from "./actions/get-custom-table-fields/types";
+
+export type {
+    GetCustomTableData,
+    GetCustomTableDataParams,
+    GetCustomTableDataResponse
+} from "./actions/get-custom-table-data/types";
+
+export type {
+    UpsertCustomTableData,
+    UpsertCustomTableDataParams,
+    UpsertCustomTableDataResponse
+} from "./actions/upsert-custom-table-data/types"
+
+export type {
+    DeleteCustomTableData,
+    DeleteCustomTableDataParams,
+    DeleteCustomTableDataResponse
+} from "./actions/delete-custom-table-data/types";
+
 // Export Common Types
 export * from "./CommonTypes";
 
@@ -394,7 +424,7 @@ export { refundsTopic } from "./pubsub/topics/refunds";
 export { productsTopic } from "./pubsub/topics/products";
 export { cartTopic } from "./pubsub/topics/cart";
 export { paymentsTopic } from "./pubsub/topics/payments";
-
+export { customTablesTopic } from "./pubsub/topics/custom-tables";
 // Export Pub/Sub Event Types
 export type {
     // Customer event payloads
@@ -477,3 +507,15 @@ export type {
     PaymentsEventType,
     PaymentsEventPayload
 } from "./pubsub/topics/payments/types";
+
+// Export Custom Tables Event Types
+export type {
+    RowCreatedPayload,
+    RowUpdatedPayload,
+    RowDeletedPayload,
+    RowCreatedEvent,
+    RowUpdatedEvent,
+    RowDeletedEvent,
+    CustomTablesEventType,
+    CustomTablesEventPayload
+} from "./pubsub/topics/custom-tables/types";
