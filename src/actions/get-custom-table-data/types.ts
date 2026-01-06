@@ -11,4 +11,4 @@ export interface GetCustomTableDataParams {
     limit?: number;
 }
 
-export type GetCustomTableData = <T = any>(params?: GetCustomTableDataParams) => Promise<GetCustomTableDataResponse<T[]>>;
+export type GetCustomTableData = <T = any>(params?: GetCustomTableDataParams) => Promise<GetCustomTableDataResponse<T>>;
