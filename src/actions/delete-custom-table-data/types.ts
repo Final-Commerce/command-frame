@@ -4,7 +4,7 @@ export interface DeleteCustomTableDataResponse {
 }
 
 export interface DeleteCustomTableDataParams {
-    tableId: string;
+    tableName: string;
     rowId: string;
 }
 
