@@ -12,6 +12,8 @@ import { getContext } from "./actions/get-context/action";
 import { getFinalContext } from "./actions/get-final-context/action";
 import { addProductDiscount } from "./actions/add-product-discount/action";
 import { addProductToCart } from "./actions/add-product-to-cart/action";
+import { removeProductFromCart } from "./actions/remove-product-from-cart/action";
+import { updateCartItemQuantity } from "./actions/update-cart-item-quantity/action";
 // Product Actions
 import { addProductNote } from "./actions/add-product-note/action";
 import { addProductFee } from "./actions/add-product-fee/action";
@@ -66,6 +68,8 @@ export const command = {
     getRefunds,
     addProductDiscount,
     addProductToCart,
+    removeProductFromCart,
+    updateCartItemQuantity,
     addCartDiscount,
     getContext,
     getFinalContext,
@@ -221,6 +225,18 @@ export type {
     AddProductToCartParams,
     AddProductToCartResponse
 } from "./actions/add-product-to-cart/types";
+
+export type {
+    RemoveProductFromCart,
+    RemoveProductFromCartParams,
+    RemoveProductFromCartResponse
+} from "./actions/remove-product-from-cart/types";
+
+export type {
+    UpdateCartItemQuantity,
+    UpdateCartItemQuantityParams,
+    UpdateCartItemQuantityResponse
+} from "./actions/update-cart-item-quantity/types";
 
 export type {
     AddCartDiscount,
