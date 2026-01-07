@@ -10,6 +10,8 @@ import type {
     GetRefunds,
     AddProductDiscount,
     AddProductToCart,
+    RemoveProductFromCart,
+    UpdateCartItemQuantity,
     AddCartDiscount,
     GetContext,
     GetFinalContext,
@@ -59,6 +61,8 @@ export interface RenderProviderActions {
     getRefunds: GetRefunds;
     addProductDiscount: AddProductDiscount;
     addProductToCart: AddProductToCart;
+    removeProductFromCart: RemoveProductFromCart;
+    updateCartItemQuantity: UpdateCartItemQuantity;
     addCartDiscount: AddCartDiscount;
     getContext: GetContext;
     getFinalContext: GetFinalContext;

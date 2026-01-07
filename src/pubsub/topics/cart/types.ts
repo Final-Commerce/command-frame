@@ -8,6 +8,7 @@ export * from "./cart-created/types";
 export * from "./customer-assigned/types";
 export * from "./product-added/types";
 export * from "./product-deleted/types";
+export * from "./product-updated/types";
 export * from "./cart-discount-added/types";
 export * from "./cart-discount-removed/types";
 export * from "./cart-fee-added/types";
@@ -18,6 +19,7 @@ import type { CartCreatedPayload } from "./cart-created/types";
 import type { CartCustomerAssignedPayload } from "./customer-assigned/types";
 import type { ProductAddedPayload } from "./product-added/types";
 import type { ProductDeletedPayload } from "./product-deleted/types";
+import type { CartProductUpdatedPayload } from "./product-updated/types";
 import type { CartDiscountAddedPayload } from "./cart-discount-added/types";
 import type { CartDiscountRemovedPayload } from "./cart-discount-removed/types";
 import type { CartFeeAddedPayload } from "./cart-fee-added/types";
@@ -29,6 +31,7 @@ export type CartEventPayload =
     | CartCustomerAssignedPayload
     | ProductAddedPayload
     | ProductDeletedPayload
+    | CartProductUpdatedPayload
     | CartDiscountAddedPayload
     | CartDiscountRemovedPayload
     | CartFeeAddedPayload
@@ -40,6 +43,7 @@ export type CartEventType =
     | "customer-assigned"
     | "product-added"
     | "product-deleted"
+    | "product-updated"
     | "cart-discount-added"
     | "cart-discount-removed"
     | "cart-fee-added"
