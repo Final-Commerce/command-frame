@@ -31,6 +31,11 @@ export const cartTopic: TopicDefinition = {
             description: "Published when a product is removed from the cart"
         },
         {
+            id: "product-updated",
+            name: "Product Updated",
+            description: "Published when a product's quantity is updated in the cart"
+        },
+        {
             id: "cart-discount-added",
             name: "Cart Discount Added",
             description: "Published when a discount is added to the cart"
