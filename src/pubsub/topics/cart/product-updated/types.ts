@@ -14,4 +14,3 @@ export interface CartProductUpdatedPayload {
  * Typed event for cart product-updated
  */
 export type CartProductUpdatedEvent = TopicEvent<CartProductUpdatedPayload>;
-

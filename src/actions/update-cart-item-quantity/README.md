@@ -91,5 +91,3 @@ When increasing quantity, this action validates stock availability. If insuffici
 - `addProductToCart` - Add a product to the cart (returns `internalId`)
 - `removeProductFromCart` - Remove a product from the cart
 - `getCurrentCart` - Get all cart items with their `internalId` values
-
-

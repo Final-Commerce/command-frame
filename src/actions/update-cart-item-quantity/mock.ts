@@ -75,5 +75,3 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = async (params?
         timestamp: new Date().toISOString()
     };
 };
-
-

@@ -48,4 +48,3 @@ export type CartEventType =
     | "cart-discount-removed"
     | "cart-fee-added"
     | "cart-fee-removed";
-

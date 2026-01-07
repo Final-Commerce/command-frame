@@ -13,5 +13,3 @@ import type {
 export const removeProductFromCart: RemoveProductFromCart = async (params?: RemoveProductFromCartParams): Promise<RemoveProductFromCartResponse> => {
     return await commandFrameClient.call<RemoveProductFromCartParams, RemoveProductFromCartResponse>("removeProductFromCart", params);
 };
-
-

@@ -17,5 +17,3 @@ export interface UpdateCartItemQuantityResponse {
 }
 
 export type UpdateCartItemQuantity = (params?: UpdateCartItemQuantityParams) => Promise<UpdateCartItemQuantityResponse>;
-
-

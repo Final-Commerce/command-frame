@@ -13,5 +13,3 @@ import type {
 export const updateCartItemQuantity: UpdateCartItemQuantity = async (params?: UpdateCartItemQuantityParams): Promise<UpdateCartItemQuantityResponse> => {
     return await commandFrameClient.call<UpdateCartItemQuantityParams, UpdateCartItemQuantityResponse>("updateCartItemQuantity", params);
 };
-
-

@@ -63,5 +63,3 @@ This action publishes a `product-deleted` event on the `cart` topic when a produ
 - `addProductToCart` - Add a product to the cart (returns `internalId`)
 - `updateCartItemQuantity` - Update the quantity of a cart item (or remove if quantity is 0)
 - `getCurrentCart` - Get all cart items with their `internalId` values
-
-

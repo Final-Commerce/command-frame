@@ -42,5 +42,3 @@ export const mockRemoveProductFromCart: RemoveProductFromCart = async (params?: 
         timestamp: new Date().toISOString()
     };
 };
-
-

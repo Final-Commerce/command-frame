@@ -13,5 +13,3 @@ export interface RemoveProductFromCartResponse {
 }
 
 export type RemoveProductFromCart = (params?: RemoveProductFromCartParams) => Promise<RemoveProductFromCartResponse>;
-
-

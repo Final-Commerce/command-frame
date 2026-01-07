@@ -62,4 +62,3 @@ topicPublisher.publish('cart', 'product-updated', {
 - `CFActiveProduct` - Product type from CommonTypes
 - `CartProductUpdatedPayload` - Event payload type
 - `CartProductUpdatedEvent` - Full event type with topic, type, data, and timestamp
-
