@@ -47,6 +47,17 @@ export function CartSection({ isInIframe }: CartSectionProps) {
   const [getCurrentCartLoading, setGetCurrentCartLoading] = useState(false);
   const [getCurrentCartResponse, setGetCurrentCartResponse] = useState<string>('');
 
+  // Remove Product from Cart
+  const [removeProductInternalId, setRemoveProductInternalId] = useState<string>('');
+  const [removeProductLoading, setRemoveProductLoading] = useState(false);
+  const [removeProductResponse, setRemoveProductResponse] = useState<string>('');
+
+  // Update Cart Item Quantity
+  const [updateQuantityInternalId, setUpdateQuantityInternalId] = useState<string>('');
+  const [updateQuantityValue, setUpdateQuantityValue] = useState<string>('1');
+  const [updateQuantityLoading, setUpdateQuantityLoading] = useState(false);
+  const [updateQuantityResponse, setUpdateQuantityResponse] = useState<string>('');
+
   const handleAddCustomSale = async () => {
     if (!isInIframe) {
       setCustomSaleResponse('Error: Not running in iframe');
@@ -464,6 +475,126 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           <JsonViewer
             data={getCurrentCartResponse}
             title={getCurrentCartResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Product from Cart */}
+      <CommandSection title="Remove Product from Cart">
+        <p className="section-description">
+          Removes a product from the cart by its internalId. Use getCurrentCart to find the internalId of items in the cart.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Internal ID:</label>
+            <input
+              type="text"
+              value={removeProductInternalId}
+              onChange={(e) => setRemoveProductInternalId(e.target.value)}
+              placeholder="Cart item internalId"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setRemoveProductResponse('Error: Not running in iframe');
+              return;
+            }
+            if (!removeProductInternalId) {
+              setRemoveProductResponse('Error: Please enter an internalId');
+              return;
+            }
+            setRemoveProductLoading(true);
+            setRemoveProductResponse('');
+            try {
+              const result = await command.removeProductFromCart({
+                internalId: removeProductInternalId
+              });
+              setRemoveProductResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveProductResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveProductLoading(false);
+            }
+          }}
+          disabled={removeProductLoading}
+          className="btn btn--danger"
+        >
+          {removeProductLoading ? 'Removing...' : 'Remove from Cart'}
+        </button>
+        {removeProductResponse && (
+          <JsonViewer
+            data={removeProductResponse}
+            title={removeProductResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Update Cart Item Quantity */}
+      <CommandSection title="Update Cart Item Quantity">
+        <p className="section-description">
+          Updates the quantity of a cart item by its internalId. Set quantity to 0 to remove the item. Stock validation is performed when increasing quantity.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Internal ID:</label>
+            <input
+              type="text"
+              value={updateQuantityInternalId}
+              onChange={(e) => setUpdateQuantityInternalId(e.target.value)}
+              placeholder="Cart item internalId"
+            />
+          </div>
+          <div className="form-field">
+            <label>Quantity:</label>
+            <input
+              type="number"
+              value={updateQuantityValue}
+              onChange={(e) => setUpdateQuantityValue(e.target.value)}
+              placeholder="1"
+              min="0"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setUpdateQuantityResponse('Error: Not running in iframe');
+              return;
+            }
+            if (!updateQuantityInternalId) {
+              setUpdateQuantityResponse('Error: Please enter an internalId');
+              return;
+            }
+            const quantity = parseFloat(updateQuantityValue);
+            if (isNaN(quantity) || quantity < 0) {
+              setUpdateQuantityResponse('Error: Please enter a valid quantity (>= 0)');
+              return;
+            }
+            setUpdateQuantityLoading(true);
+            setUpdateQuantityResponse('');
+            try {
+              const result = await command.updateCartItemQuantity({
+                internalId: updateQuantityInternalId,
+                quantity: quantity
+              });
+              setUpdateQuantityResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setUpdateQuantityResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setUpdateQuantityLoading(false);
+            }
+          }}
+          disabled={updateQuantityLoading}
+          className="btn btn--primary"
+        >
+          {updateQuantityLoading ? 'Updating...' : 'Update Quantity'}
+        </button>
+        {updateQuantityResponse && (
+          <JsonViewer
+            data={updateQuantityResponse}
+            title={updateQuantityResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>

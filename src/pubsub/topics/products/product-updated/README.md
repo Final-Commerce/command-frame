@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a product's information is synced/updated in the local database.
+Published when a product's information is synced/updated in the local database.
 
 ## Event Type
 

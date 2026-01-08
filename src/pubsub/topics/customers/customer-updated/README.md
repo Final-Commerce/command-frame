@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a customer's information is updated in the system.
+Published when a customer's information is updated in the system.
 
 ## Event Type
 

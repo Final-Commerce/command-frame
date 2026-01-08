@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a payment is successfully completed.
+Published when a payment is successfully completed.
 
 ## Event Type
 

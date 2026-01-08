@@ -14,14 +14,14 @@ The `cart` topic provides events related to cart operations. Subscribe to this t
 
 | Event | Description | Documentation |
 |-------|-------------|---------------|
-| [cart-created](./cart-created/README.md) | Fired when a new cart is created | [View Details](./cart-created/README.md) |
-| [customer-assigned](./customer-assigned/README.md) | Fired when a customer is assigned to the cart | [View Details](./customer-assigned/README.md) |
-| [product-added](./product-added/README.md) | Fired when a product is added to the cart | [View Details](./product-added/README.md) |
-| [product-deleted](./product-deleted/README.md) | Fired when a product is removed from the cart | [View Details](./product-deleted/README.md) |
-| [cart-discount-added](./cart-discount-added/README.md) | Fired when a discount is added to the cart | [View Details](./cart-discount-added/README.md) |
-| [cart-discount-removed](./cart-discount-removed/README.md) | Fired when a discount is removed from the cart | [View Details](./cart-discount-removed/README.md) |
-| [cart-fee-added](./cart-fee-added/README.md) | Fired when a fee is added to the cart | [View Details](./cart-fee-added/README.md) |
-| [cart-fee-removed](./cart-fee-removed/README.md) | Fired when a fee is removed from the cart | [View Details](./cart-fee-removed/README.md) |
+| [cart-created](./cart-created/README.md) | Published when a new cart is created | [View Details](./cart-created/README.md) |
+| [customer-assigned](./customer-assigned/README.md) | Published when a customer is assigned to the cart | [View Details](./customer-assigned/README.md) |
+| [product-added](./product-added/README.md) | Published when a product is added to the cart | [View Details](./product-added/README.md) |
+| [product-deleted](./product-deleted/README.md) | Published when a product is removed from the cart | [View Details](./product-deleted/README.md) |
+| [cart-discount-added](./cart-discount-added/README.md) | Published when a discount is added to the cart | [View Details](./cart-discount-added/README.md) |
+| [cart-discount-removed](./cart-discount-removed/README.md) | Published when a discount is removed from the cart | [View Details](./cart-discount-removed/README.md) |
+| [cart-fee-added](./cart-fee-added/README.md) | Published when a fee is added to the cart | [View Details](./cart-fee-added/README.md) |
+| [cart-fee-removed](./cart-fee-removed/README.md) | Published when a fee is removed from the cart | [View Details](./cart-fee-removed/README.md) |
 
 ## Quick Start
 

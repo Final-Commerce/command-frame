@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a fee is removed from the cart.
+Published when a fee is removed from the cart.
 
 ## Event Type
 

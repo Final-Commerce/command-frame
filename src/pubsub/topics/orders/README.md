@@ -14,8 +14,8 @@ The `orders` topic provides events related to order lifecycle. Subscribe to this
 
 | Event | Description | Documentation |
 |-------|-------------|---------------|
-| [order-created](./order-created/README.md) | Fired when a new order is created | [View Details](./order-created/README.md) |
-| [order-updated](./order-updated/README.md) | Fired when an order is updated | [View Details](./order-updated/README.md) |
+| [order-created](./order-created/README.md) | Published when a new order is created | [View Details](./order-created/README.md) |
+| [order-updated](./order-updated/README.md) | Published when an order is updated | [View Details](./order-updated/README.md) |
 
 ## Quick Start
 

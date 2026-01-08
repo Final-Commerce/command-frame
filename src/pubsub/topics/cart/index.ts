@@ -13,42 +13,47 @@ export const cartTopic: TopicDefinition = {
         {
             id: "cart-created",
             name: "Cart Created",
-            description: "Fired when a new cart is created"
+            description: "Published when a new cart is created"
         },
         {
             id: "customer-assigned",
             name: "Customer Assigned",
-            description: "Fired when a customer is assigned to the cart"
+            description: "Published when a customer is assigned to the cart"
         },
         {
             id: "product-added",
             name: "Product Added",
-            description: "Fired when a product is added to the cart"
+            description: "Published when a product is added to the cart"
         },
         {
             id: "product-deleted",
             name: "Product Deleted",
-            description: "Fired when a product is removed from the cart"
+            description: "Published when a product is removed from the cart"
+        },
+        {
+            id: "product-updated",
+            name: "Product Updated",
+            description: "Published when a product's quantity is updated in the cart"
         },
         {
             id: "cart-discount-added",
             name: "Cart Discount Added",
-            description: "Fired when a discount is added to the cart"
+            description: "Published when a discount is added to the cart"
         },
         {
             id: "cart-discount-removed",
             name: "Cart Discount Removed",
-            description: "Fired when a discount is removed from the cart"
+            description: "Published when a discount is removed from the cart"
         },
         {
             id: "cart-fee-added",
             name: "Cart Fee Added",
-            description: "Fired when a fee is added to the cart"
+            description: "Published when a fee is added to the cart"
         },
         {
             id: "cart-fee-removed",
             name: "Cart Fee Removed",
-            description: "Fired when a fee is removed from the cart"
+            description: "Published when a fee is removed from the cart"
         }
     ]
 };

@@ -14,8 +14,8 @@ The `payments` topic provides events related to payment processing. Subscribe to
 
 | Event | Description | Documentation |
 |-------|-------------|---------------|
-| [payment-done](./payment-done/README.md) | Fired when a payment is successfully completed | [View Details](./payment-done/README.md) |
-| [payment-err](./payment-err/README.md) | Fired when a payment error occurs | [View Details](./payment-err/README.md) |
+| [payment-done](./payment-done/README.md) | Published when a payment is successfully completed | [View Details](./payment-done/README.md) |
+| [payment-err](./payment-err/README.md) | Published when a payment error occurs | [View Details](./payment-err/README.md) |
 
 ## Quick Start
 

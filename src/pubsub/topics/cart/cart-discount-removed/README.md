@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a discount is removed from the cart.
+Published when a discount is removed from the cart.
 
 ## Event Type
 

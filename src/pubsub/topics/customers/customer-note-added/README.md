@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a note is added to a customer's record.
+Published when a note is added to a customer's record.
 
 ## Event Type
 

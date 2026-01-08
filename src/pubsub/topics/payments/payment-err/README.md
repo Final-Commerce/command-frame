@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a payment error occurs.
+Published when a payment error occurs.
 
 ## Event Type
 

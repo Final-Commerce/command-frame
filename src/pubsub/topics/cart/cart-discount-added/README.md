@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a discount is added to the cart.
+Published when a discount is added to the cart.
 
 ## Event Type
 

@@ -13,12 +13,12 @@ export const productsTopic: TopicDefinition = {
         {
             id: "product-created",
             name: "Product Created",
-            description: "Fired when a new product is synced/created"
+            description: "Published when a new product is synced/created"
         },
         {
             id: "product-updated",
             name: "Product Updated",
-            description: "Fired when a product is synced/updated"
+            description: "Published when a product is synced/updated"
         }
     ]
 };

@@ -116,12 +116,14 @@ await command.clearCart();
 await command.parkOrder();
 await command.resumeParkedOrder({ orderId: 'order-123' });
 await command.deleteParkedOrder({ orderId: 'order-123' });
-await command.initiateRefund({ orderId: 'order-123' });
 await command.cashPayment({ amount: 50.00 });
 await command.tapToPayPayment();
 await command.terminalPayment();
 await command.vendaraPayment();
 await command.partialPayment({ amount: 25.00, isPercent: false });
+
+// Refund Actions
+await command.initiateRefund({ orderId: 'order-123' });
 
 // Customer Actions
 await command.addCustomerNote({ customerId: 'customer-123', note: 'VIP customer' });

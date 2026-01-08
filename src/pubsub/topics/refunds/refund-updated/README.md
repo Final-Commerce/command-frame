@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a refund's information is updated in the system.
+Published when a refund's information is updated in the system.
 
 ## Event Type
 

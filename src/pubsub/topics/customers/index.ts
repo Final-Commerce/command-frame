@@ -13,32 +13,32 @@ export const customersTopic: TopicDefinition = {
         {
             id: "customer-created",
             name: "Customer Created",
-            description: "Fired when a new customer is created"
+            description: "Published when a new customer is created"
         },
         {
             id: "customer-updated",
             name: "Customer Updated",
-            description: "Fired when a customer is updated"
+            description: "Published when a customer is updated"
         },
         {
             id: "customer-note-added",
             name: "Customer Note Added",
-            description: "Fired when a note is added to a customer"
+            description: "Published when a note is added to a customer"
         },
         {
             id: "customer-note-deleted",
             name: "Customer Note Deleted",
-            description: "Fired when a note is deleted from a customer"
+            description: "Published when a note is deleted from a customer"
         },
         {
             id: "customer-assigned",
             name: "Customer Assigned",
-            description: "Fired when a customer is assigned to the cart"
+            description: "Published when a customer is assigned to the cart"
         },
         {
             id: "customer-unassigned",
             name: "Customer Unassigned",
-            description: "Fired when a customer is unassigned from the cart"
+            description: "Published when a customer is unassigned from the cart"
         }
     ]
 };

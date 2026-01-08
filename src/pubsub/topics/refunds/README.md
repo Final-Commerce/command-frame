@@ -14,8 +14,8 @@ The `refunds` topic provides events related to refund lifecycle. Subscribe to th
 
 | Event | Description | Documentation |
 |-------|-------------|---------------|
-| [refund-created](./refund-created/README.md) | Fired when a new refund is created | [View Details](./refund-created/README.md) |
-| [refund-updated](./refund-updated/README.md) | Fired when a refund is updated | [View Details](./refund-updated/README.md) |
+| [refund-created](./refund-created/README.md) | Published when a new refund is created | [View Details](./refund-created/README.md) |
+| [refund-updated](./refund-updated/README.md) | Published when a refund is updated | [View Details](./refund-updated/README.md) |
 
 ## Quick Start
 

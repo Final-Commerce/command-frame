@@ -2,7 +2,7 @@
 
 ## Description
 
-Fired when a new cart is created (when first product is added to an empty cart or when cart is cleared/reset).
+Published when a new cart is created (when first product is added to an empty cart or when cart is cleared/reset).
 
 ## Event Type
 
