@@ -9,4 +9,4 @@ export * from "./refunds";
 export * from "./products";
 export * from "./cart";
 export * from "./payments";
-
+export * from "./custom-tables";

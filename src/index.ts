@@ -400,7 +400,7 @@ export { commandFrameClient, CommandFrameClient } from "./client";
 export type { PostMessageRequest, PostMessageResponse } from "./client";
 
 // Export Pub/Sub
-export { topics } from "./pubsub/topic";
+export { topics } from "./pubsub/topics";
 export type {
     TopicDefinition,
     TopicEvent,
@@ -416,7 +416,7 @@ export { refundsTopic } from "./pubsub/topics/refunds";
 export { productsTopic } from "./pubsub/topics/products";
 export { cartTopic } from "./pubsub/topics/cart";
 export { paymentsTopic } from "./pubsub/topics/payments";
-
+export { customTablesTopic } from "./pubsub/topics/custom-tables";
 // Export Pub/Sub Event Types
 export type {
     // Customer event payloads
@@ -499,6 +499,18 @@ export type {
     PaymentsEventType,
     PaymentsEventPayload
 } from "./pubsub/topics/payments/types";
+
+// Export Custom Tables Event Types
+export type {
+    RowCreatedPayload,
+    RowUpdatedPayload,
+    RowDeletedPayload,
+    RowCreatedEvent,
+    RowUpdatedEvent,
+    RowDeletedEvent,
+    CustomTablesEventType,
+    CustomTablesEventPayload
+} from "./pubsub/topics/custom-tables/types";
 
 // Export Custom Tables Types
 export type {
