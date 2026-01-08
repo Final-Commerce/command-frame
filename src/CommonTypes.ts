@@ -1,3 +1,5 @@
+export * from "./common-types";
+
 // Enums
 export enum CFProductType {
     SIMPLE = "simple",

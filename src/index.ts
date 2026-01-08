@@ -12,6 +12,8 @@ import { getContext } from "./actions/get-context/action";
 import { getFinalContext } from "./actions/get-final-context/action";
 import { addProductDiscount } from "./actions/add-product-discount/action";
 import { addProductToCart } from "./actions/add-product-to-cart/action";
+import { removeProductFromCart } from "./actions/remove-product-from-cart/action";
+import { updateCartItemQuantity } from "./actions/update-cart-item-quantity/action";
 // Product Actions
 import { addProductNote } from "./actions/add-product-note/action";
 import { addProductFee } from "./actions/add-product-fee/action";
@@ -52,6 +54,9 @@ import { resetRefundDetails } from "./actions/reset-refund-details/action";
 import { calculateRefundTotal } from "./actions/calculate-refund-total/action";
 import { getRemainingRefundableQuantities } from "./actions/get-remaining-refundable-quantities/action";
 import { processPartialRefund } from "./actions/process-partial-refund/action";
+// Custom Tables Actions
+import { getCustomTables } from "./actions/get-custom-tables/action";
+import { getCustomTableFields } from "./actions/get-custom-table-fields/action";
 
 // Export actions as command object
 export const command = {
@@ -66,6 +71,8 @@ export const command = {
     getRefunds,
     addProductDiscount,
     addProductToCart,
+    removeProductFromCart,
+    updateCartItemQuantity,
     addCartDiscount,
     getContext,
     getFinalContext,
@@ -107,6 +114,9 @@ export const command = {
     calculateRefundTotal,
     getRemainingRefundableQuantities,
     processPartialRefund,
+    // Custom Tables Actions
+    getCustomTables,
+    getCustomTableFields,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -221,6 +231,18 @@ export type {
     AddProductToCartParams,
     AddProductToCartResponse
 } from "./actions/add-product-to-cart/types";
+
+export type {
+    RemoveProductFromCart,
+    RemoveProductFromCartParams,
+    RemoveProductFromCartResponse
+} from "./actions/remove-product-from-cart/types";
+
+export type {
+    UpdateCartItemQuantity,
+    UpdateCartItemQuantityParams,
+    UpdateCartItemQuantityResponse
+} from "./actions/update-cart-item-quantity/types";
 
 export type {
     AddCartDiscount,
@@ -489,3 +511,33 @@ export type {
     CustomTablesEventType,
     CustomTablesEventPayload
 } from "./pubsub/topics/custom-tables/types";
+
+// Export Custom Tables Types
+export type {
+    GetCustomTables,
+    GetCustomTablesResponse
+} from "./actions/get-custom-tables/types";
+
+export type {
+    GetCustomTableFields,
+    GetCustomTableFieldsParams,
+    GetCustomTableFieldsResponse
+} from "./actions/get-custom-table-fields/types";
+
+export type {
+    GetCustomTableData,
+    GetCustomTableDataParams,
+    GetCustomTableDataResponse
+} from "./actions/get-custom-table-data/types";
+
+export type {
+    UpsertCustomTableData,
+    UpsertCustomTableDataParams,
+    UpsertCustomTableDataResponse
+} from "./actions/upsert-custom-table-data/types"
+
+export type {
+    DeleteCustomTableData,
+    DeleteCustomTableDataParams,
+    DeleteCustomTableDataResponse
+} from "./actions/delete-custom-table-data/types";

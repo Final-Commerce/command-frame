@@ -38,6 +38,8 @@ The library provides a `command` namespace object containing all available comma
 
 #### Product Actions
 - **[addProductToCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-to-cart/README.md)** - Add a product to the cart with optional discounts, fees, and notes
+- **[removeProductFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-product-from-cart/README.md)** - Remove a product from the cart (using `internalId`)
+- **[updateCartItemQuantity](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-cart-item-quantity/README.md)** - Update the quantity of a cart item (using `internalId`)
 - **[addProductDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-discount/README.md)** - Add a discount to a specific product in the cart (using `internalId`)
 - **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `internalId`)
 - **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `internalId`)
@@ -194,6 +196,14 @@ Adds a discount to the entire cart. Supports both fixed amount and percentage di
 Retrieves the current environment/context information from the parent application. Returns user, company, device, station, outlet, and build information including IDs, names, and other relevant details.
 
 ### Product Actions
+
+### [removeProductFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-product-from-cart/README.md)
+
+Removes a product from the cart by its unique `internalId`. Publishes a `product-deleted` event on the `cart` topic.
+
+### [updateCartItemQuantity](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-cart-item-quantity/README.md)
+
+Updates the quantity of a cart item by its unique `internalId`. If quantity is set to 0, the item is removed. Includes stock validation when increasing quantity. Publishes `product-updated` or `product-deleted` events on the `cart` topic.
 
 ### [addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)
 
@@ -370,6 +380,7 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
   - `cart-created` - Published when a cart is created
   - `customer-assigned` - Published when a customer is assigned to the cart
   - `product-added` - Published when a product is added to the cart
+  - `product-updated` - Published when a cart item's quantity is updated
   - `product-deleted` - Published when a product is removed from the cart
   - `cart-discount-added` - Published when a discount is added to the cart
   - `cart-discount-removed` - Published when a discount is removed from the cart
@@ -427,6 +438,8 @@ import type {
     // Product Actions
     AddProductDiscountParams, AddProductDiscountResponse, AddProductDiscount,
     AddProductToCartParams, AddProductToCartResponse, AddProductToCart,
+    RemoveProductFromCartParams, RemoveProductFromCartResponse, RemoveProductFromCart,
+    UpdateCartItemQuantityParams, UpdateCartItemQuantityResponse, UpdateCartItemQuantity,
     AddProductNoteParams, AddProductNoteResponse, AddProductNote,
     AddProductFeeParams, AddProductFeeResponse, AddProductFee,
     AdjustInventoryParams, AdjustInventoryResponse, AdjustInventory,
