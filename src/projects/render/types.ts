@@ -46,7 +46,8 @@ import type {
     CalculateRefundTotal,
     GetRemainingRefundableQuantities,
     ProcessPartialRefund,
-    GetCurrentCart
+    GetCurrentCart,
+    Print
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -98,5 +99,5 @@ export interface RenderProviderActions {
     getRemainingRefundableQuantities: GetRemainingRefundableQuantities;
     processPartialRefund: ProcessPartialRefund;
     getCurrentCart: GetCurrentCart;
+    print: Print;
 }
-

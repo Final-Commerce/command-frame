@@ -41,6 +41,7 @@ import { showConfirmation } from "./actions/show-confirmation/action";
 import { authenticateUser } from "./actions/authenticate-user/action";
 import { partialPayment } from "./actions/partial-payment/action";
 import { switchUser } from "./actions/switch-user/action";
+import { print } from "./actions/print/action";
 // Integration Actions
 import { triggerWebhook } from "./actions/trigger-webhook/action";
 import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
@@ -103,6 +104,7 @@ export const command = {
     authenticateUser,
     partialPayment,
     switchUser,
+    print,
     // Integration Actions
     triggerWebhook,
     triggerZapierWebhook,
@@ -116,86 +118,35 @@ export const command = {
     processPartialRefund,
     // Custom Tables Actions
     getCustomTables,
-    getCustomTableFields,
+    getCustomTableFields
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
-export type {
-    ExampleFunction,
-    ExampleFunctionParams,
-    ExampleFunctionResponse
-} from "./actions/example-function/types";
+export type { ExampleFunction, ExampleFunctionParams, ExampleFunctionResponse } from "./actions/example-function/types";
 
-export type {
-    GetProducts,
-    GetProductsParams,
-    GetProductsResponse
-} from "./actions/get-products/types";
+export type { GetProducts, GetProductsParams, GetProductsResponse } from "./actions/get-products/types";
 
-export type {
-    AddCustomSale,
-    AddCustomSaleParams,
-    AddCustomSaleResponse
-} from "./actions/add-custom-sale/types";
+export type { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from "./actions/add-custom-sale/types";
 
-export type {
-    GetCustomers,
-    GetCustomersParams,
-    GetCustomersResponse
-} from "./actions/get-customers/types";
+export type { GetCustomers, GetCustomersParams, GetCustomersResponse } from "./actions/get-customers/types";
 
-export type {
-    AssignCustomer,
-    AssignCustomerParams,
-    AssignCustomerResponse
-} from "./actions/assign-customer/types";
+export type { AssignCustomer, AssignCustomerParams, AssignCustomerResponse } from "./actions/assign-customer/types";
 
-export type {
-    AddCustomer,
-    AddCustomerParams,
-    AddCustomerResponse
-} from "./actions/add-customer/types";
+export type { AddCustomer, AddCustomerParams, AddCustomerResponse } from "./actions/add-customer/types";
 
-export type {
-    GetCategories,
-    GetCategoriesParams,
-    GetCategoriesResponse
-} from "./actions/get-categories/types";
+export type { GetCategories, GetCategoriesParams, GetCategoriesResponse } from "./actions/get-categories/types";
 
-export type {
-    GetOrders,
-    GetOrdersParams,
-    GetOrdersResponse
-} from "./actions/get-orders/types";
+export type { GetOrders, GetOrdersParams, GetOrdersResponse } from "./actions/get-orders/types";
 
-export type {
-    GetRefunds,
-    GetRefundsParams,
-    GetRefundsResponse
-} from "./actions/get-refunds/types";
+export type { GetRefunds, GetRefundsParams, GetRefundsResponse } from "./actions/get-refunds/types";
 
-export type {
-    SetRefundStockAction,
-    SetRefundStockActionParams,
-    SetRefundStockActionResponse
-} from "./actions/set-refund-stock-action/types";
+export type { SetRefundStockAction, SetRefundStockActionParams, SetRefundStockActionResponse } from "./actions/set-refund-stock-action/types";
 
-export type {
-    SelectAllRefundItems,
-    SelectAllRefundItemsParams,
-    SelectAllRefundItemsResponse
-} from "./actions/select-all-refund-items/types";
+export type { SelectAllRefundItems, SelectAllRefundItemsParams, SelectAllRefundItemsResponse } from "./actions/select-all-refund-items/types";
 
-export type {
-    ResetRefundDetails,
-    ResetRefundDetailsResponse
-} from "./actions/reset-refund-details/types";
+export type { ResetRefundDetails, ResetRefundDetailsResponse } from "./actions/reset-refund-details/types";
 
-export type {
-    CalculateRefundTotal,
-    CalculateRefundTotalParams,
-    CalculateRefundTotalResponse
-} from "./actions/calculate-refund-total/types";
+export type { CalculateRefundTotal, CalculateRefundTotalParams, CalculateRefundTotalResponse } from "./actions/calculate-refund-total/types";
 
 export type {
     GetRemainingRefundableQuantities,
@@ -203,184 +154,56 @@ export type {
     GetRemainingRefundableQuantitiesResponse
 } from "./actions/get-remaining-refundable-quantities/types";
 
-export type {
-    ProcessPartialRefund,
-    ProcessPartialRefundParams,
-    ProcessPartialRefundResponse
-} from "./actions/process-partial-refund/types";
+export type { ProcessPartialRefund, ProcessPartialRefundParams, ProcessPartialRefundResponse } from "./actions/process-partial-refund/types";
 // Refund Actions
-export type {
-    InitiateRefund,
-    InitiateRefundParams,
-    InitiateRefundResponse
-} from "./actions/initiate-refund/types";
+export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from "./actions/initiate-refund/types";
 
-export type {
-    GetCurrentCart,
-    GetCurrentCartResponse
-} from "./actions/get-current-cart/types";
+export type { GetCurrentCart, GetCurrentCartResponse } from "./actions/get-current-cart/types";
 
-export type {
-    AddProductDiscount,
-    AddProductDiscountParams,
-    AddProductDiscountResponse
-} from "./actions/add-product-discount/types";
+export type { AddProductDiscount, AddProductDiscountParams, AddProductDiscountResponse } from "./actions/add-product-discount/types";
 
-export type {
-    AddProductToCart,
-    AddProductToCartParams,
-    AddProductToCartResponse
-} from "./actions/add-product-to-cart/types";
+export type { AddProductToCart, AddProductToCartParams, AddProductToCartResponse } from "./actions/add-product-to-cart/types";
 
-export type {
-    RemoveProductFromCart,
-    RemoveProductFromCartParams,
-    RemoveProductFromCartResponse
-} from "./actions/remove-product-from-cart/types";
+export type { RemoveProductFromCart, RemoveProductFromCartParams, RemoveProductFromCartResponse } from "./actions/remove-product-from-cart/types";
 
-export type {
-    UpdateCartItemQuantity,
-    UpdateCartItemQuantityParams,
-    UpdateCartItemQuantityResponse
-} from "./actions/update-cart-item-quantity/types";
+export type { UpdateCartItemQuantity, UpdateCartItemQuantityParams, UpdateCartItemQuantityResponse } from "./actions/update-cart-item-quantity/types";
 
-export type {
-    AddCartDiscount,
-    AddCartDiscountParams,
-    AddCartDiscountResponse
-} from "./actions/add-cart-discount/types";
+export type { AddCartDiscount, AddCartDiscountParams, AddCartDiscountResponse } from "./actions/add-cart-discount/types";
 
-export type {
-    GetContext,
-    GetContextResponse
-} from "./actions/get-context/types";
+export type { GetContext, GetContextResponse } from "./actions/get-context/types";
 
-export type {
-    GetFinalContext,
-    GetFinalContextResponse
-} from "./actions/get-final-context/types";
+export type { GetFinalContext, GetFinalContextResponse } from "./actions/get-final-context/types";
 
 // Product Actions
-export type {
-    AddProductNote,
-    AddProductNoteParams,
-    AddProductNoteResponse
-} from "./actions/add-product-note/types";
-export type {
-    AddProductFee,
-    AddProductFeeParams,
-    AddProductFeeResponse
-} from "./actions/add-product-fee/types";
-export type {
-    AdjustInventory,
-    AdjustInventoryParams,
-    AdjustInventoryResponse
-} from "./actions/adjust-inventory/types";
+export type { AddProductNote, AddProductNoteParams, AddProductNoteResponse } from "./actions/add-product-note/types";
+export type { AddProductFee, AddProductFeeParams, AddProductFeeResponse } from "./actions/add-product-fee/types";
+export type { AdjustInventory, AdjustInventoryParams, AdjustInventoryResponse } from "./actions/adjust-inventory/types";
 // Order Actions
-export type {
-    AddOrderNote,
-    AddOrderNoteParams,
-    AddOrderNoteResponse
-} from "./actions/add-order-note/types";
-export type {
-    AddCartFee,
-    AddCartFeeParams,
-    AddCartFeeResponse
-} from "./actions/add-cart-fee/types";
-export type {
-    ClearCart,
-    ClearCartResponse
-} from "./actions/clear-cart/types";
-export type {
-    ParkOrder,
-    ParkOrderResponse
-} from "./actions/park-order/types";
-export type {
-    ResumeParkedOrder,
-    ResumeParkedOrderParams,
-    ResumeParkedOrderResponse
-} from "./actions/resume-parked-order/types";
-export type {
-    DeleteParkedOrder,
-    DeleteParkedOrderParams,
-    DeleteParkedOrderResponse
-} from "./actions/delete-parked-order/types";
-export type {
-    CashPayment,
-    CashPaymentParams,
-    CashPaymentResponse
-} from "./actions/cash-payment/types";
-export type {
-    TapToPayPayment,
-    TapToPayPaymentParams,
-    TapToPayPaymentResponse
-} from "./actions/tap-to-pay-payment/types";
-export type {
-    TerminalPayment,
-    TerminalPaymentParams,
-    TerminalPaymentResponse
-} from "./actions/terminal-payment/types";
-export type {
-    VendaraPayment,
-    VendaraPaymentParams,
-    VendaraPaymentResponse
-} from "./actions/vendara-payment/types";
+export type { AddOrderNote, AddOrderNoteParams, AddOrderNoteResponse } from "./actions/add-order-note/types";
+export type { AddCartFee, AddCartFeeParams, AddCartFeeResponse } from "./actions/add-cart-fee/types";
+export type { ClearCart, ClearCartResponse } from "./actions/clear-cart/types";
+export type { ParkOrder, ParkOrderResponse } from "./actions/park-order/types";
+export type { ResumeParkedOrder, ResumeParkedOrderParams, ResumeParkedOrderResponse } from "./actions/resume-parked-order/types";
+export type { DeleteParkedOrder, DeleteParkedOrderParams, DeleteParkedOrderResponse } from "./actions/delete-parked-order/types";
+export type { CashPayment, CashPaymentParams, CashPaymentResponse } from "./actions/cash-payment/types";
+export type { TapToPayPayment, TapToPayPaymentParams, TapToPayPaymentResponse } from "./actions/tap-to-pay-payment/types";
+export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } from "./actions/terminal-payment/types";
+export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
 // Customer Actions
-export type {
-    AddCustomerNote,
-    AddCustomerNoteParams,
-    AddCustomerNoteResponse
-} from "./actions/add-customer-note/types";
-export type {
-    RemoveCustomerFromCart,
-    RemoveCustomerFromCartResponse
-} from "./actions/remove-customer-from-cart/types";
+export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
+export type { RemoveCustomerFromCart, RemoveCustomerFromCartResponse } from "./actions/remove-customer-from-cart/types";
 // System Actions
-export type {
-    GoToStationHome,
-    GoToStationHomeResponse
-} from "./actions/go-to-station-home/types";
-export type {
-    OpenCashDrawer,
-    OpenCashDrawerResponse
-} from "./actions/open-cash-drawer/types";
-export type {
-    ShowNotification,
-    ShowNotificationParams,
-    ShowNotificationResponse
-} from "./actions/show-notification/types";
-export type {
-    ShowConfirmation,
-    ShowConfirmationParams,
-    ShowConfirmationResponse
-} from "./actions/show-confirmation/types";
-export type {
-    AuthenticateUser,
-    AuthenticateUserParams,
-    AuthenticateUserResponse
-} from "./actions/authenticate-user/types";
-export type {
-    PartialPayment,
-    PartialPaymentParams,
-    PartialPaymentResponse
-} from "./actions/partial-payment/types";
-export type {
-    SwitchUser,
-    SwitchUserParams,
-    SwitchUserResponse
-} from "./actions/switch-user/types";
+export type { GoToStationHome, GoToStationHomeResponse } from "./actions/go-to-station-home/types";
+export type { OpenCashDrawer, OpenCashDrawerResponse } from "./actions/open-cash-drawer/types";
+export type { ShowNotification, ShowNotificationParams, ShowNotificationResponse } from "./actions/show-notification/types";
+export type { ShowConfirmation, ShowConfirmationParams, ShowConfirmationResponse } from "./actions/show-confirmation/types";
+export type { AuthenticateUser, AuthenticateUserParams, AuthenticateUserResponse } from "./actions/authenticate-user/types";
+export type { PartialPayment, PartialPaymentParams, PartialPaymentResponse } from "./actions/partial-payment/types";
+export type { SwitchUser, SwitchUserParams, SwitchUserResponse } from "./actions/switch-user/types";
+export type { Print, PrintParams, PrintResponse } from "./actions/print/types";
 // Integration Actions
-export type {
-    TriggerWebhook,
-    TriggerWebhookPresetType,
-    TriggerWebhookParams,
-    TriggerWebhookResponse
-} from "./actions/trigger-webhook/types";
-export type {
-    TriggerZapierWebhook,
-    TriggerZapierWebhookParams,
-    TriggerZapierWebhookResponse
-} from "./actions/trigger-zapier-webhook/types";
+export type { TriggerWebhook, TriggerWebhookPresetType, TriggerWebhookParams, TriggerWebhookResponse } from "./actions/trigger-webhook/types";
+export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWebhookResponse } from "./actions/trigger-zapier-webhook/types";
 
 // Export Common Types
 export * from "./CommonTypes";
@@ -401,13 +224,7 @@ export type { PostMessageRequest, PostMessageResponse } from "./client";
 
 // Export Pub/Sub
 export { topics } from "./pubsub/topics";
-export type {
-    TopicDefinition,
-    TopicEvent,
-    TopicEventType,
-    TopicSubscriptionCallback,
-    TopicSubscription
-} from "./pubsub/types";
+export type { TopicDefinition, TopicEvent, TopicEventType, TopicSubscriptionCallback, TopicSubscription } from "./pubsub/types";
 
 // Export Pub/Sub Topics
 export { customersTopic } from "./pubsub/topics/customers";
@@ -513,31 +330,12 @@ export type {
 } from "./pubsub/topics/custom-tables/types";
 
 // Export Custom Tables Types
-export type {
-    GetCustomTables,
-    GetCustomTablesResponse
-} from "./actions/get-custom-tables/types";
+export type { GetCustomTables, GetCustomTablesResponse } from "./actions/get-custom-tables/types";
 
-export type {
-    GetCustomTableFields,
-    GetCustomTableFieldsParams,
-    GetCustomTableFieldsResponse
-} from "./actions/get-custom-table-fields/types";
+export type { GetCustomTableFields, GetCustomTableFieldsParams, GetCustomTableFieldsResponse } from "./actions/get-custom-table-fields/types";
 
-export type {
-    GetCustomTableData,
-    GetCustomTableDataParams,
-    GetCustomTableDataResponse
-} from "./actions/get-custom-table-data/types";
+export type { GetCustomTableData, GetCustomTableDataParams, GetCustomTableDataResponse } from "./actions/get-custom-table-data/types";
 
-export type {
-    UpsertCustomTableData,
-    UpsertCustomTableDataParams,
-    UpsertCustomTableDataResponse
-} from "./actions/upsert-custom-table-data/types"
+export type { UpsertCustomTableData, UpsertCustomTableDataParams, UpsertCustomTableDataResponse } from "./actions/upsert-custom-table-data/types";
 
-export type {
-    DeleteCustomTableData,
-    DeleteCustomTableDataParams,
-    DeleteCustomTableDataResponse
-} from "./actions/delete-custom-table-data/types";
+export type { DeleteCustomTableData, DeleteCustomTableDataParams, DeleteCustomTableDataResponse } from "./actions/delete-custom-table-data/types";
