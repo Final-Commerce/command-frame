@@ -47,7 +47,8 @@ import type {
     GetRemainingRefundableQuantities,
     ProcessPartialRefund,
     GetCurrentCart,
-    Print
+    Print,
+    SetActiveOrder
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -100,4 +101,5 @@ export interface RenderProviderActions {
     processPartialRefund: ProcessPartialRefund;
     getCurrentCart: GetCurrentCart;
     print: Print;
+    setActiveOrder: SetActiveOrder;
 }

@@ -22,7 +22,7 @@ export type PrintParams =
       }
     | {
           type: "receipt";
-          data: { order: Omit<CFActiveOrder, "_id">; globalBlockId?: string };
+          data: { order?: Omit<CFActiveOrder, "_id">; globalBlockId?: string };
           options?: PrintOptions;
       };
 

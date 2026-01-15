@@ -133,19 +133,11 @@ export function PrintSection({ isInIframe }: PrintSectionProps) {
         setReceiptPrintResponse("");
 
         try {
-            // Get current cart to use as order data
-            const cart = await command.getCurrentCart();
-
-            // Convert cart to order format (simplified)
-            // Note: CFActiveCart doesn't have an id, so we create a temporary one
-            const orderData = {
-                ...cart.cart,
-                id: "temp-order-id"
-            };
-
+            // Print receipt using active order from store (no order needed in params)
+            // If there's no active order, it will throw an error
             const result = await command.print({
                 type: "receipt",
-                data: { order: orderData as any }
+                data: {} // No order provided - will use active order from store
             });
             setReceiptPrintResponse(JSON.stringify(result, null, 2));
         } catch (error) {
@@ -237,7 +229,10 @@ export function PrintSection({ isInIframe }: PrintSectionProps) {
             </CommandSection>
 
             <CommandSection title="Print Receipt">
-                <p className="section-description">Print a receipt using the existing receipt printing system with the current cart data.</p>
+                <p className="section-description">
+                    Print a receipt using the existing receipt printing system with the active order from the store. Note: This requires an active
+                    order to be present (e.g., after completing a payment).
+                </p>
                 <button onClick={handlePrintReceipt} disabled={receiptPrintLoading} className="btn btn--primary">
                     {receiptPrintLoading ? "Printing..." : "Print Receipt"}
                 </button>

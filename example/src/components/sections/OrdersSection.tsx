@@ -24,6 +24,11 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
   const [deleteParkedOrderResponse, setDeleteParkedOrderResponse] = useState<string>('');
 
 
+  // Set Active Order
+  const [activeOrderId, setActiveOrderId] = useState<string>('');
+  const [setActiveOrderLoading, setSetActiveOrderLoading] = useState(false);
+  const [setActiveOrderResponse, setSetActiveOrderResponse] = useState<string>('');
+
   // Get Orders
   const [ordersStatus, setOrdersStatus] = useState<string>('');
   const [ordersCustomerId, setOrdersCustomerId] = useState<string>('');
@@ -168,6 +173,56 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
         )}
       </CommandSection>
 
+      {/* Set Active Order */}
+      <CommandSection title="Set Active Order">
+        <p className="section-description">
+          Sets an order as the active order by fetching it from the database using the order ID.
+          This is useful for printing receipts or performing operations on a specific order.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Order ID:</label>
+            <input
+              type="text"
+              value={activeOrderId}
+              onChange={(e) => setActiveOrderId(e.target.value)}
+              placeholder="order-id-123"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setSetActiveOrderResponse('Error: Not running in iframe');
+              return;
+            }
+            if (!activeOrderId) {
+              setSetActiveOrderResponse('Error: Please enter an order ID');
+              return;
+            }
+            setSetActiveOrderLoading(true);
+            setSetActiveOrderResponse('');
+            try {
+              const result = await command.setActiveOrder({ orderId: activeOrderId });
+              setSetActiveOrderResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setSetActiveOrderResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setSetActiveOrderLoading(false);
+            }
+          }}
+          disabled={setActiveOrderLoading}
+          className="btn btn--primary"
+        >
+          {setActiveOrderLoading ? 'Setting...' : 'Set Active Order'}
+        </button>
+        {setActiveOrderResponse && (
+          <JsonViewer
+            data={setActiveOrderResponse}
+            title={setActiveOrderResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
 
       {/* Get Orders */}
       <CommandSection title="Get Orders">

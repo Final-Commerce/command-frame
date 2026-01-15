@@ -47,6 +47,7 @@ import { mockTriggerZapierWebhook } from "../../actions/trigger-zapier-webhook/m
 import { mockVendaraPayment } from "../../actions/vendara-payment/mock";
 import { mockGetFinalContext } from "../../actions/get-final-context/mock";
 import { mockPrint } from "../../actions/print/mock";
+import { mockSetActiveOrder } from "../../actions/set-active-order/mock";
 
 import { RenderProviderActions } from "./types";
 
@@ -99,5 +100,6 @@ export const RENDER_MOCKS: RenderProviderActions = {
     triggerZapierWebhook: mockTriggerZapierWebhook,
     vendaraPayment: mockVendaraPayment,
     getFinalContext: mockGetFinalContext,
-    print: mockPrint
+    print: mockPrint,
+    setActiveOrder: mockSetActiveOrder
 };
