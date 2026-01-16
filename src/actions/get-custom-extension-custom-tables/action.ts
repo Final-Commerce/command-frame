@@ -6,9 +6,10 @@
 import { commandFrameClient } from "../../client";
 import type {
     GetCustomExtensionCustomTables,
+    GetCustomExtensionCustomTablesParams,
     GetCustomExtensionCustomTablesResponse
 } from "./types";
 
-export const getCustomExtensionCustomTables: GetCustomExtensionCustomTables = async (): Promise<GetCustomExtensionCustomTablesResponse> => {
-    return await commandFrameClient.call<undefined, GetCustomExtensionCustomTablesResponse>("getCustomExtensionCustomTables");
+export const getCustomExtensionCustomTables: GetCustomExtensionCustomTables = async (params: GetCustomExtensionCustomTablesParams): Promise<GetCustomExtensionCustomTablesResponse> => {
+    return await commandFrameClient.call<GetCustomExtensionCustomTablesParams, GetCustomExtensionCustomTablesResponse>("getCustomExtensionCustomTables", params);
 };

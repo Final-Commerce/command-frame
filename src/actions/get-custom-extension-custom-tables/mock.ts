@@ -1,7 +1,7 @@
-import { GetCustomExtensionCustomTables, GetCustomExtensionCustomTablesResponse } from "./types";
+import { GetCustomExtensionCustomTables, GetCustomExtensionCustomTablesParams, GetCustomExtensionCustomTablesResponse } from "./types";
 
-export const mockGetCustomExtensionCustomTables: GetCustomExtensionCustomTables = async (): Promise<GetCustomExtensionCustomTablesResponse> => {
-    console.log("[Mock] getCustomExtensionCustomTables called");
+export const mockGetCustomExtensionCustomTables: GetCustomExtensionCustomTables = async (params: GetCustomExtensionCustomTablesParams): Promise<GetCustomExtensionCustomTablesResponse> => {
+    console.log("[Mock] getCustomExtensionCustomTables called", params);
     
     return {
         success: true,
