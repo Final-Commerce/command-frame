@@ -10,7 +10,9 @@ export const MOCK_CUSTOM_TABLES: CFCustomTable[] = [
                 key: "value",
                 value: "value"
             }
-        ]
+        ],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     }
 ];
 
@@ -20,7 +22,9 @@ export const MOCK_CUSTOM_TABLE_FIELDS: CFCustomTableField[] = [
         tableId: "custom_table_1",
         name: "customerId",
         type: AttributeType.STRING,
-        required: true
+        required: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     },
     {
         _id: "field_2",
@@ -28,7 +32,9 @@ export const MOCK_CUSTOM_TABLE_FIELDS: CFCustomTableField[] = [
         name: "points",
         type: AttributeType.NUMBER,
         required: true,
-        defaultValue: 0
+        defaultValue: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     },
     {
         _id: "field_3",
@@ -36,13 +42,17 @@ export const MOCK_CUSTOM_TABLE_FIELDS: CFCustomTableField[] = [
         name: "isActive",
         type: AttributeType.BOOLEAN,
         required: false,
-        defaultValue: true
+        defaultValue: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     },
     {
         _id: "field_4",
         tableId: "custom_table_1",
         name: "lastUpdated",
         type: AttributeType.DATE,
-        required: false
+        required: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     }
 ];

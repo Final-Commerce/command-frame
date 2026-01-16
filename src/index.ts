@@ -59,6 +59,12 @@ import { processPartialRefund } from "./actions/process-partial-refund/action";
 // Custom Tables Actions
 import { getCustomTables } from "./actions/get-custom-tables/action";
 import { getCustomTableFields } from "./actions/get-custom-table-fields/action";
+import { getCustomTableData } from "./actions/get-custom-table-data/action";
+import { upsertCustomTableData } from "./actions/upsert-custom-table-data/action";
+import { deleteCustomTableData } from "./actions/delete-custom-table-data/action";
+// Custom Extensions Actions
+import { getCustomExtensions } from "./actions/get-custom-extensions/action";
+import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
 
 // Export actions as command object
 export const command = {
@@ -120,7 +126,13 @@ export const command = {
     processPartialRefund,
     // Custom Tables Actions
     getCustomTables,
-    getCustomTableFields
+    getCustomTableFields,
+    getCustomTableData,
+    upsertCustomTableData,
+    deleteCustomTableData,
+    // Custom Extensions Actions
+    getCustomExtensions,
+    getCustomExtensionCustomTables,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -341,4 +353,19 @@ export type { GetCustomTableData, GetCustomTableDataParams, GetCustomTableDataRe
 
 export type { UpsertCustomTableData, UpsertCustomTableDataParams, UpsertCustomTableDataResponse } from "./actions/upsert-custom-table-data/types";
 
-export type { DeleteCustomTableData, DeleteCustomTableDataParams, DeleteCustomTableDataResponse } from "./actions/delete-custom-table-data/types";
+export type {
+    DeleteCustomTableData,
+    DeleteCustomTableDataParams,
+    DeleteCustomTableDataResponse
+} from "./actions/delete-custom-table-data/types";
+
+export type {
+    GetCustomExtensions,
+    GetCustomExtensionsResponse
+} from "./actions/get-custom-extensions/types";
+
+export type {
+    GetCustomExtensionCustomTables,
+    GetCustomExtensionCustomTablesParams,
+    GetCustomExtensionCustomTablesResponse
+} from "./actions/get-custom-extension-custom-tables/types";

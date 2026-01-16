@@ -1,6 +1,6 @@
 /**
- * Get custom tables action
- * Calls the getCustomTables action on the parent window
+ * Get custom table data action
+ * Calls the getCustomTableData action on the parent window
  */
 
 import { commandFrameClient } from "../../client";
