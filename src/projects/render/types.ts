@@ -48,7 +48,7 @@ import type {
     ProcessPartialRefund,
     GetCurrentCart,
     Print,
-    SetActiveOrder
+    SetActiveOrder,
     GetCustomTables,
     GetCustomTableData,
     UpsertCustomTableData,
