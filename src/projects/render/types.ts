@@ -48,7 +48,13 @@ import type {
     ProcessPartialRefund,
     GetCurrentCart,
     Print,
-    SetActiveOrder
+    SetActiveOrder,
+    GetCustomTables,
+    GetCustomTableData,
+    UpsertCustomTableData,
+    DeleteCustomTableData,
+    GetCustomExtensions,
+    GetCustomExtensionCustomTables
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -102,4 +108,10 @@ export interface RenderProviderActions {
     getCurrentCart: GetCurrentCart;
     print: Print;
     setActiveOrder: SetActiveOrder;
+    getCustomTables: GetCustomTables;
+    getCustomTableData: GetCustomTableData;
+    upsertCustomTableData: UpsertCustomTableData;
+    deleteCustomTableData: DeleteCustomTableData;
+    getCustomExtensions: GetCustomExtensions;
+    getCustomExtensionCustomTables: GetCustomExtensionCustomTables;
 }

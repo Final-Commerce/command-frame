@@ -1,6 +1,6 @@
 /**
- * Get custom tables action
- * Calls the getCustomTables action on the parent window
+ * Delete custom table data action
+ * Calls the deleteCustomTableData action on the parent window
  */
 
 import { commandFrameClient } from "../../client";

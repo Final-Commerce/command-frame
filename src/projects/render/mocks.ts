@@ -48,7 +48,12 @@ import { mockVendaraPayment } from "../../actions/vendara-payment/mock";
 import { mockGetFinalContext } from "../../actions/get-final-context/mock";
 import { mockPrint } from "../../actions/print/mock";
 import { mockSetActiveOrder } from "../../actions/set-active-order/mock";
-
+import { mockGetCustomTables } from "../../actions/get-custom-tables/mock";
+import { mockGetCustomTableData } from "../../actions/get-custom-table-data/mock";
+import { mockUpsertCustomTableData } from "../../actions/upsert-custom-table-data/mock";
+import { mockDeleteCustomTableData } from "../../actions/delete-custom-table-data/mock";
+import { mockGetCustomExtensions } from "../../actions/get-custom-extensions/mock";
+import { mockGetCustomExtensionCustomTables } from "../../actions/get-custom-extension-custom-tables/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -101,5 +106,11 @@ export const RENDER_MOCKS: RenderProviderActions = {
     vendaraPayment: mockVendaraPayment,
     getFinalContext: mockGetFinalContext,
     print: mockPrint,
-    setActiveOrder: mockSetActiveOrder
+    setActiveOrder: mockSetActiveOrder,
+    getCustomTables: mockGetCustomTables,
+    getCustomTableData: mockGetCustomTableData,
+    upsertCustomTableData: mockUpsertCustomTableData,
+    deleteCustomTableData: mockDeleteCustomTableData,
+    getCustomExtensions: mockGetCustomExtensions,
+    getCustomExtensionCustomTables: mockGetCustomExtensionCustomTables,
 };

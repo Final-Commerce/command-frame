@@ -1,5 +1,6 @@
-export type CFCustomTable = {
-    _id: string;
+import { BaseEntity } from "./base-entity";
+
+export type CFCustomTable = BaseEntity & {
     name: string;
     description?: string;
     metadata?: Array<{
@@ -16,8 +17,7 @@ export enum AttributeType {
     JSON_STRING = 'json-string',
   }
 
-export type CFCustomTableField = {
-    _id: string;
+export type CFCustomTableField = BaseEntity & {
     tableId: string;
     name: string;
     type: AttributeType;
