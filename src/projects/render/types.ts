@@ -54,7 +54,8 @@ import type {
     UpsertCustomTableData,
     DeleteCustomTableData,
     GetCustomExtensions,
-    GetCustomExtensionCustomTables
+    GetCustomExtensionCustomTables,
+    GetCustomTableFields
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -114,4 +115,5 @@ export interface RenderProviderActions {
     deleteCustomTableData: DeleteCustomTableData;
     getCustomExtensions: GetCustomExtensions;
     getCustomExtensionCustomTables: GetCustomExtensionCustomTables;
+    getCustomTableFields: GetCustomTableFields;
 }
