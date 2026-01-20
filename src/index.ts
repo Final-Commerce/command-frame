@@ -66,9 +66,12 @@ import { deleteCustomTableData } from "./actions/delete-custom-table-data/action
 import { getCustomExtensions } from "./actions/get-custom-extensions/action";
 import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
 
+import { getPublicKey } from "./actions/get-public-key/action";
+
 // Export actions as command object
 export const command = {
     exampleFunction,
+    getPublicKey,
     getProducts,
     addCustomSale,
     getCustomers,
@@ -137,6 +140,8 @@ export const command = {
 
 // Export types from action folders (only Params, Response, and Function types)
 export type { ExampleFunction, ExampleFunctionParams, ExampleFunctionResponse } from "./actions/example-function/types";
+
+export type { GetPublicKey, GetPublicKeyResponse } from "./actions/get-public-key/types";
 
 export type { GetProducts, GetProductsParams, GetProductsResponse } from "./actions/get-products/types";
 
