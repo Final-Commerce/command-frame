@@ -64,6 +64,7 @@ import { upsertCustomTableData } from "./actions/upsert-custom-table-data/action
 import { deleteCustomTableData } from "./actions/delete-custom-table-data/action";
 // Custom Extensions Actions
 import { getCustomExtensions } from "./actions/get-custom-extensions/action";
+import { getCurrentCompanyCustomExtensions } from "./actions/get-current-company-custom-extensions/action";
 import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
 
 // Export actions as command object
@@ -132,6 +133,7 @@ export const command = {
     deleteCustomTableData,
     // Custom Extensions Actions
     getCustomExtensions,
+    getCurrentCompanyCustomExtensions,
     getCustomExtensionCustomTables,
 } as const;
 
@@ -369,3 +371,9 @@ export type {
     GetCustomExtensionCustomTablesParams,
     GetCustomExtensionCustomTablesResponse
 } from "./actions/get-custom-extension-custom-tables/types";
+
+export type {
+    GetCurrentCompanyCustomExtensions,
+    GetCurrentCompanyCustomExtensionsParams,
+    GetCurrentCompanyCustomExtensionsResponse
+} from "./actions/get-current-company-custom-extensions/types";
