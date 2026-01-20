@@ -90,7 +90,9 @@ The library provides a `command` namespace object containing all available comma
 - **[upsertCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/upsert-custom-table-data/README.md)** - Insert or update data in a custom table
 - **[deleteCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-custom-table-data/README.md)** - Delete a specific record from a custom table
 - **[getCustomExtensions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-extensions/README.md)** - Retrieve all custom extensions from the local database
+- **[getCurrentCompanyCustomExtensions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-company-custom-extensions/README.md)** - Retrieve all custom extensions for the current company
 - **[getCustomExtensionCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-extension-custom-tables/README.md)** - Retrieve custom tables associated with a specific extension
+
 
 #### Integration Actions
 - **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
