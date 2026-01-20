@@ -189,7 +189,7 @@ export type { UpdateCartItemQuantity, UpdateCartItemQuantityParams, UpdateCartIt
 
 export type { AddCartDiscount, AddCartDiscountParams, AddCartDiscountResponse } from "./actions/add-cart-discount/types";
 
-export type { GetContext, GetContextResponse } from "./actions/get-context/types";
+export type { GetContext, GetContextResponse, GetContextResponseManage, GetContextResponseRender } from "./actions/get-context/types";
 
 export type { GetFinalContext, GetFinalContextResponse } from "./actions/get-final-context/types";
 

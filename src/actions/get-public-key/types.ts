@@ -1,4 +1,3 @@
-// Types: Get Public Key
 export interface GetPublicKeyResponse {
     publicKey: string;
 }
