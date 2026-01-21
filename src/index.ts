@@ -134,7 +134,7 @@ export const command = {
     // Custom Extensions Actions
     getCustomExtensions,
     getCurrentCompanyCustomExtensions,
-    getCustomExtensionCustomTables,
+    getCustomExtensionCustomTables
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -251,6 +251,7 @@ export { productsTopic } from "./pubsub/topics/products";
 export { cartTopic } from "./pubsub/topics/cart";
 export { paymentsTopic } from "./pubsub/topics/payments";
 export { customTablesTopic } from "./pubsub/topics/custom-tables";
+export { printTopic } from "./pubsub/topics/print";
 // Export Pub/Sub Event Types
 export type {
     // Customer event payloads
@@ -346,6 +347,18 @@ export type {
     CustomTablesEventPayload
 } from "./pubsub/topics/custom-tables/types";
 
+// Export Print Event Types
+export type {
+    PrintStartedPayload,
+    PrintCompletedPayload,
+    PrintErrorPayload,
+    PrintStartedEvent,
+    PrintCompletedEvent,
+    PrintErrorEvent,
+    PrintEventType,
+    PrintEventPayload
+} from "./pubsub/topics/print/types";
+
 // Export Custom Tables Types
 export type { GetCustomTables, GetCustomTablesResponse } from "./actions/get-custom-tables/types";
 
@@ -355,16 +368,9 @@ export type { GetCustomTableData, GetCustomTableDataParams, GetCustomTableDataRe
 
 export type { UpsertCustomTableData, UpsertCustomTableDataParams, UpsertCustomTableDataResponse } from "./actions/upsert-custom-table-data/types";
 
-export type {
-    DeleteCustomTableData,
-    DeleteCustomTableDataParams,
-    DeleteCustomTableDataResponse
-} from "./actions/delete-custom-table-data/types";
+export type { DeleteCustomTableData, DeleteCustomTableDataParams, DeleteCustomTableDataResponse } from "./actions/delete-custom-table-data/types";
 
-export type {
-    GetCustomExtensions,
-    GetCustomExtensionsResponse
-} from "./actions/get-custom-extensions/types";
+export type { GetCustomExtensions, GetCustomExtensionsResponse } from "./actions/get-custom-extensions/types";
 
 export type {
     GetCustomExtensionCustomTables,
