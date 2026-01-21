@@ -1,7 +1,7 @@
-import { GetCustomExtensions, GetCustomExtensionsResponse } from "./types";
+import { GetCurrentCompanyCustomExtensions, GetCurrentCompanyCustomExtensionsParams, GetCurrentCompanyCustomExtensionsResponse } from "./types";
 
-export const mockGetCustomExtensions: GetCustomExtensions = async (): Promise<GetCustomExtensionsResponse> => {
-    console.log("[Mock] getCustomExtensions called");
+export const mockGetCurrentCompanyCustomExtensions: GetCurrentCompanyCustomExtensions = async (params: GetCurrentCompanyCustomExtensionsParams): Promise<GetCurrentCompanyCustomExtensionsResponse> => {
+    console.log("[Mock] getCurrentCompanyCustomExtensions called", params);
     
     const mockExtensions = [
         {

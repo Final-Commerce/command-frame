@@ -64,6 +64,7 @@ import { upsertCustomTableData } from "./actions/upsert-custom-table-data/action
 import { deleteCustomTableData } from "./actions/delete-custom-table-data/action";
 // Custom Extensions Actions
 import { getCustomExtensions } from "./actions/get-custom-extensions/action";
+import { getCurrentCompanyCustomExtensions } from "./actions/get-current-company-custom-extensions/action";
 import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
 
 import { getPublicKey } from "./actions/get-public-key/action";
@@ -135,7 +136,8 @@ export const command = {
     deleteCustomTableData,
     // Custom Extensions Actions
     getCustomExtensions,
-    getCustomExtensionCustomTables,
+    getCurrentCompanyCustomExtensions,
+    getCustomExtensionCustomTables
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -254,6 +256,7 @@ export { productsTopic } from "./pubsub/topics/products";
 export { cartTopic } from "./pubsub/topics/cart";
 export { paymentsTopic } from "./pubsub/topics/payments";
 export { customTablesTopic } from "./pubsub/topics/custom-tables";
+export { printTopic } from "./pubsub/topics/print";
 // Export Pub/Sub Event Types
 export type {
     // Customer event payloads
@@ -349,6 +352,18 @@ export type {
     CustomTablesEventPayload
 } from "./pubsub/topics/custom-tables/types";
 
+// Export Print Event Types
+export type {
+    PrintStartedPayload,
+    PrintCompletedPayload,
+    PrintErrorPayload,
+    PrintStartedEvent,
+    PrintCompletedEvent,
+    PrintErrorEvent,
+    PrintEventType,
+    PrintEventPayload
+} from "./pubsub/topics/print/types";
+
 // Export Custom Tables Types
 export type { GetCustomTables, GetCustomTablesResponse } from "./actions/get-custom-tables/types";
 
@@ -358,19 +373,18 @@ export type { GetCustomTableData, GetCustomTableDataParams, GetCustomTableDataRe
 
 export type { UpsertCustomTableData, UpsertCustomTableDataParams, UpsertCustomTableDataResponse } from "./actions/upsert-custom-table-data/types";
 
-export type {
-    DeleteCustomTableData,
-    DeleteCustomTableDataParams,
-    DeleteCustomTableDataResponse
-} from "./actions/delete-custom-table-data/types";
+export type { DeleteCustomTableData, DeleteCustomTableDataParams, DeleteCustomTableDataResponse } from "./actions/delete-custom-table-data/types";
 
-export type {
-    GetCustomExtensions,
-    GetCustomExtensionsResponse
-} from "./actions/get-custom-extensions/types";
+export type { GetCustomExtensions, GetCustomExtensionsResponse } from "./actions/get-custom-extensions/types";
 
 export type {
     GetCustomExtensionCustomTables,
     GetCustomExtensionCustomTablesParams,
     GetCustomExtensionCustomTablesResponse
 } from "./actions/get-custom-extension-custom-tables/types";
+
+export type {
+    GetCurrentCompanyCustomExtensions,
+    GetCurrentCompanyCustomExtensionsParams,
+    GetCurrentCompanyCustomExtensionsResponse
+} from "./actions/get-current-company-custom-extensions/types";

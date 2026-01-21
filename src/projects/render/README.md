@@ -83,6 +83,17 @@ The library provides a `command` namespace object containing all available comma
 - **[processPartialRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/process-partial-refund/README.md)** - Process a partial refund based on current selections
 - **[getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)** - Get remaining refundable quantities for items in the active order
 
+#### Custom Tables & Extensions
+- **[getCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-tables/README.md)** - Retrieve all custom tables from the local database
+- **[getCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-table-data/README.md)** - Retrieve data from a specific custom table with filtering and pagination
+- **[getCustomTableFields](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-table-fields/README.md)** - Retrieve field definitions (schema) for a specific custom table
+- **[upsertCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/upsert-custom-table-data/README.md)** - Insert or update data in a custom table
+- **[deleteCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-custom-table-data/README.md)** - Delete a specific record from a custom table
+- **[getCustomExtensions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-extensions/README.md)** - Retrieve all custom extensions from the local database
+- **[getCurrentCompanyCustomExtensions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-company-custom-extensions/README.md)** - Retrieve all custom extensions for the current company
+- **[getCustomExtensionCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-extension-custom-tables/README.md)** - Retrieve custom tables associated with a specific extension
+
+
 #### Integration Actions
 - **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
 - **[triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)** - Trigger a Zapier webhook with the current context data
@@ -138,6 +149,26 @@ const context = await command.getContext();
 console.log('Current user:', context.userId);
 console.log('Current company:', context.companyName);
 console.log('Current build:', context.buildName);
+
+// Work with custom tables
+const customTables = await command.getCustomTables();
+console.log('Available custom tables:', customTables.customTables);
+
+// Insert data into a custom table
+await command.upsertCustomTableData({
+    tableName: 'customer_preferences',
+    data: {
+        customerId: context.userId,
+        theme: 'dark',
+        notifications: true
+    }
+});
+
+// Query custom table data
+const preferences = await command.getCustomTableData({
+    tableName: 'customer_preferences',
+    query: { customerId: context.userId }
+});
 ```
 
 For complete usage examples and detailed parameter descriptions, see the documentation for each command in the [Commands Documentation](#commands-documentation) section.
@@ -328,6 +359,36 @@ Processes a partial refund based on the current refund selections in the refund 
 ### [getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)
 
 Gets the remaining refundable quantities for all line items and custom sales in the active order.
+
+### Custom Tables & Extensions
+
+### [getCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-tables/README.md)
+
+Retrieves a list of all custom tables from the parent application's local database. Custom tables allow you to store and manage custom data structures specific to your business needs.
+
+### [getCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-table-data/README.md)
+
+Retrieves data from a specific custom table. Supports MongoDB-style filtering, pagination with offset and limit parameters, and type-safe generic responses.
+
+### [getCustomTableFields](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-table-fields/README.md)
+
+Retrieves the field definitions (schema) for a specific custom table. Returns field metadata including name, type (string, number, boolean, date, json-string), required status, default values, and reference relationships.
+
+### [upsertCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/upsert-custom-table-data/README.md)
+
+Inserts new data or updates existing data in a custom table. If the data includes an `_id` field, it updates the existing record; otherwise, it creates a new one. Supports type-safe generic operations.
+
+### [deleteCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-custom-table-data/README.md)
+
+Deletes a specific record from a custom table by its unique `_id`. The deletion is permanent and synchronized with the central database.
+
+### [getCustomExtensions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-extensions/README.md)
+
+Retrieves all custom extensions from the local database. Extensions are additional features or modules that can be installed in the Final Commerce ecosystem, each potentially having associated custom tables.
+
+### [getCustomExtensionCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-extension-custom-tables/README.md)
+
+Retrieves all custom tables associated with a specific custom extension. Useful for discovering and managing the data structures created by installed extensions.
 
 ### Integration Actions
 
