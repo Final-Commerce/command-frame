@@ -1,12 +1,12 @@
 import type {
     GetContext,
     GetFinalContext,
-    GetPublicKey
+    GenerateAPIKey
 } from "../../index";
 
 export interface ManageProviderActions {
     getContext: GetContext;
     getFinalContext: GetFinalContext;
-    getPublicKey: GetPublicKey;
+    generateAPIKey: GenerateAPIKey;
 }
 

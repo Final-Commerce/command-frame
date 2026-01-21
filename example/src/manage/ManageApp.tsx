@@ -7,12 +7,10 @@ import '../components/sections/Sections.css';
 export function ManageApp() {
   const [contextData, setContextData] = useState<any>(null);
   const [finalContextData, setFinalContextData] = useState<any>(null);
-  const [publicKeyData, setPublicKeyData] = useState<any>(null);
+  const [apiKeyData, setApiKeyData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   
-  // Use _ to indicate intentionally unused variable if needed, 
-  // but here we use it for conditional rendering text
   const isInIframe = window.self !== window.top;
 
   const handleGetContext = async () => {
@@ -41,15 +39,19 @@ export function ManageApp() {
     }
   };
 
-  const handleGetPublicKey = async () => {
+  const handleGenerateAPIKey = async () => {
     setLoading(true);
     setError('');
     try {
-      // Cast to any since getPublicKey might be dynamically added or missing in strict types until fully rebuilt
-      const result = await (manageClient as any).getPublicKey();
-      setPublicKeyData(result);
+      // First get context to get companyId
+      const context = contextData || await manageClient.getContext();
+      if (!context?.company?._id) {
+        throw new Error('No company ID available. Please get context first.');
+      }
+      const result = await (manageClient as any).generateAPIKey({ companyId: context.company._id });
+      setApiKeyData(result);
     } catch (err: any) {
-      setError(err.message || 'Error fetching public key');
+      setError(err.message || 'Error generating API key');
     } finally {
       setLoading(false);
     }
@@ -108,18 +110,21 @@ export function ManageApp() {
 
             <div className="command-section">
               <div className="command-section__header">
-                <h3>Get Public Key</h3>
+                <h3>Generate API Key</h3>
               </div>
               <div className="command-section__content">
                 <button 
-                  onClick={handleGetPublicKey} 
+                  onClick={handleGenerateAPIKey} 
                   disabled={loading}
                   className="btn btn--primary"
                 >
-                  Get Public Key
+                  Generate API Key
                 </button>
-                {publicKeyData && (
-                  <JsonViewer data={JSON.stringify(publicKeyData, null, 2)} title="Result" />
+                <p style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+                  Requires context to be loaded first (uses company ID)
+                </p>
+                {apiKeyData && (
+                  <JsonViewer data={JSON.stringify(apiKeyData, null, 2)} title="Result" />
                 )}
               </div>
             </div>

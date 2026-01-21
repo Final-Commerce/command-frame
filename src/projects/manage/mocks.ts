@@ -1,5 +1,5 @@
-import { mockGetContext, mockGetContextManage } from "../../actions/get-context/mock";
-import { mockGetPublicKey } from "../../actions/get-public-key/mock";
+import { mockGetContextManage } from "../../actions/get-context/mock";
+import { mockGenerateAPIKey } from "../../actions/generate-api-key/mock";
 import { GetFinalContext, GetFinalContextResponse } from "../../actions/get-final-context/types";
 import { ManageProviderActions } from "./types";
 
@@ -14,6 +14,6 @@ const mockGetFinalContextManage: GetFinalContext = async (): Promise<GetFinalCon
 export const MANAGE_MOCKS: ManageProviderActions = {
     getContext: mockGetContextManage,
     getFinalContext: mockGetFinalContextManage,
-    getPublicKey: mockGetPublicKey
+    generateAPIKey: mockGenerateAPIKey
 };
 

@@ -67,12 +67,12 @@ import { getCustomExtensions } from "./actions/get-custom-extensions/action";
 import { getCurrentCompanyCustomExtensions } from "./actions/get-current-company-custom-extensions/action";
 import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
 
-import { getPublicKey } from "./actions/get-public-key/action";
+import { generateAPIKey } from "./actions/generate-api-key/action";
 
 // Export actions as command object
 export const command = {
     exampleFunction,
-    getPublicKey,
+    generateAPIKey,
     getProducts,
     addCustomSale,
     getCustomers,
@@ -143,7 +143,7 @@ export const command = {
 // Export types from action folders (only Params, Response, and Function types)
 export type { ExampleFunction, ExampleFunctionParams, ExampleFunctionResponse } from "./actions/example-function/types";
 
-export type { GetPublicKey, GetPublicKeyResponse } from "./actions/get-public-key/types";
+export type { GenerateAPIKey, GenerateAPIKeyParams, GenerateAPIKeyResponse } from "./actions/generate-api-key/types";
 
 export type { GetProducts, GetProductsParams, GetProductsResponse } from "./actions/get-products/types";
 
