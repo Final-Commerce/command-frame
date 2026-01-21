@@ -32,44 +32,31 @@ export const mockGetContextManage = async (): Promise<GetContextResponseManage> 
     console.log("[Mock] getContext called (Manage)");
     
     return {
-        userId: MOCK_USER.id,
-        companyId: MOCK_COMPANY.id || null,
-        companyName: MOCK_COMPANY.name || null,
-        outlets: [
-            {
-                _id: MOCK_OUTLET.id,
-                id: MOCK_OUTLET.id,
-                name: MOCK_OUTLET.name || "Demo Outlet",
-                address: MOCK_OUTLET.address,
-                city: MOCK_OUTLET.city,
-                state: MOCK_OUTLET.state,
-                country: MOCK_OUTLET.country
-            }
-        ],
         user: {
-            id: MOCK_USER.id,
             _id: MOCK_USER.id,
             email: "demo@example.com",
             firstName: MOCK_USER.firstName,
             lastName: MOCK_USER.lastName,
             outlets: [MOCK_OUTLET.id],
             type: "organization_owner",
-            role: {
-                name: "Admin",
-                permissions: []
-            }
+            role: { name: "Admin", permissions: [] }
         },
         company: {
-            id: MOCK_COMPANY.id || "mock_company_id",
             _id: MOCK_COMPANY.id || "mock_company_id",
             name: MOCK_COMPANY.name || "Demo Company",
             logo: MOCK_COMPANY.logo,
+            organizationId: "mock_org_id",
             settings: {
                 currency: "USD",
                 currencySymbol: "$",
                 defaultLanguage: "en",
                 timeZone: "America/New_York"
             }
+        },
+        menuItem: {
+            _id: "mock_menu_item_id",
+            text: "Demo Menu Item",
+            iframeUrl: "https://example.com/iframe"
         },
         timestamp: new Date().toISOString()
     };

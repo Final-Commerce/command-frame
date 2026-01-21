@@ -537,96 +537,22 @@ export interface CFOutletInfo {
     country?: string;
 }
 
-// User info for Manage context
-export interface CFManageUser {
-    id: string;
-    _id?: string;
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    outlets?: CFOutletInfo[] | string[];
-    type?: string;
-    role?: {
-        name: string;
-        permissions?: any[];
-    };
-}
-
-// Company info for Manage context (excludes sensitive data like API keys)
-export interface CFManageCompany {
-    id: string;
-    _id?: string;
-    name: string;
-    logo?: string;
-    address?: {
-        address1?: string;
-        address2?: string;
-        city?: string;
-        country?: string;
-        state?: string;
-        postCode?: string;
-    };
-    shipping?: {
-        address1?: string;
-        address2?: string;
-        city?: string;
-        country?: string;
-        state?: string;
-        postCode?: string;
-    };
-    organizationId?: string;
-    registrationCompleted?: boolean;
-    isDemoCompany?: boolean;
-    billingManagement?: string;
-    libraries?: string;
-    industry?: string;
-    plan?: {
-        _id: string;
-        planId: string;
-        companyId?: string;
-        isDeleted?: boolean;
-        createdAt?: string;
-        updatedAt?: string;
-        __v?: number;
-    };
-    planData?: {
-        _id: string;
-        name: string;
-        description?: string;
-        organizationId?: string;
-        checkoutFlows?: any;
-        extensions?: any;
-        isDeleted?: boolean;
-        createdAt?: string;
-        updatedAt?: string;
-        __v?: number;
-    };
-    // Settings with sensitive fields removed
-    settings?: {
-        currency?: string;
-        currencyPrefix?: string;
-        currencySuffix?: string;
-        currencySymbol?: string;
-        defaultLanguage?: string;
-        timeZone?: string;
-        isTaxInclusive?: boolean;
-        dateFormat?: string;
-        thousandSeparator?: string;
-        decimalSeparator?: string;
-        decimals?: number;
-        enablePaymentTerminalTipping?: boolean;
-        automaticallyPrintReceipt?: boolean;
-    };
+// Menu item for extension context
+export interface CFMenuItem {
+    _id: string;
+    text: string;
+    iconType?: string;
+    project?: string;
+    iframeUrl: string;
 }
 
 // Context for Manage/BuilderHub project
+// Uses Record<string, unknown> for flexibility - the actual objects come from BuilderHub's types
 export interface CFContextManage {
-    userId: string | null;
-    companyId: string | null;
-    companyName: string | null;
-    outlets?: CFOutletInfo[];
-    user: CFManageUser | null;
-    company: CFManageCompany | null;
+    user: Record<string, unknown> | null;
+    company: Record<string, unknown> | null;
+    menuItem?: CFMenuItem;
+    extension?: Record<string, unknown> | null;
     timestamp: string;
 }
 
