@@ -5,6 +5,7 @@ import { ProductsEventType, ProductsEventPayload } from "./products/types";
 import { CartEventType, CartEventPayload } from "./cart/types";
 import { PaymentsEventType, PaymentsEventPayload } from "./payments/types";
 import { CustomTablesEventPayload, CustomTablesEventType } from "./custom-tables/types";
+import { PrintEventType, PrintEventPayload } from "./print/types";
 
 export interface TopicEventPayloadMap {
     customers: Record<CustomersEventType, CustomersEventPayload>;
@@ -14,5 +15,5 @@ export interface TopicEventPayloadMap {
     cart: Record<CartEventType, CartEventPayload>;
     payments: Record<PaymentsEventType, PaymentsEventPayload>;
     customTables: Record<CustomTablesEventType, CustomTablesEventPayload>;
+    print: Record<PrintEventType, PrintEventPayload>;
 }
-
