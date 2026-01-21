@@ -69,6 +69,7 @@ The library provides a `command` namespace object containing all available comma
 #### System Actions
 - **[goToStationHome](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-station-home/README.md)** - Navigate to the station home page
 - **[openCashDrawer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-cash-drawer/README.md)** - Open the cash drawer
+- **[print](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/print/README.md)** - Print content to a connected printer or open browser print dialog (supports images, HTML, selectors, and receipts)
 - **[showNotification](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-notification/README.md)** - Show a notification message
 - **[showConfirmation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-confirmation/README.md)** - Show a confirmation dialog
 - **[authenticateUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/authenticate-user/README.md)** - Trigger user authentication for specific roles
@@ -330,6 +331,10 @@ Triggers user authentication for specific roles. Shows an authentication dialog 
 
 Switches the current user to a different user. Supports three modes: dialog (select from all users), role (select from users with specific roles), or specific (switch to a specific user).
 
+### [print](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/print/README.md)
+
+Prints content to a connected printer or opens the browser print dialog. Supports multiple print types: images (base64-encoded), HTML content, DOM elements via selectors, and receipts. Publishes events on the `print` topic when print actions are initiated, completed, or encounter errors.
+
 ### Refund Actions
 
 ### [initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)
@@ -452,6 +457,12 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
 - **[payments](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/payments/README.md)** - Payment processing events
   - `payment-done` - Published when a payment is successfully completed
   - `payment-err` - Published when a payment fails
+
+#### Print Events
+- **[print](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/print/README.md)** - Print action events
+  - `print-started` - Published when a print action is initiated
+  - `print-completed` - Published when a print action completes successfully
+  - `print-error` - Published when a print action encounters an error
 
 For detailed documentation on each topic and its events, including payload structures and usage examples, see the [Pub/Sub Documentation](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/README.md).
 

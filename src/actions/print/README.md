@@ -170,6 +170,16 @@ await command.print({
 - **Receipt printing**: Uses the existing receipt printing system with global block templates.
 - **Error handling**: If a selector is not found, an error will be thrown. Invalid HTML may cause rendering issues.
 
+## Events
+
+This action publishes events on the `print` topic:
+
+- `print-started` - Published when a print action is initiated
+- `print-completed` - Published when a print action completes successfully
+- `print-error` - Published when a print action encounters an error
+
+For detailed information about print events, including payload structures and subscription examples, see the [print topic documentation](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/print/README.md).
+
 ## Error Handling
 
 The command will throw an error if:
