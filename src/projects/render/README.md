@@ -28,6 +28,7 @@ The library provides a `command` namespace object containing all available comma
 ### Available Commands
 
 #### Data Retrieval
+
 - **[getCustomers](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-customers/README.md)** - Retrieve a list of customers from the parent application
 - **[getProducts](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-products/README.md)** - Retrieve a list of products from the parent application
 - **[getCategories](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-categories/README.md)** - Retrieve a list of categories from the parent application
@@ -37,6 +38,7 @@ The library provides a `command` namespace object containing all available comma
 - **[getFinalContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-final-context/README.md)** - Get final context information (project name)
 
 #### Product Actions
+
 - **[addProductToCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-to-cart/README.md)** - Add a product to the cart with optional discounts, fees, and notes
 - **[removeProductFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-product-from-cart/README.md)** - Remove a product from the cart (using `internalId`)
 - **[updateCartItemQuantity](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/update-cart-item-quantity/README.md)** - Update the quantity of a cart item (using `internalId`)
@@ -46,6 +48,7 @@ The library provides a `command` namespace object containing all available comma
 - **[adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)** - Adjust inventory/stock level for a specific product variant
 
 #### Order Actions
+
 - **[addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)** - Add a custom sale item to the cart
 - **[addCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-discount/README.md)** - Add a discount to the entire cart
 - **[addOrderNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-order-note/README.md)** - Add a note to the current order/cart
@@ -61,12 +64,14 @@ The library provides a `command` namespace object containing all available comma
 - **[partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)** - Initiate a partial/split payment
 
 #### Customer Actions
+
 - **[addCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-customer/README.md)** - Add a new customer to the local database
 - **[assignCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-customer/README.md)** - Assign an existing customer to the current session/cart
 - **[addCustomerNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-customer-note/README.md)** - Add a note to a customer's record
 - **[removeCustomerFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-customer-from-cart/README.md)** - Remove the currently assigned customer from the cart
 
 #### System Actions
+
 - **[goToStationHome](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-station-home/README.md)** - Navigate to the station home page
 - **[openCashDrawer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-cash-drawer/README.md)** - Open the cash drawer
 - **[print](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/print/README.md)** - Print content to a connected printer or open browser print dialog (supports images, HTML, selectors, and receipts)
@@ -76,6 +81,7 @@ The library provides a `command` namespace object containing all available comma
 - **[switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)** - Switch the current user to a different user
 
 #### Refund Actions
+
 - **[initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)** - Open the refund UI for an order
 - **[selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)** - Select all remaining refundable items for a full refund
 - **[resetRefundDetails](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reset-refund-details/README.md)** - Clear all refund selections
@@ -85,6 +91,7 @@ The library provides a `command` namespace object containing all available comma
 - **[getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)** - Get remaining refundable quantities for items in the active order
 
 #### Custom Tables & Extensions
+
 - **[getCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-tables/README.md)** - Retrieve all custom tables from the local database
 - **[getCustomTableData](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-table-data/README.md)** - Retrieve data from a specific custom table with filtering and pagination
 - **[getCustomTableFields](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-table-fields/README.md)** - Retrieve field definitions (schema) for a specific custom table
@@ -94,12 +101,13 @@ The library provides a `command` namespace object containing all available comma
 - **[getCurrentCompanyCustomExtensions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-company-custom-extensions/README.md)** - Retrieve all custom extensions for the current company
 - **[getCustomExtensionCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-extension-custom-tables/README.md)** - Retrieve custom tables associated with a specific extension
 
-
 #### Integration Actions
+
 - **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
 - **[triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)** - Trigger a Zapier webhook with the current context data
 
 #### Reference
+
 - **[exampleFunction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/example-function/README.md)** - Example/template function (for reference only)
 
 For detailed documentation on each command, including parameter descriptions, response structures, and usage examples, see the [Commands Documentation](#commands-documentation) section below.
@@ -107,7 +115,7 @@ For detailed documentation on each command, including parameter descriptions, re
 ## Quick Start
 
 ```typescript
-import { command } from '@final-commerce/command-frame';
+import { command } from "@final-commerce/command-frame";
 
 // Get products from parent window
 const products = await command.getProducts();
@@ -120,14 +128,16 @@ const categories = await command.getCategories();
 
 // Add product to cart with optional discounts and fees
 const addedProduct = await command.addProductToCart({
-    variantId: '691df9c6c478bada1fb23d55',
+    variantId: "691df9c6c478bada1fb23d55",
     quantity: 1,
-    discounts: [{
-        amount: 10,
-        isPercent: false,
-        label: 'Discount'
-    }],
-    notes: 'No onions'
+    discounts: [
+        {
+            amount: 10,
+            isPercent: false,
+            label: "Discount"
+        }
+    ],
+    notes: "No onions"
 });
 
 // Add a discount to the specific item just added (if you didn't add it during creation)
@@ -135,45 +145,44 @@ await command.addProductDiscount({
     internalId: addedProduct.internalId,
     amount: 5,
     isPercent: true,
-    label: 'Extra 5% Off'
+    label: "Extra 5% Off"
 });
 
 // Add cart discount
 await command.addCartDiscount({
     amount: 10,
     isPercent: false,
-    label: 'Cart Discount'
+    label: "Cart Discount"
 });
 
 // Get current context/environment
 const context = await command.getContext();
-console.log('Current user:', context.userId);
-console.log('Current company:', context.companyName);
-console.log('Current build:', context.buildName);
+console.log("Current user:", context.userId);
+console.log("Current company:", context.companyName);
+console.log("Current build:", context.buildName);
 
 // Work with custom tables
 const customTables = await command.getCustomTables();
-console.log('Available custom tables:', customTables.customTables);
+console.log("Available custom tables:", customTables.customTables);
 
 // Insert data into a custom table
 await command.upsertCustomTableData({
-    tableName: 'customer_preferences',
+    tableName: "customer_preferences",
     data: {
         customerId: context.userId,
-        theme: 'dark',
+        theme: "dark",
         notifications: true
     }
 });
 
 // Query custom table data
 const preferences = await command.getCustomTableData({
-    tableName: 'customer_preferences',
+    tableName: "customer_preferences",
     query: { customerId: context.userId }
 });
 ```
 
 For complete usage examples and detailed parameter descriptions, see the documentation for each command in the [Commands Documentation](#commands-documentation) section.
-
 
 ## Commands Documentation
 
@@ -418,51 +427,58 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
 ### Available Topics
 
 #### Customer Events
+
 - **[customers](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/customers/README.md)** - Customer lifecycle events
-  - `customer-created` - Published when a new customer is created
-  - `customer-updated` - Published when a customer's information is updated
-  - `customer-note-added` - Published when a note is added to a customer
-  - `customer-note-deleted` - Published when a note is deleted from a customer
-  - `customer-assigned` - Published when a customer is assigned to the cart
-  - `customer-unassigned` - Published when a customer is unassigned from the cart
+    - `customer-created` - Published when a new customer is created
+    - `customer-updated` - Published when a customer's information is updated
+    - `customer-note-added` - Published when a note is added to a customer
+    - `customer-note-deleted` - Published when a note is deleted from a customer
+    - `customer-assigned` - Published when a customer is assigned to the cart
+    - `customer-unassigned` - Published when a customer is unassigned from the cart
 
 #### Order Events
+
 - **[orders](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/orders/README.md)** - Order lifecycle events
-  - `order-created` - Published when a new order is created
-  - `order-updated` - Published when an order is updated
+    - `order-created` - Published when a new order is created
+    - `order-updated` - Published when an order is updated
 
 #### Refund Events
+
 - **[refunds](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/refunds/README.md)** - Refund lifecycle events
-  - `refund-created` - Published when a refund is created
-  - `refund-updated` - Published when a refund is updated
+    - `refund-created` - Published when a refund is created
+    - `refund-updated` - Published when a refund is updated
 
 #### Product Events
+
 - **[products](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/products/README.md)** - Product sync events
-  - `product-created` - Published when a product is created
-  - `product-updated` - Published when a product is updated
+    - `product-created` - Published when a product is created
+    - `product-updated` - Published when a product is updated
 
 #### Cart Events
+
 - **[cart](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/cart/README.md)** - Cart operation events
-  - `cart-created` - Published when a cart is created
-  - `customer-assigned` - Published when a customer is assigned to the cart
-  - `product-added` - Published when a product is added to the cart
-  - `product-updated` - Published when a cart item's quantity is updated
-  - `product-deleted` - Published when a product is removed from the cart
-  - `cart-discount-added` - Published when a discount is added to the cart
-  - `cart-discount-removed` - Published when a discount is removed from the cart
-  - `cart-fee-added` - Published when a fee is added to the cart
-  - `cart-fee-removed` - Published when a fee is removed from the cart
+    - `cart-created` - Published when a cart is created
+    - `customer-assigned` - Published when a customer is assigned to the cart
+    - `product-added` - Published when a product is added to the cart
+    - `product-updated` - Published when a cart item's quantity is updated
+    - `product-deleted` - Published when a product is removed from the cart
+    - `cart-discount-added` - Published when a discount is added to the cart
+    - `cart-discount-removed` - Published when a discount is removed from the cart
+    - `cart-fee-added` - Published when a fee is added to the cart
+    - `cart-fee-removed` - Published when a fee is removed from the cart
 
 #### Payment Events
+
 - **[payments](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/payments/README.md)** - Payment processing events
-  - `payment-done` - Published when a payment is successfully completed
-  - `payment-err` - Published when a payment fails
+    - `payment-done` - Published when a payment is successfully completed
+    - `payment-err` - Published when a payment fails
 
 #### Print Events
+
 - **[print](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/print/README.md)** - Print action events
-  - `print-started` - Published when a print action is initiated
-  - `print-completed` - Published when a print action completes successfully
-  - `print-error` - Published when a print action encounters an error
+    - `print-started` - Published when a print action is initiated
+    - `print-completed` - Published when a print action completes successfully
+    - `print-error` - Published when a print action encounters an error
 
 For detailed documentation on each topic and its events, including payload structures and usage examples, see the [Pub/Sub Documentation](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/README.md).
 
@@ -484,10 +500,11 @@ Enable debug logging by setting the debug flag before importing:
 
 ```typescript
 (window as any).__POSTMESSAGE_DEBUG__ = true;
-import { command } from '@final-commerce/command-frame';
+import { command } from "@final-commerce/command-frame";
 ```
 
 This will log all postMessage communication to the console, including:
+
 - Request details (action name, parameters, request ID)
 - Response details (success status, data, errors)
 - Timing information
@@ -500,71 +517,168 @@ All commands are fully typed with TypeScript. Import types for use in your code:
 ```typescript
 import type {
     // Data Retrieval
-    GetCustomersParams, GetCustomersResponse, GetCustomers,
-    GetProductsParams, GetProductsResponse, GetProducts,
-    GetCategoriesParams, GetCategoriesResponse, GetCategories,
-    GetOrdersParams, GetOrdersResponse, GetOrders,
-    GetContext, GetContextResponse,
-    GetFinalContext, GetFinalContextResponse,
-    GetCurrentCart, GetCurrentCartResponse,
+    GetCustomersParams,
+    GetCustomersResponse,
+    GetCustomers,
+    GetProductsParams,
+    GetProductsResponse,
+    GetProducts,
+    GetCategoriesParams,
+    GetCategoriesResponse,
+    GetCategories,
+    GetOrdersParams,
+    GetOrdersResponse,
+    GetOrders,
+    GetContext,
+    GetContextResponse,
+    GetFinalContext,
+    GetFinalContextResponse,
+    GetCurrentCart,
+    GetCurrentCartResponse,
     // Product Actions
-    AddProductDiscountParams, AddProductDiscountResponse, AddProductDiscount,
-    AddProductToCartParams, AddProductToCartResponse, AddProductToCart,
-    RemoveProductFromCartParams, RemoveProductFromCartResponse, RemoveProductFromCart,
-    UpdateCartItemQuantityParams, UpdateCartItemQuantityResponse, UpdateCartItemQuantity,
-    AddProductNoteParams, AddProductNoteResponse, AddProductNote,
-    AddProductFeeParams, AddProductFeeResponse, AddProductFee,
-    AdjustInventoryParams, AdjustInventoryResponse, AdjustInventory,
+    AddProductDiscountParams,
+    AddProductDiscountResponse,
+    AddProductDiscount,
+    AddProductToCartParams,
+    AddProductToCartResponse,
+    AddProductToCart,
+    RemoveProductFromCartParams,
+    RemoveProductFromCartResponse,
+    RemoveProductFromCart,
+    UpdateCartItemQuantityParams,
+    UpdateCartItemQuantityResponse,
+    UpdateCartItemQuantity,
+    AddProductNoteParams,
+    AddProductNoteResponse,
+    AddProductNote,
+    AddProductFeeParams,
+    AddProductFeeResponse,
+    AddProductFee,
+    AdjustInventoryParams,
+    AdjustInventoryResponse,
+    AdjustInventory,
     // Order Actions
-    AddCustomSaleParams, AddCustomSaleResponse, AddCustomSale,
-    AddCartDiscountParams, AddCartDiscountResponse, AddCartDiscount,
-    AddOrderNoteParams, AddOrderNoteResponse, AddOrderNote,
-    AddCartFeeParams, AddCartFeeResponse, AddCartFee,
-    ClearCartResponse, ClearCart,
-    ParkOrderResponse, ParkOrder,
-    ResumeParkedOrderParams, ResumeParkedOrderResponse, ResumeParkedOrder,
-    DeleteParkedOrderParams, DeleteParkedOrderResponse, DeleteParkedOrder,
-    CashPaymentParams, CashPaymentResponse, CashPayment,
-    TapToPayPaymentParams, TapToPayPaymentResponse, TapToPayPayment,
-    TerminalPaymentParams, TerminalPaymentResponse, TerminalPayment,
-    VendaraPaymentParams, VendaraPaymentResponse, VendaraPayment,
-    PartialPaymentParams, PartialPaymentResponse, PartialPayment,
+    AddCustomSaleParams,
+    AddCustomSaleResponse,
+    AddCustomSale,
+    AddCartDiscountParams,
+    AddCartDiscountResponse,
+    AddCartDiscount,
+    AddOrderNoteParams,
+    AddOrderNoteResponse,
+    AddOrderNote,
+    AddCartFeeParams,
+    AddCartFeeResponse,
+    AddCartFee,
+    ClearCartResponse,
+    ClearCart,
+    ParkOrderResponse,
+    ParkOrder,
+    ResumeParkedOrderParams,
+    ResumeParkedOrderResponse,
+    ResumeParkedOrder,
+    DeleteParkedOrderParams,
+    DeleteParkedOrderResponse,
+    DeleteParkedOrder,
+    CashPaymentParams,
+    CashPaymentResponse,
+    CashPayment,
+    TapToPayPaymentParams,
+    TapToPayPaymentResponse,
+    TapToPayPayment,
+    TerminalPaymentParams,
+    TerminalPaymentResponse,
+    TerminalPayment,
+    VendaraPaymentParams,
+    VendaraPaymentResponse,
+    VendaraPayment,
+    PartialPaymentParams,
+    PartialPaymentResponse,
+    PartialPayment,
     // Customer Actions
-    AddCustomerParams, AddCustomerResponse, AddCustomer,
-    AssignCustomerParams, AssignCustomerResponse, AssignCustomer,
-    AddCustomerNoteParams, AddCustomerNoteResponse, AddCustomerNote,
-    RemoveCustomerFromCartResponse, RemoveCustomerFromCart,
+    AddCustomerParams,
+    AddCustomerResponse,
+    AddCustomer,
+    AssignCustomerParams,
+    AssignCustomerResponse,
+    AssignCustomer,
+    AddCustomerNoteParams,
+    AddCustomerNoteResponse,
+    AddCustomerNote,
+    RemoveCustomerFromCartResponse,
+    RemoveCustomerFromCart,
     // System Actions
-    GoToStationHomeResponse, GoToStationHome,
-    OpenCashDrawerResponse, OpenCashDrawer,
-    ShowNotificationParams, ShowNotificationResponse, ShowNotification,
-    ShowConfirmationParams, ShowConfirmationResponse, ShowConfirmation,
-    AuthenticateUserParams, AuthenticateUserResponse, AuthenticateUser,
-    SwitchUserParams, SwitchUserResponse, SwitchUser,
+    GoToStationHomeResponse,
+    GoToStationHome,
+    OpenCashDrawerResponse,
+    OpenCashDrawer,
+    ShowNotificationParams,
+    ShowNotificationResponse,
+    ShowNotification,
+    ShowConfirmationParams,
+    ShowConfirmationResponse,
+    ShowConfirmation,
+    AuthenticateUserParams,
+    AuthenticateUserResponse,
+    AuthenticateUser,
+    SwitchUserParams,
+    SwitchUserResponse,
+    SwitchUser,
     // Refund Actions
-    InitiateRefundParams, InitiateRefundResponse, InitiateRefund,
-    SelectAllRefundItemsParams, SelectAllRefundItemsResponse, SelectAllRefundItems,
-    ResetRefundDetailsResponse, ResetRefundDetails,
-    SetRefundStockActionParams, SetRefundStockActionResponse, SetRefundStockAction,
-    CalculateRefundTotalResponse, CalculateRefundTotal,
-    ProcessPartialRefundParams, ProcessPartialRefundResponse, ProcessPartialRefund,
-    GetRemainingRefundableQuantitiesParams, GetRemainingRefundableQuantitiesResponse, GetRemainingRefundableQuantities,
+    InitiateRefundParams,
+    InitiateRefundResponse,
+    InitiateRefund,
+    SelectAllRefundItemsParams,
+    SelectAllRefundItemsResponse,
+    SelectAllRefundItems,
+    ResetRefundDetailsResponse,
+    ResetRefundDetails,
+    SetRefundStockActionParams,
+    SetRefundStockActionResponse,
+    SetRefundStockAction,
+    CalculateRefundTotalResponse,
+    CalculateRefundTotal,
+    ProcessPartialRefundParams,
+    ProcessPartialRefundResponse,
+    ProcessPartialRefund,
+    GetRemainingRefundableQuantitiesParams,
+    GetRemainingRefundableQuantitiesResponse,
+    GetRemainingRefundableQuantities,
     // Integration Actions
-    TriggerWebhookParams, TriggerWebhookResponse, TriggerWebhook,
-    TriggerZapierWebhookParams, TriggerZapierWebhookResponse, TriggerZapierWebhook,
+    TriggerWebhookParams,
+    TriggerWebhookResponse,
+    TriggerWebhook,
+    TriggerZapierWebhookParams,
+    TriggerZapierWebhookResponse,
+    TriggerZapierWebhook,
     // Reference
-    ExampleFunctionParams, ExampleFunctionResponse, ExampleFunction,
+    ExampleFunctionParams,
+    ExampleFunctionResponse,
+    ExampleFunction,
     // Common Types (Directly exported)
-    CFProduct, CFProductVariant, CFProductType,
-    CFCustomer, CFActiveCustomer, CFCustomerNote,
-    CFOrder, CFActiveOrder, CFActiveCart,
-    CFActiveProduct, CFActiveCustomSales,
-    CFLineItem, CFCustomSale,
-    CFDiscount, CFCustomFee, CFTax,
-    CFAddress, CFMetadataItem,
-    CFActiveUser, CFActiveOutlet, CFActiveStation,
+    CFProduct,
+    CFProductVariant,
+    CFProductType,
+    CFCustomer,
+    CFActiveCustomer,
+    CFCustomerNote,
+    CFOrder,
+    CFActiveOrder,
+    CFActiveCart,
+    CFActiveProduct,
+    CFActiveCustomSales,
+    CFLineItem,
+    CFCustomSale,
+    CFDiscount,
+    CFCustomFee,
+    CFTax,
+    CFAddress,
+    CFMetadataItem,
+    CFActiveUser,
+    CFActiveOutlet,
+    CFActiveStation,
     CFContext
-} from '@final-commerce/command-frame';
+} from "@final-commerce/command-frame";
 ```
 
 **Note:** The library exports useful types like `CFProduct`, `CFActiveCart`, `CFCustomer`, etc., we recommend using them in your code to type args for components displaying Products/ Customers / Variations / Orders etc
