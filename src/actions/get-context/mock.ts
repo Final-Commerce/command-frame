@@ -6,7 +6,7 @@ export const mockGetContext: GetContext = async (): Promise<GetContextResponse> 
     console.log("[Mock] getContext called (Render)");
     
     return {
-        userId: MOCK_USER.id,
+        userId: MOCK_USER.id || null,
         companyId: MOCK_COMPANY.id || null,
         companyName: MOCK_COMPANY.name || null,
         deviceId: "mock_device_id",
@@ -34,30 +34,22 @@ export const mockGetContextManage = async (): Promise<GetContextResponseManage> 
     return {
         user: {
             _id: MOCK_USER.id,
-            email: "demo@example.com",
+            id: MOCK_USER.id,
             firstName: MOCK_USER.firstName,
-            lastName: MOCK_USER.lastName,
-            outlets: [MOCK_OUTLET.id],
-            type: "organization_owner",
-            role: { name: "Admin", permissions: [] }
+            lastName: MOCK_USER.lastName
         },
         company: {
-            _id: MOCK_COMPANY.id || "mock_company_id",
+            _id: MOCK_COMPANY.id,
             name: MOCK_COMPANY.name || "Demo Company",
-            logo: MOCK_COMPANY.logo,
-            organizationId: "mock_org_id",
-            settings: {
-                currency: "USD",
-                currencySymbol: "$",
-                defaultLanguage: "en",
-                timeZone: "America/New_York"
-            }
+            logo: MOCK_COMPANY.logo
         },
         menuItem: {
             _id: "mock_menu_item_id",
             text: "Demo Menu Item",
             iframeUrl: "https://example.com/iframe"
         },
+        extensionId: "mock_extension_id",
+        outlets: [MOCK_OUTLET],
         timestamp: new Date().toISOString()
     };
 };

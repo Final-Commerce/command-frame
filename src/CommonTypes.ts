@@ -412,6 +412,7 @@ export interface CFActiveUser extends CFActiveEntity {
     lastName?: string;
     role: CFActiveUserRole;
     id: string;
+    _id?: string;
     outlets?: string[];
     type?: CFUserTypes;
     companies?: any;
@@ -537,22 +538,14 @@ export interface CFOutletInfo {
     country?: string;
 }
 
-// Menu item for extension context
-export interface CFMenuItem {
-    _id: string;
-    text: string;
-    iconType?: string;
-    project?: string;
-    iframeUrl: string;
-}
 
 // Context for Manage/BuilderHub project
-// Uses Record<string, unknown> for flexibility - the actual objects come from BuilderHub's types
 export interface CFContextManage {
-    user: Record<string, unknown> | null;
-    company: Record<string, unknown> | null;
-    menuItem?: CFMenuItem;
-    extension?: Record<string, unknown> | null;
+    user: any;
+    company: any;
+    menuItem?: any;
+    extensionId: string;
+    outlets?: any[];
     timestamp: string;
 }
 
