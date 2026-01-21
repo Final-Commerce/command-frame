@@ -4,6 +4,6 @@ export const mockGetFinalContext: GetFinalContext = async (): Promise<GetFinalCo
     console.log("[Mock] getFinalContext called");
     
     return {
-        projectName: "Mock Project"
+        projectName: "Render"
     };
 };

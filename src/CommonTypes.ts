@@ -494,14 +494,8 @@ export interface CFActiveCompany extends CFActiveEntity {
     settings?: any;
 }
 
-// Project name constants for type-safe project identification
-export const CFProjectName = {
-    RENDER: "Render",
-    MANAGE: "Manage",
-    BUILDER_HUB: "BuilderHub"
-} as const;
-
-export type CFProjectName = typeof CFProjectName[keyof typeof CFProjectName];
+// Project name type for identifying which provider environment is active
+export type CFProjectName = "Render" | "Manage";
 
 // Context for Render project (POS terminal context)
 export interface CFContextRender {

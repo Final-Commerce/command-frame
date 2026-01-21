@@ -34,7 +34,7 @@ const AutoRouter = () => {
 
         // Try to get context from Manage client
         const manageContext = await manageClient.getFinalContext();
-        if (manageContext?.projectName === 'BuilderHub') {
+        if (manageContext?.projectName === 'Manage') {
           console.log('[Router] Detected Manage environment');
           navigate('/manage');
           setIsDetecting(false);
