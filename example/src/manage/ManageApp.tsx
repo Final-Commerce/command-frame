@@ -48,10 +48,13 @@ export function ManageApp() {
       if (!context?.company?._id) {
         throw new Error('No company ID available. Please get context first.');
       }
-      const result = await (manageClient as any).generateAPIKey({ companyId: context.company._id });
+      // name and permissions are optional - defaults applied by provider
+      const result = await (manageClient as any).generateAPIKey({ 
+        companyId: context.company._id
+      });
       setApiKeyData(result);
     } catch (err: any) {
-      setError(err.message || 'Error generating API key');
+      setError(err.message || 'Error creating API key');
     } finally {
       setLoading(false);
     }
@@ -110,7 +113,7 @@ export function ManageApp() {
 
             <div className="command-section">
               <div className="command-section__header">
-                <h3>Generate API Key</h3>
+                <h3>Create API Key</h3>
               </div>
               <div className="command-section__content">
                 <button 
@@ -118,7 +121,7 @@ export function ManageApp() {
                   disabled={loading}
                   className="btn btn--primary"
                 >
-                  Generate API Key
+                  Create API Key
                 </button>
                 <p style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
                   Requires context to be loaded first (uses company ID)
