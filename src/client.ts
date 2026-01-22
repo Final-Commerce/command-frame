@@ -69,6 +69,8 @@ export class CommandFrameClient {
         // Auto-detect mock mode on initialization
         this.detectContext().then((context) => {
             if (!context) {
+                // If context detection fails, we switch to mock mode
+                // BUT only if we aren't already forcing mock mode (which happens above if no parent)
                 if (this.isDebugEnabled()) {
                     console.warn("[ActionsClient] Environment detection failed (timeout or error). Switching to Mock Mode.");
                 }

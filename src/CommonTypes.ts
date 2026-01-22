@@ -412,6 +412,7 @@ export interface CFActiveUser extends CFActiveEntity {
     lastName?: string;
     role: CFActiveUserRole;
     id: string;
+    _id?: string;
     outlets?: string[];
     type?: CFUserTypes;
     companies?: any;
@@ -494,7 +495,11 @@ export interface CFActiveCompany extends CFActiveEntity {
     settings?: any;
 }
 
-export interface CFContext {
+// Project name type for identifying which provider environment is active
+export type CFProjectName = "Render" | "Manage";
+
+// Context for Render project (POS terminal context)
+export interface CFContextRender {
     userId: string | null;
     companyId: string | null;
     companyName: string | null;
@@ -514,3 +519,35 @@ export interface CFContext {
     outlet: Record<string, any> | null;
     timestamp: string;
 }
+
+// Outlet info for Manage context
+export interface CFOutletInfo {
+    _id?: string;
+    id?: string;
+    name: string;
+    address?: string | {
+        address1?: string;
+        address2?: string;
+        city?: string;
+        country?: string;
+        state?: string;
+        postCode?: string;
+    };
+    city?: string;
+    state?: string;
+    country?: string;
+}
+
+
+// Context for Manage/BuilderHub project
+export interface CFContextManage {
+    user: any;
+    company: any;
+    menuItem?: any;
+    extensionId: string;
+    outlets?: any[];
+    timestamp: string;
+}
+
+// Legacy alias for backward compatibility
+export type CFContext = CFContextRender;

@@ -117,8 +117,8 @@ export function CustomersSection({ isInIframe: _ }: CustomersSectionProps) {
       if (!customerData.companyId) {
         try {
           const context = await command.getContext();
-          if (context?.companyId) {
-            customerData.companyId = context.companyId;
+          if (context?.company) {
+            customerData.companyId = context.company._id;
           }
         } catch (error) {
           // If context fetch fails, continue without companyId

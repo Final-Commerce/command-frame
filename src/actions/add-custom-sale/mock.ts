@@ -1,6 +1,6 @@
-import { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from "./types";
-import { MOCK_CART, MOCK_OUTLET_MAIN, MOCK_STATION_1 } from "../../demo/database";
 import { CFActiveCustomSales } from "../../CommonTypes";
+import { MOCK_CART } from "../../demo/database";
+import { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from "./types";
 
 export const mockAddCustomSale: AddCustomSale = async (params?: AddCustomSaleParams): Promise<AddCustomSaleResponse> => {
     console.log("[Mock] addCustomSale called", params);

@@ -67,9 +67,12 @@ import { getCustomExtensions } from "./actions/get-custom-extensions/action";
 import { getCurrentCompanyCustomExtensions } from "./actions/get-current-company-custom-extensions/action";
 import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
 
+import { generateAPIKey } from "./actions/generate-api-key/action";
+
 // Export actions as command object
 export const command = {
     exampleFunction,
+    generateAPIKey,
     getProducts,
     addCustomSale,
     getCustomers,
@@ -140,6 +143,8 @@ export const command = {
 // Export types from action folders (only Params, Response, and Function types)
 export type { ExampleFunction, ExampleFunctionParams, ExampleFunctionResponse } from "./actions/example-function/types";
 
+export type { GenerateAPIKey, GenerateAPIKeyParams, GenerateAPIKeyResponse } from "./actions/generate-api-key/types";
+
 export type { GetProducts, GetProductsParams, GetProductsResponse } from "./actions/get-products/types";
 
 export type { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from "./actions/add-custom-sale/types";
@@ -186,7 +191,7 @@ export type { UpdateCartItemQuantity, UpdateCartItemQuantityParams, UpdateCartIt
 
 export type { AddCartDiscount, AddCartDiscountParams, AddCartDiscountResponse } from "./actions/add-cart-discount/types";
 
-export type { GetContext, GetContextResponse } from "./actions/get-context/types";
+export type { GetContext, GetContextResponse, GetContextResponseManage, GetContextResponseRender } from "./actions/get-context/types";
 
 export type { GetFinalContext, GetFinalContextResponse } from "./actions/get-final-context/types";
 

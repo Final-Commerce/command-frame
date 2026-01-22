@@ -56,6 +56,7 @@ import { mockDeleteCustomTableData } from "../../actions/delete-custom-table-dat
 import { mockGetCustomExtensions } from "../../actions/get-custom-extensions/mock";
 import { mockGetCurrentCompanyCustomExtensions } from "../../actions/get-current-company-custom-extensions/mock";
 import { mockGetCustomExtensionCustomTables } from "../../actions/get-custom-extension-custom-tables/mock";
+
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
