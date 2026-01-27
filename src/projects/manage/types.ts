@@ -1,12 +1,26 @@
 import type {
     GetContext,
     GetFinalContext,
-    GenerateAPIKey
+    GenerateAPIKey,
+    GetCustomTables,
+    GetCustomTableData,
+    DeleteCustomTableData,
+    GetCustomExtensions,
+    GetCurrentCompanyCustomExtensions,
+    GetCustomExtensionCustomTables
 } from "../../index";
 
 export interface ManageProviderActions {
     getContext: GetContext;
     getFinalContext: GetFinalContext;
     generateAPIKey: GenerateAPIKey;
+    // Custom Tables Actions (simplified - getCustomTables returns tables for current extension)
+    getCustomTables: GetCustomTables;
+    getCustomTableData: GetCustomTableData;
+    deleteCustomTableData: DeleteCustomTableData;
+    // Custom Extensions Actions
+    getCustomExtensions: GetCustomExtensions;
+    getCurrentCompanyCustomExtensions: GetCurrentCompanyCustomExtensions;
+    getCustomExtensionCustomTables: GetCustomExtensionCustomTables;
 }
 
