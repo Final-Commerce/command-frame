@@ -4,6 +4,7 @@ import type {
     GenerateAPIKey,
     GetCustomTables,
     GetCustomTableData,
+    UpsertCustomTableData,
     DeleteCustomTableData,
     GetCustomExtensions,
     GetCurrentCompanyCustomExtensions,
@@ -17,6 +18,7 @@ export interface ManageProviderActions {
     // Custom Tables Actions (simplified - getCustomTables returns tables for current extension)
     getCustomTables: GetCustomTables;
     getCustomTableData: GetCustomTableData;
+    upsertCustomTableData: UpsertCustomTableData;
     deleteCustomTableData: DeleteCustomTableData;
     // Custom Extensions Actions
     getCustomExtensions: GetCustomExtensions;

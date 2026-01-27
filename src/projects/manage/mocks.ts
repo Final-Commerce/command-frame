@@ -5,6 +5,7 @@ import { ManageProviderActions } from "./types";
 // Custom Tables Mocks
 import { mockGetCustomTables } from "../../actions/get-custom-tables/mock";
 import { mockGetCustomTableData } from "../../actions/get-custom-table-data/mock";
+import { mockUpsertCustomTableData } from "../../actions/upsert-custom-table-data/mock";
 import { mockDeleteCustomTableData } from "../../actions/delete-custom-table-data/mock";
 // Custom Extensions Mocks
 import { mockGetCustomExtensions } from "../../actions/get-custom-extensions/mock";
@@ -23,9 +24,10 @@ export const MANAGE_MOCKS: ManageProviderActions = {
     getContext: mockGetContextManage,
     getFinalContext: mockGetFinalContextManage,
     generateAPIKey: mockGenerateAPIKey,
-    // Custom Tables Actions (simplified for Manage)
+    // Custom Tables Actions
     getCustomTables: mockGetCustomTables,
     getCustomTableData: mockGetCustomTableData,
+    upsertCustomTableData: mockUpsertCustomTableData,
     deleteCustomTableData: mockDeleteCustomTableData,
     // Custom Extensions Actions
     getCustomExtensions: mockGetCustomExtensions,

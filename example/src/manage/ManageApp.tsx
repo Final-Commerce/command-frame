@@ -4,14 +4,14 @@ import { JsonViewer } from '../components/JsonViewer';
 import '../App.css';
 import '../components/sections/Sections.css';
 
-// Custom table type matching backend response
+// Custom table type matching backend response (includes optional fields from CFCustomTable)
 interface CustomTable {
   _id: string;
-  organizationId: string;
-  availability: string;
   name: string;
+  organizationId?: string;
+  availability?: string;
   description?: string;
-  metadata?: Array<{ key: string; val: any; _id?: string }>;
+  metadata?: Array<{ key: string; val?: any; value?: any; _id?: string }>;
   isDeleted?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -36,8 +36,17 @@ export function ManageApp() {
   const [customTableData, setCustomTableData] = useState<CustomTableRow[]>([]);
   const [selectedRow, setSelectedRow] = useState<CustomTableRow | null>(null);
   const [tableNameInput, setTableNameInput] = useState('');
+  const [tableIdInput, setTableIdInput] = useState('');
   const [deleteRowId, setDeleteRowId] = useState('');
   const [deleteResult, setDeleteResult] = useState<any>(null);
+  
+  // Create document state
+  const [createJson, setCreateJson] = useState('{}');
+  const [createResult, setCreateResult] = useState<any>(null);
+  
+  // Upsert state
+  const [upsertJson, setUpsertJson] = useState('{}');
+  const [upsertResult, setUpsertResult] = useState<any>(null);
   
   // Custom Extensions state
   const [customExtensions, setCustomExtensions] = useState<any[]>([]);
@@ -47,15 +56,23 @@ export function ManageApp() {
   
   const isInIframe = window.self !== window.top;
 
-  // When a table is selected, update the tableNameInput
+  // When a table is selected, update the inputs
   useEffect(() => {
     if (selectedTable) {
       setTableNameInput(selectedTable.name);
+      setTableIdInput(selectedTable._id);
       // Clear previous data when switching tables
       setCustomTableData([]);
       setSelectedRow(null);
     }
   }, [selectedTable]);
+
+  // When context is loaded, set the extension ID input
+  useEffect(() => {
+    if (contextData?.extensionId && !extensionIdInput) {
+      setExtensionIdInput(contextData.extensionId);
+    }
+  }, [contextData, extensionIdInput]);
 
   const handleGetContext = async () => {
     setLoading(true);
@@ -102,19 +119,24 @@ export function ManageApp() {
     }
   };
 
-  // Custom Tables handlers
-  const handleGetCustomTables = async () => {
+  // Get Custom Tables for Extension
+  const handleGetCustomTablesForExtension = async () => {
     setLoading(true);
     setError('');
     try {
-      const result = await manageClient.getCustomTables();
-      // Handle both array and { data: [], count: number } formats
-      const tables = Array.isArray(result.customTables) 
-        ? result.customTables 
-        : (result as any).data || [];
-      setCustomTables(tables);
+      if (!extensionIdInput) {
+        throw new Error('Extension ID is required. Get context first or enter an extension ID.');
+      }
+      const result = await manageClient.getCustomExtensionCustomTables({ 
+        extensionId: extensionIdInput 
+      });
+      const tables = result.customTables || [];
+      setCustomTables(tables as CustomTable[]);
+      if (tables.length === 0) {
+        setError('No custom tables found for this extension.');
+      }
     } catch (err: any) {
-      setError(err.message || 'Error fetching custom tables');
+      setError(err.message || 'Error fetching custom tables for extension');
     } finally {
       setLoading(false);
     }
@@ -124,7 +146,28 @@ export function ManageApp() {
     setSelectedTable(table);
   };
 
-  const handleGetCustomTableData = async () => {
+  // Get Custom Table Data by Table ID
+  const handleGetCustomTableDataById = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      if (!tableIdInput) {
+        throw new Error('Table ID is required');
+      }
+      // Use tableId if the types support it, otherwise find table name first
+      const result = await manageClient.getCustomTableData({ tableId: tableIdInput } as any);
+      const data = Array.isArray(result.data) ? result.data : [];
+      setCustomTableData(data);
+      setSelectedRow(null);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching custom table data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get Custom Table Data by Table Name
+  const handleGetCustomTableDataByName = async () => {
     setLoading(true);
     setError('');
     try {
@@ -132,7 +175,6 @@ export function ManageApp() {
         throw new Error('Table name is required');
       }
       const result = await manageClient.getCustomTableData({ tableName: tableNameInput });
-      // Handle both array and { data: [], count: number } formats
       const data = Array.isArray(result.data) ? result.data : [];
       setCustomTableData(data);
       setSelectedRow(null);
@@ -146,6 +188,62 @@ export function ManageApp() {
   const handleSelectRow = (row: CustomTableRow) => {
     setSelectedRow(row);
     setDeleteRowId(row._id);
+    // Pre-populate upsert JSON with selected row data
+    setUpsertJson(JSON.stringify(row, null, 2));
+  };
+
+  // Create new document (POST with validation)
+  const handleCreateDocument = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      if (!tableNameInput) {
+        throw new Error('Table name is required');
+      }
+      const data = JSON.parse(createJson);
+      // Remove _id if present since we're creating new
+      delete data._id;
+      delete data.createdAt;
+      delete data.updatedAt;
+      
+      const result = await manageClient.upsertCustomTableData({ 
+        tableName: tableNameInput, 
+        data 
+      });
+      setCreateResult(result);
+      // Refresh data after create
+      handleGetCustomTableDataByName();
+    } catch (err: any) {
+      setError(err.message || 'Error creating document');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Upsert document (update existing)
+  const handleUpsertCustomTableData = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      if (!tableNameInput) {
+        throw new Error('Table name is required');
+      }
+      const data = JSON.parse(upsertJson);
+      if (!data._id) {
+        throw new Error('_id is required for update. Use "Create Document" for new records.');
+      }
+      const result = await manageClient.upsertCustomTableData({ 
+        tableName: tableNameInput, 
+        data 
+      });
+      setUpsertResult(result);
+      // Refresh data after upsert
+      handleGetCustomTableDataByName();
+    } catch (err: any) {
+      setError(err.message || 'Error upserting custom table data');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteCustomTableData = async () => {
@@ -161,7 +259,7 @@ export function ManageApp() {
       });
       setDeleteResult(result);
       // Refresh data after delete
-      handleGetCustomTableData();
+      handleGetCustomTableDataByName();
     } catch (err: any) {
       setError(err.message || 'Error deleting custom table data');
     } finally {
@@ -321,18 +419,29 @@ export function ManageApp() {
 
             <div className="command-section">
               <div className="command-section__header">
-                <h3>Get Custom Tables</h3>
+                <h3>Get Custom Tables for Extension</h3>
               </div>
               <div className="command-section__content">
                 <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                  Retrieves custom tables linked to <strong>this extension</strong>. Click on a table to select it for data operations.
+                  Retrieves custom tables linked to a specific extension. The extension ID is auto-filled from context.
                 </p>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Extension ID:</label>
+                  <input
+                    type="text"
+                    value={extensionIdInput}
+                    onChange={(e) => setExtensionIdInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Get context first or enter extension ID"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
                 <button 
-                  onClick={handleGetCustomTables} 
-                  disabled={loading}
+                  onClick={handleGetCustomTablesForExtension} 
+                  disabled={loading || !extensionIdInput}
                   className="btn btn--primary"
                 >
-                  Get Custom Tables
+                  Get Custom Tables for Extension
                 </button>
                 
                 {customTables.length > 0 && (
@@ -389,6 +498,12 @@ export function ManageApp() {
                     ))}
                   </div>
                 )}
+                
+                {customTables.length === 0 && extensionIdInput && (
+                  <p style={{ fontSize: '12px', color: '#999', marginTop: '12px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+                    No custom tables found for this extension. Make sure you have linked custom tables to this extension.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -398,9 +513,29 @@ export function ManageApp() {
               </div>
               <div className="command-section__content">
                 <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                  Retrieves data (rows) from a custom table by name. Click a row to select it for deletion.
+                  Retrieves data (rows) from a custom table. You can query by table ID or by table name.
                 </p>
                 <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Table ID:</label>
+                  <input
+                    type="text"
+                    value={tableIdInput}
+                    onChange={(e) => setTableIdInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Select a table above or enter ID"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <button 
+                  onClick={handleGetCustomTableDataById} 
+                  disabled={loading || !tableIdInput}
+                  className="btn btn--primary"
+                  style={{ marginRight: '8px' }}
+                >
+                  Get by Table ID
+                </button>
+                
+                <div className="form-group" style={{ marginTop: '16px', marginBottom: '12px' }}>
                   <label className="form-label">Table Name:</label>
                   <input
                     type="text"
@@ -412,11 +547,11 @@ export function ManageApp() {
                   />
                 </div>
                 <button 
-                  onClick={handleGetCustomTableData} 
+                  onClick={handleGetCustomTableDataByName} 
                   disabled={loading || !tableNameInput}
                   className="btn btn--primary"
                 >
-                  Get Custom Table Data
+                  Get by Table Name
                 </button>
                 
                 {customTableData.length > 0 && (
@@ -470,9 +605,9 @@ export function ManageApp() {
                   </div>
                 )}
                 
-                {customTableData.length === 0 && tableNameInput && (
+                {customTableData.length === 0 && (tableNameInput || tableIdInput) && (
                   <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
-                    No data found. Click "Get Custom Table Data" to fetch rows.
+                    No data found. Click one of the "Get" buttons to fetch rows.
                   </p>
                 )}
               </div>
@@ -480,7 +615,110 @@ export function ManageApp() {
 
             <div className="command-section">
               <div className="command-section__header">
-                <h3>Delete Custom Table Data</h3>
+                <h3>Create Document (POST)</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Create a new row in a custom table. The backend validates that all field names exist in the table schema and that value types match. Uses a transaction for atomicity.
+                </p>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Table Name:</label>
+                  <input
+                    type="text"
+                    value={tableNameInput}
+                    onChange={(e) => setTableNameInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Select a table above or enter name"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Data (JSON - do NOT include _id):</label>
+                  <textarea
+                    value={createJson}
+                    onChange={(e) => setCreateJson(e.target.value)}
+                    className="form-input"
+                    placeholder='{"fieldName": "value", ...}'
+                    style={{ 
+                      width: '100%', 
+                      padding: '8px', 
+                      marginTop: '4px',
+                      minHeight: '120px',
+                      fontFamily: 'monospace',
+                      fontSize: '12px'
+                    }}
+                  />
+                </div>
+                <button 
+                  onClick={handleCreateDocument} 
+                  disabled={loading || !tableNameInput}
+                  className="btn btn--primary"
+                  style={{ backgroundColor: '#2e7d32' }}
+                >
+                  Create Document
+                </button>
+                {createResult && (
+                  <JsonViewer data={createResult} title="Create Result" />
+                )}
+              </div>
+            </div>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Update Document (Upsert)</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Update an existing row. The JSON <strong>must include the _id</strong> field. Select a row above to pre-populate.
+                </p>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Table Name:</label>
+                  <input
+                    type="text"
+                    value={tableNameInput}
+                    onChange={(e) => setTableNameInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Select a table above or enter name"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Data (JSON - must include _id):</label>
+                  <textarea
+                    value={upsertJson}
+                    onChange={(e) => setUpsertJson(e.target.value)}
+                    className="form-input"
+                    placeholder='{"_id": "...", "fieldName": "value", ...}'
+                    style={{ 
+                      width: '100%', 
+                      padding: '8px', 
+                      marginTop: '4px',
+                      minHeight: '120px',
+                      fontFamily: 'monospace',
+                      fontSize: '12px'
+                    }}
+                  />
+                  <p style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
+                    Tip: Select a row above to pre-populate this field for editing
+                  </p>
+                </div>
+                <button 
+                  onClick={handleUpsertCustomTableData} 
+                  disabled={loading || !tableNameInput}
+                  className="btn btn--primary"
+                  style={{ backgroundColor: '#1976d2' }}
+                >
+                  Update Document
+                </button>
+                {upsertResult && (
+                  <JsonViewer data={upsertResult} title="Update Result" />
+                )}
+              </div>
+            </div>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Delete Document</h3>
               </div>
               <div className="command-section__content">
                 <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
@@ -552,7 +790,7 @@ export function ManageApp() {
               </div>
               <div className="command-section__content">
                 <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                  Retrieves custom extensions installed for the current company.
+                  Retrieves custom extensions installed for the current company. Uses aggregation to lookup extension details.
                 </p>
                 <button 
                   onClick={handleGetCurrentCompanyCustomExtensions} 
