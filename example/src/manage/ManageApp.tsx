@@ -40,6 +40,14 @@ export function ManageApp() {
   const [deleteRowId, setDeleteRowId] = useState('');
   const [deleteResult, setDeleteResult] = useState<any>(null);
   
+  // Pagination state
+  const [paginationLimit, setPaginationLimit] = useState(10);
+  const [paginationOffset, setPaginationOffset] = useState(0);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+  
+  // Navigation menu state
+  const [navMenuOpen, setNavMenuOpen] = useState(false);
+  
   // Create document state
   const [createJson, setCreateJson] = useState('{}');
   const [createResult, setCreateResult] = useState<any>(null);
@@ -158,18 +166,28 @@ export function ManageApp() {
   };
 
   // Get Custom Table Data by Table ID
-  const handleGetCustomTableDataById = async () => {
+  const handleGetCustomTableDataById = async (newOffset?: number) => {
     setLoading(true);
     setError('');
     try {
       if (!tableIdInput) {
         throw new Error('Table ID is required');
       }
-      // Use tableId if the types support it, otherwise find table name first
-      const result = await manageClient.getCustomTableData({ tableId: tableIdInput } as any);
+      const offset = newOffset !== undefined ? newOffset : paginationOffset;
+      // Use tableId if the types support it
+      const result = await manageClient.getCustomTableData({ 
+        tableId: tableIdInput,
+        offset,
+        limit: paginationLimit,
+      } as any);
       const data = Array.isArray(result.data) ? result.data : [];
       setCustomTableData(data);
       setSelectedRow(null);
+      if (newOffset !== undefined) setPaginationOffset(newOffset);
+      // Try to get total count from response if available
+      if ((result as any).count !== undefined) {
+        setTotalCount((result as any).count);
+      }
     } catch (err: any) {
       setError(err.message || 'Error fetching custom table data');
     } finally {
@@ -178,17 +196,27 @@ export function ManageApp() {
   };
 
   // Get Custom Table Data by Table Name
-  const handleGetCustomTableDataByName = async () => {
+  const handleGetCustomTableDataByName = async (newOffset?: number) => {
     setLoading(true);
     setError('');
     try {
       if (!tableNameInput) {
         throw new Error('Table name is required');
       }
-      const result = await manageClient.getCustomTableData({ tableName: tableNameInput });
+      const offset = newOffset !== undefined ? newOffset : paginationOffset;
+      const result = await manageClient.getCustomTableData({ 
+        tableName: tableNameInput,
+        offset,
+        limit: paginationLimit,
+      });
       const data = Array.isArray(result.data) ? result.data : [];
       setCustomTableData(data);
       setSelectedRow(null);
+      if (newOffset !== undefined) setPaginationOffset(newOffset);
+      // Try to get total count from response if available
+      if ((result as any).count !== undefined) {
+        setTotalCount((result as any).count);
+      }
     } catch (err: any) {
       setError(err.message || 'Error fetching custom table data');
     } finally {
@@ -370,16 +398,107 @@ export function ManageApp() {
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   };
 
+  // Navigation menu items
+  const navItems = [
+    { id: 'section-context', label: 'Context' },
+    { id: 'section-custom-tables', label: 'Custom Tables' },
+    { id: 'section-get-data', label: '↳ Get Data' },
+    { id: 'section-create', label: '↳ Create Document' },
+    { id: 'section-update', label: '↳ Update Document' },
+    { id: 'section-delete', label: '↳ Delete Document' },
+    { id: 'section-extensions', label: 'Custom Extensions' },
+  ];
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setNavMenuOpen(false);
+    }
+  };
+
   return (
     <div className="app">
       <div className="app__main" style={{ marginLeft: 0, width: '100%' }}>
-        <div className="app__header">
+        <div className="app__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 className="app__title">Manage Integration Example</h1>
-          <div className="app__status">
-            <span className={`app__status-indicator ${isInIframe ? 'app__status-indicator--active' : ''}`}></span>
-            <span className="app__status-text">
-              {isInIframe ? 'Running in iframe' : 'Not in iframe (Mock Mode)'}
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="app__status">
+              <span className={`app__status-indicator ${isInIframe ? 'app__status-indicator--active' : ''}`}></span>
+              <span className="app__status-text">
+                {isInIframe ? 'Running in iframe' : 'Not in iframe (Mock Mode)'}
+              </span>
+            </div>
+            
+            {/* Navigation Menu */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setNavMenuOpen(!navMenuOpen)}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '6px',
+                  backgroundColor: '#1976d2',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                }}
+                title="Navigation Menu"
+              >
+                {navMenuOpen ? '✕' : '☰'}
+              </button>
+              
+              {navMenuOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: '44px',
+                  right: '0',
+                  backgroundColor: '#fff',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                  minWidth: '200px',
+                  overflow: 'hidden',
+                  zIndex: 1000,
+                }}>
+                  <div style={{ 
+                    padding: '12px 16px', 
+                    backgroundColor: '#1976d2', 
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: '14px'
+                  }}>
+                    Jump to Section
+                  </div>
+                  {navItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollToSection(item.id)}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '10px 16px',
+                        textAlign: 'left',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        borderBottom: '1px solid #eee',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        color: '#333',
+                        transition: 'background-color 0.2s',
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
@@ -392,7 +511,7 @@ export function ManageApp() {
 
           <div className="section-content">
             {/* Context Section */}
-            <h2 style={{ marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Context</h2>
+            <h2 id="section-context" style={{ marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Context</h2>
             
             <div className="command-section">
               <div className="command-section__header">
@@ -452,7 +571,7 @@ export function ManageApp() {
             </div>
 
             {/* Custom Tables Section */}
-            <h2 style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Custom Tables</h2>
+            <h2 id="section-custom-tables" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Custom Tables</h2>
 
             <div className="command-section">
               <div className="command-section__header">
@@ -544,7 +663,7 @@ export function ManageApp() {
               </div>
             </div>
 
-            <div className="command-section">
+            <div className="command-section" id="section-get-data">
               <div className="command-section__header">
                 <h3>Get Custom Table Data</h3>
               </div>
@@ -552,6 +671,49 @@ export function ManageApp() {
                 <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
                   Retrieves data (rows) from a custom table. You can query by table ID or by table name.
                 </p>
+                
+                {/* Pagination Controls */}
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '16px', 
+                  marginBottom: '16px', 
+                  padding: '12px', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  alignItems: 'center',
+                  flexWrap: 'wrap'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 500 }}>Limit:</label>
+                    <select 
+                      value={paginationLimit} 
+                      onChange={(e) => setPaginationLimit(Number(e.target.value))}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 500 }}>Offset:</label>
+                    <input 
+                      type="number" 
+                      value={paginationOffset} 
+                      onChange={(e) => setPaginationOffset(Number(e.target.value))}
+                      min={0}
+                      style={{ width: '80px', padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    />
+                  </div>
+                  {totalCount !== null && (
+                    <span style={{ fontSize: '12px', color: '#666' }}>
+                      Total: {totalCount} rows
+                    </span>
+                  )}
+                </div>
+                
                 <div className="form-group" style={{ marginBottom: '12px' }}>
                   <label className="form-label">Table ID:</label>
                   <input
@@ -564,7 +726,7 @@ export function ManageApp() {
                   />
                 </div>
                 <button 
-                  onClick={handleGetCustomTableDataById} 
+                  onClick={() => handleGetCustomTableDataById()} 
                   disabled={loading || !tableIdInput}
                   className="btn btn--primary"
                   style={{ marginRight: '8px' }}
@@ -584,7 +746,7 @@ export function ManageApp() {
                   />
                 </div>
                 <button 
-                  onClick={handleGetCustomTableDataByName} 
+                  onClick={() => handleGetCustomTableDataByName()} 
                   disabled={loading || !tableNameInput}
                   className="btn btn--primary"
                 >
@@ -593,8 +755,55 @@ export function ManageApp() {
                 
                 {customTableData.length > 0 && (
                   <div style={{ marginTop: '16px' }}>
-                    <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                      <strong>{customTableData.length} row(s) found.</strong> Click to select:
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>
+                        <strong>{customTableData.length} row(s) shown</strong> (offset: {paginationOffset}, limit: {paginationLimit})
+                        {totalCount !== null && <span> of {totalCount} total</span>}
+                      </p>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          onClick={() => {
+                            const newOffset = Math.max(0, paginationOffset - paginationLimit);
+                            setPaginationOffset(newOffset);
+                            if (tableNameInput) handleGetCustomTableDataByName(newOffset);
+                            else if (tableIdInput) handleGetCustomTableDataById(newOffset);
+                          }}
+                          disabled={loading || paginationOffset === 0}
+                          style={{ 
+                            padding: '4px 12px', 
+                            fontSize: '12px',
+                            backgroundColor: paginationOffset === 0 ? '#e0e0e0' : '#1976d2',
+                            color: paginationOffset === 0 ? '#999' : '#fff',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: paginationOffset === 0 ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          ← Prev
+                        </button>
+                        <button
+                          onClick={() => {
+                            const newOffset = paginationOffset + paginationLimit;
+                            setPaginationOffset(newOffset);
+                            if (tableNameInput) handleGetCustomTableDataByName(newOffset);
+                            else if (tableIdInput) handleGetCustomTableDataById(newOffset);
+                          }}
+                          disabled={loading || (totalCount !== null && paginationOffset + paginationLimit >= totalCount)}
+                          style={{ 
+                            padding: '4px 12px', 
+                            fontSize: '12px',
+                            backgroundColor: (totalCount !== null && paginationOffset + paginationLimit >= totalCount) ? '#e0e0e0' : '#1976d2',
+                            color: (totalCount !== null && paginationOffset + paginationLimit >= totalCount) ? '#999' : '#fff',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: (totalCount !== null && paginationOffset + paginationLimit >= totalCount) ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: '11px', color: '#999', marginBottom: '8px' }}>Click to select:
                     </p>
                     {customTableData.map((row, index) => (
                       <div
@@ -650,7 +859,7 @@ export function ManageApp() {
               </div>
             </div>
 
-            <div className="command-section">
+            <div className="command-section" id="section-create">
               <div className="command-section__header">
                 <h3>Create Document (POST)</h3>
               </div>
@@ -734,7 +943,7 @@ export function ManageApp() {
               </div>
             </div>
 
-            <div className="command-section">
+            <div className="command-section" id="section-update">
               <div className="command-section__header">
                 <h3>Update Document (Upsert)</h3>
               </div>
@@ -821,7 +1030,7 @@ export function ManageApp() {
               </div>
             </div>
 
-            <div className="command-section">
+            <div className="command-section" id="section-delete">
               <div className="command-section__header">
                 <h3>Delete Document</h3>
               </div>
@@ -866,7 +1075,7 @@ export function ManageApp() {
             </div>
 
             {/* Custom Extensions Section */}
-            <h2 style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Custom Extensions</h2>
+            <h2 id="section-extensions" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Custom Extensions</h2>
 
             <div className="command-section">
               <div className="command-section__header">
