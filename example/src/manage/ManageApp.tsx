@@ -788,15 +788,15 @@ export function ManageApp() {
                             if (tableNameInput) handleGetCustomTableDataByName(newOffset);
                             else if (tableIdInput) handleGetCustomTableDataById(newOffset);
                           }}
-                          disabled={loading || (totalCount !== null && paginationOffset + paginationLimit >= totalCount)}
+                          disabled={loading || customTableData.length < paginationLimit || (totalCount !== null && paginationOffset + paginationLimit >= totalCount)}
                           style={{ 
                             padding: '4px 12px', 
                             fontSize: '12px',
-                            backgroundColor: (totalCount !== null && paginationOffset + paginationLimit >= totalCount) ? '#e0e0e0' : '#1976d2',
-                            color: (totalCount !== null && paginationOffset + paginationLimit >= totalCount) ? '#999' : '#fff',
+                            backgroundColor: (customTableData.length < paginationLimit || (totalCount !== null && paginationOffset + paginationLimit >= totalCount)) ? '#e0e0e0' : '#1976d2',
+                            color: (customTableData.length < paginationLimit || (totalCount !== null && paginationOffset + paginationLimit >= totalCount)) ? '#999' : '#fff',
                             border: 'none',
                             borderRadius: '4px',
-                            cursor: (totalCount !== null && paginationOffset + paginationLimit >= totalCount) ? 'not-allowed' : 'pointer'
+                            cursor: (customTableData.length < paginationLimit || (totalCount !== null && paginationOffset + paginationLimit >= totalCount)) ? 'not-allowed' : 'pointer'
                           }}
                         >
                           Next →
