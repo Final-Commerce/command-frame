@@ -83,6 +83,9 @@ export function ManageApp() {
       // Clear previous data when switching tables
       setCustomTableData([]);
       setSelectedRow(null);
+      // Reset pagination state
+      setPaginationOffset(0);
+      setTotalCount(null);
     }
   }, [selectedTable]);
 
@@ -262,7 +265,7 @@ export function ManageApp() {
       
       setCreateResult(result);
       // Refresh data after create
-      handleGetCustomTableDataByName();
+      await handleGetCustomTableDataByName();
     } catch (err: any) {
       const errorMsg = err.message || JSON.stringify(err) || 'Error creating document';
       setCreateError(errorMsg);
@@ -298,7 +301,7 @@ export function ManageApp() {
       
       setUpsertResult(result);
       // Refresh data after upsert
-      handleGetCustomTableDataByName();
+      await handleGetCustomTableDataByName();
     } catch (err: any) {
       const errorMsg = err.message || JSON.stringify(err) || 'Error updating document';
       setUpsertError(errorMsg);
@@ -321,7 +324,7 @@ export function ManageApp() {
       });
       setDeleteResult(result);
       // Refresh data after delete
-      handleGetCustomTableDataByName();
+      await handleGetCustomTableDataByName();
     } catch (err: any) {
       setError(err.message || 'Error deleting custom table data');
     } finally {
