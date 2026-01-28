@@ -365,6 +365,9 @@ export type {
 } from "./pubsub/topics/print/types";
 
 // Export Custom Tables Types
+export { AttributeType } from "./common-types/attribute-type";
+export type { AttributeTypeValue } from "./common-types/attribute-type";
+
 export type { GetCustomTables, GetCustomTablesResponse } from "./actions/get-custom-tables/types";
 
 export type { GetCustomTableFields, GetCustomTableFieldsParams, GetCustomTableFieldsResponse } from "./actions/get-custom-table-fields/types";

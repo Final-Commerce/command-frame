@@ -43,10 +43,12 @@ export function ManageApp() {
   // Create document state
   const [createJson, setCreateJson] = useState('{}');
   const [createResult, setCreateResult] = useState<any>(null);
+  const [createError, setCreateError] = useState<string>('');
   
   // Upsert state
   const [upsertJson, setUpsertJson] = useState('{}');
   const [upsertResult, setUpsertResult] = useState<any>(null);
+  const [upsertError, setUpsertError] = useState<string>('');
   
   // Custom Extensions state
   const [customExtensions, setCustomExtensions] = useState<any[]>([]);
@@ -195,12 +197,18 @@ export function ManageApp() {
   // Create new document (POST with validation)
   const handleCreateDocument = async () => {
     setLoading(true);
-    setError('');
+    setCreateError('');
+    setCreateResult(null);
     try {
       if (!tableNameInput) {
         throw new Error('Table name is required');
       }
-      const data = JSON.parse(createJson);
+      let data;
+      try {
+        data = JSON.parse(createJson);
+      } catch (parseErr) {
+        throw new Error('Invalid JSON: ' + (parseErr as Error).message);
+      }
       // Remove _id if present since we're creating new
       delete data._id;
       delete data.createdAt;
@@ -210,11 +218,18 @@ export function ManageApp() {
         tableName: tableNameInput, 
         data 
       });
+      
+      if (!result.success) {
+        throw new Error((result as any).error || 'Create failed');
+      }
+      
       setCreateResult(result);
       // Refresh data after create
       handleGetCustomTableDataByName();
     } catch (err: any) {
-      setError(err.message || 'Error creating document');
+      const errorMsg = err.message || JSON.stringify(err) || 'Error creating document';
+      setCreateError(errorMsg);
+      console.error('Create document error:', err);
     } finally {
       setLoading(false);
     }
@@ -223,12 +238,18 @@ export function ManageApp() {
   // Upsert document (update existing)
   const handleUpsertCustomTableData = async () => {
     setLoading(true);
-    setError('');
+    setUpsertError('');
+    setUpsertResult(null);
     try {
       if (!tableNameInput) {
         throw new Error('Table name is required');
       }
-      const data = JSON.parse(upsertJson);
+      let data;
+      try {
+        data = JSON.parse(upsertJson);
+      } catch (parseErr) {
+        throw new Error('Invalid JSON: ' + (parseErr as Error).message);
+      }
       if (!data._id) {
         throw new Error('_id is required for update. Use "Create Document" for new records.');
       }
@@ -236,11 +257,18 @@ export function ManageApp() {
         tableName: tableNameInput, 
         data 
       });
+      
+      if (!result.success) {
+        throw new Error((result as any).error || 'Update failed');
+      }
+      
       setUpsertResult(result);
       // Refresh data after upsert
       handleGetCustomTableDataByName();
     } catch (err: any) {
-      setError(err.message || 'Error upserting custom table data');
+      const errorMsg = err.message || JSON.stringify(err) || 'Error updating document';
+      setUpsertError(errorMsg);
+      console.error('Upsert error:', err);
     } finally {
       setLoading(false);
     }
@@ -657,8 +685,42 @@ export function ManageApp() {
                 >
                   Create Document
                 </button>
+                {createError && (
+                  <div style={{ 
+                    marginTop: '12px', 
+                    padding: '12px', 
+                    backgroundColor: '#ffebee', 
+                    color: '#c62828', 
+                    borderRadius: '4px',
+                    border: '1px solid #ef9a9a',
+                    fontSize: '13px'
+                  }}>
+                    <strong>❌ Create Error:</strong>
+                    <pre style={{ 
+                      margin: '8px 0 0 0', 
+                      whiteSpace: 'pre-wrap', 
+                      wordBreak: 'break-all',
+                      fontSize: '12px',
+                      fontFamily: 'monospace'
+                    }}>
+                      {createError}
+                    </pre>
+                  </div>
+                )}
                 {createResult && (
-                  <JsonViewer data={createResult} title="Create Result" />
+                  <div style={{ marginTop: '12px' }}>
+                    <div style={{ 
+                      padding: '8px 12px', 
+                      backgroundColor: '#e8f5e9', 
+                      color: '#2e7d32', 
+                      borderRadius: '4px',
+                      marginBottom: '8px',
+                      fontSize: '13px'
+                    }}>
+                      ✅ Document created successfully!
+                    </div>
+                    <JsonViewer data={createResult} title="Create Result" />
+                  </div>
                 )}
               </div>
             </div>
@@ -710,8 +772,42 @@ export function ManageApp() {
                 >
                   Update Document
                 </button>
+                {upsertError && (
+                  <div style={{ 
+                    marginTop: '12px', 
+                    padding: '12px', 
+                    backgroundColor: '#ffebee', 
+                    color: '#c62828', 
+                    borderRadius: '4px',
+                    border: '1px solid #ef9a9a',
+                    fontSize: '13px'
+                  }}>
+                    <strong>❌ Update Error:</strong>
+                    <pre style={{ 
+                      margin: '8px 0 0 0', 
+                      whiteSpace: 'pre-wrap', 
+                      wordBreak: 'break-all',
+                      fontSize: '12px',
+                      fontFamily: 'monospace'
+                    }}>
+                      {upsertError}
+                    </pre>
+                  </div>
+                )}
                 {upsertResult && (
-                  <JsonViewer data={upsertResult} title="Update Result" />
+                  <div style={{ marginTop: '12px' }}>
+                    <div style={{ 
+                      padding: '8px 12px', 
+                      backgroundColor: '#e8f5e9', 
+                      color: '#2e7d32', 
+                      borderRadius: '4px',
+                      marginBottom: '8px',
+                      fontSize: '13px'
+                    }}>
+                      ✅ Document updated successfully!
+                    </div>
+                    <JsonViewer data={upsertResult} title="Update Result" />
+                  </div>
                 )}
               </div>
             </div>
