@@ -58,6 +58,15 @@ export function ManageApp() {
   
   const isInIframe = window.self !== window.top;
 
+  // Auto-fetch context on mount when in iframe
+  useEffect(() => {
+    if (isInIframe && !contextData) {
+      manageClient.getContext()
+        .then(setContextData)
+        .catch((err) => console.error('Failed to auto-fetch context:', err));
+    }
+  }, [isInIframe]);
+
   // When a table is selected, update the inputs
   useEffect(() => {
     if (selectedTable) {
