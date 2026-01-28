@@ -287,9 +287,6 @@ export function ManageApp() {
       } catch (parseErr) {
         throw new Error('Invalid JSON: ' + (parseErr as Error).message);
       }
-      if (!data._id) {
-        throw new Error('_id is required for update. Use "Create Document" for new records.');
-      }
       const result = await manageClient.upsertCustomTableData({ 
         tableName: tableNameInput, 
         data 
