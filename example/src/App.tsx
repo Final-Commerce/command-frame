@@ -15,6 +15,7 @@ import { EventsSection } from './components/sections/EventsSection';
 import { ExamplesSection } from './components/sections/ExamplesSection';
 import { CustomExtensions } from './components/sections/CustomExtensions';
 import { CustomTables } from './components/sections/CustomTables';
+import { SecretsSection } from './components/sections/SecretsSection';
 import { PrintSection } from "./components/sections/PrintSection";
 
 function App() {
@@ -51,6 +52,8 @@ function App() {
         return <CustomExtensions isInIframe={isInIframe} />;
       case 'custom-tables':
         return <CustomTables isInIframe={isInIframe} />;
+      case 'secrets':
+        return <SecretsSection isInIframe={isInIframe} />;
       case "print":
         return <PrintSection isInIframe={isInIframe} />;
       default:
