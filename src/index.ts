@@ -66,6 +66,9 @@ import { deleteCustomTableData } from "./actions/delete-custom-table-data/action
 import { getCustomExtensions } from "./actions/get-custom-extensions/action";
 import { getCurrentCompanyCustomExtensions } from "./actions/get-current-company-custom-extensions/action";
 import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
+// Company Data Actions
+import { getUsers } from "./actions/get-users/action";
+import { getRoles } from "./actions/get-roles/action";
 
 import { generateAPIKey } from "./actions/generate-api-key/action";
 
@@ -137,7 +140,10 @@ export const command = {
     // Custom Extensions Actions
     getCustomExtensions,
     getCurrentCompanyCustomExtensions,
-    getCustomExtensionCustomTables
+    getCustomExtensionCustomTables,
+    // Company Data Actions
+    getUsers,
+    getRoles
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -391,3 +397,7 @@ export type {
     GetCurrentCompanyCustomExtensionsParams,
     GetCurrentCompanyCustomExtensionsResponse
 } from "./actions/get-current-company-custom-extensions/types";
+
+// Company Data Actions
+export type { GetUsers, GetUsersParams, GetUsersResponse } from "./actions/get-users/types";
+export type { GetRoles, GetRolesParams, GetRolesResponse } from "./actions/get-roles/types";

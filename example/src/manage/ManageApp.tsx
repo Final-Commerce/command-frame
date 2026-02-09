@@ -64,6 +64,15 @@ export function ManageApp() {
   const [extensionIdInput, setExtensionIdInput] = useState('');
   const [extensionCustomTables, setExtensionCustomTables] = useState<any[]>([]);
   
+  // Company Data state
+  const [manageUsers, setManageUsers] = useState<any[]>([]);
+  const [manageRoles, setManageRoles] = useState<any[]>([]);
+  const [manageCustomers, setManageCustomers] = useState<any[]>([]);
+  const [customersCount, setCustomersCount] = useState<number>(0);
+  const [customersOffset, setCustomersOffset] = useState(0);
+  const [customersLimit, setCustomersLimit] = useState(10);
+  const [customersFilter, setCustomersFilter] = useState('');
+  
   const isInIframe = window.self !== window.top;
 
   // Auto-fetch context on mount when in iframe
@@ -377,6 +386,53 @@ export function ManageApp() {
     }
   };
 
+  // Company Data handlers
+  const handleGetUsers = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await manageClient.getUsers();
+      setManageUsers(result.users || []);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetRoles = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await manageClient.getRoles();
+      setManageRoles(result.roles || []);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching roles');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetCustomers = async (newOffset?: number) => {
+    setLoading(true);
+    setError('');
+    try {
+      const offset = newOffset !== undefined ? newOffset : customersOffset;
+      const result = await manageClient.getCustomers({ 
+        offset, 
+        limit: customersLimit,
+        ...(customersFilter ? { query: { searchValue: customersFilter } } : {}),
+      });
+      setManageCustomers(result.customers || []);
+      setCustomersCount((result as any).total || 0);
+      if (newOffset !== undefined) setCustomersOffset(newOffset);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching customers');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Styles for selectable cards
   const cardStyle = {
     border: '1px solid #ddd',
@@ -401,6 +457,7 @@ export function ManageApp() {
   // Navigation menu items
   const navItems = [
     { id: 'section-context', label: 'Context' },
+    { id: 'section-company-data', label: 'Company Data' },
     { id: 'section-custom-tables', label: 'Custom Tables' },
     { id: 'section-get-data', label: '↳ Get Data' },
     { id: 'section-create', label: '↳ Create Document' },
@@ -566,6 +623,289 @@ export function ManageApp() {
                 </p>
                 {apiKeyData && (
                   <JsonViewer data={JSON.stringify(apiKeyData, null, 2)} title="Result" />
+                )}
+              </div>
+            </div>
+
+            {/* Company Data Section */}
+            <h2 id="section-company-data" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Company Data</h2>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Users</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Retrieves all users (employees) for the current company.
+                </p>
+                <button 
+                  onClick={handleGetUsers} 
+                  disabled={loading}
+                  className="btn btn--primary"
+                >
+                  Get Users
+                </button>
+                {manageUsers.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                      <strong>{manageUsers.length} user(s) found:</strong>
+                    </p>
+                    {manageUsers.map((user) => (
+                      <div
+                        key={user._id || user.id}
+                        style={{
+                          ...cardStyle,
+                          cursor: 'default',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <strong style={{ fontSize: '14px', color: '#333' }}>
+                              {user.firstName} {user.lastName}
+                            </strong>
+                            {user.email && (
+                              <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>
+                                {user.email}
+                              </p>
+                            )}
+                            {user.phone && (
+                              <p style={{ fontSize: '11px', color: '#999', margin: '2px 0 0 0' }}>
+                                {user.phone}
+                              </p>
+                            )}
+                          </div>
+                          {user.role && (
+                            <span style={{ 
+                              backgroundColor: '#e3f2fd', 
+                              color: '#1976d2', 
+                              padding: '2px 8px', 
+                              borderRadius: '4px',
+                              fontSize: '11px'
+                            }}>
+                              {user.role?.name || 'No role'}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#999', marginTop: '8px' }}>
+                          ID: {user._id || user.id} | Type: {user.type}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Roles</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Retrieves all roles defined for the current company.
+                </p>
+                <button 
+                  onClick={handleGetRoles} 
+                  disabled={loading}
+                  className="btn btn--primary"
+                >
+                  Get Roles
+                </button>
+                {manageRoles.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                      <strong>{manageRoles.length} role(s) found:</strong>
+                    </p>
+                    {manageRoles.map((role) => (
+                      <div
+                        key={role._id || role.id}
+                        style={{
+                          ...cardStyle,
+                          cursor: 'default',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <strong style={{ fontSize: '14px', color: '#333' }}>
+                            {role.name}
+                          </strong>
+                          {role.permissions && (
+                            <span style={{ 
+                              backgroundColor: '#f5f5f5', 
+                              color: '#666', 
+                              padding: '2px 8px', 
+                              borderRadius: '4px',
+                              fontSize: '11px'
+                            }}>
+                              {role.permissions.length} permissions
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#999', marginTop: '8px' }}>
+                          ID: {role._id || role.id}
+                        </div>
+                        {role.permissions && role.permissions.length > 0 && (
+                          <div style={{ 
+                            fontSize: '11px', 
+                            color: '#666', 
+                            marginTop: '8px',
+                            maxHeight: '60px',
+                            overflow: 'auto'
+                          }}>
+                            Permissions: {role.permissions.filter((p: any) => p.value).map((p: any) => p.name).join(', ') || 'None enabled'}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Customers</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Retrieves customers for the current company with pagination.
+                </p>
+                
+                {/* Pagination Controls */}
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '16px', 
+                  marginBottom: '16px', 
+                  padding: '12px', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  alignItems: 'center',
+                  flexWrap: 'wrap'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 500 }}>Limit:</label>
+                    <select 
+                      value={customersLimit} 
+                      onChange={(e) => setCustomersLimit(Number(e.target.value))}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 500 }}>Filter:</label>
+                    <input 
+                      type="text" 
+                      value={customersFilter}
+                      onChange={(e) => setCustomersFilter(e.target.value)}
+                      placeholder="Search name, email..."
+                      style={{ width: '160px', padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px' }}
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => { setCustomersOffset(0); handleGetCustomers(0); }} 
+                  disabled={loading}
+                  className="btn btn--primary"
+                >
+                  Get Customers
+                </button>
+                {manageCustomers.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>
+                        <strong>{manageCustomers.length} customer(s) shown</strong> (offset: {customersOffset}, limit: {customersLimit})
+                        {customersCount > 0 && <span> of {customersCount} total</span>}
+                      </p>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          onClick={() => {
+                            const newOffset = Math.max(0, customersOffset - customersLimit);
+                            setCustomersOffset(newOffset);
+                            handleGetCustomers(newOffset);
+                          }}
+                          disabled={loading || customersOffset === 0}
+                          style={{ 
+                            padding: '4px 12px', fontSize: '12px',
+                            backgroundColor: customersOffset === 0 ? '#e0e0e0' : '#1976d2',
+                            color: customersOffset === 0 ? '#999' : '#fff',
+                            border: 'none', borderRadius: '4px',
+                            cursor: customersOffset === 0 ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          ← Prev
+                        </button>
+                        <button
+                          onClick={() => {
+                            const newOffset = customersOffset + customersLimit;
+                            setCustomersOffset(newOffset);
+                            handleGetCustomers(newOffset);
+                          }}
+                          disabled={loading || manageCustomers.length < customersLimit || (customersCount > 0 && customersOffset + customersLimit >= customersCount)}
+                          style={{ 
+                            padding: '4px 12px', fontSize: '12px',
+                            backgroundColor: (manageCustomers.length < customersLimit || (customersCount > 0 && customersOffset + customersLimit >= customersCount)) ? '#e0e0e0' : '#1976d2',
+                            color: (manageCustomers.length < customersLimit || (customersCount > 0 && customersOffset + customersLimit >= customersCount)) ? '#999' : '#fff',
+                            border: 'none', borderRadius: '4px',
+                            cursor: (manageCustomers.length < customersLimit || (customersCount > 0 && customersOffset + customersLimit >= customersCount)) ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    </div>
+                    {manageCustomers.map((customer) => (
+                      <div
+                        key={customer._id}
+                        style={{
+                          ...cardStyle,
+                          cursor: 'default',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <strong style={{ fontSize: '14px', color: '#333' }}>
+                              {customer.firstName} {customer.lastName}
+                            </strong>
+                            {customer.email && (
+                              <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>
+                                {customer.email}
+                              </p>
+                            )}
+                            {customer.phone && (
+                              <p style={{ fontSize: '11px', color: '#999', margin: '2px 0 0 0' }}>
+                                {customer.phone}
+                              </p>
+                            )}
+                          </div>
+                          {customer.tags && customer.tags.length > 0 && (
+                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                              {customer.tags.slice(0, 3).map((tag: string) => (
+                                <span 
+                                  key={tag}
+                                  style={{ 
+                                    backgroundColor: '#e8f5e9', 
+                                    color: '#2e7d32', 
+                                    padding: '2px 6px', 
+                                    borderRadius: '4px',
+                                    fontSize: '10px'
+                                  }}
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#999', marginTop: '8px' }}>
+                          ID: {customer._id}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

@@ -11,6 +11,10 @@ import { mockDeleteCustomTableData } from "../../actions/delete-custom-table-dat
 import { mockGetCustomExtensions } from "../../actions/get-custom-extensions/mock";
 import { mockGetCurrentCompanyCustomExtensions } from "../../actions/get-current-company-custom-extensions/mock";
 import { mockGetCustomExtensionCustomTables } from "../../actions/get-custom-extension-custom-tables/mock";
+// Company Data Mocks
+import { mockGetUsers } from "../../actions/get-users/mock";
+import { mockGetRoles } from "../../actions/get-roles/mock";
+import { mockGetCustomers } from "../../actions/get-customers/mock";
 
 // Manage-specific mock for getFinalContext
 const mockGetFinalContextManage: GetFinalContext = async (): Promise<GetFinalContextResponse | null> => {
@@ -32,6 +36,9 @@ export const MANAGE_MOCKS: ManageProviderActions = {
     // Custom Extensions Actions
     getCustomExtensions: mockGetCustomExtensions,
     getCurrentCompanyCustomExtensions: mockGetCurrentCompanyCustomExtensions,
-    getCustomExtensionCustomTables: mockGetCustomExtensionCustomTables
+    getCustomExtensionCustomTables: mockGetCustomExtensionCustomTables,
+    // Company Data Actions
+    getUsers: mockGetUsers,
+    getRoles: mockGetRoles,
+    getCustomers: mockGetCustomers
 };
-

@@ -398,22 +398,29 @@ export interface CFOrder {
 
 export interface CFActiveUserRole {
     id?: string;
+    _id?: string;
+    companyId?: string;
     name: string;
     permissions: {
         category: string;
-        label: string;
+        label?: string;
         name: string;
         value: boolean;
+        permissionId?: string;
+        subCategory?: string;
     }[];
 }
 
 export interface CFActiveUser extends CFActiveEntity {
     firstName?: string;
     lastName?: string;
-    role: CFActiveUserRole;
+    email?: string;
+    phone?: string;
+    pincode?: string;
+    role: CFActiveUserRole | { _id: string; name: string };
     id: string;
     _id?: string;
-    outlets?: string[];
+    outlets?: string[] | { _id: string }[];
     type?: CFUserTypes;
     companies?: any;
 }
