@@ -50,9 +50,11 @@ import { mockPrint } from "../../actions/print/mock";
 import { mockSetActiveOrder } from "../../actions/set-active-order/mock";
 import { mockGetCustomTables } from "../../actions/get-custom-tables/mock";
 import { mockGetCustomTableData } from "../../actions/get-custom-table-data/mock";
+import { mockGetCustomTableFields } from "../../actions/get-custom-table-fields/mock";
 import { mockUpsertCustomTableData } from "../../actions/upsert-custom-table-data/mock";
 import { mockDeleteCustomTableData } from "../../actions/delete-custom-table-data/mock";
 import { mockGetCustomExtensions } from "../../actions/get-custom-extensions/mock";
+import { mockGetCurrentCompanyCustomExtensions } from "../../actions/get-current-company-custom-extensions/mock";
 import { mockGetCustomExtensionCustomTables } from "../../actions/get-custom-extension-custom-tables/mock";
 import { mockGetSecretsKeys } from "../../actions/get-secrets-keys/mock";
 import { mockGetSecretVal } from "../../actions/get-secret-val/mock";
@@ -112,9 +114,11 @@ export const RENDER_MOCKS: RenderProviderActions = {
     setActiveOrder: mockSetActiveOrder,
     getCustomTables: mockGetCustomTables,
     getCustomTableData: mockGetCustomTableData,
+    getCustomTableFields: mockGetCustomTableFields,
     upsertCustomTableData: mockUpsertCustomTableData,
     deleteCustomTableData: mockDeleteCustomTableData,
     getCustomExtensions: mockGetCustomExtensions,
+    getCurrentCompanyCustomExtensions: mockGetCurrentCompanyCustomExtensions,
     getCustomExtensionCustomTables: mockGetCustomExtensionCustomTables,
     getSecretsKeys: mockGetSecretsKeys,
     getSecretVal: mockGetSecretVal,

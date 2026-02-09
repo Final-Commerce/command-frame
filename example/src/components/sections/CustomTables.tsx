@@ -18,6 +18,14 @@ export function CustomTables({ isInIframe }: SectionProps) {
   const [customTableData, setCustomTableData] = useState<any[]>([]);
   const [customTableDataLoading, setCustomTableDataLoading] = useState(false);
 
+  const [upsertCustomTableDataJson, setUpsertCustomTableDataJson] = useState<string>('');
+  const [upsertCustomTableDataResponse, setUpsertCustomTableDataResponse] = useState<any>(null);
+  const [upsertCustomTableDataLoading, setUpsertCustomTableDataLoading] = useState(false);
+
+  const [customTableRowId, setCustomTableRowId] = useState('');
+  const [deleteCustomTableDataResponse, setDeleteCustomTableDataResponse] = useState<any>(null);
+  const [deleteCustomTableDataLoading, setDeleteCustomTableDataLoading] = useState(false);
+
   const handleGetCustomTables = async () => {
     if (!isInIframe) {
       console.error('Error: Not running in iframe');
@@ -72,6 +80,46 @@ export function CustomTables({ isInIframe }: SectionProps) {
     }
   };
 
+  const handleUpsertCustomTableData = async () => {
+    if (!isInIframe) {
+      console.error('Error: Not running in iframe');
+      return;
+    }
+
+    setUpsertCustomTableDataLoading(true);
+
+    try {
+      const data = JSON.parse(upsertCustomTableDataJson);
+      const result = await command.upsertCustomTableData({ tableName: customTableName, data });
+      setUpsertCustomTableDataResponse(result);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUpsertCustomTableDataLoading(false);
+    }
+  };
+
+  const handleDeleteCustomTableData = async () => {
+    if (!isInIframe) {
+      console.error('Error: Not running in iframe');
+      return;
+    }
+
+    setDeleteCustomTableDataLoading(true);
+
+    try {
+      const result = await command.deleteCustomTableData({ tableName: customTableName, rowId: customTableRowId });
+      setDeleteCustomTableDataResponse(result);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeleteCustomTableDataLoading(false);
+    }
+
+    setDeleteCustomTableDataLoading(false);
+    setCustomTableRowId('');
+  };
+  
   return (
     <div className="section-content">
       <CommandSection title="Custom Tables">
@@ -148,6 +196,80 @@ export function CustomTables({ isInIframe }: SectionProps) {
           customTableData.map((customTable) => (
             <JsonViewer key={customTable._id} data={customTable} title={customTable.name} />
           ))
+        )}
+      </CommandSection>
+
+      <CommandSection title="Upsert Custom Table Data">
+        <p className="section-description">
+          Upsert data for a custom table.
+        </p>
+        <div className="form-group">
+          <label className="form-label">Custom Table Name:</label>
+          <input
+            type="text"
+            value={customTableName}
+            onChange={(e) => setCustomTableName(e.target.value)}
+            className="form-input"
+            placeholder="Enter Custom Table Name"
+          />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Custom Table Row JSON:</label>
+          <textarea
+            value={upsertCustomTableDataJson}
+            onChange={(e) => setUpsertCustomTableDataJson(e.target.value)}
+            className="form-input"
+            placeholder="Enter Custom Table Data as JSON"
+            style={{ minHeight: '200px' }}
+          />
+        </div>
+        <button
+          onClick={handleUpsertCustomTableData} 
+          disabled={upsertCustomTableDataLoading}
+          className="btn btn--primary"
+        >
+          {upsertCustomTableDataLoading ? 'Loading...' : 'Upsert Custom Table Data'}
+        </button>
+
+        {upsertCustomTableDataResponse && (
+          <JsonViewer data={upsertCustomTableDataResponse} title="Upsert Custom Table Data Response" />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Delete Custom Table Data">
+        <p className="section-description">
+          Delete data for a custom table.
+        </p>
+        <div className="form-group">
+          <label className="form-label">Custom Table Name:</label>
+          <input
+            type="text"
+            value={customTableName}
+            onChange={(e) => setCustomTableName(e.target.value)}
+            className="form-input"
+            placeholder="Enter Custom Table Name"
+          />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Custom Table Row ID:</label>
+          <input
+            type="text"
+            value={customTableRowId}
+            onChange={(e) => setCustomTableRowId(e.target.value)}
+            className="form-input"
+            placeholder="Enter Custom Table Row ID"
+          />
+        </div>
+        <button
+          onClick={handleDeleteCustomTableData} 
+          disabled={deleteCustomTableDataLoading}
+          className="btn btn--primary"
+        >
+          {deleteCustomTableDataLoading ? 'Loading...' : 'Delete Custom Table Row'}
+        </button>
+
+        {deleteCustomTableDataResponse && (
+          <JsonViewer data={deleteCustomTableDataResponse} title="Delete Custom Table Row Response" />
         )}
       </CommandSection>
     </div>

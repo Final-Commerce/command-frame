@@ -1,5 +1,7 @@
+import { CFProjectName } from "../../CommonTypes";
+
 export interface GetFinalContextResponse {
-    projectName: string;
+    projectName: CFProjectName;
 }
 
 export type GetFinalContext = () => Promise<GetFinalContextResponse | null>;

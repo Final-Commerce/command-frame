@@ -64,14 +64,18 @@ import { upsertCustomTableData } from "./actions/upsert-custom-table-data/action
 import { deleteCustomTableData } from "./actions/delete-custom-table-data/action";
 // Custom Extensions Actions
 import { getCustomExtensions } from "./actions/get-custom-extensions/action";
+import { getCurrentCompanyCustomExtensions } from "./actions/get-current-company-custom-extensions/action";
 import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
 import { getSecretsKeys } from "./actions/get-secrets-keys/action";
 import { getSecretVal } from "./actions/get-secret-val/action";
 import { setSecretVal } from "./actions/set-secret-val/action";
 
+import { generateAPIKey } from "./actions/generate-api-key/action";
+
 // Export actions as command object
 export const command = {
     exampleFunction,
+    generateAPIKey,
     getProducts,
     addCustomSale,
     getCustomers,
@@ -135,6 +139,7 @@ export const command = {
     deleteCustomTableData,
     // Custom Extensions Actions
     getCustomExtensions,
+    getCurrentCompanyCustomExtensions,
     getCustomExtensionCustomTables,
     // Secret Storage Actions
     getSecretsKeys,
@@ -144,6 +149,8 @@ export const command = {
 
 // Export types from action folders (only Params, Response, and Function types)
 export type { ExampleFunction, ExampleFunctionParams, ExampleFunctionResponse } from "./actions/example-function/types";
+
+export type { GenerateAPIKey, GenerateAPIKeyParams, GenerateAPIKeyResponse } from "./actions/generate-api-key/types";
 
 export type { GetProducts, GetProductsParams, GetProductsResponse } from "./actions/get-products/types";
 
@@ -191,7 +198,7 @@ export type { UpdateCartItemQuantity, UpdateCartItemQuantityParams, UpdateCartIt
 
 export type { AddCartDiscount, AddCartDiscountParams, AddCartDiscountResponse } from "./actions/add-cart-discount/types";
 
-export type { GetContext, GetContextResponse } from "./actions/get-context/types";
+export type { GetContext, GetContextResponse, GetContextResponseManage, GetContextResponseRender } from "./actions/get-context/types";
 
 export type { GetFinalContext, GetFinalContextResponse } from "./actions/get-final-context/types";
 
@@ -256,6 +263,7 @@ export { productsTopic } from "./pubsub/topics/products";
 export { cartTopic } from "./pubsub/topics/cart";
 export { paymentsTopic } from "./pubsub/topics/payments";
 export { customTablesTopic } from "./pubsub/topics/custom-tables";
+export { printTopic } from "./pubsub/topics/print";
 // Export Pub/Sub Event Types
 export type {
     // Customer event payloads
@@ -351,7 +359,22 @@ export type {
     CustomTablesEventPayload
 } from "./pubsub/topics/custom-tables/types";
 
+// Export Print Event Types
+export type {
+    PrintStartedPayload,
+    PrintCompletedPayload,
+    PrintErrorPayload,
+    PrintStartedEvent,
+    PrintCompletedEvent,
+    PrintErrorEvent,
+    PrintEventType,
+    PrintEventPayload
+} from "./pubsub/topics/print/types";
+
 // Export Custom Tables Types
+export { AttributeType } from "./common-types/attribute-type";
+export type { AttributeTypeValue } from "./common-types/attribute-type";
+
 export type { GetCustomTables, GetCustomTablesResponse } from "./actions/get-custom-tables/types";
 
 export type { GetCustomTableFields, GetCustomTableFieldsParams, GetCustomTableFieldsResponse } from "./actions/get-custom-table-fields/types";
@@ -360,22 +383,21 @@ export type { GetCustomTableData, GetCustomTableDataParams, GetCustomTableDataRe
 
 export type { UpsertCustomTableData, UpsertCustomTableDataParams, UpsertCustomTableDataResponse } from "./actions/upsert-custom-table-data/types";
 
-export type {
-    DeleteCustomTableData,
-    DeleteCustomTableDataParams,
-    DeleteCustomTableDataResponse
-} from "./actions/delete-custom-table-data/types";
+export type { DeleteCustomTableData, DeleteCustomTableDataParams, DeleteCustomTableDataResponse } from "./actions/delete-custom-table-data/types";
 
-export type {
-    GetCustomExtensions,
-    GetCustomExtensionsResponse
-} from "./actions/get-custom-extensions/types";
+export type { GetCustomExtensions, GetCustomExtensionsResponse } from "./actions/get-custom-extensions/types";
 
 export type {
     GetCustomExtensionCustomTables,
     GetCustomExtensionCustomTablesParams,
     GetCustomExtensionCustomTablesResponse
 } from "./actions/get-custom-extension-custom-tables/types";
+
+export type {
+    GetCurrentCompanyCustomExtensions,
+    GetCurrentCompanyCustomExtensionsParams,
+    GetCurrentCompanyCustomExtensionsResponse
+} from "./actions/get-current-company-custom-extensions/types";
 
 export type { GetSecretsKeys, GetSecretsKeysParams, GetSecretsKeysResponse } from "./actions/get-secrets-keys/types";
 export type { GetSecretVal, GetSecretValParams, GetSecretValResponse } from "./actions/get-secret-val/types";

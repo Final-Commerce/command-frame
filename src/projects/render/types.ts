@@ -54,7 +54,9 @@ import type {
     UpsertCustomTableData,
     DeleteCustomTableData,
     GetCustomExtensions,
+    GetCurrentCompanyCustomExtensions,
     GetCustomExtensionCustomTables,
+    GetCustomTableFields,
     GetSecretsKeys,
     GetSecretVal,
     SetSecretVal
@@ -116,7 +118,9 @@ export interface RenderProviderActions {
     upsertCustomTableData: UpsertCustomTableData;
     deleteCustomTableData: DeleteCustomTableData;
     getCustomExtensions: GetCustomExtensions;
+    getCurrentCompanyCustomExtensions: GetCurrentCompanyCustomExtensions;
     getCustomExtensionCustomTables: GetCustomExtensionCustomTables;
+    getCustomTableFields: GetCustomTableFields;
     getSecretsKeys: GetSecretsKeys;
     getSecretVal: GetSecretVal;
     setSecretVal: SetSecretVal;
