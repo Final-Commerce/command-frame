@@ -65,6 +65,9 @@ import { deleteCustomTableData } from "./actions/delete-custom-table-data/action
 // Custom Extensions Actions
 import { getCustomExtensions } from "./actions/get-custom-extensions/action";
 import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-custom-tables/action";
+import { getSecretsKeys } from "./actions/get-secrets-keys/action";
+import { getSecretVal } from "./actions/get-secret-val/action";
+import { setSecretVal } from "./actions/set-secret-val/action";
 
 // Export actions as command object
 export const command = {
@@ -133,6 +136,10 @@ export const command = {
     // Custom Extensions Actions
     getCustomExtensions,
     getCustomExtensionCustomTables,
+    // Secret Storage Actions
+    getSecretsKeys,
+    getSecretVal,
+    setSecretVal,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -369,3 +376,7 @@ export type {
     GetCustomExtensionCustomTablesParams,
     GetCustomExtensionCustomTablesResponse
 } from "./actions/get-custom-extension-custom-tables/types";
+
+export type { GetSecretsKeys, GetSecretsKeysParams, GetSecretsKeysResponse } from "./actions/get-secrets-keys/types";
+export type { GetSecretVal, GetSecretValParams, GetSecretValResponse } from "./actions/get-secret-val/types";
+export type { SetSecretVal, SetSecretValParams, SetSecretValResponse } from "./actions/set-secret-val/types";
