@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { manageClient } from '@final-commerce/command-frame';
 import { JsonViewer } from '../components/JsonViewer';
 import '../App.css';
@@ -64,6 +64,19 @@ export function ManageApp() {
   const [extensionIdInput, setExtensionIdInput] = useState('');
   const [extensionCustomTables, setExtensionCustomTables] = useState<any[]>([]);
   
+  // Secrets state
+  const [secretKeys, setSecretKeys] = useState<string[]>([]);
+  const [secretKeyInput, setSecretKeyInput] = useState('');
+  const [secretValueInput, setSecretValueInput] = useState('');
+  const [secretExtensionIdInput, setSecretExtensionIdInput] = useState('');
+  const [secretGetResult, setSecretGetResult] = useState<{ key: string; value: string } | null>(null);
+  const [secretSetResult, setSecretSetResult] = useState<boolean | null>(null);
+  const [secretError, setSecretError] = useState<string>('');
+  
+  // Only initialize extension ID inputs from context once (so clearing the field is not overwritten)
+  const hasInitializedExtensionIdFromContext = useRef(false);
+  const hasInitializedSecretExtensionIdFromContext = useRef(false);
+  
   const isInIframe = window.self !== window.top;
 
   // Auto-fetch context on mount when in iframe
@@ -89,12 +102,21 @@ export function ManageApp() {
     }
   }, [selectedTable]);
 
-  // When context is loaded, set the extension ID input
+  // When context is loaded, set the extension ID input once (user can clear it afterward)
   useEffect(() => {
-    if (contextData?.extensionId && !extensionIdInput) {
+    if (contextData?.extensionId && !hasInitializedExtensionIdFromContext.current) {
       setExtensionIdInput(contextData.extensionId);
+      hasInitializedExtensionIdFromContext.current = true;
     }
-  }, [contextData, extensionIdInput]);
+  }, [contextData]);
+
+  // When context is loaded, set the secrets extension ID input once (user can clear it afterward)
+  useEffect(() => {
+    if (contextData?.extensionId && !hasInitializedSecretExtensionIdFromContext.current) {
+      setSecretExtensionIdInput(contextData.extensionId);
+      hasInitializedSecretExtensionIdFromContext.current = true;
+    }
+  }, [contextData]);
 
   const handleGetContext = async () => {
     setLoading(true);
@@ -377,6 +399,68 @@ export function ManageApp() {
     }
   };
 
+  // Secrets handlers
+  const handleGetSecretsKeys = async () => {
+    setLoading(true);
+    setSecretError('');
+    setSecretKeys([]);
+    try {
+      const result = await manageClient.getSecretsKeys({
+        extensionId: secretExtensionIdInput,
+      });
+      setSecretKeys(result.keys || []);
+    } catch (err: any) {
+      setSecretError(err.message || 'Error fetching secret keys');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetSecretVal = async () => {
+    setLoading(true);
+    setSecretError('');
+    setSecretGetResult(null);
+    try {
+      if (!secretKeyInput) {
+        throw new Error('Key is required');
+      }
+      const result = await manageClient.getSecretVal({
+        key: secretKeyInput,
+        extensionId: secretExtensionIdInput,
+      });
+      setSecretGetResult(result);
+    } catch (err: any) {
+      setSecretError(err.message || 'Error fetching secret value');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSetSecretVal = async () => {
+    setLoading(true);
+    setSecretError('');
+    setSecretSetResult(null);
+    try {
+      if (!secretKeyInput) {
+        throw new Error('Key is required');
+      }
+      if (secretValueInput === undefined || secretValueInput === null) {
+        throw new Error('Value is required');
+      }
+      await manageClient.setSecretVal({
+        key: secretKeyInput,
+        value: String(secretValueInput),
+        extensionId: secretExtensionIdInput,
+      });
+      setSecretSetResult(true);
+    } catch (err: any) {
+      setSecretError(err.message || 'Error setting secret');
+      setSecretSetResult(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Styles for selectable cards
   const cardStyle = {
     border: '1px solid #ddd',
@@ -407,6 +491,7 @@ export function ManageApp() {
     { id: 'section-update', label: '↳ Update Document' },
     { id: 'section-delete', label: '↳ Delete Document' },
     { id: 'section-extensions', label: 'Custom Extensions' },
+    { id: 'section-secrets', label: 'Secrets' },
   ];
 
   const scrollToSection = (id: string) => {
@@ -1148,6 +1233,151 @@ export function ManageApp() {
                 {extensionCustomTables.length > 0 && extensionCustomTables.map((table) => (
                   <JsonViewer key={table._id} data={table} title={table.name} />
                 ))}
+              </div>
+            </div>
+
+            {/* Secrets Section */}
+            <h2 id="section-secrets" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Secrets</h2>
+            {secretError && (
+              <div style={{ marginBottom: '16px', padding: '10px', backgroundColor: '#ffebee', color: '#c62828', borderRadius: '4px' }}>
+                <strong>Error:</strong> {secretError}
+              </div>
+            )}
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Secrets Keys</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  List secret keys for the company, or for a specific extension. Leave extension ID empty for company-level keys.
+                </p>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Extension ID (optional):</label>
+                  <input
+                    type="text"
+                    value={secretExtensionIdInput}
+                    onChange={(e) => setSecretExtensionIdInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Leave empty for company-level"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <button 
+                  onClick={handleGetSecretsKeys} 
+                  disabled={loading}
+                  className="btn btn--primary"
+                >
+                  Get Secrets Keys
+                </button>
+                {secretKeys.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                      <strong>{secretKeys.length} key(s):</strong> {secretKeys.join(', ') || '(none)'}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Secret Value</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Retrieve a secret value by key.
+                </p>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Key:</label>
+                  <input
+                    type="text"
+                    value={secretKeyInput}
+                    onChange={(e) => setSecretKeyInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Secret key name"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Extension ID (optional):</label>
+                  <input
+                    type="text"
+                    value={secretExtensionIdInput}
+                    onChange={(e) => setSecretExtensionIdInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Leave empty for company-level"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <button 
+                  onClick={handleGetSecretVal} 
+                  disabled={loading || !secretKeyInput}
+                  className="btn btn--primary"
+                >
+                  Get Secret Value
+                </button>
+                {secretGetResult && (
+                  <div style={{ marginTop: '16px' }}>
+                    <JsonViewer data={JSON.stringify(secretGetResult, null, 2)} title="Result" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Set Secret Value</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Create or update a secret. Uses extension ID from above if set.
+                </p>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Key:</label>
+                  <input
+                    type="text"
+                    value={secretKeyInput}
+                    onChange={(e) => setSecretKeyInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Secret key name"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Value:</label>
+                  <input
+                    type="text"
+                    value={secretValueInput}
+                    onChange={(e) => setSecretValueInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Secret value"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <div className="form-group" style={{ marginBottom: '12px' }}>
+                  <label className="form-label">Extension ID (optional):</label>
+                  <input
+                    type="text"
+                    value={secretExtensionIdInput}
+                    onChange={(e) => setSecretExtensionIdInput(e.target.value)}
+                    className="form-input"
+                    placeholder="Leave empty for company-level"
+                    style={{ width: '100%', padding: '8px', marginTop: '4px' }}
+                  />
+                </div>
+                <button 
+                  onClick={handleSetSecretVal} 
+                  disabled={loading || !secretKeyInput}
+                  className="btn btn--primary"
+                >
+                  Set Secret
+                </button>
+                {secretSetResult === true && (
+                  <div style={{ marginTop: '12px', padding: '8px 12px', backgroundColor: '#e8f5e9', color: '#2e7d32', borderRadius: '4px' }}>
+                    Secret saved successfully.
+                  </div>
+                )}
               </div>
             </div>
           </div>
