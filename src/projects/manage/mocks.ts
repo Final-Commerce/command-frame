@@ -1,6 +1,9 @@
 import { mockGetContextManage } from "../../actions/get-context/mock";
 import { mockGenerateAPIKey } from "../../actions/generate-api-key/mock";
 import { GetFinalContext, GetFinalContextResponse } from "../../actions/get-final-context/types";
+import { mockGetSecretsKeys } from "../../actions/get-secrets-keys/mock";
+import { mockGetSecretVal } from "../../actions/get-secret-val/mock";
+import { mockSetSecretVal } from "../../actions/set-secret-val/mock";
 import { ManageProviderActions } from "./types";
 // Custom Tables Mocks
 import { mockGetCustomTables } from "../../actions/get-custom-tables/mock";
@@ -23,6 +26,9 @@ const mockGetFinalContextManage: GetFinalContext = async (): Promise<GetFinalCon
 export const MANAGE_MOCKS: ManageProviderActions = {
     getContext: mockGetContextManage,
     getFinalContext: mockGetFinalContextManage,
+    getSecretsKeys: mockGetSecretsKeys,
+    getSecretVal: mockGetSecretVal,
+    setSecretVal: mockSetSecretVal,
     generateAPIKey: mockGenerateAPIKey,
     // Custom Tables Actions
     getCustomTables: mockGetCustomTables,

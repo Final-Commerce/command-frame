@@ -1,6 +1,9 @@
 import type {
     GetContext,
     GetFinalContext,
+    GetSecretsKeys,
+    GetSecretVal,
+    SetSecretVal,
     GenerateAPIKey,
     GetCustomTables,
     GetCustomTableData,
@@ -14,6 +17,9 @@ import type {
 export interface ManageProviderActions {
     getContext: GetContext;
     getFinalContext: GetFinalContext;
+    getSecretsKeys: GetSecretsKeys;
+    getSecretVal: GetSecretVal;
+    setSecretVal: SetSecretVal;
     generateAPIKey: GenerateAPIKey;
     // Custom Tables Actions (simplified - getCustomTables returns tables for current extension)
     getCustomTables: GetCustomTables;
