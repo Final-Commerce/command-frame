@@ -1,6 +1,9 @@
 import type {
     GetContext,
     GetFinalContext,
+    GetSecretsKeys,
+    GetSecretVal,
+    SetSecretVal,
     GenerateAPIKey,
     GetCustomTables,
     GetCustomTableData,
@@ -17,6 +20,9 @@ import type { GetRoles } from "../../actions/get-roles/types";
 export interface ManageProviderActions {
     getContext: GetContext;
     getFinalContext: GetFinalContext;
+    getSecretsKeys: GetSecretsKeys;
+    getSecretVal: GetSecretVal;
+    setSecretVal: SetSecretVal;
     generateAPIKey: GenerateAPIKey;
     // Custom Tables Actions
     getCustomTables: GetCustomTables;

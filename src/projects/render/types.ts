@@ -56,7 +56,10 @@ import type {
     GetCustomExtensions,
     GetCurrentCompanyCustomExtensions,
     GetCustomExtensionCustomTables,
-    GetCustomTableFields
+    GetCustomTableFields,
+    GetSecretsKeys,
+    GetSecretVal,
+    SetSecretVal
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -118,4 +121,7 @@ export interface RenderProviderActions {
     getCurrentCompanyCustomExtensions: GetCurrentCompanyCustomExtensions;
     getCustomExtensionCustomTables: GetCustomExtensionCustomTables;
     getCustomTableFields: GetCustomTableFields;
+    getSecretsKeys: GetSecretsKeys;
+    getSecretVal: GetSecretVal;
+    setSecretVal: SetSecretVal;
 }

@@ -69,6 +69,9 @@ import { getCustomExtensionCustomTables } from "./actions/get-custom-extension-c
 // Company Data Actions
 import { getUsers } from "./actions/get-users/action";
 import { getRoles } from "./actions/get-roles/action";
+import { getSecretsKeys } from "./actions/get-secrets-keys/action";
+import { getSecretVal } from "./actions/get-secret-val/action";
+import { setSecretVal } from "./actions/set-secret-val/action";
 
 import { generateAPIKey } from "./actions/generate-api-key/action";
 
@@ -143,7 +146,11 @@ export const command = {
     getCustomExtensionCustomTables,
     // Company Data Actions
     getUsers,
-    getRoles
+    getRoles,
+    // Secret Storage Actions
+    getSecretsKeys,
+    getSecretVal,
+    setSecretVal,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -397,7 +404,8 @@ export type {
     GetCurrentCompanyCustomExtensionsParams,
     GetCurrentCompanyCustomExtensionsResponse
 } from "./actions/get-current-company-custom-extensions/types";
-
-// Company Data Actions
+export type { GetSecretsKeys, GetSecretsKeysParams, GetSecretsKeysResponse } from "./actions/get-secrets-keys/types";
+export type { GetSecretVal, GetSecretValParams, GetSecretValResponse } from "./actions/get-secret-val/types";
+export type { SetSecretVal, SetSecretValParams, SetSecretValResponse } from "./actions/set-secret-val/types";
 export type { GetUsers, GetUsersParams, GetUsersResponse } from "./actions/get-users/types";
 export type { GetRoles, GetRolesParams, GetRolesResponse } from "./actions/get-roles/types";
