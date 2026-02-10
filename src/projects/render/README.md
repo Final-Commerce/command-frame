@@ -101,6 +101,12 @@ The library provides a `command` namespace object containing all available comma
 - **[getCurrentCompanyCustomExtensions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-company-custom-extensions/README.md)** - Retrieve all custom extensions for the current company
 - **[getCustomExtensionCustomTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-extension-custom-tables/README.md)** - Retrieve custom tables associated with a specific extension
 
+#### Secrets Storage
+
+- **[getSecretsKeys](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secrets-keys/README.md)** - Retrieve all secret keys for the current company or a specific extension
+- **[getSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secret-val/README.md)** - Retrieve the value of a specific secret by key
+- **[setSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-secret-val/README.md)** - Create or update a secret key-value pair
+
 #### Integration Actions
 
 - **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
@@ -404,6 +410,20 @@ Retrieves all custom extensions from the local database. Extensions are addition
 
 Retrieves all custom tables associated with a specific custom extension. Useful for discovering and managing the data structures created by installed extensions.
 
+### Secrets Storage
+
+### [getSecretsKeys](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secrets-keys/README.md)
+
+Retrieves all secret keys for the current company or a specific extension. Supports both company-level and extension-scoped secrets. Returns an array of key names without their values.
+
+### [getSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secret-val/README.md)
+
+Retrieves the value of a specific secret by its key. Supports both company-level and extension-scoped secrets. Returns the key-value pair.
+
+### [setSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-secret-val/README.md)
+
+Creates or updates a secret key-value pair. Supports both company-level and extension-scoped secrets. Automatically handles create vs update (upsert behavior).
+
 ### Integration Actions
 
 ### [triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)
@@ -644,6 +664,16 @@ import type {
     GetRemainingRefundableQuantitiesParams,
     GetRemainingRefundableQuantitiesResponse,
     GetRemainingRefundableQuantities,
+    // Secrets Storage
+    GetSecretsKeysParams,
+    GetSecretsKeysResponse,
+    GetSecretsKeys,
+    GetSecretValParams,
+    GetSecretValResponse,
+    GetSecretVal,
+    SetSecretValParams,
+    SetSecretValResponse,
+    SetSecretVal,
     // Integration Actions
     TriggerWebhookParams,
     TriggerWebhookResponse,
