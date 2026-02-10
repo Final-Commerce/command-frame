@@ -21,6 +21,7 @@ export function CustomTables({ isInIframe }: SectionProps) {
   const [upsertCustomTableDataJson, setUpsertCustomTableDataJson] = useState<string>('');
   const [upsertCustomTableDataResponse, setUpsertCustomTableDataResponse] = useState<any>(null);
   const [upsertCustomTableDataLoading, setUpsertCustomTableDataLoading] = useState(false);
+  const [upsertCustomTableDataError, setUpsertCustomTableDataError] = useState<string | null>(null);
 
   const [customTableRowId, setCustomTableRowId] = useState('');
   const [deleteCustomTableDataResponse, setDeleteCustomTableDataResponse] = useState<any>(null);
@@ -80,6 +81,19 @@ export function CustomTables({ isInIframe }: SectionProps) {
     }
   };
 
+  const validateCustomTableData = (data: any): string | null => {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return "Invalid data";
+    }
+    
+    const keys = Object.keys(data);
+    if (keys.some(key => key.trim() === '')) {
+      return "Invalid data";
+    }
+    
+    return null;
+  };
+
   const handleUpsertCustomTableData = async () => {
     if (!isInIframe) {
       console.error('Error: Not running in iframe');
@@ -87,13 +101,29 @@ export function CustomTables({ isInIframe }: SectionProps) {
     }
 
     setUpsertCustomTableDataLoading(true);
+    setUpsertCustomTableDataError(null);
 
     try {
       const data = JSON.parse(upsertCustomTableDataJson);
+      
+      // Validate the parsed data
+      const validationError = validateCustomTableData(data);
+      if (validationError) {
+        setUpsertCustomTableDataError(validationError);
+        setUpsertCustomTableDataResponse(null);
+        setUpsertCustomTableDataLoading(false);
+        return;
+      }
+
+      // Proceed with API call if validation passes
       const result = await command.upsertCustomTableData({ tableName: customTableName, data });
       setUpsertCustomTableDataResponse(result);
+      setUpsertCustomTableDataError(null);
     } catch (error) {
       console.error(error);
+      if (error instanceof SyntaxError) {
+        setUpsertCustomTableDataError("Invalid JSON format");
+      }
     } finally {
       setUpsertCustomTableDataLoading(false);
     }
@@ -217,7 +247,10 @@ export function CustomTables({ isInIframe }: SectionProps) {
           <label className="form-label">Custom Table Row JSON:</label>
           <textarea
             value={upsertCustomTableDataJson}
-            onChange={(e) => setUpsertCustomTableDataJson(e.target.value)}
+            onChange={(e) => {
+              setUpsertCustomTableDataJson(e.target.value);
+              setUpsertCustomTableDataError(null);
+            }}
             className="form-input"
             placeholder="Enter Custom Table Data as JSON"
             style={{ minHeight: '200px' }}
@@ -230,6 +263,12 @@ export function CustomTables({ isInIframe }: SectionProps) {
         >
           {upsertCustomTableDataLoading ? 'Loading...' : 'Upsert Custom Table Data'}
         </button>
+
+        {upsertCustomTableDataError && (
+          <div className="error-message" style={{ color: 'red', marginTop: '8px' }}>
+            {upsertCustomTableDataError}
+          </div>
+        )}
 
         {upsertCustomTableDataResponse && (
           <JsonViewer data={upsertCustomTableDataResponse} title="Upsert Custom Table Data Response" />
