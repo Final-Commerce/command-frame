@@ -1,10 +1,15 @@
-import type { GetUsers } from "./types";
+/**
+ * Get users action
+ * Calls the getUsers action on the parent window
+ */
 
-export const getUsers: GetUsers = async (params) => {
-    console.log("getUsers called with params:", params);
-    return {
-        users: [],
-        success: true,
-        timestamp: new Date().toISOString(),
-    };
+import { commandFrameClient } from "../../client";
+import type {
+    GetUsers,
+    GetUsersParams,
+    GetUsersResponse
+} from "./types";
+
+export const getUsers: GetUsers = async (params?: GetUsersParams): Promise<GetUsersResponse> => {
+    return await commandFrameClient.call<GetUsersParams, GetUsersResponse>("getUsers", params);
 };
