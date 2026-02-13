@@ -87,7 +87,7 @@ export function CustomTables({ isInIframe }: SectionProps) {
     }
     
     const keys = Object.keys(data);
-    if (keys.some(key => key.trim() === '')) {
+    if (keys.length === 0 || keys.some(key => key.trim() === '')) {
       return "Invalid data";
     }
     
