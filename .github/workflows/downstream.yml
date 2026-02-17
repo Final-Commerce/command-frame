@@ -1,0 +1,13 @@
+name: Scheduled Downstream Sync
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * *'
+jobs:
+  run-sync:
+    uses: OliverPOSDev/central-ops/.github/workflows/downstream-sync.yml@main
+    with:
+      tier_1: '["main"]'
+      tier_2: '[]'
+      auto_merge: false
+    secrets: inherit
