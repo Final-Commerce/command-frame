@@ -259,7 +259,20 @@ export type { PostMessageRequest, PostMessageResponse } from "./client";
 
 // Export Pub/Sub
 export { topics } from "./pubsub/topics";
-export type { TopicDefinition, TopicEvent, TopicEventType, TopicSubscriptionCallback, TopicSubscription } from "./pubsub/types";
+export type {
+    TopicDefinition,
+    TopicEvent,
+    TopicEventType,
+    TopicSubscriptionCallback,
+    TopicSubscription,
+    HookCallback,
+    HookOptions,
+    HookRegistration
+} from "./pubsub/types";
+
+// Export Hooks (extension iframe API for session-scoped event callbacks)
+export { hooks } from "./hooks";
+export type { HookFunction, HookRegisterOptions } from "./hooks";
 
 // Export Pub/Sub Topics
 export { customersTopic } from "./pubsub/topics/customers";
