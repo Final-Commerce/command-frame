@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `products` topic provides events related to product lifecycle. Subscribe to this topic to receive real-time notifications when products are synced/created or updated in the local database.
+The `products` topic provides events related to product lifecycle and inventory management. Subscribe to this topic to receive real-time notifications when products are synced/created, updated, or when inventory stock changes.
 
 ## Topic Information
 
@@ -16,6 +16,8 @@ The `products` topic provides events related to product lifecycle. Subscribe to 
 |-------|-------------|---------------|
 | [product-created](./product-created/README.md) | Published when a new product is synced/created | [View Details](./product-created/README.md) |
 | [product-updated](./product-updated/README.md) | Published when a product is synced/updated | [View Details](./product-updated/README.md) |
+| [inventory-adjusted](./inventory-adjusted/README.md) | Published when a variant's inventory stock is manually adjusted | [View Details](./inventory-adjusted/README.md) |
+| [inventory-updated](./inventory-updated/README.md) | Published when a variant's inventory stock changes (e.g. after a sale or restock) | [View Details](./inventory-updated/README.md) |
 
 ## Quick Start
 
@@ -33,6 +35,12 @@ const subscriptionId = topics.subscribe('products', (event: TopicEvent) => {
         case 'product-updated':
             console.log('Product updated:', event.data.product);
             break;
+        case 'inventory-adjusted':
+            console.log('Inventory adjusted:', event.data.variantId, event.data.amount, event.data.stockType);
+            break;
+        case 'inventory-updated':
+            console.log('Inventory updated:', event.data.variantId, event.data.previousStock, '->', event.data.newStock);
+            break;
     }
 });
 ```
@@ -47,6 +55,10 @@ import type {
     ProductCreatedEvent,
     ProductUpdatedPayload,
     ProductUpdatedEvent,
+    InventoryAdjustedPayload,
+    InventoryAdjustedEvent,
+    InventoryUpdatedPayload,
+    InventoryUpdatedEvent,
     ProductsEventType,
     ProductsEventPayload
 } from '@final-commerce/command-frame';
