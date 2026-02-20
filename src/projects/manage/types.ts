@@ -14,10 +14,16 @@ import type {
     GetCustomExtensionCustomTables,
     GetCustomers,
     GetProducts,
-    GetCategories
+    GetCategories,
+    GetOrders
 } from "../../index";
 import type { GetUsers } from "../../actions/get-users/types";
 import type { GetRoles } from "../../actions/get-roles/types";
+import type { EditProduct } from "../../actions/edit-product/types";
+import type { EditProductVariants } from "../../actions/edit-product-variants/types";
+import type { DeleteProduct } from "../../actions/delete-product/types";
+import type { GetOutlets } from "../../actions/get-outlets/types";
+import type { GetStations } from "../../actions/get-stations/types";
 
 export interface ManageProviderActions {
     getContext: GetContext;
@@ -42,4 +48,11 @@ export interface ManageProviderActions {
     // Catalog Actions
     getProducts: GetProducts;
     getCategories: GetCategories;
+    editProduct: EditProduct;
+    editProductVariants: EditProductVariants;
+    deleteProduct: DeleteProduct;
+    // Entity Actions
+    getOutlets: GetOutlets;
+    getStations: GetStations;
+    getOrders: GetOrders;
 }

@@ -21,6 +21,13 @@ import { mockGetCustomers } from "../../actions/get-customers/mock";
 // Catalog Mocks
 import { mockGetProducts } from "../../actions/get-products/mock";
 import { mockGetCategories } from "../../actions/get-categories/mock";
+import { mockEditProduct } from "../../actions/edit-product/mock";
+import { mockEditProductVariants } from "../../actions/edit-product-variants/mock";
+import { mockDeleteProduct } from "../../actions/delete-product/mock";
+// Entity Mocks
+import { mockGetOutlets } from "../../actions/get-outlets/mock";
+import { mockGetStations } from "../../actions/get-stations/mock";
+import { mockGetOrders } from "../../actions/get-orders/mock";
 
 // Manage-specific mock for getFinalContext
 const mockGetFinalContextManage: GetFinalContext = async (): Promise<GetFinalContextResponse | null> => {
@@ -52,5 +59,12 @@ export const MANAGE_MOCKS: ManageProviderActions = {
     getCustomers: mockGetCustomers,
     // Catalog Actions
     getProducts: mockGetProducts,
-    getCategories: mockGetCategories
+    getCategories: mockGetCategories,
+    editProduct: mockEditProduct,
+    editProductVariants: mockEditProductVariants,
+    deleteProduct: mockDeleteProduct,
+    // Entity Actions
+    getOutlets: mockGetOutlets,
+    getStations: mockGetStations,
+    getOrders: mockGetOrders,
 };

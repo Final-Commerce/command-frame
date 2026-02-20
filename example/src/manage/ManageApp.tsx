@@ -92,10 +92,37 @@ export function ManageApp() {
   const [productsLimit, setProductsLimit] = useState(10);
   const [expandedProductId, setExpandedProductId] = useState<string | null>(null);
   const [productsFetched, setProductsFetched] = useState(false);
+  const [productsStatusFilter, setProductsStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [productsCategoryFilter, setProductsCategoryFilter] = useState('');
   const [showInventoryVariantId, setShowInventoryVariantId] = useState<string | null>(null);
   
   // Categories state
   const [categories, setCategories] = useState<any[]>([]);
+  
+  // Product CRUD state
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [editProductName, setEditProductName] = useState('');
+  const [editProductDescription, setEditProductDescription] = useState('');
+  const [editProductStatus, setEditProductStatus] = useState<'active' | 'inactive'>('active');
+  
+  // Outlets state
+  const [outlets, setOutlets] = useState<any[]>([]);
+  const [outletsFetched, setOutletsFetched] = useState(false);
+  
+  // Stations state
+  const [stations, setStations] = useState<any[]>([]);
+  const [stationsFetched, setStationsFetched] = useState(false);
+  const [selectedOutletForStations, setSelectedOutletForStations] = useState('');
+  
+  // Orders state
+  const [orders, setOrders] = useState<any[]>([]);
+  const [ordersTotal, setOrdersTotal] = useState(0);
+  const [ordersLimit, setOrdersLimit] = useState(10);
+  const [ordersOffset, setOrdersOffset] = useState(0);
+  const [ordersSearch, setOrdersSearch] = useState('');
+  const [ordersStatusFilter, setOrdersStatusFilter] = useState<string>('all');
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const [ordersFetched, setOrdersFetched] = useState(false);
   
   const isInIframe = window.self !== window.top;
 
@@ -472,9 +499,17 @@ export function ManageApp() {
     setError('');
     try {
       const offset = newOffset !== undefined ? newOffset : productsOffset;
+      const query: Record<string, any> = {};
+      if (productsStatusFilter !== 'all') {
+        query.status = productsStatusFilter;
+      }
+      if (productsCategoryFilter.trim()) {
+        query.categories = { $in: [productsCategoryFilter.trim()] };
+      }
       const result = await manageClient.getProducts({
         offset,
         limit: productsLimit,
+        query: Object.keys(query).length > 0 ? query : undefined,
       });
       setProducts(result.products || []);
       setProductsFetched(true);
@@ -495,6 +530,93 @@ export function ManageApp() {
       setCategories(result.categories || []);
     } catch (err: any) {
       setError(err.message || 'Error fetching categories');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Product CRUD handlers
+  const handleEditProduct = async (productId: string) => {
+    setLoading(true);
+    setError('');
+    try {
+      await manageClient.editProduct({
+        productId,
+        changes: {
+          name: editProductName || undefined,
+          description: editProductDescription || undefined,
+          status: editProductStatus,
+        },
+      });
+      setEditingProductId(null);
+      handleGetProducts();
+    } catch (err: any) {
+      setError(err.message || 'Error editing product');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    setLoading(true);
+    setError('');
+    try {
+      await manageClient.deleteProduct({ productId });
+      setProducts(products.filter((p) => p._id !== productId));
+    } catch (err: any) {
+      setError(err.message || 'Error deleting product');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Entity handlers
+  const handleGetOutlets = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await manageClient.getOutlets();
+      setOutlets(result.outlets || []);
+      setOutletsFetched(true);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching outlets');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetStations = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await manageClient.getStations(
+        selectedOutletForStations ? { outletId: selectedOutletForStations } : undefined
+      );
+      setStations(result.stations || []);
+      setStationsFetched(true);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching stations');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGetOrders = async (newOffset?: number) => {
+    setLoading(true);
+    setError('');
+    try {
+      const offset = newOffset !== undefined ? newOffset : ordersOffset;
+      const params: Record<string, any> = { limit: ordersLimit, offset };
+      if (ordersSearch.trim()) params.searchValue = ordersSearch.trim();
+      if (ordersStatusFilter !== 'all') params.status = ordersStatusFilter;
+      const result = await manageClient.getOrders(params);
+      setOrders(result.orders || []);
+      setOrdersTotal(result.total || 0);
+      setOrdersFetched(true);
+      if (newOffset !== undefined) setOrdersOffset(newOffset);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching orders');
     } finally {
       setLoading(false);
     }
@@ -589,6 +711,9 @@ export function ManageApp() {
     { id: 'section-company-data', label: 'Company Data' },
     { id: 'section-products', label: 'Products' },
     { id: 'section-categories', label: 'Categories' },
+    { id: 'section-outlets', label: 'Outlets' },
+    { id: 'section-stations', label: 'Stations' },
+    { id: 'section-orders', label: 'Orders' },
     { id: 'section-custom-tables', label: 'Custom Tables' },
     { id: 'section-get-data', label: '↳ Get Data' },
     { id: 'section-create', label: '↳ Create Document' },
@@ -802,7 +927,7 @@ export function ManageApp() {
                             )}
                             {user.phone && (
                               <p style={{ fontSize: '11px', color: '#999', margin: '2px 0 0 0' }}>
-                                {user.phone}
+                                {typeof user.phone === 'object' ? JSON.stringify(user.phone) : user.phone}
                               </p>
                             )}
                           </div>
@@ -819,7 +944,7 @@ export function ManageApp() {
                           )}
                         </div>
                         <div style={{ fontSize: '11px', color: '#999', marginTop: '8px' }}>
-                          ID: {user._id || user.id} | Type: {user.type}
+                          ID: {user._id || user.id} | Type: {typeof user.type === 'object' ? (user.type as any).name || JSON.stringify(user.type) : user.type}
                         </div>
                       </div>
                     ))}
@@ -1056,26 +1181,69 @@ export function ManageApp() {
                 
                 <div style={{ 
                   display: 'flex', 
-                  gap: '16px', 
+                  gap: '12px', 
                   marginBottom: '16px', 
                   padding: '12px', 
                   backgroundColor: '#f8f9fa', 
                   borderRadius: '4px',
-                  alignItems: 'center',
+                  alignItems: 'flex-end',
                   flexWrap: 'wrap'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 500 }}>Limit:</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Status:</label>
+                    <select
+                      value={productsStatusFilter}
+                      onChange={(e) => setProductsStatusFilter(e.target.value as any)}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px' }}
+                    >
+                      <option value="all">All</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Category ID:</label>
+                    <input
+                      value={productsCategoryFilter}
+                      onChange={(e) => setProductsCategoryFilter(e.target.value)}
+                      placeholder="Category ID..."
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px', width: '160px' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Limit:</label>
                     <select 
                       value={productsLimit} 
                       onChange={(e) => setProductsLimit(Number(e.target.value))}
-                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px' }}
                     >
                       <option value={5}>5</option>
                       <option value={10}>10</option>
                       <option value={25}>25</option>
                       <option value={50}>50</option>
                     </select>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Offset:</label>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <input
+                        type="number"
+                        value={productsOffset}
+                        onChange={(e) => setProductsOffset(Math.max(0, Number(e.target.value)))}
+                        min={0}
+                        style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px', width: '80px' }}
+                      />
+                      <button
+                        onClick={() => handleGetProducts(productsOffset)}
+                        disabled={loading}
+                        style={{
+                          padding: '4px 10px', fontSize: '11px', backgroundColor: '#1976d2', color: '#fff',
+                          border: 'none', borderRadius: '4px', cursor: 'pointer'
+                        }}
+                      >
+                        Go
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -1200,11 +1368,66 @@ export function ManageApp() {
                                 </span>
                               </div>
                             </div>
-                            <div style={{ fontSize: '11px', color: '#999', marginTop: '6px' }}>
-                              ID: {product._id}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+                              <span style={{ fontSize: '11px', color: '#999' }}>
+                                ID: {product._id}
+                              </span>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                {!product.externalId && (
+                                  <>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingProductId(editingProductId === product._id ? null : product._id);
+                                        setEditProductName(product.name);
+                                        setEditProductDescription(product.description || '');
+                                        setEditProductStatus(product.status || 'active');
+                                      }}
+                                      style={{ fontSize: '11px', color: '#1976d2', background: 'none', border: '1px solid #1976d2',
+                                        borderRadius: '4px', cursor: 'pointer', padding: '2px 8px' }}
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); handleDeleteProduct(product._id); }}
+                                      style={{ fontSize: '11px', color: '#c62828', background: 'none', border: '1px solid #c62828',
+                                        borderRadius: '4px', cursor: 'pointer', padding: '2px 8px' }}
+                                    >
+                                      Delete
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
+
+                        {editingProductId === product._id && (
+                          <div style={{ marginTop: '8px', padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '6px', border: '1px solid #ddd' }}>
+                            <p style={{ fontSize: '12px', fontWeight: 600, marginBottom: '8px' }}>Edit Product</p>
+                            <input value={editProductName} onChange={(e) => setEditProductName(e.target.value)}
+                              placeholder="Name" style={{ width: '100%', padding: '6px', marginBottom: '6px', fontSize: '12px' }} />
+                            <input value={editProductDescription} onChange={(e) => setEditProductDescription(e.target.value)}
+                              placeholder="Description" style={{ width: '100%', padding: '6px', marginBottom: '6px', fontSize: '12px' }} />
+                            <select value={editProductStatus} onChange={(e) => setEditProductStatus(e.target.value as any)}
+                              style={{ padding: '6px', marginBottom: '8px', fontSize: '12px' }}>
+                              <option value="active">Active</option>
+                              <option value="inactive">Inactive</option>
+                            </select>
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <button onClick={() => handleEditProduct(product._id)} disabled={loading}
+                                style={{ fontSize: '11px', padding: '4px 12px', backgroundColor: '#1976d2', color: '#fff',
+                                  border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                                Save
+                              </button>
+                              <button onClick={() => setEditingProductId(null)}
+                                style={{ fontSize: '11px', padding: '4px 12px', backgroundColor: '#eee',
+                                  border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
                         {expandedProductId === product._id && product.variants && product.variants.length > 0 && (
                           <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #eee' }}>
@@ -1411,6 +1634,301 @@ export function ManageApp() {
                       </div>
                     ))}
                   </div>
+                )}
+              </div>
+            </div>
+
+            {/* Outlets Section */}
+            <h2 id="section-outlets" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Outlets</h2>
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Outlets</h3>
+              </div>
+              <div className="command-section__content">
+                <button onClick={handleGetOutlets} disabled={loading} className="btn btn--primary">
+                  Get Outlets
+                </button>
+                {outlets.length > 0 && (
+                  <div style={{ marginTop: '12px', display: 'grid', gap: '8px' }}>
+                    {outlets.map((outlet: any) => (
+                      <div key={outlet._id} style={{
+                        padding: '12px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#fff'
+                      }}>
+                        <strong style={{ fontSize: '14px' }}>{outlet.name || 'Unnamed Outlet'}</strong>
+                        {outlet.address && (
+                          <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0' }}>
+                            {typeof outlet.address === 'string' ? outlet.address : outlet.address.address1}
+                          </p>
+                        )}
+                        <p style={{ fontSize: '11px', color: '#999', margin: '4px 0 0' }}>
+                          {[outlet.city, outlet.state, outlet.country].filter(Boolean).join(', ')}
+                        </p>
+                        <p style={{ fontSize: '10px', color: '#bbb', margin: '4px 0 0' }}>ID: {outlet._id}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {outletsFetched && outlets.length === 0 && (
+                  <p style={{ marginTop: '12px', fontSize: '13px', color: '#999', fontStyle: 'italic' }}>No outlets found.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Stations Section */}
+            <h2 id="section-stations" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Stations</h2>
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Stations</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Select an outlet first to fetch its stations.{!outletsFetched && ' Fetch outlets above.'}
+                </p>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Outlet:</label>
+                    <select
+                      value={selectedOutletForStations}
+                      onChange={(e) => setSelectedOutletForStations(e.target.value)}
+                      disabled={outlets.length === 0}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px', minWidth: '180px' }}
+                    >
+                      <option value="">{outlets.length === 0 ? 'No outlets loaded' : 'Select an outlet...'}</option>
+                      {outlets.map((o: any) => (
+                        <option key={o._id} value={o._id}>{o.name} ({o._id.slice(-6)})</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    onClick={handleGetStations}
+                    disabled={loading || !selectedOutletForStations}
+                    className="btn btn--primary"
+                  >
+                    Get Stations
+                  </button>
+                </div>
+                {stations.length > 0 && (
+                  <div style={{ marginTop: '12px', display: 'grid', gap: '8px' }}>
+                    {stations.map((station: any) => (
+                      <div key={station._id} style={{
+                        padding: '12px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#fff'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <strong style={{ fontSize: '14px' }}>{station.name}</strong>
+                          <span style={{
+                            backgroundColor: station.status === 'active' ? '#e8f5e9' : '#fff3e0',
+                            color: station.status === 'active' ? '#2e7d32' : '#e65100',
+                            padding: '2px 8px', borderRadius: '4px', fontSize: '11px'
+                          }}>
+                            {station.status}
+                          </span>
+                        </div>
+                        {station.sequenceNumber != null && (
+                          <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0' }}>Seq: {station.sequenceNumber}</p>
+                        )}
+                        <p style={{ fontSize: '10px', color: '#bbb', margin: '4px 0 0' }}>ID: {station._id}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {stationsFetched && stations.length === 0 && (
+                  <p style={{ marginTop: '12px', fontSize: '13px', color: '#999', fontStyle: 'italic' }}>No stations found.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Orders Section */}
+            <h2 id="section-orders" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Orders</h2>
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Orders</h3>
+              </div>
+              <div className="command-section__content">
+                <div style={{
+                  display: 'flex', gap: '12px', marginBottom: '16px', padding: '12px',
+                  backgroundColor: '#f8f9fa', borderRadius: '4px', alignItems: 'flex-end', flexWrap: 'wrap'
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Search:</label>
+                    <input
+                      value={ordersSearch}
+                      onChange={(e) => setOrdersSearch(e.target.value)}
+                      placeholder="Order ID, receipt..."
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px', width: '160px' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Status:</label>
+                    <select
+                      value={ordersStatusFilter}
+                      onChange={(e) => setOrdersStatusFilter(e.target.value)}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px' }}
+                    >
+                      <option value="all">All</option>
+                      <option value="completed">Completed</option>
+                      <option value="refunded">Refunded</option>
+                      <option value="parked">Parked</option>
+                      <option value="voided">Voided</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Limit:</label>
+                    <select value={ordersLimit} onChange={(e) => setOrdersLimit(Number(e.target.value))}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px' }}>
+                      {[5, 10, 25, 50].map((n) => <option key={n} value={n}>{n}</option>)}
+                    </select>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 500, color: '#666' }}>Offset:</label>
+                    <input
+                      type="number"
+                      value={ordersOffset}
+                      onChange={(e) => setOrdersOffset(Math.max(0, Number(e.target.value)))}
+                      min={0}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px', width: '80px' }}
+                    />
+                  </div>
+                </div>
+
+                <button onClick={() => { setOrdersOffset(0); handleGetOrders(0); }} disabled={loading} className="btn btn--primary">
+                  Get Orders
+                </button>
+
+                {ordersFetched && <p style={{ fontSize: '12px', color: '#666', margin: '8px 0' }}>
+                  <strong>{orders.length} order(s) shown</strong> (offset: {ordersOffset}, limit: {ordersLimit}, total: {ordersTotal})
+                </p>}
+
+                {orders.length > 0 && (
+                  <div>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                      <button
+                        onClick={() => { const o = Math.max(0, ordersOffset - ordersLimit); setOrdersOffset(o); handleGetOrders(o); }}
+                        disabled={loading || ordersOffset === 0}
+                        style={{
+                          padding: '4px 12px', fontSize: '12px',
+                          backgroundColor: ordersOffset === 0 ? '#e0e0e0' : '#1976d2',
+                          color: ordersOffset === 0 ? '#999' : '#fff',
+                          border: 'none', borderRadius: '4px',
+                          cursor: ordersOffset === 0 ? 'not-allowed' : 'pointer'
+                        }}
+                      >
+                        &larr; Prev
+                      </button>
+                      <button
+                        onClick={() => { const o = ordersOffset + ordersLimit; setOrdersOffset(o); handleGetOrders(o); }}
+                        disabled={loading || orders.length < ordersLimit}
+                        style={{
+                          padding: '4px 12px', fontSize: '12px',
+                          backgroundColor: orders.length < ordersLimit ? '#e0e0e0' : '#1976d2',
+                          color: orders.length < ordersLimit ? '#999' : '#fff',
+                          border: 'none', borderRadius: '4px',
+                          cursor: orders.length < ordersLimit ? 'not-allowed' : 'pointer'
+                        }}
+                      >
+                        Next &rarr;
+                      </button>
+                    </div>
+                    <div style={{ display: 'grid', gap: '8px' }}>
+                      {orders.map((order: any) => (
+                        <div key={order._id} style={{
+                          padding: '12px', border: expandedOrderId === order._id ? '2px solid #1976d2' : '1px solid #ddd',
+                          borderRadius: '8px', backgroundColor: expandedOrderId === order._id ? '#fafafa' : '#fff',
+                          cursor: 'pointer'
+                        }}
+                          onClick={() => setExpandedOrderId(expandedOrderId === order._id ? null : order._id)}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <strong style={{ fontSize: '14px' }}>
+                              {order.receiptId ? `#${order.receiptId}` : order._id.slice(-6)}
+                            </strong>
+                            <span style={{
+                              backgroundColor: order.status === 'completed' ? '#e8f5e9' : order.status === 'refunded' ? '#fce4ec' : '#fff3e0',
+                              color: order.status === 'completed' ? '#2e7d32' : order.status === 'refunded' ? '#c62828' : '#e65100',
+                              padding: '2px 8px', borderRadius: '4px', fontSize: '11px'
+                            }}>
+                              {order.status}
+                            </span>
+                          </div>
+                          {order.customer && (
+                            <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0' }}>
+                              Customer: {order.customer.firstName} {order.customer.lastName}
+                            </p>
+                          )}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+                            <span style={{ fontSize: '12px', color: '#666' }}>
+                              {order.summary?.total ? `$${order.summary.total}` : ''}
+                            </span>
+                            <span style={{ fontSize: '11px', color: '#999' }}>
+                              {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : ''}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: '10px', color: '#bbb', margin: '4px 0 0' }}>
+                            {order.lineItems?.length || 0} item(s) | Source: {order.source || 'N/A'}
+                            {expandedOrderId !== order._id && <span style={{ marginLeft: '8px', color: '#1976d2' }}>(click to expand)</span>}
+                          </p>
+
+                          {expandedOrderId === order._id && (
+                            <div style={{ marginTop: '12px', borderTop: '1px solid #eee', paddingTop: '12px' }}>
+                              {order.lineItems && order.lineItems.length > 0 && (
+                                <div style={{ marginBottom: '12px' }}>
+                                  <strong style={{ fontSize: '12px' }}>Line Items:</strong>
+                                  <table style={{ width: '100%', fontSize: '11px', borderCollapse: 'collapse', marginTop: '4px' }}>
+                                    <thead>
+                                      <tr style={{ backgroundColor: '#f5f5f5' }}>
+                                        <th style={{ padding: '4px 6px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Name</th>
+                                        <th style={{ padding: '4px 6px', textAlign: 'right', borderBottom: '1px solid #ddd' }}>Qty</th>
+                                        <th style={{ padding: '4px 6px', textAlign: 'right', borderBottom: '1px solid #ddd' }}>Price</th>
+                                        <th style={{ padding: '4px 6px', textAlign: 'right', borderBottom: '1px solid #ddd' }}>Total</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {order.lineItems.map((item: any, idx: number) => (
+                                        <tr key={idx} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                                          <td style={{ padding: '4px 6px' }}>{item.name || item.productName || '-'}</td>
+                                          <td style={{ padding: '4px 6px', textAlign: 'right' }}>{item.quantity ?? '-'}</td>
+                                          <td style={{ padding: '4px 6px', textAlign: 'right' }}>{item.price ?? '-'}</td>
+                                          <td style={{ padding: '4px 6px', textAlign: 'right' }}>{item.total ?? item.subTotal ?? '-'}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              )}
+                              {order.paymentMethods && order.paymentMethods.length > 0 && (
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong style={{ fontSize: '12px' }}>Payments:</strong>
+                                  <span style={{ fontSize: '11px', marginLeft: '8px' }}>
+                                    {order.paymentMethods.map((pm: any) => `${pm.name || pm.type || 'Unknown'}: $${pm.amount || '0'}`).join(', ')}
+                                  </span>
+                                </div>
+                              )}
+                              {order.summary && (
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong style={{ fontSize: '12px' }}>Summary:</strong>
+                                  <span style={{ fontSize: '11px', marginLeft: '8px' }}>
+                                    Subtotal: ${order.summary.subTotal || '0'} | Tax: ${order.summary.totalTax || '0'} | Total: ${order.summary.total || '0'}
+                                  </span>
+                                </div>
+                              )}
+                              {order.notes && (
+                                <div style={{ marginBottom: '8px' }}>
+                                  <strong style={{ fontSize: '12px' }}>Notes:</strong>
+                                  <span style={{ fontSize: '11px', marginLeft: '8px' }}>{order.notes}</span>
+                                </div>
+                              )}
+                              <details style={{ marginTop: '8px' }} onClick={(e) => e.stopPropagation()}>
+                                <summary style={{ fontSize: '11px', color: '#1976d2', cursor: 'pointer' }}>Full order JSON</summary>
+                                <JsonViewer data={order} />
+                              </details>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {ordersFetched && orders.length === 0 && (
+                  <p style={{ marginTop: '12px', fontSize: '13px', color: '#999', fontStyle: 'italic' }}>No orders found.</p>
                 )}
               </div>
             </div>
