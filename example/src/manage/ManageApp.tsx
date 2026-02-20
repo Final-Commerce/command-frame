@@ -86,6 +86,15 @@ export function ManageApp() {
   const [customersLimit, setCustomersLimit] = useState(10);
   const [customersFilter, setCustomersFilter] = useState('');
   
+  // Products state
+  const [products, setProducts] = useState<any[]>([]);
+  const [productsOffset, setProductsOffset] = useState(0);
+  const [productsLimit, setProductsLimit] = useState(10);
+  const [expandedProductId, setExpandedProductId] = useState<string | null>(null);
+  
+  // Categories state
+  const [categories, setCategories] = useState<any[]>([]);
+  
   const isInIframe = window.self !== window.top;
 
   // Auto-fetch context on mount when in iframe
@@ -455,6 +464,39 @@ export function ManageApp() {
     }
   };
 
+  // Products handler
+  const handleGetProducts = async (newOffset?: number) => {
+    setLoading(true);
+    setError('');
+    try {
+      const offset = newOffset !== undefined ? newOffset : productsOffset;
+      const result = await manageClient.getProducts({
+        offset,
+        limit: productsLimit,
+      });
+      setProducts(result.products || []);
+      if (newOffset !== undefined) setProductsOffset(newOffset);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Categories handler
+  const handleGetCategories = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await manageClient.getCategories();
+      setCategories(result.categories || []);
+    } catch (err: any) {
+      setError(err.message || 'Error fetching categories');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Secrets handlers
   const handleGetSecretsKeys = async () => {
     setLoading(true);
@@ -542,6 +584,8 @@ export function ManageApp() {
   const navItems = [
     { id: 'section-context', label: 'Context' },
     { id: 'section-company-data', label: 'Company Data' },
+    { id: 'section-products', label: 'Products' },
+    { id: 'section-categories', label: 'Categories' },
     { id: 'section-custom-tables', label: 'Custom Tables' },
     { id: 'section-get-data', label: '↳ Get Data' },
     { id: 'section-create', label: '↳ Create Document' },
@@ -987,6 +1031,293 @@ export function ManageApp() {
                         </div>
                         <div style={{ fontSize: '11px', color: '#999', marginTop: '8px' }}>
                           ID: {customer._id}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Products Section */}
+            <h2 id="section-products" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Products</h2>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Products</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Retrieves products with their variants for the current company. Paginated.
+                </p>
+                
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '16px', 
+                  marginBottom: '16px', 
+                  padding: '12px', 
+                  backgroundColor: '#f8f9fa', 
+                  borderRadius: '4px',
+                  alignItems: 'center',
+                  flexWrap: 'wrap'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 500 }}>Limit:</label>
+                    <select 
+                      value={productsLimit} 
+                      onChange={(e) => setProductsLimit(Number(e.target.value))}
+                      style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => { setProductsOffset(0); handleGetProducts(0); }} 
+                  disabled={loading}
+                  className="btn btn--primary"
+                >
+                  Get Products
+                </button>
+                {products.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>
+                        <strong>{products.length} product(s) shown</strong> (offset: {productsOffset}, limit: {productsLimit})
+                      </p>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          onClick={() => {
+                            const newOffset = Math.max(0, productsOffset - productsLimit);
+                            setProductsOffset(newOffset);
+                            handleGetProducts(newOffset);
+                          }}
+                          disabled={loading || productsOffset === 0}
+                          style={{ 
+                            padding: '4px 12px', fontSize: '12px',
+                            backgroundColor: productsOffset === 0 ? '#e0e0e0' : '#1976d2',
+                            color: productsOffset === 0 ? '#999' : '#fff',
+                            border: 'none', borderRadius: '4px',
+                            cursor: productsOffset === 0 ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          ← Prev
+                        </button>
+                        <button
+                          onClick={() => {
+                            const newOffset = productsOffset + productsLimit;
+                            setProductsOffset(newOffset);
+                            handleGetProducts(newOffset);
+                          }}
+                          disabled={loading || products.length < productsLimit}
+                          style={{ 
+                            padding: '4px 12px', fontSize: '12px',
+                            backgroundColor: products.length < productsLimit ? '#e0e0e0' : '#1976d2',
+                            color: products.length < productsLimit ? '#999' : '#fff',
+                            border: 'none', borderRadius: '4px',
+                            cursor: products.length < productsLimit ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    </div>
+                    {products.map((product) => (
+                      <div
+                        key={product._id}
+                        style={{
+                          ...cardStyle,
+                          cursor: 'pointer',
+                          border: expandedProductId === product._id ? '2px solid #1976d2' : '1px solid #ddd',
+                          backgroundColor: expandedProductId === product._id ? '#fafafa' : '#fff',
+                        }}
+                        onClick={() => setExpandedProductId(expandedProductId === product._id ? null : product._id)}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <strong style={{ fontSize: '14px', color: '#333' }}>
+                              {product.name}
+                            </strong>
+                            {product.sku && (
+                              <span style={{ fontSize: '11px', color: '#999', marginLeft: '8px' }}>
+                                SKU: {product.sku}
+                              </span>
+                            )}
+                            <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>
+                              {product.minPrice && product.maxPrice
+                                ? product.minPrice === product.maxPrice
+                                  ? `$${product.minPrice}`
+                                  : `$${product.minPrice} - $${product.maxPrice}`
+                                : 'No price'}
+                            </p>
+                          </div>
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            <span style={{
+                              backgroundColor: product.status === 'active' ? '#e8f5e9' : '#fff3e0',
+                              color: product.status === 'active' ? '#2e7d32' : '#e65100',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              fontSize: '11px'
+                            }}>
+                              {product.status || 'N/A'}
+                            </span>
+                            <span style={{
+                              backgroundColor: '#f3e5f5',
+                              color: '#7b1fa2',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              fontSize: '11px'
+                            }}>
+                              {product.productType}
+                            </span>
+                            <span style={{ fontSize: '11px', color: '#999' }}>
+                              {product.variants?.length || 0} variant(s)
+                            </span>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#999', marginTop: '6px' }}>
+                          ID: {product._id}
+                        </div>
+
+                        {expandedProductId === product._id && product.variants && product.variants.length > 0 && (
+                          <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #eee' }}>
+                            <p style={{ fontSize: '12px', fontWeight: 600, color: '#555', marginBottom: '8px' }}>
+                              Variants ({product.variants.length}):
+                            </p>
+                            {product.variants.map((variant: any, idx: number) => (
+                              <div key={variant._id || idx} style={{
+                                padding: '8px 12px',
+                                marginBottom: '6px',
+                                backgroundColor: '#f8f9fa',
+                                borderRadius: '6px',
+                                border: '1px solid #eee',
+                                fontSize: '12px',
+                              }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <div>
+                                    <strong>${variant.price}</strong>
+                                    {variant.isOnSale && variant.salePrice !== '0' && (
+                                      <span style={{ color: '#c62828', marginLeft: '8px' }}>
+                                        Sale: ${variant.salePrice}
+                                      </span>
+                                    )}
+                                    {variant.sku && (
+                                      <span style={{ color: '#999', marginLeft: '8px' }}>
+                                        SKU: {variant.sku}
+                                      </span>
+                                    )}
+                                    {variant.barcode && (
+                                      <span style={{ color: '#999', marginLeft: '8px' }}>
+                                        Barcode: {variant.barcode}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {variant.manageStock && (
+                                    <span style={{
+                                      backgroundColor: '#e3f2fd',
+                                      color: '#1976d2',
+                                      padding: '1px 6px',
+                                      borderRadius: '3px',
+                                      fontSize: '10px'
+                                    }}>
+                                      Stock managed
+                                    </span>
+                                  )}
+                                </div>
+                                {variant.attributes && variant.attributes.length > 0 && (
+                                  <div style={{ marginTop: '4px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                    {variant.attributes.map((attr: any, aIdx: number) => (
+                                      <span key={aIdx} style={{
+                                        backgroundColor: '#ede7f6',
+                                        color: '#4527a0',
+                                        padding: '1px 6px',
+                                        borderRadius: '3px',
+                                        fontSize: '10px'
+                                      }}>
+                                        {attr.name}: {attr.value}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                                {variant.inventory && variant.inventory.length > 0 && (
+                                  <div style={{ marginTop: '4px', fontSize: '11px', color: '#666' }}>
+                                    Inventory: {variant.inventory.map((inv: any) => `${inv.stock} @ ${inv.outletId}`).join(', ')}
+                                  </div>
+                                )}
+                                <div style={{ fontSize: '10px', color: '#bbb', marginTop: '4px' }}>
+                                  ID: {variant._id}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {expandedProductId === product._id && (!product.variants || product.variants.length === 0) && (
+                          <p style={{ fontSize: '12px', color: '#999', marginTop: '12px', fontStyle: 'italic' }}>
+                            No variants for this product.
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Categories Section */}
+            <h2 id="section-categories" style={{ marginTop: '32px', marginBottom: '16px', borderBottom: '1px solid #ddd', paddingBottom: '8px' }}>Categories</h2>
+
+            <div className="command-section">
+              <div className="command-section__header">
+                <h3>Get Categories</h3>
+              </div>
+              <div className="command-section__content">
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  Retrieves all product categories for the current company.
+                </p>
+                <button 
+                  onClick={handleGetCategories} 
+                  disabled={loading}
+                  className="btn btn--primary"
+                >
+                  Get Categories
+                </button>
+                {categories.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                      <strong>{categories.length} category(ies) found:</strong>
+                    </p>
+                    {categories.map((cat) => (
+                      <div
+                        key={cat._id}
+                        style={{
+                          ...cardStyle,
+                          cursor: 'default',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <strong style={{ fontSize: '14px', color: '#333' }}>
+                            {cat.name}
+                          </strong>
+                          {cat.parentId && (
+                            <span style={{
+                              backgroundColor: '#f5f5f5',
+                              color: '#666',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              fontSize: '11px'
+                            }}>
+                              Parent: {cat.parentId}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#999', marginTop: '6px' }}>
+                          ID: {cat._id}
+                          {cat.externalId && <span> | External: {cat.externalId}</span>}
                         </div>
                       </div>
                     ))}

@@ -12,7 +12,9 @@ import type {
     GetCustomExtensions,
     GetCurrentCompanyCustomExtensions,
     GetCustomExtensionCustomTables,
-    GetCustomers
+    GetCustomers,
+    GetProducts,
+    GetCategories
 } from "../../index";
 import type { GetUsers } from "../../actions/get-users/types";
 import type { GetRoles } from "../../actions/get-roles/types";
@@ -37,4 +39,7 @@ export interface ManageProviderActions {
     getUsers: GetUsers;
     getRoles: GetRoles;
     getCustomers: GetCustomers;
+    // Catalog Actions
+    getProducts: GetProducts;
+    getCategories: GetCategories;
 }

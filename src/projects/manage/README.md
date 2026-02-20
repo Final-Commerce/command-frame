@@ -28,6 +28,12 @@ Retrieve a list of users (employees) for the current company.
 ### [getRoles](../../../actions/get-roles/README.md)
 Retrieve a list of all roles and their associated permissions for the current company.
 
+### [getProducts](../../../actions/get-products/README.md)
+Retrieve a list of products with their variants.
+
+### [getCategories](../../../actions/get-categories/README.md)
+Retrieve a list of product categories.
+
 ## Usage
 
 ```typescript
