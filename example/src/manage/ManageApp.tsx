@@ -91,6 +91,8 @@ export function ManageApp() {
   const [productsOffset, setProductsOffset] = useState(0);
   const [productsLimit, setProductsLimit] = useState(10);
   const [expandedProductId, setExpandedProductId] = useState<string | null>(null);
+  const [productsFetched, setProductsFetched] = useState(false);
+  const [showInventoryVariantId, setShowInventoryVariantId] = useState<string | null>(null);
   
   // Categories state
   const [categories, setCategories] = useState<any[]>([]);
@@ -475,6 +477,7 @@ export function ManageApp() {
         limit: productsLimit,
       });
       setProducts(result.products || []);
+      setProductsFetched(true);
       if (newOffset !== undefined) setProductsOffset(newOffset);
     } catch (err: any) {
       setError(err.message || 'Error fetching products');
@@ -1137,50 +1140,70 @@ export function ManageApp() {
                         }}
                         onClick={() => setExpandedProductId(expandedProductId === product._id ? null : product._id)}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <div>
-                            <strong style={{ fontSize: '14px', color: '#333' }}>
-                              {product.name}
-                            </strong>
-                            {product.sku && (
-                              <span style={{ fontSize: '11px', color: '#999', marginLeft: '8px' }}>
-                                SKU: {product.sku}
-                              </span>
-                            )}
-                            <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>
-                              {product.minPrice && product.maxPrice
-                                ? product.minPrice === product.maxPrice
-                                  ? `$${product.minPrice}`
-                                  : `$${product.minPrice} - $${product.maxPrice}`
-                                : 'No price'}
-                            </p>
-                          </div>
-                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                            <span style={{
-                              backgroundColor: product.status === 'active' ? '#e8f5e9' : '#fff3e0',
-                              color: product.status === 'active' ? '#2e7d32' : '#e65100',
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                              fontSize: '11px'
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                          {product.images && product.images.length > 0 ? (
+                            <img 
+                              src={product.images[0]} 
+                              alt={product.name}
+                              style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }}
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                            />
+                          ) : (
+                            <div style={{ 
+                              width: '48px', height: '48px', backgroundColor: '#f0f0f0', borderRadius: '6px',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                              color: '#ccc', fontSize: '20px', flexShrink: 0 
                             }}>
-                              {product.status || 'N/A'}
-                            </span>
-                            <span style={{
-                              backgroundColor: '#f3e5f5',
-                              color: '#7b1fa2',
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                              fontSize: '11px'
-                            }}>
-                              {product.productType}
-                            </span>
-                            <span style={{ fontSize: '11px', color: '#999' }}>
-                              {product.variants?.length || 0} variant(s)
-                            </span>
+                              ?
+                            </div>
+                          )}
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <div>
+                                <strong style={{ fontSize: '14px', color: '#333' }}>
+                                  {product.name}
+                                </strong>
+                                {product.sku && (
+                                  <span style={{ fontSize: '11px', color: '#999', marginLeft: '8px' }}>
+                                    SKU: {product.sku}
+                                  </span>
+                                )}
+                                <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>
+                                  {product.minPrice && product.maxPrice
+                                    ? product.minPrice === product.maxPrice
+                                      ? `$${product.minPrice}`
+                                      : `$${product.minPrice} - $${product.maxPrice}`
+                                    : 'No price'}
+                                </p>
+                              </div>
+                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                <span style={{
+                                  backgroundColor: product.status === 'active' ? '#e8f5e9' : '#fff3e0',
+                                  color: product.status === 'active' ? '#2e7d32' : '#e65100',
+                                  padding: '2px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '11px'
+                                }}>
+                                  {product.status || 'N/A'}
+                                </span>
+                                <span style={{
+                                  backgroundColor: '#f3e5f5',
+                                  color: '#7b1fa2',
+                                  padding: '2px 8px',
+                                  borderRadius: '4px',
+                                  fontSize: '11px'
+                                }}>
+                                  {product.productType}
+                                </span>
+                                <span style={{ fontSize: '11px', color: '#999' }}>
+                                  {product.variants?.length || 0} variant(s)
+                                </span>
+                              </div>
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#999', marginTop: '6px' }}>
+                              ID: {product._id}
+                            </div>
                           </div>
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#999', marginTop: '6px' }}>
-                          ID: {product._id}
                         </div>
 
                         {expandedProductId === product._id && product.variants && product.variants.length > 0 && (
@@ -1197,59 +1220,112 @@ export function ManageApp() {
                                 border: '1px solid #eee',
                                 fontSize: '12px',
                               }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <div>
-                                    <strong>${variant.price}</strong>
-                                    {variant.isOnSale && variant.salePrice !== '0' && (
-                                      <span style={{ color: '#c62828', marginLeft: '8px' }}>
-                                        Sale: ${variant.salePrice}
-                                      </span>
-                                    )}
-                                    {variant.sku && (
-                                      <span style={{ color: '#999', marginLeft: '8px' }}>
-                                        SKU: {variant.sku}
-                                      </span>
-                                    )}
-                                    {variant.barcode && (
-                                      <span style={{ color: '#999', marginLeft: '8px' }}>
-                                        Barcode: {variant.barcode}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {variant.manageStock && (
-                                    <span style={{
-                                      backgroundColor: '#e3f2fd',
-                                      color: '#1976d2',
-                                      padding: '1px 6px',
-                                      borderRadius: '3px',
-                                      fontSize: '10px'
+                                <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                                  {variant.images && variant.images.length > 0 ? (
+                                    <img 
+                                      src={variant.images[0]} 
+                                      alt={`Variant ${variant.sku || idx}`}
+                                      style={{ width: '28px', height: '28px', objectFit: 'cover', borderRadius: '4px', flexShrink: 0 }}
+                                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                    />
+                                  ) : (
+                                    <div style={{ 
+                                      width: '28px', height: '28px', backgroundColor: '#e8e8e8', borderRadius: '4px',
+                                      display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                                      color: '#ccc', fontSize: '12px', flexShrink: 0 
                                     }}>
-                                      Stock managed
-                                    </span>
+                                      ?
+                                    </div>
                                   )}
-                                </div>
-                                {variant.attributes && variant.attributes.length > 0 && (
-                                  <div style={{ marginTop: '4px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                                    {variant.attributes.map((attr: any, aIdx: number) => (
-                                      <span key={aIdx} style={{
-                                        backgroundColor: '#ede7f6',
-                                        color: '#4527a0',
-                                        padding: '1px 6px',
-                                        borderRadius: '3px',
-                                        fontSize: '10px'
-                                      }}>
-                                        {attr.name}: {attr.value}
-                                      </span>
-                                    ))}
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                      <div>
+                                        <strong>${variant.price}</strong>
+                                        {variant.isOnSale && variant.salePrice !== '0' && (
+                                          <span style={{ color: '#c62828', marginLeft: '8px' }}>
+                                            Sale: ${variant.salePrice}
+                                          </span>
+                                        )}
+                                        {variant.sku && (
+                                          <span style={{ color: '#999', marginLeft: '8px' }}>
+                                            SKU: {variant.sku}
+                                          </span>
+                                        )}
+                                        {variant.barcode && (
+                                          <span style={{ color: '#999', marginLeft: '8px' }}>
+                                            Barcode: {variant.barcode}
+                                          </span>
+                                        )}
+                                      </div>
+                                      {variant.manageStock && (
+                                        <span style={{
+                                          backgroundColor: '#e3f2fd',
+                                          color: '#1976d2',
+                                          padding: '1px 6px',
+                                          borderRadius: '3px',
+                                          fontSize: '10px'
+                                        }}>
+                                          Stock managed
+                                        </span>
+                                      )}
+                                    </div>
+                                    {variant.attributes && variant.attributes.length > 0 && (
+                                      <div style={{ marginTop: '4px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                        {variant.attributes.map((attr: any, aIdx: number) => (
+                                          <span key={aIdx} style={{
+                                            backgroundColor: '#ede7f6',
+                                            color: '#4527a0',
+                                            padding: '1px 6px',
+                                            borderRadius: '3px',
+                                            fontSize: '10px'
+                                          }}>
+                                            {attr.name}: {attr.value}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {variant.inventory && variant.inventory.length > 0 && (
+                                      <div style={{ marginTop: '6px' }}>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowInventoryVariantId(
+                                              showInventoryVariantId === variant._id ? null : variant._id
+                                            );
+                                          }}
+                                          style={{
+                                            fontSize: '11px', color: '#1976d2', background: 'none', border: 'none',
+                                            cursor: 'pointer', padding: 0, textDecoration: 'underline',
+                                          }}
+                                        >
+                                          {showInventoryVariantId === variant._id
+                                            ? 'Hide inventory'
+                                            : `Show inventory (${variant.inventory.length} outlet(s))`}
+                                        </button>
+                                        {showInventoryVariantId === variant._id && (
+                                          <table style={{ marginTop: '6px', width: '100%', fontSize: '11px', borderCollapse: 'collapse' }}>
+                                            <thead>
+                                              <tr style={{ borderBottom: '1px solid #ddd', textAlign: 'left' }}>
+                                                <th style={{ padding: '4px 8px' }}>Outlet ID</th>
+                                                <th style={{ padding: '4px 8px' }}>Stock</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {variant.inventory.map((inv: any, i: number) => (
+                                                <tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                                                  <td style={{ padding: '4px 8px', fontFamily: 'monospace' }}>{inv.outletId}</td>
+                                                  <td style={{ padding: '4px 8px' }}>{inv.stock}</td>
+                                                </tr>
+                                              ))}
+                                            </tbody>
+                                          </table>
+                                        )}
+                                      </div>
+                                    )}
+                                    <div style={{ fontSize: '10px', color: '#bbb', marginTop: '4px' }}>
+                                      ID: {variant._id}
+                                    </div>
                                   </div>
-                                )}
-                                {variant.inventory && variant.inventory.length > 0 && (
-                                  <div style={{ marginTop: '4px', fontSize: '11px', color: '#666' }}>
-                                    Inventory: {variant.inventory.map((inv: any) => `${inv.stock} @ ${inv.outletId}`).join(', ')}
-                                  </div>
-                                )}
-                                <div style={{ fontSize: '10px', color: '#bbb', marginTop: '4px' }}>
-                                  ID: {variant._id}
                                 </div>
                               </div>
                             ))}
@@ -1264,6 +1340,19 @@ export function ManageApp() {
                       </div>
                     ))}
                   </div>
+                )}
+                {productsFetched && products.length === 0 && (
+                  <p style={{ 
+                    marginTop: '16px', 
+                    padding: '24px', 
+                    textAlign: 'center', 
+                    backgroundColor: '#f5f5f5', 
+                    borderRadius: '8px', 
+                    color: '#999', 
+                    fontSize: '13px' 
+                  }}>
+                    No products found for this company.
+                  </p>
                 )}
               </div>
             </div>
