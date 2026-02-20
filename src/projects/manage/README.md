@@ -19,6 +19,15 @@ Retrieve a secret value by key.
 ### [setSecretVal](../../../actions/set-secret-val/README.md)
 Create or update a secret value.
 
+### [getCustomers](../../../actions/get-customers/README.md)
+Retrieve a list of customers.
+
+### [getUsers](../../../actions/get-users/README.md)
+Retrieve a list of users (employees) for the current company.
+
+### [getRoles](../../../actions/get-roles/README.md)
+Retrieve a list of all roles and their associated permissions for the current company.
+
 ## Usage
 
 ```typescript

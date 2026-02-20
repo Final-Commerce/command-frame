@@ -43,7 +43,7 @@ const products = await client.getProducts();
 For building applications that run inside the Final Commerce Management Dashboard.
 
 - **[Manage Documentation](./src/projects/manage/README.md)**
-- **Features:** Context information, Dashboard widgets (more coming soon).
+- **Features:** Context information, Users & Roles, Customers, Custom tables, Secrets storage.
 
 ```typescript
 import { ManageClient } from '@final-commerce/command-frame';
