@@ -143,6 +143,14 @@ export const command = {
     calculateRefundTotal,
     getRemainingRefundableQuantities,
     processPartialRefund,
+    // Product CRUD Actions
+    addProduct,
+    editProduct,
+    editProductVariants,
+    deleteProduct,
+    // Entity Actions
+    getOutlets,
+    getStations,
     // Custom Tables Actions
     getCustomTables,
     getCustomTableFields,
@@ -160,14 +168,6 @@ export const command = {
     getSecretsKeys,
     getSecretVal,
     setSecretVal,
-    // Product CRUD Actions
-    addProduct,
-    editProduct,
-    editProductVariants,
-    deleteProduct,
-    // Entity Actions
-    getOutlets,
-    getStations,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -186,6 +186,18 @@ export type { AssignCustomer, AssignCustomerParams, AssignCustomerResponse } fro
 export type { AddCustomer, AddCustomerParams, AddCustomerResponse } from "./actions/add-customer/types";
 
 export type { GetCategories, GetCategoriesParams, GetCategoriesResponse } from "./actions/get-categories/types";
+
+export type { AddProduct, AddProductParams, AddProductResponse } from "./actions/add-product/types";
+
+export type { EditProduct, EditProductParams, EditProductResponse } from "./actions/edit-product/types";
+
+export type { EditProductVariants, EditProductVariantsParams, EditProductVariantsResponse } from "./actions/edit-product-variants/types";
+
+export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from "./actions/delete-product/types";
+
+export type { GetOutlets, GetOutletsResponse } from "./actions/get-outlets/types";
+
+export type { GetStations, GetStationsParams, GetStationsResponse } from "./actions/get-stations/types";
 
 export type { GetOrders, GetOrdersParams, GetOrdersResponse } from "./actions/get-orders/types";
 
@@ -439,13 +451,3 @@ export type { GetSecretVal, GetSecretValParams, GetSecretValResponse } from "./a
 export type { SetSecretVal, SetSecretValParams, SetSecretValResponse } from "./actions/set-secret-val/types";
 export type { GetUsers, GetUsersParams, GetUsersResponse } from "./actions/get-users/types";
 export type { GetRoles, GetRolesParams, GetRolesResponse } from "./actions/get-roles/types";
-
-// Product CRUD Types
-export type { AddProduct, AddProductParams, AddProductResponse } from "./actions/add-product/types";
-export type { EditProduct, EditProductParams, EditProductResponse } from "./actions/edit-product/types";
-export type { EditProductVariants, EditProductVariantsParams, EditProductVariantsResponse } from "./actions/edit-product-variants/types";
-export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from "./actions/delete-product/types";
-
-// Entity Types
-export type { GetOutlets, GetOutletsResponse } from "./actions/get-outlets/types";
-export type { GetStations, GetStationsParams, GetStationsResponse } from "./actions/get-stations/types";
