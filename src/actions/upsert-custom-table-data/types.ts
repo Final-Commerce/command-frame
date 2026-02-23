@@ -2,6 +2,7 @@ export interface UpsertCustomTableDataResponse<T = any> {
     success: boolean;
     data: T;
     timestamp: string;
+    error?: string;
 }
 
 export interface UpsertCustomTableDataParams<T = any> {

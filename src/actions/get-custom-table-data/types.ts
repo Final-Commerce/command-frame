@@ -2,6 +2,7 @@ export interface GetCustomTableDataResponse<T = any> {
     success: boolean;
     data: T[];
     timestamp: string;
+    count?: number;
 }
 
 export interface GetCustomTableDataParams {

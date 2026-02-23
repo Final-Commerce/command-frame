@@ -521,7 +521,7 @@ export interface CFContextRender {
     buildSourceId: string | null;
     buildIsPremium: boolean;
     user: Record<string, any> | null;
-    company: Omit<Record<string, any>, 'settings'> | null;
+    company: Omit<Record<string, any>, "settings"> | null;
     station: Record<string, any> | null;
     outlet: Record<string, any> | null;
     timestamp: string;
@@ -532,27 +532,47 @@ export interface CFOutletInfo {
     _id?: string;
     id?: string;
     name: string;
-    address?: string | {
-        address1?: string;
-        address2?: string;
-        city?: string;
-        country?: string;
-        state?: string;
-        postCode?: string;
-    };
+    address?:
+        | string
+        | {
+              address1?: string;
+              address2?: string;
+              city?: string;
+              country?: string;
+              state?: string;
+              postCode?: string;
+          };
     city?: string;
     state?: string;
     country?: string;
 }
 
+// Company Interface for Manage Context
+export interface CFCompany {
+    _id: string;
+    name: string;
+    logo?: string;
+    settings?: Record<string, any>;
+    [key: string]: any;
+}
+
+// Menu Item Interface
+export interface CFMenuItem {
+    _id: string;
+    label: string;
+    icon?: string;
+    path?: string;
+    customExtensionId?: string;
+    [key: string]: any;
+}
 
 // Context for Manage/BuilderHub project
 export interface CFContextManage {
-    user: any;
-    company: any;
-    menuItem?: any;
+    user: CFActiveUser | Record<string, unknown>;
+    company: CFCompany;
+    menuItem?: CFMenuItem;
     extensionId: string;
-    outlets?: any[];
+    outlets?: CFOutletInfo[];
     timestamp: string;
 }
 

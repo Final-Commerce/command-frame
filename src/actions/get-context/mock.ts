@@ -39,17 +39,26 @@ export const mockGetContextManage = async (): Promise<GetContextResponseManage> 
             lastName: MOCK_USER.lastName
         },
         company: {
-            _id: MOCK_COMPANY.id,
+            _id: MOCK_COMPANY.id || "demo_company",
             name: MOCK_COMPANY.name || "Demo Company",
             logo: MOCK_COMPANY.logo
         },
         menuItem: {
             _id: "mock_menu_item_id",
+            label: "Demo Menu Item",
             text: "Demo Menu Item",
             iframeUrl: "https://example.com/iframe"
         },
         extensionId: "mock_extension_id",
-        outlets: [MOCK_OUTLET],
+        outlets: [{
+            _id: MOCK_OUTLET._id || MOCK_OUTLET.id,
+            id: MOCK_OUTLET.id,
+            name: MOCK_OUTLET.name || "Default Outlet",
+            address: MOCK_OUTLET.address,
+            city: MOCK_OUTLET.city,
+            state: MOCK_OUTLET.state,
+            country: MOCK_OUTLET.country,
+        }],
         timestamp: new Date().toISOString()
     };
 };
