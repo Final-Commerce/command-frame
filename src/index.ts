@@ -75,6 +75,15 @@ import { setSecretVal } from "./actions/set-secret-val/action";
 
 import { generateAPIKey } from "./actions/generate-api-key/action";
 
+// Product CRUD Actions
+import { addProduct } from "./actions/add-product/action";
+import { editProduct } from "./actions/edit-product/action";
+import { editProductVariants } from "./actions/edit-product-variants/action";
+import { deleteProduct } from "./actions/delete-product/action";
+// Entity Actions
+import { getOutlets } from "./actions/get-outlets/action";
+import { getStations } from "./actions/get-stations/action";
+
 // Export actions as command object
 export const command = {
     exampleFunction,
@@ -134,6 +143,14 @@ export const command = {
     calculateRefundTotal,
     getRemainingRefundableQuantities,
     processPartialRefund,
+    // Product CRUD Actions
+    addProduct,
+    editProduct,
+    editProductVariants,
+    deleteProduct,
+    // Entity Actions
+    getOutlets,
+    getStations,
     // Custom Tables Actions
     getCustomTables,
     getCustomTableFields,
@@ -169,6 +186,18 @@ export type { AssignCustomer, AssignCustomerParams, AssignCustomerResponse } fro
 export type { AddCustomer, AddCustomerParams, AddCustomerResponse } from "./actions/add-customer/types";
 
 export type { GetCategories, GetCategoriesParams, GetCategoriesResponse } from "./actions/get-categories/types";
+
+export type { AddProduct, AddProductParams, AddProductResponse } from "./actions/add-product/types";
+
+export type { EditProduct, EditProductParams, EditProductResponse } from "./actions/edit-product/types";
+
+export type { EditProductVariants, EditProductVariantsParams, EditProductVariantsResponse } from "./actions/edit-product-variants/types";
+
+export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from "./actions/delete-product/types";
+
+export type { GetOutlets, GetOutletsResponse } from "./actions/get-outlets/types";
+
+export type { GetStations, GetStationsParams, GetStationsResponse } from "./actions/get-stations/types";
 
 export type { GetOrders, GetOrdersParams, GetOrdersResponse } from "./actions/get-orders/types";
 
