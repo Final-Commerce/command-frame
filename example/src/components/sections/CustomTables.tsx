@@ -6,9 +6,6 @@ import { renderClient as command } from '@final-commerce/command-frame';
 import './Sections.css';
 
 export function CustomTables({ isInIframe }: SectionProps) {
-  const [customTables, setCustomTables] = useState<any[]>([]);
-  const [customTablesLoading, setCustomTablesLoading] = useState(false);
-
   const [customExtensionCustomTables, setCustomExtensionCustomTables] = useState<any[]>([]);
   const [customExtensionCustomTablesLoading, setCustomExtensionCustomTablesLoading] = useState(false);
 
@@ -26,24 +23,6 @@ export function CustomTables({ isInIframe }: SectionProps) {
   const [customTableRowId, setCustomTableRowId] = useState('');
   const [deleteCustomTableDataResponse, setDeleteCustomTableDataResponse] = useState<any>(null);
   const [deleteCustomTableDataLoading, setDeleteCustomTableDataLoading] = useState(false);
-
-  const handleGetCustomTables = async () => {
-    if (!isInIframe) {
-      console.error('Error: Not running in iframe');
-      return;
-    }
-
-    setCustomTablesLoading(true);
-
-    try {
-      const result = await command.getCustomTables();
-      setCustomTables(result.customTables);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setCustomTablesLoading(false);
-    }
-  };
 
   const handleGetCustomExtensionCustomTables = async () => {
     if (!isInIframe) {
@@ -152,22 +131,6 @@ export function CustomTables({ isInIframe }: SectionProps) {
   
   return (
     <div className="section-content">
-      <CommandSection title="Custom Tables">
-        <button 
-          onClick={handleGetCustomTables} 
-          disabled={customTablesLoading}
-          className="btn btn--primary"
-        >
-          {customTablesLoading ? 'Loading...' : 'Get Custom Tables'}
-        </button>
-
-        {customTables.length > 0 && (
-          customTables.map((customTable) => (
-            <JsonViewer key={customTable._id} data={customTable} title={customTable.name} />
-          ))
-        )}
-      </CommandSection>
-
       <CommandSection title="Custom Extension Custom Tables">
         <p className="section-description">
           Get custom tables available for a custom extension.
