@@ -520,6 +520,7 @@ export interface CFContextRender {
     buildVersion: string | null;
     buildSourceId: string | null;
     buildIsPremium: boolean;
+    isOffline: boolean;
     user: Record<string, any> | null;
     company: Omit<Record<string, any>, 'settings'> | null;
     station: Record<string, any> | null;
