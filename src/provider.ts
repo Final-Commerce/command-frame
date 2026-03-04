@@ -6,6 +6,7 @@ export type ActionHandlers = Map<string, ActionHandler>;
 export class CommandFrameProvider<TActions extends object = any> {
     private handlers: ActionHandlers = new Map();
     private origin: string;
+    private isWildcardPattern: boolean;
     private debug: boolean;
     private destroyed: boolean = false;
     private boundHandleMessage: (event: MessageEvent<PostMessageRequest>) => void;
@@ -13,6 +14,7 @@ export class CommandFrameProvider<TActions extends object = any> {
     constructor(actions?: TActions, options: { origin?: string; debug?: boolean } = {}) {
         this.origin = options.origin || "*";
         this.debug = options.debug || false;
+        this.isWildcardPattern = this.origin !== "*" && this.origin.includes("*");
 
         this.boundHandleMessage = this.handleMessage.bind(this);
 
@@ -35,6 +37,24 @@ export class CommandFrameProvider<TActions extends object = any> {
                 debug: this.debug
             });
         }
+    }
+
+    /**
+     * Supports "*" (allow all), exact match, and wildcard subdomain
+     * patterns like "https://*.example.com".
+     */
+    private isOriginAllowed(eventOrigin: string): boolean {
+        if (this.origin === "*") return true;
+        if (!this.isWildcardPattern) return eventOrigin === this.origin;
+
+        const wildcardIndex = this.origin.indexOf("*.");
+        const prefix = this.origin.slice(0, wildcardIndex);
+        const suffix = this.origin.slice(wildcardIndex + 1);
+        return (
+            eventOrigin.startsWith(prefix) &&
+            eventOrigin.endsWith(suffix) &&
+            eventOrigin.length > prefix.length + suffix.length
+        );
     }
 
     register<TParams = any, TResponse = any>(action: string, handler: ActionHandler<TParams, TResponse>): void {
@@ -78,7 +98,7 @@ export class CommandFrameProvider<TActions extends object = any> {
             return;
         }
 
-        if (this.origin !== "*" && event.origin !== this.origin) {
+        if (!this.isOriginAllowed(event.origin)) {
             if (this.debug) {
                 console.warn("[CommandFrameProvider] Origin mismatch", {
                     expected: this.origin,
@@ -87,6 +107,8 @@ export class CommandFrameProvider<TActions extends object = any> {
             }
             return;
         }
+
+        const targetOrigin = this.isWildcardPattern ? event.origin : this.origin;
 
         if (!request.action || !request.requestId) {
             if (this.debug) {
@@ -119,7 +141,7 @@ export class CommandFrameProvider<TActions extends object = any> {
                 this.sendResponse(event.source as Window, request.requestId, {
                     success: false,
                     error: `Unknown action: ${request.action}`
-                });
+                }, targetOrigin);
             }
             return;
         }
@@ -132,7 +154,7 @@ export class CommandFrameProvider<TActions extends object = any> {
                 this.sendResponse(event.source as Window, request.requestId, {
                     success: true,
                     data: result
-                });
+                }, targetOrigin);
 
                 if (this.debug) {
                     console.log("[CommandFrameProvider] Action executed", {
@@ -154,7 +176,7 @@ export class CommandFrameProvider<TActions extends object = any> {
                 this.sendResponse(event.source as Window, request.requestId, {
                     success: false,
                     error: errorMessage
-                });
+                }, targetOrigin);
 
                 if (this.debug) {
                     console.error("[CommandFrameProvider] Action failed", {
@@ -173,7 +195,7 @@ export class CommandFrameProvider<TActions extends object = any> {
         }
     }
 
-    private sendResponse(target: Window, requestId: string, response: Omit<PostMessageResponse, "requestId">): void {
+    private sendResponse(target: Window, requestId: string, response: Omit<PostMessageResponse, "requestId">, targetOrigin: string): void {
         const message: PostMessageResponse = {
             requestId,
             ...response
@@ -182,11 +204,12 @@ export class CommandFrameProvider<TActions extends object = any> {
         if (this.debug) {
             console.log("[CommandFrameProvider] Sending response", {
                 requestId,
-                success: response.success
+                success: response.success,
+                targetOrigin
             });
         }
 
-        target.postMessage(message, this.origin);
+        target.postMessage(message, targetOrigin);
     }
 
     destroy(): void {
