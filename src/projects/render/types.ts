@@ -59,7 +59,9 @@ import type {
     GetCustomTableFields,
     GetSecretsKeys,
     GetSecretVal,
-    SetSecretVal
+    SetSecretVal,
+    GetUsers,
+    GetRoles
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -124,4 +126,6 @@ export interface RenderProviderActions {
     getSecretsKeys: GetSecretsKeys;
     getSecretVal: GetSecretVal;
     setSecretVal: SetSecretVal;
+    getUsers: GetUsers;
+    getRoles: GetRoles;
 }

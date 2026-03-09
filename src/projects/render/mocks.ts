@@ -59,6 +59,8 @@ import { mockGetCustomExtensionCustomTables } from "../../actions/get-custom-ext
 import { mockGetSecretsKeys } from "../../actions/get-secrets-keys/mock";
 import { mockGetSecretVal } from "../../actions/get-secret-val/mock";
 import { mockSetSecretVal } from "../../actions/set-secret-val/mock";
+import { mockGetUsers } from "../../actions/get-users/mock";
+import { mockGetRoles } from "../../actions/get-roles/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -123,4 +125,6 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getSecretsKeys: mockGetSecretsKeys,
     getSecretVal: mockGetSecretVal,
     setSecretVal: mockSetSecretVal,
+    getUsers: mockGetUsers,
+    getRoles: mockGetRoles,
 };
