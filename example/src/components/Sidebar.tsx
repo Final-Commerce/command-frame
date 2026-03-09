@@ -17,7 +17,9 @@ export type SectionId =
     | 'custom-extensions'
     | 'custom-tables'
     | "secrets"
-    | "print";
+    | "print"
+    | "users"
+    | "roles";
 
 interface SidebarProps {
     activeSection: SectionId;
@@ -46,7 +48,9 @@ const sections: Section[] = [
     { id: 'custom-extensions', label: 'Custom Extensions' },
     { id: 'custom-tables', label: 'Custom Tables' },
     { id: "secrets", label: "Secrets" },
-    { id: "print", label: "Print" }
+    { id: "print", label: "Print" },
+    { id: "users", label: "Users" },
+    { id: "roles", label: "Roles" }
 ];
 
 export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {

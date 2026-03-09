@@ -17,6 +17,8 @@ import { CustomExtensions } from './components/sections/CustomExtensions';
 import { CustomTables } from './components/sections/CustomTables';
 import { SecretsSection } from './components/sections/SecretsSection';
 import { PrintSection } from "./components/sections/PrintSection";
+import { UsersSection } from './components/sections/UsersSection';
+import { RolesSection } from './components/sections/RolesSection';
 
 function App() {
   const [activeSection, setActiveSection] = useState<SectionId>("environment");
@@ -56,6 +58,10 @@ function App() {
         return <SecretsSection isInIframe={isInIframe} />;
       case "print":
         return <PrintSection isInIframe={isInIframe} />;
+      case "users":
+        return <UsersSection isInIframe={isInIframe} />;
+      case "roles":
+        return <RolesSection isInIframe={isInIframe} />;
       default:
         return <EnvironmentSection isInIframe={isInIframe} />;
     }
