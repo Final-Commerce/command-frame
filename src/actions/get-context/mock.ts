@@ -19,6 +19,7 @@ export const mockGetContext: GetContext = async (): Promise<GetContextResponse> 
         buildVersion: "1.0.0-mock",
         buildSourceId: "mock_source_id",
         buildIsPremium: true,
+        isOffline: false,
         user: null,
         company: null,
         station: null,
