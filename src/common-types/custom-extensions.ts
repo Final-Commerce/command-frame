@@ -10,7 +10,7 @@ export type CustomExtension = BaseEntity & {
     short_description?: string;
     long_description?: string;
     main_image?: string;
-    price: string;
+    price: number;
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;

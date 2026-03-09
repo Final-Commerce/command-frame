@@ -1,3 +1,6 @@
+import { CurrencyCode } from '@final-commerce/common';
+export { CurrencyCode };
+
 export * from "./common-types";
 
 // Enums
@@ -60,7 +63,7 @@ export interface CFTax {
     id: string;
     name: string;
     percentage: number;
-    amount: string;
+    amount: number;
     taxTableName: string;
     taxTableId: string;
 }
@@ -98,11 +101,11 @@ export interface CFCategory {
 // Product Interfaces
 export interface CFProductVariant {
     sku: string;
-    price: string;
-    salePrice: string;
+    price: number;
+    salePrice: number;
     isOnSale: boolean;
     barcode?: string;
-    costPrice?: string;
+    costPrice?: number;
     manageStock: boolean;
     externalId?: string;
     inventory?: CFInventory[];
@@ -139,8 +142,10 @@ export interface CFProduct {
     productType: CFProductType;
     variants: CFProductVariant[];
 
-    minPrice?: string;
-    maxPrice?: string;
+    currency: CurrencyCode;
+    minorUnits: number;
+    minPrice?: number;
+    maxPrice?: number;
     status?: string;
     isDeleted?: boolean;
 }
@@ -196,16 +201,16 @@ export interface CFActiveCustomer extends CFCustomer {
 
 // Order & Cart Interfaces
 export interface CFTip {
-    amount: string;
+    amount: number;
     percentage: number;
 }
 
 export interface CFSummary {
-    discountTotal: string;
-    shippingTotal?: string | null;
-    total: string;
-    totalTaxes: string;
-    subTotal: string;
+    discountTotal: number;
+    shippingTotal?: number | null;
+    total: number;
+    totalTaxes: number;
+    subTotal: number;
     taxes: CFTax[];
     tip?: CFTip | null;
     isTaxInclusive: boolean;
@@ -213,28 +218,28 @@ export interface CFSummary {
 
 export interface CFCartDiscountItem {
     label: string;
-    amount: string;
+    amount: number;
     percentage: number;
 }
 
 export interface CFCartFeeItem {
     id: string;
     label: string;
-    amount: string;
+    amount: number;
     percentage: number;
     taxTableId?: string;
-    tax?: string;
+    tax?: number;
     taxName: string;
 }
 
 export interface CFTipPayment {
-    amount: string;
+    amount: number;
     tipTo: string;
     percentage: number;
 }
 
 export interface CFRefundedTipPayment {
-    amount: string;
+    amount: number;
     percentage: number;
     transactionId: string;
     tipTo: string;
@@ -243,11 +248,11 @@ export interface CFRefundedTipPayment {
 export interface CFPaymentMethod {
     transactionId: string;
     paymentType: string;
-    amount: string;
+    amount: number;
     timestamp: string;
     processor: string;
     saleId?: string;
-    change?: string | null;
+    change?: number | null;
     tip?: CFTipPayment | null;
     cashRounding?: number;
     emv?: string | null;
@@ -261,14 +266,14 @@ export interface CFPosDataItem {
 
 export interface CFDiscountDetail {
     percentage: number;
-    amount: string;
+    amount: number;
     const?: string;
 }
 
 export interface CFFeeDetail {
     percentage: number;
-    amount: string;
-    tax: string;
+    amount: number;
+    tax: number;
     taxTableId: string;
 }
 
@@ -289,12 +294,12 @@ export interface CFLineItem {
     internalId?: string;
     name: string;
     quantity: number;
-    price: string;
+    price: number;
     taxes: CFTax[];
     discount: CFDiscountLineItem;
     fee: CFFeeLineItem;
-    totalTax: string;
-    total: string;
+    totalTax: number;
+    total: number;
     metadata: CFMetadataItem[];
     image: string;
     sku: string;
@@ -309,21 +314,21 @@ export interface CFLineItem {
 export interface CFCustomSale {
     customSaleId: string;
     name: string;
-    price: string;
+    price: number;
     quantity: number;
     applyTaxes: boolean;
-    total: string;
-    totalTax: string;
+    total: number;
+    totalTax: number;
     taxes: CFTax[];
     discount: {
         cartDiscount: CFDiscountDetail;
     };
     fee: {
         cartFee: {
-            amount: string;
+            amount: number;
             label: string;
             percentage: number;
-            tax: string;
+            tax: number;
             taxTableId: string;
         };
     };
@@ -337,11 +342,11 @@ export interface CFRefundedLineItem {
     internalId?: string;
     name: string;
     quantity: number;
-    price: string;
+    price: number;
     taxes: CFTax[];
     discount: CFDiscountLineItem;
-    totalTax: string;
-    total: string;
+    totalTax: number;
+    total: number;
     image: string;
     sku: string;
     note?: string;
@@ -363,13 +368,16 @@ export interface CFRefundItem {
     timestamp: string | undefined;
     summary?: CFSummary;
     refundPayment: CFPaymentMethod[];
-    balance?: string;
+    balance?: number;
     receiptId?: string;
-    currency?: string;
+    currency: CurrencyCode;
+    minorUnits: number;
 }
 
 export interface CFOrder {
     _id: string;
+    currency: CurrencyCode;
+    minorUnits: number;
     receiptId?: string;
     companyId: string;
     externalId: string | null;
@@ -379,7 +387,7 @@ export interface CFOrder {
     summary: CFSummary;
     cartDiscount: CFCartDiscountItem | null;
     cartFees: CFCartFeeItem[] | null;
-    updatedAt?: string; //server side
+    updatedAt?: string;
     createdAt?: string;
     paymentMethods: CFPaymentMethod[];
     source: string;
@@ -392,7 +400,7 @@ export interface CFOrder {
     lineItems: CFLineItem[];
     customSales: CFCustomSale[];
     refund?: CFRefundItem[];
-    balance: string;
+    balance: number;
     signature?: string | null;
 }
 
@@ -463,7 +471,6 @@ export interface CFActiveOrder extends CFOrder {
     outlet?: CFActiveOutlet;
     isDeleted?: boolean;
     newOrder?: boolean;
-    currency?: string;
     station?: CFActiveStation;
 }
 
