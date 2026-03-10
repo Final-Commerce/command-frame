@@ -1,7 +1,48 @@
-import { CurrencyCode } from '@final-commerce/common';
-export { CurrencyCode };
-
 export * from "./common-types";
+
+export enum CurrencyCode {
+    USD = "USD",
+    EUR = "EUR",
+    GBP = "GBP",
+    CAD = "CAD",
+    AUD = "AUD",
+    NZD = "NZD",
+    CHF = "CHF",
+    CNY = "CNY",
+    INR = "INR",
+    MXN = "MXN",
+    BRL = "BRL",
+    ZAR = "ZAR",
+    SGD = "SGD",
+    HKD = "HKD",
+    SEK = "SEK",
+    NOK = "NOK",
+    DKK = "DKK",
+    PLN = "PLN",
+    THB = "THB",
+    MYR = "MYR",
+    PHP = "PHP",
+    IDR = "IDR",
+    AED = "AED",
+    SAR = "SAR",
+    ILS = "ILS",
+    TRY = "TRY",
+    RUB = "RUB",
+    JPY = "JPY",
+    KRW = "KRW",
+    VND = "VND",
+    CLP = "CLP",
+    ISK = "ISK",
+    HUF = "HUF",
+    TWD = "TWD",
+    KWD = "KWD",
+    BHD = "BHD",
+    OMR = "OMR",
+    JOD = "JOD",
+    TND = "TND",
+    LYD = "LYD",
+    IQD = "IQD",
+}
 
 // Enums
 export enum CFProductType {
