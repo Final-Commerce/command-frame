@@ -74,7 +74,7 @@ export function RolesSection({ isInIframe: _ }: RolesSectionProps) {
                     <>
                       <tr key={roleId}>
                         <td>{role.name}</td>
-                        <td>{role.permissions?.length ?? 0}</td>
+                        <td>{role.permissions?.filter((p: any) => p.value === true).length ?? 0}</td>
                         <td className="text-right">
                           <button
                             onClick={() => toggleExpand(roleId)}
