@@ -16,6 +16,23 @@ The library provides three main capabilities:
 
 ## Installation
 
+### From npm (public registry)
+
+```bash
+npm install @final-commerce/command-frame
+```
+
+### From GitHub Packages
+
+To install from GitHub Packages, add this to your project's `.npmrc`:
+
+```
+@final-commerce:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+Set `NODE_AUTH_TOKEN` to a GitHub personal access token with `read:packages` scope, then install as usual:
+
 ```bash
 npm install @final-commerce/command-frame
 ```
