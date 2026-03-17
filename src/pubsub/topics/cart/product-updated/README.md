@@ -23,7 +23,7 @@ interface CartProductUpdatedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `product` | `CFActiveProduct` | The product object that was updated in the cart. |
+| `product` | [`CFActiveProduct`](../../../types/README.md#cfactiveproduct) | The product object that was updated in the cart. |
 | `previousQuantity` | `number` | The quantity before the update. |
 | `newQuantity` | `number` | The quantity after the update. |
 
@@ -59,6 +59,6 @@ topicPublisher.publish('cart', 'product-updated', {
 
 ## Related Types
 
-- `CFActiveProduct` - Product type from CommonTypes
+- [`CFActiveProduct`](../../../types/README.md#cfactiveproduct) - Product type from CommonTypes
 - `CartProductUpdatedPayload` - Event payload type
 - `CartProductUpdatedEvent` - Full event type with topic, type, data, and timestamp

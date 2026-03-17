@@ -21,7 +21,7 @@ interface CustomerUnassignedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `customer` | `CFCustomer` | The customer object that was unassigned from the cart (before removal). |
+| `customer` | [`CFCustomer`](../../../types/README.md#cfcustomer) | The customer object that was unassigned from the cart (before removal). |
 
 ## Example Usage
 
@@ -53,7 +53,7 @@ topicPublisher.publish('customers', 'customer-unassigned', {
 
 ## Related Types
 
-- `CFCustomer` - Customer type from CommonTypes
+- [`CFCustomer`](../../../types/README.md#cfcustomer) - Customer type from CommonTypes
 - `CustomerUnassignedPayload` - Event payload type
 - `CustomerUnassignedEvent` - Full event type with topic, type, data, and timestamp
 

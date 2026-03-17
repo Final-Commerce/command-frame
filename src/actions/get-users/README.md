@@ -28,11 +28,11 @@ interface GetUsersResponse {
 }
 ```
 
-#### `users` (CFActiveUser[])
+#### `users` ([CFActiveUser](../../types/README.md#cfactiveuser)[])
 
 Array of user objects matching the query. Each user includes their full role object with permissions.
 
-**Tip:** You can import the `CFActiveUser` type directly from the library:
+**Tip:** You can import the [`CFActiveUser`](../../types/README.md#cfactiveuser) type directly from the library:
 ```typescript
 import { type CFActiveUser } from '@final-commerce/command-frame';
 ```

@@ -48,11 +48,11 @@ interface GetCustomersResponse {
 }
 ```
 
-#### `customers` (CFCustomer[])
+#### `customers` ([CFCustomer](../../types/README.md#cfcustomer)[])
 
 Array of customer objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
 
-**Tip:** You can import the `CFCustomer` type directly from the library:
+**Tip:** You can import the [`CFCustomer`](../../types/README.md#cfcustomer) type directly from the library:
 ```typescript
 import { type CFCustomer } from '@final-commerce/command-frame';
 ```

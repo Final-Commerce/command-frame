@@ -262,7 +262,7 @@ export interface CFPosDataItem {
 export interface CFDiscountDetail {
     percentage: number;
     amount: string;
-    const?: string;
+    label?: string;
 }
 
 export interface CFFeeDetail {
@@ -270,6 +270,7 @@ export interface CFFeeDetail {
     amount: string;
     tax: string;
     taxTableId: string;
+    label?: string;
 }
 
 export interface CFDiscountLineItem {
@@ -319,13 +320,7 @@ export interface CFCustomSale {
         cartDiscount: CFDiscountDetail;
     };
     fee: {
-        cartFee: {
-            amount: string;
-            label: string;
-            percentage: number;
-            tax: string;
-            taxTableId: string;
-        };
+        cartFee: CFFeeDetail;
     };
 }
 

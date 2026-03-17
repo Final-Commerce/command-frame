@@ -54,7 +54,7 @@ import type {
 
 ## Related Types
 
-- `CFProduct` - Product type from CommonTypes
+- [`CFProduct`](../../types/README.md#cfproduct) - Product type from CommonTypes
 - `ProductsEventType` - Union type of all product event IDs
 - `ProductsEventPayload` - Union type of all product event payloads
 

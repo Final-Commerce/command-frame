@@ -27,7 +27,7 @@ interface GetStationsResponse {
 }
 ```
 
-#### `stations` (CFActiveStation[])
+#### `stations` ([CFActiveStation](../../types/README.md#cfactivestation)[])
 
 Array of station objects. Each station contains:
 
