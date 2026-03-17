@@ -90,11 +90,11 @@ import type {
 
 ## Related Types
 
-- `CFActiveCart` - Cart type from CommonTypes
-- `CFActiveProduct` - Product type from CommonTypes
-- `CFCustomer` - Customer type from CommonTypes
-- `CFDiscount` - Discount type from CommonTypes
-- `CFCustomFee` - Fee type from CommonTypes
+- [`CFActiveCart`](../../types/README.md#cfactivecart) - Cart type from CommonTypes
+- [`CFActiveProduct`](../../types/README.md#cfactiveproduct) - Product type from CommonTypes
+- [`CFCustomer`](../../types/README.md#cfcustomer) - Customer type from CommonTypes
+- [`CFDiscount`](../../types/README.md#cfdiscount) - Discount type from CommonTypes
+- [`CFCustomFee`](../../types/README.md#cfcustomfee) - Fee type from CommonTypes
 - `CartEventType` - Union type of all cart event IDs
 - `CartEventPayload` - Union type of all cart event payloads
 

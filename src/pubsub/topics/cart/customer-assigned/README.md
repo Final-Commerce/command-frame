@@ -21,7 +21,7 @@ interface CartCustomerAssignedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `customer` | `CFCustomer` | The customer object that was assigned to the cart. |
+| `customer` | [`CFCustomer`](../../../types/README.md#cfcustomer) | The customer object that was assigned to the cart. |
 
 ## Example Usage
 
@@ -52,7 +52,7 @@ topicPublisher.publish('cart', 'customer-assigned', {
 
 ## Related Types
 
-- `CFCustomer` - Customer type from CommonTypes
+- [`CFCustomer`](../../../types/README.md#cfcustomer) - Customer type from CommonTypes
 - `CartCustomerAssignedPayload` - Event payload type
 - `CartCustomerAssignedEvent` - Full event type with topic, type, data, and timestamp
 

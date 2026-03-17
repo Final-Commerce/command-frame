@@ -21,7 +21,7 @@ interface ProductCreatedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `product` | `CFProduct` | The newly created/synced product object with all product fields including `_id`, `name`, `variants`, `categories`, etc. |
+| `product` | [`CFProduct`](../../../types/README.md#cfproduct) | The newly created/synced product object with all product fields including `_id`, `name`, `variants`, `categories`, etc. |
 
 ## Example Usage
 
@@ -53,7 +53,7 @@ topicPublisher.publish('products', 'product-created', {
 
 ## Related Types
 
-- `CFProduct` - Product type from CommonTypes
+- [`CFProduct`](../../../types/README.md#cfproduct) - Product type from CommonTypes
 - `ProductCreatedPayload` - Event payload type
 - `ProductCreatedEvent` - Full event type with topic, type, data, and timestamp
 

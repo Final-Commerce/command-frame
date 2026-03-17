@@ -21,7 +21,7 @@ interface ProductAddedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `product` | `CFActiveProduct` | The product object that was added to the cart. |
+| `product` | [`CFActiveProduct`](../../../types/README.md#cfactiveproduct) | The product object that was added to the cart. |
 
 ## Example Usage
 
@@ -52,7 +52,7 @@ topicPublisher.publish('cart', 'product-added', {
 
 ## Related Types
 
-- `CFActiveProduct` - Product type from CommonTypes
+- [`CFActiveProduct`](../../../types/README.md#cfactiveproduct) - Product type from CommonTypes
 - `ProductAddedPayload` - Event payload type
 - `ProductAddedEvent` - Full event type with topic, type, data, and timestamp
 

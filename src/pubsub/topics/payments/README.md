@@ -54,8 +54,8 @@ import type {
 
 ## Related Types
 
-- `CFPaymentMethod` - Payment method type from CommonTypes
-- `CFOrder` - Order type from CommonTypes
+- [`CFPaymentMethod`](../../types/README.md#cfpaymentmethod) - Payment method type from CommonTypes
+- [`CFOrder`](../../types/README.md#cforder) - Order type from CommonTypes
 - `PaymentsEventType` - Union type of all payment event IDs
 - `PaymentsEventPayload` - Union type of all payment event payloads
 

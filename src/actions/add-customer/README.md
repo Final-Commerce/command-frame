@@ -64,9 +64,9 @@ interface AddCustomerResponse {
 
 Indicates whether the customer was successfully created.
 
-#### `customer` (CFCustomer)
+#### `customer` ([CFCustomer](../../types/README.md#cfcustomer))
 
-The created customer object, including all fields from the request plus automatically generated fields. The structure is strictly typed as `CFCustomer`.
+The created customer object, including all fields from the request plus automatically generated fields. The structure is strictly typed as [`CFCustomer`](../../types/README.md#cfcustomer).
 
 - `_id`: Unique identifier (MongoDB style).
 - `createdAt`: Creation timestamp.

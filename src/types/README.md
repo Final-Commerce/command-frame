@@ -1,0 +1,835 @@
+# Types Reference
+
+Complete field-level reference for all types exported from `@final-commerce/command-frame`.
+
+All types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
+
+```typescript
+import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
+```
+
+## Table of Contents
+
+- [Enums](#enums) -- CFProductType, CFUserTypes
+- [Order Types](#order-types) -- CFOrder, CFActiveOrder
+- [Line Item Types](#line-item-types) -- CFLineItem, CFCustomSale, CFRefundedLineItem, CFRefundedCustomSale
+- [Discount Types](#discount-types) -- CFDiscount, CFDiscountDetail, CFDiscountLineItem
+- [Fee Types](#fee-types) -- CFCustomFee, CFFeeDetail, CFFeeLineItem
+- [Summary & Payment Types](#summary--payment-types) -- CFSummary, CFTip, CFPaymentMethod, CFTipPayment, CFCartDiscountItem, CFCartFeeItem
+- [Customer Types](#customer-types) -- CFCustomer, CFActiveCustomer, CFCustomerNote
+- [Cart Types](#cart-types) -- CFActiveCart, CFActiveProduct, CFActiveCustomSales
+- [Product Types](#product-types) -- CFProduct, CFProductVariant, CFCategory, CFInventory
+- [Refund Types](#refund-types) -- CFRefundItem, CFRefundedTipPayment
+- [System Types](#system-types) -- CFActiveUser, CFActiveUserRole, CFActiveOutlet, CFActiveStation, CFActiveCompany, CFPosDataItem, CFOrderNote
+- [Address & Metadata](#address--metadata) -- CFAddress, CFMetadataItem, CFTax
+- [Context Types](#context-types) -- CFContextRender, CFContextManage, CFOutletInfo, CFProjectName, CFContext
+
+## Type Relationships
+
+```mermaid
+graph TD
+    CFOrder --> CFLineItem
+    CFOrder --> CFCustomSale
+    CFOrder --> CFSummary
+    CFOrder --> CFPaymentMethod
+    CFOrder --> CFCartDiscountItem
+    CFOrder --> CFCartFeeItem
+    CFOrder --> CFActiveCustomer
+    CFOrder --> CFRefundItem
+    CFOrder --> CFPosDataItem
+    CFOrder --> CFOrderNote
+    CFOrder --> CFAddress
+    CFOrder --> CFMetadataItem
+
+    CFLineItem --> CFDiscountLineItem
+    CFLineItem --> CFFeeLineItem
+    CFLineItem --> CFTax
+    CFLineItem --> CFMetadataItem
+
+    CFDiscountLineItem --> CFDiscountDetail
+    CFFeeLineItem --> CFFeeDetail
+
+    CFCustomSale --> CFDiscountDetail
+    CFCustomSale --> CFFeeDetail
+    CFCustomSale --> CFTax
+
+    CFSummary --> CFTax
+    CFSummary --> CFTip
+
+    CFPaymentMethod --> CFTipPayment
+
+    CFRefundItem --> CFRefundedLineItem
+    CFRefundItem --> CFRefundedCustomSale
+    CFRefundItem --> CFCartFeeItem
+    CFRefundItem --> CFRefundedTipPayment
+    CFRefundItem --> CFSummary
+    CFRefundItem --> CFPaymentMethod
+
+    CFRefundedLineItem --> CFDiscountLineItem
+    CFRefundedLineItem --> CFFeeLineItem
+    CFRefundedLineItem --> CFTax
+
+    CFActiveOrder --> CFOrder
+    CFActiveOrder --> CFActiveUser
+    CFActiveOrder --> CFActiveOutlet
+    CFActiveOrder --> CFActiveStation
+
+    CFActiveCart --> CFActiveProduct
+    CFActiveCart --> CFActiveCustomSales
+    CFActiveCart --> CFDiscount
+    CFActiveCart --> CFCustomFee
+    CFActiveCart --> CFCustomer
+
+    CFActiveProduct --> CFDiscount
+    CFActiveProduct --> CFCustomFee
+
+    CFCustomer --> CFCustomerNote
+    CFCustomer --> CFAddress
+    CFActiveCustomer --> CFCustomer
+
+    CFProduct --> CFProductVariant
+    CFProductVariant --> CFInventory
+
+    CFActiveUser --> CFActiveUserRole
+```
+
+---
+
+## Enums
+
+### CFProductType
+
+| Value | Description |
+|-------|-------------|
+| `SIMPLE` | `"simple"` -- A product without variants |
+| `VARIABLE` | `"variable"` -- A product with one or more variants |
+
+### CFUserTypes
+
+| Value | Description |
+|-------|-------------|
+| `OWNER` | `"owner"` |
+| `ORG_USER` | `"organization_user"` |
+| `ORG_OWNER` | `"organization_owner"` |
+| `FINAL_USER` | `"final_user"` |
+| `FINAL_OWNER` | `"final_owner"` |
+| `EMPLOYEE` | `"employee"` |
+| `SUPER_ADMIN` | `"super_admin"` |
+| `MANAGER` | `"manager"` |
+| `ADMIN` | `"admin"` |
+| `ASSISTANT_MANAGER` | `"assistant"` |
+| `CASHIER` | `"cashier"` |
+| `RESELLER` | `"reseller"` |
+
+---
+
+## Order Types
+
+### CFOrder
+
+The core order object returned by `getOrders`, published in `order-created` / `order-updated` events.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Unique order identifier |
+| `receiptId` | `string` | No | Receipt identifier |
+| `companyId` | `string` | Yes | Company this order belongs to |
+| `externalId` | `string \| null` | Yes | External system identifier |
+| `status` | `string` | Yes | Order status (e.g. `"completed"`, `"pending"`) |
+| `customer` | `Partial<`[`CFActiveCustomer`](#cfactivecustomer)` \| null>` | Yes | Customer attached to the order |
+| `customerNote` | `string` | No | Note from the customer |
+| `summary` | [`CFSummary`](#cfsummary) | Yes | Order totals, taxes, tip, discount summary |
+| `cartDiscount` | [`CFCartDiscountItem`](#cfcartdiscountitem)` \| null` | Yes | Cart-level discount applied |
+| `cartFees` | [`CFCartFeeItem`](#cfcartfeeitem)`[] \| null` | Yes | Cart-level fees applied |
+| `updatedAt` | `string` | No | ISO timestamp of last update (server-side) |
+| `createdAt` | `string` | No | ISO timestamp of creation |
+| `paymentMethods` | [`CFPaymentMethod`](#cfpaymentmethod)`[]` | Yes | Payments made on the order |
+| `source` | `string` | Yes | Origin of the order (e.g. `"pos"`) |
+| `posData` | [`CFPosDataItem`](#cfposdataitem)` \| null` | Yes | POS context (outlet, station, employee) |
+| `sessionId` | `string` | Yes | Session identifier |
+| `metadata` | [`CFMetadataItem`](#cfmetadataitem)`[]` | Yes | Key-value metadata pairs |
+| `notes` | [`CFOrderNote`](#cfordernote)`[] \| null` | No | Order notes |
+| `billing` | [`CFAddress`](#cfaddress)` \| null` | Yes | Billing address |
+| `shipping` | [`CFAddress`](#cfaddress)` \| null` | Yes | Shipping address |
+| `lineItems` | [`CFLineItem`](#cflineitem)`[]` | Yes | Product line items |
+| `customSales` | [`CFCustomSale`](#cfcustomsale)`[]` | Yes | Custom sale items |
+| `refund` | [`CFRefundItem`](#cfrefunditem)`[]` | No | Refund records |
+| `balance` | `string` | Yes | Remaining balance |
+| `signature` | `string \| null` | No | Customer signature data |
+
+### CFActiveOrder
+
+Extends [`CFOrder`](#cforder) with runtime fields used in the POS session.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| *(all CFOrder fields)* | | | |
+| `id` | `string` | No | Alias for `_id` |
+| `internalId` | `string` | No | Internal runtime identifier |
+| `user` | [`CFActiveUser`](#cfactiveuser) | No | User who created the order |
+| `outlet` | [`CFActiveOutlet`](#cfactiveoutlet) | No | Outlet where the order was placed |
+| `isDeleted` | `boolean` | No | Soft-delete flag |
+| `newOrder` | `boolean` | No | Whether this is a newly created order |
+| `currency` | `string` | No | Currency code |
+| `station` | [`CFActiveStation`](#cfactivestation) | No | Station where the order was placed |
+
+---
+
+## Line Item Types
+
+### CFLineItem
+
+A product line item within an order.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `productId` | `string` | Yes | Product identifier |
+| `variantExternalId` | `string` | No | External ID of the variant |
+| `productExternalId` | `string` | No | External ID of the product |
+| `internalId` | `string` | No | Internal runtime identifier for cart operations |
+| `name` | `string` | Yes | Product display name |
+| `quantity` | `number` | Yes | Quantity ordered |
+| `price` | `string` | Yes | Unit price |
+| `taxes` | [`CFTax`](#cftax)`[]` | Yes | Taxes applied to this item |
+| `discount` | [`CFDiscountLineItem`](#cfdiscountlineitem) | Yes | Item-level and cart-level discounts |
+| `fee` | [`CFFeeLineItem`](#cffeelineitem) | Yes | Item-level and cart-level fees |
+| `totalTax` | `string` | Yes | Total tax amount |
+| `total` | `string` | Yes | Total after discounts, fees, and taxes |
+| `metadata` | [`CFMetadataItem`](#cfmetadataitem)`[]` | Yes | Key-value metadata pairs |
+| `image` | `string` | Yes | Primary image URL |
+| `sku` | `string` | Yes | Stock keeping unit |
+| `stock` | `number` | Yes | Stock level at time of order |
+| `note` | `string` | No | Note attached to this line item |
+| `description` | `string` | No | Product description |
+| `variantId` | `string` | Yes | Variant identifier |
+| `images` | `string[]` | No | Additional image URLs |
+| `attributes` | `string` | No | Serialized variant attributes |
+
+### CFCustomSale
+
+A non-product sale item (e.g. service charge, manual entry).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `customSaleId` | `string` | Yes | Unique custom sale identifier |
+| `name` | `string` | Yes | Display name |
+| `price` | `string` | Yes | Unit price |
+| `quantity` | `number` | Yes | Quantity |
+| `applyTaxes` | `boolean` | Yes | Whether taxes are applied |
+| `total` | `string` | Yes | Total amount |
+| `totalTax` | `string` | Yes | Total tax amount |
+| `taxes` | [`CFTax`](#cftax)`[]` | Yes | Taxes applied |
+| `discount.cartDiscount` | [`CFDiscountDetail`](#cfdiscountdetail) | Yes | Cart-level discount applied to this item |
+| `fee.cartFee` | [`CFFeeDetail`](#cffeedetail) | Yes | Cart-level fee applied to this item |
+
+### CFRefundedLineItem
+
+A line item included in a refund. Same shape as [`CFLineItem`](#cflineitem) with `variantId` required and without `metadata`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `productId` | `string` | Yes | Product identifier |
+| `variantId` | `string` | Yes | Variant identifier |
+| `variantExternalId` | `string` | No | External ID of the variant |
+| `productExternalId` | `string` | No | External ID of the product |
+| `internalId` | `string` | No | Internal runtime identifier |
+| `name` | `string` | Yes | Product display name |
+| `quantity` | `number` | Yes | Quantity refunded |
+| `price` | `string` | Yes | Unit price |
+| `taxes` | [`CFTax`](#cftax)`[]` | Yes | Taxes on the refunded item |
+| `discount` | [`CFDiscountLineItem`](#cfdiscountlineitem) | Yes | Discounts that were applied |
+| `totalTax` | `string` | Yes | Total tax amount |
+| `total` | `string` | Yes | Total refund amount for this item |
+| `image` | `string` | Yes | Primary image URL |
+| `sku` | `string` | Yes | Stock keeping unit |
+| `note` | `string` | No | Note attached to this item |
+| `description` | `string` | No | Product description |
+| `images` | `string[]` | No | Additional image URLs |
+| `fee` | [`CFFeeLineItem`](#cffeelineitem) | Yes | Fees that were applied |
+
+### CFRefundedCustomSale
+
+Extends [`CFCustomSale`](#cfcustomsale). Same structure as a custom sale included in a refund.
+
+---
+
+## Discount Types
+
+### CFDiscount
+
+A discount applied to a product in the cart (before order creation).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `value` | `number` | Yes | Discount value (fixed amount or percentage) |
+| `label` | `string` | No | Display label for the discount |
+| `isPercent` | `boolean` | No | If `true`, `value` is a percentage; if `false`, it is a fixed amount |
+
+### CFDiscountDetail
+
+A computed discount as it appears on an order line item or custom sale.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `percentage` | `number` | Yes | Discount percentage (0 if fixed amount) |
+| `amount` | `string` | Yes | Calculated discount amount |
+| `label` | `string` | No | Display label for the discount |
+
+### CFDiscountLineItem
+
+Groups item-level and cart-level discounts for a single line item.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `itemDiscount` | [`CFDiscountDetail`](#cfdiscountdetail) | Yes | Discount applied directly to this item |
+| `cartDiscount` | [`CFDiscountDetail`](#cfdiscountdetail) | Yes | Share of the cart-level discount allocated to this item |
+
+---
+
+## Fee Types
+
+### CFCustomFee
+
+A fee applied to a product in the cart (before order creation).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `label` | `string` | Yes | Display label for the fee |
+| `amount` | `number` | Yes | Fee value (fixed amount or percentage) |
+| `isPercent` | `boolean` | Yes | If `true`, `amount` is a percentage |
+| `applyTaxes` | `boolean` | Yes | Whether taxes should be calculated on this fee |
+| `taxTableId` | `string` | No | Tax table to use if `applyTaxes` is `true` |
+
+### CFFeeDetail
+
+A computed fee as it appears on an order line item or custom sale.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `percentage` | `number` | Yes | Fee percentage (0 if fixed amount) |
+| `amount` | `string` | Yes | Calculated fee amount |
+| `tax` | `string` | Yes | Tax amount on the fee |
+| `taxTableId` | `string` | Yes | Tax table used |
+| `label` | `string` | No | Display label for the fee |
+
+### CFFeeLineItem
+
+Groups item-level and cart-level fees for a single line item.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `itemFee` | [`CFFeeDetail`](#cffeedetail) | Yes | Fee applied directly to this item |
+| `cartFee` | [`CFFeeDetail`](#cffeedetail) | No | Share of the cart-level fee allocated to this item |
+
+---
+
+## Summary & Payment Types
+
+### CFSummary
+
+Aggregate totals for an order.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `discountTotal` | `string` | Yes | Total discount amount |
+| `shippingTotal` | `string \| null` | No | Total shipping amount |
+| `total` | `string` | Yes | Grand total |
+| `totalTaxes` | `string` | Yes | Total tax amount |
+| `subTotal` | `string` | Yes | Subtotal before taxes and discounts |
+| `taxes` | [`CFTax`](#cftax)`[]` | Yes | Itemized tax breakdown |
+| `tip` | [`CFTip`](#cftip)` \| null` | No | Tip information |
+| `isTaxInclusive` | `boolean` | Yes | Whether prices include tax |
+
+### CFTip
+
+Tip information on an order summary.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `amount` | `string` | Yes | Tip amount |
+| `percentage` | `number` | Yes | Tip percentage |
+
+### CFPaymentMethod
+
+A payment transaction recorded on an order.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `transactionId` | `string` | Yes | Unique transaction identifier |
+| `paymentType` | `string` | Yes | Type of payment (e.g. `"cash"`, `"card"`) |
+| `amount` | `string` | Yes | Amount paid |
+| `timestamp` | `string` | Yes | ISO timestamp of the payment |
+| `processor` | `string` | Yes | Payment processor name |
+| `saleId` | `string` | No | Sale identifier from the processor |
+| `change` | `string \| null` | No | Change given (cash payments) |
+| `tip` | [`CFTipPayment`](#cftippayment)` \| null` | No | Tip included in this payment |
+| `cashRounding` | `number` | No | Cash rounding adjustment |
+| `emv` | `string \| null` | No | EMV card data |
+
+### CFTipPayment
+
+Tip details within a payment transaction.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `amount` | `string` | Yes | Tip amount |
+| `tipTo` | `string` | Yes | Recipient of the tip |
+| `percentage` | `number` | Yes | Tip percentage |
+
+### CFCartDiscountItem
+
+A cart-level discount as stored on the order.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `label` | `string` | Yes | Discount label |
+| `amount` | `string` | Yes | Discount amount |
+| `percentage` | `number` | Yes | Discount percentage |
+
+### CFCartFeeItem
+
+A cart-level fee as stored on the order.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | Yes | Fee identifier |
+| `label` | `string` | Yes | Fee label |
+| `amount` | `string` | Yes | Fee amount |
+| `percentage` | `number` | Yes | Fee percentage |
+| `taxTableId` | `string` | No | Tax table used for the fee |
+| `tax` | `string` | No | Tax amount on the fee |
+| `taxName` | `string` | Yes | Name of the tax applied |
+
+---
+
+## Customer Types
+
+### CFCustomer
+
+A customer record.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Unique customer identifier |
+| `companyId` | `any` | Yes | Company this customer belongs to |
+| `externalId` | `string` | No | External system identifier |
+| `email` | `string` | Yes | Email address |
+| `firstName` | `string` | Yes | First name |
+| `lastName` | `string` | Yes | Last name |
+| `fromOliver` | `boolean` | No | Legacy migration flag |
+| `phone` | `string` | No | Phone number |
+| `tags` | `string[]` | No | Customer tags |
+| `metadata` | `Record<string, string>[]` | No | Key-value metadata |
+| `notes` | [`CFCustomerNote`](#cfcustomernote)`[]` | No | Customer notes |
+| `billing` | [`CFAddress`](#cfaddress)` \| null` | Yes | Billing address |
+| `shipping` | [`CFAddress`](#cfaddress)` \| null` | Yes | Shipping address |
+| `createdAt` | `string` | No | ISO timestamp of creation |
+| `updatedAt` | `string` | No | ISO timestamp of last update |
+
+### CFActiveCustomer
+
+Extends [`CFCustomer`](#cfcustomer) with an optional runtime `id` alias.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| *(all CFCustomer fields)* | | | |
+| `id` | `string` | No | Alias for `_id` |
+
+### CFCustomerNote
+
+A note attached to a customer.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `createdAt` | `string` | Yes | ISO timestamp of when the note was created |
+| `message` | `string` | Yes | Note content |
+
+---
+
+## Cart Types
+
+### CFActiveCart
+
+The current cart state in the POS session.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `tax` | `number` | No | Total tax amount |
+| `total` | `number` | Yes | Cart total |
+| `subtotal` | `number` | Yes | Subtotal before taxes and discounts |
+| `discount` | [`CFDiscount`](#cfdiscount) | No | Cart-level discount |
+| `customFee` | [`CFCustomFee`](#cfcustomfee)`[]` | No | Cart-level custom fees |
+| `products` | [`CFActiveProduct`](#cfactiveproduct)`[]` | Yes | Products in the cart |
+| `customSales` | [`CFActiveCustomSales`](#cfactivecustomsales)`[]` | No | Custom sale items in the cart |
+| `remainingBalance` | `number` | No | Remaining balance for split payments |
+| `amountToBeCharged` | `number` | Yes | Amount to be charged |
+| `customer` | `Partial<`[`CFCustomer`](#cfcustomer)` \| null> \| null` | No | Customer assigned to the cart |
+| `orderNotes` | `string` | No | Order-level notes |
+| `cartTotal` | `number` | No | Cart total (alternative calculation) |
+| `orderTotal` | `number` | No | Order total (alternative calculation) |
+| `orderId` | `string` | No | Associated order ID (for resumed orders) |
+
+### CFActiveProduct
+
+A product in the active cart.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | Yes | Product identifier |
+| `internalId` | `string` | Yes | Unique cart line-item identifier |
+| `externalId` | `string` | Yes | External product identifier |
+| `productExternalId` | `string` | Yes | External product-level identifier |
+| `variantId` | `string` | Yes | Variant identifier |
+| `name` | `string` | Yes | Product display name |
+| `sku` | `string` | Yes | Stock keeping unit |
+| `price` | `number` | Yes | Unit price |
+| `images` | `string[]` | Yes | Product image URLs |
+| `taxTableId` | `string` | Yes | Tax table identifier |
+| `quantity` | `number` | Yes | Quantity in the cart |
+| `note` | `string` | No | Note for this item |
+| `discount` | [`CFDiscount`](#cfdiscount) | No | Discount applied to this item |
+| `description` | `string` | No | Product description |
+| `longDescription` | `string` | No | Long product description |
+| `shortDescription` | `string` | No | Short product description |
+| `barcodeId` | `string` | No | Barcode identifier |
+| `stock` | `number` | Yes | Current stock level |
+| `allowBackOrder` | `boolean` | No | Whether back-ordering is allowed |
+| `fee` | [`CFCustomFee`](#cfcustomfee) | No | Fee applied to this item |
+| `isUnlimited` | `boolean` | No | Whether stock is unlimited |
+| `attributes` | `string` | No | Serialized variant attributes |
+| `localQuantity` | `number` | No | Local quantity (offline sync) |
+
+### CFActiveCustomSales
+
+A custom sale item in the active cart.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | Yes | Custom sale identifier |
+| `name` | `string` | Yes | Display name |
+| `applyTaxes` | `boolean` | Yes | Whether taxes are applied |
+| `taxTableId` | `string` | No | Tax table identifier |
+| `quantity` | `number` | Yes | Quantity |
+| `price` | `number` | Yes | Unit price |
+| `discount` | `any` | No | Discount applied |
+| `fee` | `any` | No | Fee applied |
+
+---
+
+## Product Types
+
+### CFProduct
+
+A product from the catalog.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Unique product identifier |
+| `companyId` | `string` | No | Company identifier |
+| `externalId` | `string` | No | External system identifier |
+| `taxTable` | `string` | Yes | Tax table identifier |
+| `name` | `string` | Yes | Product name |
+| `description` | `string` | No | Full description |
+| `shortDescription` | `string` | No | Short description |
+| `images` | `string[]` | No | Image URLs |
+| `categories` | `string[]` | Yes | Category IDs this product belongs to |
+| `attributes` | `{ name: string; values: string[] }[]` | Yes | Product attributes and their possible values |
+| `tags` | `string[]` | No | Product tags |
+| `supplier` | `string` | No | Supplier name |
+| `sku` | `string` | No | Stock keeping unit |
+| `productType` | [`CFProductType`](#cfproducttype) | Yes | `"simple"` or `"variable"` |
+| `variants` | [`CFProductVariant`](#cfproductvariant)`[]` | Yes | Product variants |
+| `minPrice` | `string` | No | Minimum variant price |
+| `maxPrice` | `string` | No | Maximum variant price |
+| `status` | `string` | No | Product status |
+| `isDeleted` | `boolean` | No | Soft-delete flag |
+
+### CFProductVariant
+
+A specific variant of a product.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Unique variant identifier |
+| `sku` | `string` | Yes | Stock keeping unit |
+| `price` | `string` | Yes | Regular price |
+| `salePrice` | `string` | Yes | Sale price |
+| `isOnSale` | `boolean` | Yes | Whether the variant is on sale |
+| `barcode` | `string` | No | Barcode value |
+| `costPrice` | `string` | No | Cost price |
+| `manageStock` | `boolean` | Yes | Whether stock is tracked |
+| `externalId` | `string` | No | External system identifier |
+| `inventory` | [`CFInventory`](#cfinventory)`[]` | No | Stock levels per outlet |
+| `allowBackorder` | `boolean` | No | Whether back-ordering is allowed |
+| `images` | `string[]` | No | Variant-specific image URLs |
+| `attributes` | `{ name: string; value?: string }[]` | Yes | Attribute values for this variant |
+| `metadata` | `{ key: string; value: string }[]` | No | Key-value metadata |
+
+### CFCategory
+
+A product category.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Unique category identifier |
+| `companyId` | `string` | Yes | Company identifier |
+| `externalId` | `string` | Yes | External system identifier |
+| `name` | `string` | Yes | Category name |
+| `parentId` | `string \| null` | Yes | Parent category ID (`null` for root categories) |
+| `__v` | `number` | No | Version key |
+
+### CFInventory
+
+Stock level for a variant at a specific outlet.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `outletId` | `string` | Yes | Outlet identifier |
+| `stock` | `number \| null` | No | Current stock level |
+| `_id` | `string` | No | Record identifier |
+
+---
+
+## Refund Types
+
+### CFRefundItem
+
+A refund record attached to an order.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `lineItems` | [`CFRefundedLineItem`](#cfrefundedlineitem)`[]` | Yes | Refunded line items |
+| `customSales` | [`CFRefundedCustomSale`](#cfrefundedcustomsale)`[]` | Yes | Refunded custom sales |
+| `cartFees` | [`CFCartFeeItem`](#cfcartfeeitem)`[]` | Yes | Refunded cart fees |
+| `tips` | [`CFRefundedTipPayment`](#cfrefundedtippayment)`[]` | Yes | Refunded tips |
+| `refundedBy` | `string` | Yes | User who processed the refund |
+| `timestamp` | `string \| undefined` | Yes | ISO timestamp of the refund |
+| `summary` | [`CFSummary`](#cfsummary) | No | Refund summary totals |
+| `refundPayment` | [`CFPaymentMethod`](#cfpaymentmethod)`[]` | Yes | Refund payment methods |
+| `balance` | `string` | No | Remaining balance after refund |
+| `receiptId` | `string` | No | Refund receipt identifier |
+| `currency` | `string` | No | Currency code |
+
+### CFRefundedTipPayment
+
+A tip that was refunded.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `amount` | `string` | Yes | Refunded tip amount |
+| `percentage` | `number` | Yes | Original tip percentage |
+| `transactionId` | `string` | Yes | Original transaction identifier |
+| `tipTo` | `string` | Yes | Original tip recipient |
+
+---
+
+## System Types
+
+### CFActiveUser
+
+The currently active user in the POS session.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | Yes | User identifier |
+| `_id` | `string` | No | Alternative user identifier |
+| `firstName` | `string` | No | First name |
+| `lastName` | `string` | No | Last name |
+| `email` | `string` | No | Email address |
+| `phone` | `string` | No | Phone number |
+| `pincode` | `string` | No | PIN code for POS authentication |
+| `role` | [`CFActiveUserRole`](#cfactiveuserrole)` \| { _id: string; name: string }` | Yes | User's role |
+| `outlets` | `string[] \| { _id: string }[]` | No | Outlets the user has access to |
+| `type` | [`CFUserTypes`](#cfusertypes) | No | User type |
+| `companies` | `any` | No | Companies the user belongs to |
+
+### CFActiveUserRole
+
+A user role with permissions.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | No | Role identifier |
+| `_id` | `string` | No | Alternative role identifier |
+| `companyId` | `string` | No | Company identifier |
+| `name` | `string` | Yes | Role name |
+| `permissions` | `{ category, label?, name, value, permissionId?, subCategory? }[]` | Yes | Permission definitions |
+
+### CFActiveOutlet
+
+An outlet (store location) in the POS session.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | Yes | Outlet identifier |
+| `_id` | `string` | No | Alternative outlet identifier |
+| `address` | `string` | Yes | Street address line 1 |
+| `address2` | `string` | Yes | Street address line 2 |
+| `city` | `string` | Yes | City |
+| `state` | `string` | Yes | State or province |
+| `country` | `string` | No | Country |
+| `taxId` | `string` | Yes | Tax identifier |
+| `postCode` | `string` | No | Postal code |
+| `name` | `string` | No | Outlet name |
+| `stripe` | `{ locationId: string }` | No | Stripe terminal location |
+| `sequenceNumber` | `number` | Yes | Outlet sequence number |
+| `stripeAccountId` | `string` | Yes | Stripe account identifier |
+
+### CFActiveStation
+
+A POS station (register/terminal).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Station identifier |
+| `sequenceNumber` | `number` | No | Station sequence number |
+| `name` | `string` | Yes | Station name |
+| `status` | `string` | Yes | Station status |
+| `buildSrcId` | `string` | No | Build source identifier |
+| `buildVersion` | `string` | No | Build version |
+| `publishBuildId` | `string` | No | Published build identifier |
+| `createdAt` | `string` | No | ISO timestamp of creation |
+| `updatedAt` | `string` | No | ISO timestamp of last update |
+| `stripeTerminalId` | `string` | No | Stripe terminal identifier |
+
+### CFActiveCompany
+
+The active company in the POS session.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | No | Company identifier |
+| `name` | `string` | No | Company name |
+| `logo` | `string` | No | Logo URL |
+| `settings` | `any` | No | Company settings |
+
+### CFPosDataItem
+
+POS context attached to an order.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `outlet` | `string` | Yes | Outlet identifier |
+| `station` | `string` | Yes | Station identifier |
+| `employee` | `string \| { _id?: string; firstName: string; lastName: string }` | Yes | Employee who created the order |
+
+### CFOrderNote
+
+A note attached to an order.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `externalId` | `string` | No | External note identifier |
+| `author` | `string` | No | Note author |
+| `note` | `string` | No | Note content |
+| `customerNote` | `boolean` | No | Whether this is a customer-facing note |
+| `addedByUser` | `string` | No | User who added the note |
+| `dateCreated` | `string` | No | ISO timestamp of when the note was created |
+
+---
+
+## Address & Metadata
+
+### CFAddress
+
+A postal address used for billing or shipping.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `firstName` | `string` | Yes | First name |
+| `lastName` | `string` | Yes | Last name |
+| `company` | `string \| null` | No | Company name |
+| `city` | `string` | Yes | City |
+| `postCode` | `string` | Yes | Postal / ZIP code |
+| `province` | `string` | No | Province |
+| `state` | `string` | No | State |
+| `country` | `string` | No | Country |
+| `address1` | `string` | Yes | Address line 1 |
+| `address2` | `string` | Yes | Address line 2 |
+
+### CFMetadataItem
+
+A key-value metadata pair.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `key` | `string` | Yes | Metadata key |
+| `value` | `string` | Yes | Metadata value |
+
+### CFTax
+
+A tax entry applied to an item or summary.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | Yes | Tax identifier |
+| `name` | `string` | Yes | Tax name |
+| `percentage` | `number` | Yes | Tax rate percentage |
+| `amount` | `string` | Yes | Calculated tax amount |
+| `taxTableName` | `string` | Yes | Name of the tax table |
+| `taxTableId` | `string` | Yes | Tax table identifier |
+
+---
+
+## Context Types
+
+### CFContextRender
+
+Context information for the Render (POS terminal) environment.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `userId` | `string \| null` | Yes | Current user ID |
+| `companyId` | `string \| null` | Yes | Current company ID |
+| `companyName` | `string \| null` | Yes | Current company name |
+| `deviceId` | `string \| null` | Yes | Device identifier |
+| `stationId` | `string \| null` | Yes | Station ID |
+| `stationName` | `string \| null` | Yes | Station name |
+| `outletId` | `string \| null` | Yes | Outlet ID |
+| `outletName` | `string \| null` | Yes | Outlet name |
+| `buildId` | `string \| null` | Yes | Build ID |
+| `buildName` | `string \| null` | Yes | Build name |
+| `buildVersion` | `string \| null` | Yes | Build version |
+| `buildSourceId` | `string \| null` | Yes | Build source ID |
+| `buildIsPremium` | `boolean` | Yes | Whether the build is premium |
+| `isOffline` | `boolean` | Yes | Whether the device is offline |
+| `user` | `Record<string, any> \| null` | Yes | Full user object |
+| `company` | `Record<string, any> \| null` | Yes | Full company object (without settings) |
+| `station` | `Record<string, any> \| null` | Yes | Full station object |
+| `outlet` | `Record<string, any> \| null` | Yes | Full outlet object |
+| `timestamp` | `string` | Yes | ISO timestamp |
+
+### CFContextManage
+
+Context information for the Manage (BuilderHub dashboard) environment.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `user` | `any` | Yes | Current user object |
+| `company` | `any` | Yes | Current company object |
+| `menuItem` | `any` | No | Active menu item |
+| `extensionId` | `string` | Yes | Extension identifier |
+| `outlets` | `any[]` | No | Available outlets |
+| `timestamp` | `string` | Yes | ISO timestamp |
+
+### CFOutletInfo
+
+Simplified outlet information in the Manage context.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | No | Outlet identifier |
+| `id` | `string` | No | Alternative outlet identifier |
+| `name` | `string` | Yes | Outlet name |
+| `address` | `string \| { address1?, address2?, city?, country?, state?, postCode? }` | No | Address (string or structured object) |
+| `city` | `string` | No | City |
+| `state` | `string` | No | State |
+| `country` | `string` | No | Country |
+
+### CFProjectName
+
+Type alias: `"Render" | "Manage"` -- identifies which host environment is active.
+
+### CFContext
+
+Type alias for [`CFContextRender`](#cfcontextrender). Kept for backward compatibility.

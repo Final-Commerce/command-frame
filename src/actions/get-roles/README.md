@@ -24,11 +24,11 @@ interface GetRolesResponse {
 }
 ```
 
-#### `roles` (CFActiveUserRole[])
+#### `roles` ([CFActiveUserRole](../../types/README.md#cfactiveuserrole)[])
 
 Array of role objects. Each role includes its name, company ID, and a full list of granular permissions grouped by category and sub-category.
 
-**Tip:** You can import the `CFActiveUserRole` type directly from the library:
+**Tip:** You can import the [`CFActiveUserRole`](../../types/README.md#cfactiveuserrole) type directly from the library:
 ```typescript
 import { type CFActiveUserRole } from '@final-commerce/command-frame';
 ```
