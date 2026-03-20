@@ -29,6 +29,9 @@ import type {
     TapToPayPayment,
     TerminalPayment,
     VendaraPayment,
+    ExtensionPayment,
+    RedeemPayment,
+    AddNonRevenueItem,
     AddCustomerNote,
     RemoveCustomerFromCart,
     GoToStationHome,
@@ -95,6 +98,9 @@ export interface RenderProviderActions {
     tapToPayPayment: TapToPayPayment;
     terminalPayment: TerminalPayment;
     vendaraPayment: VendaraPayment;
+    extensionPayment: ExtensionPayment;
+    redeemPayment: RedeemPayment;
+    addNonRevenueItem: AddNonRevenueItem;
     addCustomerNote: AddCustomerNote;
     removeCustomerFromCart: RemoveCustomerFromCart;
     goToStationHome: GoToStationHome;

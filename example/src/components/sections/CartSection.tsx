@@ -14,6 +14,14 @@ export function CartSection({ isInIframe }: CartSectionProps) {
   const [applyTaxes, setApplyTaxes] = useState<boolean>(false);
   const [customSaleLoading, setCustomSaleLoading] = useState(false);
   const [customSaleResponse, setCustomSaleResponse] = useState<string>('');
+
+  // Non-revenue line (gift card load / liability) — same wire extensions use
+  const [nrId, setNrId] = useState<string>('gc-row-001');
+  const [nrAmount, setNrAmount] = useState<string>('25');
+  const [nrLabel, setNrLabel] = useState<string>('Gift card load');
+  const [nrMetadataJson, setNrMetadataJson] = useState<string>('{"customTableId":"cards","cardName":"Demo"}');
+  const [nrLoading, setNrLoading] = useState(false);
+  const [nrResponse, setNrResponse] = useState<string>('');
   
   const [addToCartLoading, setAddToCartLoading] = useState(false);
   const [addToCartResponse, setAddToCartResponse] = useState<string>('');
@@ -185,6 +193,83 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             data={customSaleResponse}
             title={customSaleResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
+        )}
+      </CommandSection>
+
+      {/* Add non-revenue item (extension → host cart) */}
+      <CommandSection title="Add non-revenue item (gift card load)">
+        <p className="section-description">
+          Calls <code>addNonRevenueItem</code> — same API extensions use to add a liability line (e.g. gift card purchase).
+          Cart total updates; complete checkout from the <strong>Payments</strong> tab (e.g. Cash Payment).
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>id (custom table row / unique key):</label>
+            <input value={nrId} onChange={(e) => setNrId(e.target.value)} placeholder="e.g. Mongo id or row id" />
+          </div>
+          <div className="form-field">
+            <label>amount:</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={nrAmount}
+              onChange={(e) => setNrAmount(e.target.value)}
+            />
+          </div>
+          <div className="form-field">
+            <label>label (optional):</label>
+            <input value={nrLabel} onChange={(e) => setNrLabel(e.target.value)} />
+          </div>
+          <div className="form-field">
+            <label>metadata JSON (optional):</label>
+            <textarea
+              rows={3}
+              value={nrMetadataJson}
+              onChange={(e) => setNrMetadataJson(e.target.value)}
+              placeholder='{"customTableId":"..."}'
+              style={{ width: '100%', fontFamily: 'monospace', fontSize: '12px' }}
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setNrResponse('Error: Not running in iframe');
+              return;
+            }
+            setNrLoading(true);
+            setNrResponse('');
+            try {
+              let metadata: Record<string, unknown> | undefined;
+              const trimmed = nrMetadataJson.trim();
+              if (trimmed) {
+                metadata = JSON.parse(trimmed) as Record<string, unknown>;
+              }
+              const amount = parseFloat(nrAmount);
+              if (!nrId.trim()) throw new Error('id is required');
+              if (!Number.isFinite(amount) || amount <= 0) throw new Error('amount must be a positive number');
+
+              const result = await command.addNonRevenueItem({
+                id: nrId.trim(),
+                amount,
+                ...(nrLabel.trim() ? { label: nrLabel.trim() } : {}),
+                ...(metadata ? { metadata } : {}),
+              });
+              setNrResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setNrResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setNrLoading(false);
+            }
+          }}
+          disabled={nrLoading}
+          className="btn btn--primary"
+        >
+          {nrLoading ? 'Adding…' : 'Add non-revenue to cart'}
+        </button>
+        {nrResponse && (
+          <JsonViewer data={nrResponse} title={nrResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
@@ -447,7 +532,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       {/* Get Current Cart */}
       <CommandSection title="Get Current Cart">
         <p className="section-description">
-          Retrieves the complete current cart object including products, custom sales, totals, discounts, fees, and customer information.
+          Retrieves the complete current cart object including products, custom sales, non-revenue lines, totals, discounts, fees, and customer information.
         </p>
         <button
           onClick={async () => {

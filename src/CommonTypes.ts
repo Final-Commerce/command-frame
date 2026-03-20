@@ -209,6 +209,8 @@ export interface CFSummary {
     taxes: CFTax[];
     tip?: CFTip | null;
     isTaxInclusive: boolean;
+    /** Portion of order total that is non-revenue (e.g. gift card load), same string money format as `total` */
+    nonRevenueTotal?: string;
 }
 
 export interface CFCartDiscountItem {
@@ -386,6 +388,8 @@ export interface CFOrder {
     shipping: CFAddress | null;
     lineItems: CFLineItem[];
     customSales: CFCustomSale[];
+    /** Gift card / liability purchase lines (not product revenue) */
+    nonRevenueItems?: CFNonRevenueItem[];
     refund?: CFRefundItem[];
     balance: string;
     signature?: string | null;
@@ -473,6 +477,16 @@ export interface CFActiveCustomSales {
     fee?: any;
 }
 
+/** Non-revenue cart line (e.g. gift card load) — aligned with Render NonRevenueItem */
+export interface CFNonRevenueItem {
+    id: string;
+    amount: number | string;
+    label?: string;
+    metadata?: Record<string, unknown>;
+    applyTaxes?: boolean;
+    taxTableId?: string;
+}
+
 export interface CFActiveCart extends CFActiveEntity {
     tax?: number;
     total: number;
@@ -481,6 +495,8 @@ export interface CFActiveCart extends CFActiveEntity {
     customFee?: CFCustomFee[];
     products: CFActiveProduct[];
     customSales?: CFActiveCustomSales[];
+    /** Gift card / liability lines — included in cart total */
+    nonRevenueItems?: CFNonRevenueItem[];
     remainingBalance?: number;
     amountToBeCharged: number;
     customer?: Partial<CFCustomer | null> | null;
