@@ -32,7 +32,7 @@ interface GetCustomTableFieldsResponse {
 
 Indicates whether the fields were successfully retrieved.
 
-#### `fields` (CFCustomTableField[])
+#### `fields` ([CFCustomTableField](../../types/README.md#cfcustomtablefield)[])
 
 An array of field definition objects. Each field has the following structure:
 

@@ -13,8 +13,26 @@ The library provides three main capabilities:
 | **Commands** | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call |
 | **Pub/Sub** | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted) |
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
+| **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
 
 ## Installation
+
+### From npm (public registry)
+
+```bash
+npm install @final-commerce/command-frame
+```
+
+### From GitHub Packages
+
+To install from GitHub Packages, add this to your project's `.npmrc`:
+
+```
+@final-commerce:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+Set `NODE_AUTH_TOKEN` to a GitHub personal access token with `read:packages` scope, then install as usual:
 
 ```bash
 npm install @final-commerce/command-frame
@@ -91,6 +109,39 @@ hooks.register('cart', async (event, hostCommands) => {
 // Unregister when no longer needed
 hooks.unregister('my-extension:cart-log');
 ```
+
+## Host-initiated extension refunds (redeem / gift card)
+
+**Extensions that accept redeem / extension payments must implement a refund listener.** When staff refund an order paid with `paymentType: "redeem"`, Render (host) `postMessage`s into your iframe **before** it records the refund locally. If your app does not handle this message, redeem refunds will time out or fail.
+
+### What you should do
+
+1. **Recommended:** call **`installExtensionRefundListener`** once when your extension boots (e.g. next to your `RenderClient` setup). Pass an `async` handler that calls your provider (gift card API, wallet, etc.) and returns an **`ExtensionRefundResponse`** (`success`, optional `error`, optional `extensionTransactionId` for receipts / support).
+2. The helper validates `event.source === window.parent`, parses params, and replies with the same **`PostMessageResponse`** envelope as the rest of Command Frame (`requestId`, `success`, `data` / `error`).
+3. **Alternative:** implement a `window` `message` listener yourself using the same contract (action name: **`extensionRefundRequest`**, or import **`EXTENSION_REFUND_REQUEST_ACTION`** from this package).
+
+Exported APIs: `installExtensionRefundListener`, `EXTENSION_REFUND_REQUEST_ACTION`, types **`ExtensionRefundParams`** / **`ExtensionRefundResponse`**.
+
+```typescript
+import {
+    installExtensionRefundListener,
+    type ExtensionRefundParams,
+    type ExtensionRefundResponse
+} from '@final-commerce/command-frame';
+
+const unsubscribe = installExtensionRefundListener(async (params: ExtensionRefundParams): Promise<ExtensionRefundResponse> => {
+    // params.paymentType === "redeem", params.amount in major currency units, params.saleId, params.processor, etc.
+    const ok = await myGiftCardProvider.refund(params);
+    return ok
+        ? { success: true, extensionTransactionId: ok.providerRefundId }
+        : { success: false, error: 'Refund declined' };
+});
+
+// on teardown (optional)
+// unsubscribe();
+```
+
+**Full protocol, edge cases, and manual handling:** **[Extension refund documentation](./src/actions/extension-refund/README.md)**.
 
 ## Development & Testing
 

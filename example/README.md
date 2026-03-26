@@ -23,10 +23,9 @@ cd example
 
 ```bash
 npm install
-npm install @final-commerce/command-frame
 ```
 
-**Note:** This package is available on the public NPM registry.
+The example’s `package.json` uses `"@final-commerce/command-frame": "file:.."` so it always resolves the **parent** `command-frame` package (run `npm run build` in the repo root after changing the library). For published versions only, you can switch to a semver range from npm instead.
 
 3. Start the development server:
 ```bash
@@ -122,6 +121,10 @@ await command.terminalPayment();
 await command.vendaraPayment();
 await command.partialPayment({ amount: 25.00, isPercent: false });
 
+// Extension / redeem payments (Render host implements these; mocks when not in iframe)
+await command.redeemPayment({ amount: 25, processor: 'giftCard', label: 'Gift card' });
+await command.extensionPayment({ paymentType: 'redeem', amount: 25, processor: 'giftCard' });
+
 // Refund Actions
 await command.initiateRefund({ orderId: 'order-123' });
 
@@ -152,6 +155,14 @@ await command.triggerZapierWebhook({
     triggerUrl: 'https://hooks.zapier.com/hooks/catch/123456/abcdef'
 });
 ```
+
+## Host-initiated extension refunds (mock, without Render)
+
+Refunding a **redeem** payment is started by the **host** (Render), not by `command.redeemPayment`. The host `postMessage`s into your iframe; your extension must implement **`installExtensionRefundListener`** (see the main command-frame README).
+
+- **In this example app**, `src/main.tsx` registers a **mock** listener that always succeeds after a short delay, so you can verify the wire protocol locally.
+- **Without running Render:** start the dev server, then open **`http://localhost:5179/host-simulator.html`**. That page embeds the example in an iframe (like Render) and sends a fake `extensionRefundRequest`. You should see a JSON reply in the log and a matching log line in the iframe console.
+- **Full flow:** embed the example (or your extension) in Render’s flow iframe and run a real redeem sale + refund in the POS.
 
 ## Testing in an Iframe
 

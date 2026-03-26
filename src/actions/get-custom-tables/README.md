@@ -22,7 +22,7 @@ interface GetCustomTablesResponse {
 
 Indicates whether the custom tables were successfully retrieved.
 
-#### `customTables` (CFCustomTable[])
+#### `customTables` ([CFCustomTable](../../types/README.md#cfcustomtable)[])
 
 An array of custom table objects. Each custom table has the following structure:
 

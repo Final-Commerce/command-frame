@@ -22,8 +22,8 @@ interface CustomerNoteDeletedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `customer` | `CFCustomer` | The customer object with updated notes array (note removed). |
-| `note` | `CFCustomerNote` | The deleted note object with `createdAt` and `message` fields. |
+| `customer` | [`CFCustomer`](../../../types/README.md#cfcustomer) | The customer object with updated notes array (note removed). |
+| `note` | [`CFCustomerNote`](../../../types/README.md#cfcustomernote) | The deleted note object with `createdAt` and `message` fields. |
 
 ## Example Usage
 
@@ -57,8 +57,8 @@ topicPublisher.publish('customers', 'customer-note-deleted', {
 
 ## Related Types
 
-- `CFCustomer` - Customer type from CommonTypes
-- `CFCustomerNote` - Customer note type from CommonTypes
+- [`CFCustomer`](../../../types/README.md#cfcustomer) - Customer type from CommonTypes
+- [`CFCustomerNote`](../../../types/README.md#cfcustomernote) - Customer note type from CommonTypes
 - `CustomerNoteDeletedPayload` - Event payload type
 - `CustomerNoteDeletedEvent` - Full event type with topic, type, data, and timestamp
 

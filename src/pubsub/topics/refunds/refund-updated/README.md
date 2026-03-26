@@ -22,7 +22,7 @@ interface RefundUpdatedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `refund` | `CFRefundItem` | The updated refund object. |
+| `refund` | [`CFRefundItem`](../../../types/README.md#cfrefunditem) | The updated refund object. |
 | `orderId` | `string` | The ID of the order this refund is associated with. |
 
 ## Example Usage
@@ -55,7 +55,7 @@ topicPublisher.publish('refunds', 'refund-updated', {
 
 ## Related Types
 
-- `CFRefundItem` - Refund type from CommonTypes
+- [`CFRefundItem`](../../../types/README.md#cfrefunditem) - Refund type from CommonTypes
 - `RefundUpdatedPayload` - Event payload type
 - `RefundUpdatedEvent` - Full event type with topic, type, data, and timestamp
 

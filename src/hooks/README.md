@@ -103,8 +103,26 @@ The callback is **serialized** via `.toString()` and **reconstructed** in the ho
 
 - **Allowed:** Use `event`, `hostCommands`, and `callCommand` only.
 - **Not allowed:** Closures, imports, or references to extension-local variables. These will cause `ReferenceError` at runtime (caught and logged by the host).
+- **Not allowed:** Module-only globals such as `import.meta`, dynamic `import()`, or top-level `await`. The host runs the reconstructed function in global scope (not an ES module), so these will throw `"Cannot use 'import.meta' outside a module"` and the hook will **not** be registered.
 
 If you need configuration values (e.g. table name, webhook URL), encode them as literals inside the function body.
+
+### Common mistake: dev-only logging with `import.meta.env.DEV`
+
+```typescript
+// BAD - import.meta is not available in the host's new Function() context
+hooks.register('cart', async (event, hostCommands) => {
+    if (import.meta.env.DEV) {
+        console.log('[cart hook]', event);
+    }
+    await hostCommands.upsertCustomTableData({ ... });
+}, { hookId: 'my-ext:cart' });
+
+// GOOD - no module-only globals; dev logging removed or moved outside the callback
+hooks.register('cart', async (event, hostCommands) => {
+    await hostCommands.upsertCustomTableData({ ... });
+}, { hookId: 'my-ext:cart' });
+```
 
 ## Options Type
 

@@ -17,7 +17,7 @@ interface GetOutletsResponse {
 }
 ```
 
-#### `outlets` (CFOutletInfo[])
+#### `outlets` ([CFOutletInfo](../../types/README.md#cfoutletinfo)[])
 
 Array of outlet objects. Each outlet contains:
 

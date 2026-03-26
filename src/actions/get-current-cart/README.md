@@ -15,7 +15,7 @@ None.
 | `success`   | `boolean` | `true` if the cart was retrieved successfully. |
 | `cart`      | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
 
-**Tip:** You can import `CFActiveCart`, `CFActiveProduct`, and `CFActiveCustomSales` types directly from the library:
+**Tip:** You can import [`CFActiveCart`](../../types/README.md#cfactivecart), [`CFActiveProduct`](../../types/README.md#cfactiveproduct), and [`CFActiveCustomSales`](../../types/README.md#cfactivecustomsales) types directly from the library:
 ```typescript
 import { type CFActiveCart, type CFActiveProduct } from '@final-commerce/command-frame';
 ```

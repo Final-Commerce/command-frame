@@ -2,6 +2,7 @@
 import { exampleFunction } from "./actions/example-function/action";
 import { getProducts } from "./actions/get-products/action";
 import { addCustomSale } from "./actions/add-custom-sale/action";
+import { addNonRevenueItem } from "./actions/add-non-revenue-item/action";
 import { getCustomers } from "./actions/get-customers/action";
 import { assignCustomer } from "./actions/assign-customer/action";
 import { addCustomer } from "./actions/add-customer/action";
@@ -30,6 +31,8 @@ import { cashPayment } from "./actions/cash-payment/action";
 import { tapToPayPayment } from "./actions/tap-to-pay-payment/action";
 import { terminalPayment } from "./actions/terminal-payment/action";
 import { vendaraPayment } from "./actions/vendara-payment/action";
+import { extensionPayment } from "./actions/extension-payment/action";
+import { redeemPayment } from "./actions/redeem-payment/action";
 // Customer Actions
 import { addCustomerNote } from "./actions/add-customer-note/action";
 import { removeCustomerFromCart } from "./actions/remove-customer-from-cart/action";
@@ -90,6 +93,7 @@ export const command = {
     generateAPIKey,
     getProducts,
     addCustomSale,
+    addNonRevenueItem,
     getCustomers,
     assignCustomer,
     addCustomer,
@@ -119,6 +123,8 @@ export const command = {
     tapToPayPayment,
     terminalPayment,
     vendaraPayment,
+    extensionPayment,
+    redeemPayment,
     // Customer Actions
     addCustomerNote,
     removeCustomerFromCart,
@@ -178,6 +184,12 @@ export type { GenerateAPIKey, GenerateAPIKeyParams, GenerateAPIKeyResponse } fro
 export type { GetProducts, GetProductsParams, GetProductsResponse } from "./actions/get-products/types";
 
 export type { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from "./actions/add-custom-sale/types";
+
+export type {
+    AddNonRevenueItem,
+    AddNonRevenueItemParams,
+    AddNonRevenueItemResponse
+} from "./actions/add-non-revenue-item/types";
 
 export type { GetCustomers, GetCustomersParams, GetCustomersResponse } from "./actions/get-customers/types";
 
@@ -252,6 +264,15 @@ export type { CashPayment, CashPaymentParams, CashPaymentResponse } from "./acti
 export type { TapToPayPayment, TapToPayPaymentParams, TapToPayPaymentResponse } from "./actions/tap-to-pay-payment/types";
 export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } from "./actions/terminal-payment/types";
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
+export type {
+    ExtensionPayment,
+    ExtensionPaymentParams,
+    ExtensionPaymentResponse
+} from "./actions/extension-payment/types";
+export type { RedeemPayment, RedeemPaymentParams, RedeemPaymentResponse } from "./actions/redeem-payment/types";
+export { EXTENSION_REFUND_REQUEST_ACTION } from "./actions/extension-refund/constants";
+export { installExtensionRefundListener } from "./actions/extension-refund/extension-refund-listener";
+export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/extension-refund/types";
 // Customer Actions
 export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
 export type { RemoveCustomerFromCart, RemoveCustomerFromCartResponse } from "./actions/remove-customer-from-cart/types";

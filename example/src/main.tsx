@@ -4,10 +4,23 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { renderClient, manageClient } from '@final-commerce/command-frame';
+import { renderClient, manageClient, installExtensionRefundListener } from '@final-commerce/command-frame';
 import App from './App';
 import { ManageApp } from './manage/ManageApp';
 import './index.css';
+
+/**
+ * Mock host→iframe refund handler for local testing. In production Render drives this via postMessage.
+ * Without Render: run the example dev server and open /host-simulator.html (parent posts a fake refund request).
+ */
+installExtensionRefundListener(async params => {
+    console.log('[example] extension refund (mock):', params);
+    await new Promise(r => setTimeout(r, 200));
+    return {
+        success: true,
+        extensionTransactionId: `example-mock-refund-${Date.now()}`
+    };
+});
 
 const AutoRouter = () => {
   const navigate = useNavigate();

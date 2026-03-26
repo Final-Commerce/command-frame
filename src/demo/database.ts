@@ -630,6 +630,7 @@ export let MOCK_CART: CFActiveCart = {
     remainingBalance: 0,
     products: [],
     customSales: [],
+    nonRevenueItems: [],
     customer: null
 };
 
@@ -642,6 +643,7 @@ export const resetMockCart = () => {
         remainingBalance: 0,
         products: [],
         customSales: [],
+        nonRevenueItems: [],
         customer: null
     };
 };
