@@ -21,7 +21,7 @@ interface CartFeeAddedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `fee` | [`CFCustomFee`](../../../types/README.md#cfcustomfee) | The fee object that was added to the cart with `label`, `amount`, `isPercent`, and `applyTaxes` fields. |
+| `fee` | [`CFCustomFee`](../../../../types/README.md#cfcustomfee) | The fee object that was added to the cart with `label`, `amount`, `isPercent`, and `applyTaxes` fields. |
 
 ## Example Usage
 
@@ -52,7 +52,7 @@ topicPublisher.publish('cart', 'cart-fee-added', {
 
 ## Related Types
 
-- [`CFCustomFee`](../../../types/README.md#cfcustomfee) - Fee type from CommonTypes
+- [`CFCustomFee`](../../../../types/README.md#cfcustomfee) - Fee type from CommonTypes
 - `CartFeeAddedPayload` - Event payload type
 - `CartFeeAddedEvent` - Full event type with topic, type, data, and timestamp
 

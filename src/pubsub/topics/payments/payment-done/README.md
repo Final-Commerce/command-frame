@@ -23,8 +23,8 @@ interface PaymentDonePayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `payment` | [`CFPaymentMethod`](../../../types/README.md#cfpaymentmethod) | The payment method object with transaction details, payment type, amount, timestamp, etc. |
-| `order` | [`CFOrder`](../../../types/README.md#cforder) | The order object associated with this payment. |
+| `payment` | [`CFPaymentMethod`](../../../../types/README.md#cfpaymentmethod) | The payment method object with transaction details, payment type, amount, timestamp, etc. |
+| `order` | [`CFOrder`](../../../../types/README.md#cforder) | The order object associated with this payment. |
 | `amount` | `string` | The payment amount as a string. |
 
 ## Example Usage
@@ -60,8 +60,8 @@ topicPublisher.publish('payments', 'payment-done', {
 
 ## Related Types
 
-- [`CFPaymentMethod`](../../../types/README.md#cfpaymentmethod) - Payment method type from CommonTypes
-- [`CFOrder`](../../../types/README.md#cforder) - Order type from CommonTypes
+- [`CFPaymentMethod`](../../../../types/README.md#cfpaymentmethod) - Payment method type from CommonTypes
+- [`CFOrder`](../../../../types/README.md#cforder) - Order type from CommonTypes
 - `PaymentDonePayload` - Event payload type
 - `PaymentDoneEvent` - Full event type with topic, type, data, and timestamp
 

@@ -22,7 +22,7 @@ interface ProductDeletedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `product` | [`CFActiveProduct`](../../../types/README.md#cfactiveproduct) | The product object that was removed from the cart. |
+| `product` | [`CFActiveProduct`](../../../../types/README.md#cfactiveproduct) | The product object that was removed from the cart. |
 | `internalId` | `string` | The internal ID of the product that was removed. |
 
 ## Example Usage
@@ -55,7 +55,7 @@ topicPublisher.publish('cart', 'product-deleted', {
 
 ## Related Types
 
-- [`CFActiveProduct`](../../../types/README.md#cfactiveproduct) - Product type from CommonTypes
+- [`CFActiveProduct`](../../../../types/README.md#cfactiveproduct) - Product type from CommonTypes
 - `ProductDeletedPayload` - Event payload type
 - `ProductDeletedEvent` - Full event type with topic, type, data, and timestamp
 
