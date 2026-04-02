@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { manageClient } from "@final-commerce/command-frame";
 import { JsonViewer } from "../components/JsonViewer";
 import "../App.css";
@@ -123,6 +123,31 @@ export function ManageApp() {
     const [ordersStatusFilter, setOrdersStatusFilter] = useState<string>("all");
     const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
     const [ordersFetched, setOrdersFetched] = useState(false);
+
+    // Optional Manage extension commands (showNotification, navigateTo, etc.)
+    const [notificationMessage, setNotificationMessage] = useState("Hello from the Manage example");
+    const [notificationType, setNotificationType] = useState<"success" | "error" | "info" | "warning">("info");
+    const [notificationResult, setNotificationResult] = useState<any>(null);
+
+    const [navigateToPath, setNavigateToPath] = useState("/products");
+    const [navigateToResult, setNavigateToResult] = useState<any>(null);
+
+    const [refreshResourceName, setRefreshResourceName] = useState("products");
+    const [refreshResourceResult, setRefreshResourceResult] = useState<any>(null);
+
+    const [mediaSearch, setMediaSearch] = useState("");
+    const [mediaItems, setMediaItems] = useState<any[]>([]);
+    const [mediaResult, setMediaResult] = useState<any>(null);
+
+    const [uploadFilename, setUploadFilename] = useState("");
+    const [uploadMimeType, setUploadMimeType] = useState("");
+    const [uploadBase64, setUploadBase64] = useState("");
+    const [uploadResult, setUploadResult] = useState<any>(null);
+
+    const [taxTables, setTaxTables] = useState<any[]>([]);
+    const [taxTablesFetched, setTaxTablesFetched] = useState(false);
+
+    const [brandingData, setBrandingData] = useState<any>(null);
 
     const isInIframe = window.self !== window.top;
 
@@ -683,6 +708,138 @@ export function ManageApp() {
         }
     };
 
+    /** Uses `call()` so optional Manage extension actions work with typed client. */
+    const handleShowNotification = async () => {
+        setLoading(true);
+        setError("");
+        setNotificationResult(null);
+        try {
+            const result = await manageClient.call("showNotification", {
+                message: notificationMessage,
+                type: notificationType
+            });
+            setNotificationResult(result);
+        } catch (err: any) {
+            setError(err.message || "Error showing notification");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleNavigateTo = async () => {
+        setLoading(true);
+        setError("");
+        setNavigateToResult(null);
+        try {
+            const result = await manageClient.call("navigateTo", { path: navigateToPath });
+            setNavigateToResult(result);
+        } catch (err: any) {
+            setError(err.message || "Error navigating");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRefreshResource = async () => {
+        setLoading(true);
+        setError("");
+        setRefreshResourceResult(null);
+        try {
+            const result = await manageClient.call("refreshResource", { resource: refreshResourceName });
+            setRefreshResourceResult(result);
+        } catch (err: any) {
+            setError(err.message || "Error refreshing resource");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGetMedia = async () => {
+        setLoading(true);
+        setError("");
+        setMediaResult(null);
+        try {
+            const result = await manageClient.call("getMedia", {
+                search: mediaSearch || undefined,
+                page: 1,
+                pageSize: 20
+            });
+            setMediaResult(result);
+            setMediaItems(result?.items ?? []);
+        } catch (err: any) {
+            setError(err.message || "Error fetching media");
+            setMediaItems([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUploadFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const dataUrl = reader.result as string;
+            const base64 = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
+            setUploadBase64(base64);
+            setUploadFilename(file.name);
+            setUploadMimeType(file.type || "application/octet-stream");
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleUploadMedia = async () => {
+        setLoading(true);
+        setError("");
+        setUploadResult(null);
+        try {
+            if (!uploadBase64 || !uploadFilename || !uploadMimeType) {
+                throw new Error("Select a file first (base64 will be filled automatically)");
+            }
+            const result = await manageClient.call("uploadMedia", {
+                base64: uploadBase64,
+                filename: uploadFilename,
+                mimeType: uploadMimeType,
+                folder: "example"
+            });
+            setUploadResult(result);
+        } catch (err: any) {
+            setError(err.message || "Error uploading media");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGetTaxTables = async () => {
+        setLoading(true);
+        setError("");
+        setTaxTablesFetched(false);
+        try {
+            const result = await manageClient.call("getTaxTables");
+            setTaxTables(result?.taxTables ?? []);
+            setTaxTablesFetched(true);
+        } catch (err: any) {
+            setError(err.message || "Error fetching tax tables");
+            setTaxTables([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGetBranding = async () => {
+        setLoading(true);
+        setError("");
+        try {
+            const result = await manageClient.call("getBranding");
+            setBrandingData(result);
+        } catch (err: any) {
+            setError(err.message || "Error fetching branding");
+            setBrandingData(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Styles for selectable cards
     const cardStyle = {
         border: "1px solid #ddd",
@@ -719,7 +876,14 @@ export function ManageApp() {
         { id: "section-update", label: "↳ Update Document" },
         { id: "section-delete", label: "↳ Delete Document" },
         { id: "section-extensions", label: "Custom Extensions" },
-        { id: "section-secrets", label: "Secrets" }
+        { id: "section-secrets", label: "Secrets" },
+        { id: "section-notification", label: "Notification" },
+        { id: "section-navigate-to", label: "Navigate To" },
+        { id: "section-refresh-resource", label: "Refresh Resource" },
+        { id: "section-media", label: "Media" },
+        { id: "section-upload-media", label: "Upload Media" },
+        { id: "section-tax-tables", label: "Tax Tables" },
+        { id: "section-branding", label: "Branding" }
     ];
 
     const scrollToSection = (id: string) => {
@@ -3050,6 +3214,313 @@ export function ManageApp() {
                                         }}
                                     >
                                         Secret saved successfully.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Optional Manage extension commands */}
+                        <h2
+                            id="section-notification"
+                            style={{ marginTop: "32px", marginBottom: "16px", borderBottom: "1px solid #ddd", paddingBottom: "8px" }}
+                        >
+                            Notification (optional host)
+                        </h2>
+                        <div className="command-section">
+                            <div className="command-section__header">
+                                <h3>Show Notification</h3>
+                            </div>
+                            <div className="command-section__content">
+                                <p style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>
+                                    Calls <code>showNotification</code> on the host (toast). Uses MANAGE_MOCKS in standalone mode.
+                                </p>
+                                <div className="form-group" style={{ marginBottom: "12px" }}>
+                                    <label className="form-label">Message:</label>
+                                    <input
+                                        type="text"
+                                        value={notificationMessage}
+                                        onChange={e => setNotificationMessage(e.target.value)}
+                                        className="form-input"
+                                        style={{ width: "100%", padding: "8px", marginTop: "4px" }}
+                                    />
+                                </div>
+                                <div className="form-group" style={{ marginBottom: "12px" }}>
+                                    <label className="form-label">Type:</label>
+                                    <select
+                                        value={notificationType}
+                                        onChange={e =>
+                                            setNotificationType(e.target.value as "success" | "error" | "info" | "warning")
+                                        }
+                                        className="form-input"
+                                        style={{ width: "100%", padding: "8px", marginTop: "4px" }}
+                                    >
+                                        <option value="info">info</option>
+                                        <option value="success">success</option>
+                                        <option value="warning">warning</option>
+                                        <option value="error">error</option>
+                                    </select>
+                                </div>
+                                <button onClick={handleShowNotification} disabled={loading} className="btn btn--primary">
+                                    Show Notification
+                                </button>
+                                {notificationResult && (
+                                    <div style={{ marginTop: "16px" }}>
+                                        <JsonViewer data={JSON.stringify(notificationResult, null, 2)} title="Result" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <h2
+                            id="section-navigate-to"
+                            style={{ marginTop: "32px", marginBottom: "16px", borderBottom: "1px solid #ddd", paddingBottom: "8px" }}
+                        >
+                            Navigate To
+                        </h2>
+                        <div className="command-section">
+                            <div className="command-section__header">
+                                <h3>navigateTo</h3>
+                            </div>
+                            <div className="command-section__content">
+                                <p style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>
+                                    SPA path (host may restrict allowed prefixes). Mock always succeeds.
+                                </p>
+                                <div className="form-group" style={{ marginBottom: "12px" }}>
+                                    <label className="form-label">Path:</label>
+                                    <input
+                                        type="text"
+                                        value={navigateToPath}
+                                        onChange={e => setNavigateToPath(e.target.value)}
+                                        className="form-input"
+                                        placeholder="/products"
+                                        style={{ width: "100%", padding: "8px", marginTop: "4px" }}
+                                    />
+                                </div>
+                                <button onClick={handleNavigateTo} disabled={loading} className="btn btn--primary">
+                                    Navigate To
+                                </button>
+                                {navigateToResult && (
+                                    <div style={{ marginTop: "16px" }}>
+                                        <JsonViewer data={JSON.stringify(navigateToResult, null, 2)} title="Result" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <h2
+                            id="section-refresh-resource"
+                            style={{ marginTop: "32px", marginBottom: "16px", borderBottom: "1px solid #ddd", paddingBottom: "8px" }}
+                        >
+                            Refresh Resource
+                        </h2>
+                        <div className="command-section">
+                            <div className="command-section__header">
+                                <h3>refreshResource</h3>
+                            </div>
+                            <div className="command-section__content">
+                                <p style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>
+                                    Resource key for cache invalidation (e.g. Refine resource name).
+                                </p>
+                                <div className="form-group" style={{ marginBottom: "12px" }}>
+                                    <label className="form-label">Resource:</label>
+                                    <input
+                                        type="text"
+                                        value={refreshResourceName}
+                                        onChange={e => setRefreshResourceName(e.target.value)}
+                                        className="form-input"
+                                        placeholder="products"
+                                        style={{ width: "100%", padding: "8px", marginTop: "4px" }}
+                                    />
+                                </div>
+                                <button onClick={handleRefreshResource} disabled={loading} className="btn btn--primary">
+                                    Refresh Resource
+                                </button>
+                                {refreshResourceResult && (
+                                    <div style={{ marginTop: "16px" }}>
+                                        <JsonViewer data={JSON.stringify(refreshResourceResult, null, 2)} title="Result" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <h2
+                            id="section-media"
+                            style={{ marginTop: "32px", marginBottom: "16px", borderBottom: "1px solid #ddd", paddingBottom: "8px" }}
+                        >
+                            Media
+                        </h2>
+                        <div className="command-section">
+                            <div className="command-section__header">
+                                <h3>getMedia</h3>
+                            </div>
+                            <div className="command-section__content">
+                                <div className="form-group" style={{ marginBottom: "12px" }}>
+                                    <label className="form-label">Search (optional):</label>
+                                    <input
+                                        type="text"
+                                        value={mediaSearch}
+                                        onChange={e => setMediaSearch(e.target.value)}
+                                        className="form-input"
+                                        style={{ width: "100%", padding: "8px", marginTop: "4px" }}
+                                    />
+                                </div>
+                                <button onClick={handleGetMedia} disabled={loading} className="btn btn--primary">
+                                    Get Media
+                                </button>
+                                {mediaResult && (
+                                    <div style={{ marginTop: "16px" }}>
+                                        <JsonViewer data={JSON.stringify(mediaResult, null, 2)} title="Full response" />
+                                    </div>
+                                )}
+                                {mediaItems.length > 0 && (
+                                    <div style={{ marginTop: "16px" }}>
+                                        <p style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>
+                                            <strong>{mediaItems.length} item(s)</strong>
+                                        </p>
+                                        {mediaItems.map((item: any) => (
+                                            <div key={item._id} style={{ ...cardStyle, cursor: "default" }}>
+                                                <strong>{item.filename}</strong>
+                                                <div style={{ fontSize: "11px", color: "#666" }}>{item.mimeType}</div>
+                                                {item.url && (
+                                                    <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: "12px" }}>
+                                                        Open URL
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <h2
+                            id="section-upload-media"
+                            style={{ marginTop: "32px", marginBottom: "16px", borderBottom: "1px solid #ddd", paddingBottom: "8px" }}
+                        >
+                            Upload Media
+                        </h2>
+                        <div className="command-section">
+                            <div className="command-section__header">
+                                <h3>uploadMedia</h3>
+                            </div>
+                            <div className="command-section__content">
+                                <p style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>
+                                    Pick a small file; content is sent as base64 to the host.
+                                </p>
+                                <div className="form-group" style={{ marginBottom: "12px" }}>
+                                    <label className="form-label">File:</label>
+                                    <input type="file" onChange={handleUploadFileChange} style={{ marginTop: "4px" }} />
+                                </div>
+                                {uploadFilename && (
+                                    <p style={{ fontSize: "12px", color: "#666" }}>
+                                        {uploadFilename} ({uploadMimeType}) — base64 length: {uploadBase64.length}
+                                    </p>
+                                )}
+                                <button
+                                    onClick={handleUploadMedia}
+                                    disabled={loading || !uploadBase64}
+                                    className="btn btn--primary"
+                                    style={{ marginTop: "8px" }}
+                                >
+                                    Upload Media
+                                </button>
+                                {uploadResult && (
+                                    <div style={{ marginTop: "16px" }}>
+                                        <JsonViewer data={JSON.stringify(uploadResult, null, 2)} title="Result" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <h2
+                            id="section-tax-tables"
+                            style={{ marginTop: "32px", marginBottom: "16px", borderBottom: "1px solid #ddd", paddingBottom: "8px" }}
+                        >
+                            Tax Tables
+                        </h2>
+                        <div className="command-section">
+                            <div className="command-section__header">
+                                <h3>getTaxTables</h3>
+                            </div>
+                            <div className="command-section__content">
+                                <button onClick={handleGetTaxTables} disabled={loading} className="btn btn--primary">
+                                    Get Tax Tables
+                                </button>
+                                {taxTablesFetched && taxTables.length > 0 && (
+                                    <div style={{ marginTop: "16px" }}>
+                                        {taxTables.map((table: any) => (
+                                            <div key={table._id} style={{ ...cardStyle, cursor: "default" }}>
+                                                <strong>{table.name}</strong>
+                                                <div style={{ fontSize: "12px", marginTop: "8px" }}>
+                                                    {(table.rates || []).map((r: any) => (
+                                                        <span
+                                                            key={r._id}
+                                                            style={{
+                                                                display: "inline-block",
+                                                                marginRight: "8px",
+                                                                marginBottom: "4px",
+                                                                padding: "2px 8px",
+                                                                background: "#f5f5f5",
+                                                                borderRadius: "4px",
+                                                                fontSize: "11px"
+                                                            }}
+                                                        >
+                                                            {r.name}
+                                                            {r.isCompounding ? " (compounding)" : ""}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <h2
+                            id="section-branding"
+                            style={{ marginTop: "32px", marginBottom: "16px", borderBottom: "1px solid #ddd", paddingBottom: "8px" }}
+                        >
+                            Branding
+                        </h2>
+                        <div className="command-section">
+                            <div className="command-section__header">
+                                <h3>getBranding</h3>
+                            </div>
+                            <div className="command-section__content">
+                                <button onClick={handleGetBranding} disabled={loading} className="btn btn--primary">
+                                    Get Branding
+                                </button>
+                                {brandingData && (
+                                    <div style={{ marginTop: "16px" }}>
+                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+                                            {Object.entries(brandingData.colors || {}).map(([key, val]) => (
+                                                <div
+                                                    key={key}
+                                                    title={`${key}: ${String(val)}`}
+                                                    style={{
+                                                        width: "48px",
+                                                        height: "48px",
+                                                        borderRadius: "6px",
+                                                        border: "1px solid #ccc",
+                                                        background: String(val)
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                        <p style={{ fontSize: "13px" }}>
+                                            Theme: <strong>{brandingData.theme}</strong> | Radius: {brandingData.borderRadius} (
+                                            {brandingData.borderRadiusValue}) | Font: {brandingData.font?.family}
+                                        </p>
+                                        {brandingData.logo && (
+                                            <p style={{ fontSize: "12px" }}>
+                                                Logo:{" "}
+                                                <a href={brandingData.logo} target="_blank" rel="noopener noreferrer">
+                                                    link
+                                                </a>
+                                            </p>
+                                        )}
+                                        <JsonViewer data={JSON.stringify(brandingData, null, 2)} title="Full branding JSON" />
                                     </div>
                                 )}
                             </div>
