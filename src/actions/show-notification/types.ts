@@ -1,6 +1,8 @@
 // Show Notification Types
 export interface ShowNotificationParams {
     message: string;
+    /** Visual style when the host supports it (e.g. toast variant). */
+    type?: "success" | "error" | "info" | "warning";
 }
 
 export interface ShowNotificationResponse {

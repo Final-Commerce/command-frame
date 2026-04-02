@@ -98,3 +98,17 @@ Retrieve a secret value by key.
 
 #### [setSecretVal](../../actions/set-secret-val/README.md)
 Create or update a secret value.
+
+### Optional host extensions
+
+These actions are **optional** on `ManageProviderActions`. A host (e.g. Deerlake) may implement them; others may omit them. Use `command.navigateTo` etc. from the main `command` export, or call via `ManageClient` / `commandFrameClient` when the host registers handlers.
+
+| Action | Documentation |
+|--------|----------------|
+| `showNotification` | [show-notification](../../actions/show-notification/README.md) (optional `type` for toast style) |
+| `navigateTo` | [navigate-to](../../actions/navigate-to/README.md) |
+| `refreshResource` | [refresh-resource](../../actions/refresh-resource/README.md) |
+| `getMedia` | [get-media](../../actions/get-media/README.md) |
+| `uploadMedia` | [upload-media](../../actions/upload-media/README.md) |
+| `getTaxTables` | [get-tax-tables](../../actions/get-tax-tables/README.md) |
+| `getBranding` | [get-branding](../../actions/get-branding/README.md) |

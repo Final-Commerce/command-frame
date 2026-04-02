@@ -28,6 +28,14 @@ import { mockDeleteProduct } from "../../actions/delete-product/mock";
 import { mockGetOutlets } from "../../actions/get-outlets/mock";
 import { mockGetStations } from "../../actions/get-stations/mock";
 import { mockGetOrders } from "../../actions/get-orders/mock";
+// Manage extension mocks
+import { mockShowNotification } from "../../actions/show-notification/mock";
+import { mockNavigateTo } from "../../actions/navigate-to/mock";
+import { mockRefreshResource } from "../../actions/refresh-resource/mock";
+import { mockGetMedia } from "../../actions/get-media/mock";
+import { mockUploadMedia } from "../../actions/upload-media/mock";
+import { mockGetTaxTables } from "../../actions/get-tax-tables/mock";
+import { mockGetBranding } from "../../actions/get-branding/mock";
 
 // Manage-specific mock for getFinalContext
 const mockGetFinalContextManage: GetFinalContext = async (): Promise<GetFinalContextResponse | null> => {
@@ -67,4 +75,12 @@ export const MANAGE_MOCKS: ManageProviderActions = {
     getOutlets: mockGetOutlets,
     getStations: mockGetStations,
     getOrders: mockGetOrders,
+    // Manage extension mocks
+    showNotification: mockShowNotification,
+    navigateTo: mockNavigateTo,
+    refreshResource: mockRefreshResource,
+    getMedia: mockGetMedia,
+    uploadMedia: mockUploadMedia,
+    getTaxTables: mockGetTaxTables,
+    getBranding: mockGetBranding,
 };
