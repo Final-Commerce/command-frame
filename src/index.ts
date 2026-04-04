@@ -313,6 +313,10 @@ export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWeb
 // Export Common Types
 export * from "./CommonTypes";
 
+// Mock database override (standalone / extension dev)
+export { setMockDatabase } from "./demo/database";
+export type { MockDatabaseConfig } from "./demo/database";
+
 // Export Provider
 export { CommandFrameProvider } from "./provider";
 export type { ActionHandler, ActionHandlers } from "./provider";

@@ -1,26 +1,18 @@
 import { GetOutlets, GetOutletsResponse } from "./types";
+import { MOCK_OUTLETS, safeSerialize } from "../../demo/database";
 
 export const mockGetOutlets: GetOutlets = async (): Promise<GetOutletsResponse> => {
     console.log("[Mock] getOutlets called");
+    const outlets = safeSerialize(MOCK_OUTLETS).map((o) => ({
+        _id: o._id || o.id,
+        name: o.name || "",
+        address: o.address,
+        city: o.city,
+        state: o.state,
+        country: o.country
+    }));
     return {
-        outlets: [
-            {
-                _id: "mock_outlet_001",
-                name: "Main Store",
-                address: "123 Commerce St",
-                city: "New York",
-                state: "NY",
-                country: "US",
-            },
-            {
-                _id: "mock_outlet_002",
-                name: "Downtown Branch",
-                address: "456 Market Ave",
-                city: "San Francisco",
-                state: "CA",
-                country: "US",
-            },
-        ],
-        timestamp: new Date().toISOString(),
+        outlets,
+        timestamp: new Date().toISOString()
     };
 };
