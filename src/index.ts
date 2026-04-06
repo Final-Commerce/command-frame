@@ -36,6 +36,7 @@ import { redeemPayment } from "./actions/redeem-payment/action";
 // Customer Actions
 import { addCustomerNote } from "./actions/add-customer-note/action";
 import { removeCustomerFromCart } from "./actions/remove-customer-from-cart/action";
+import { removeCartDiscount } from "./actions/remove-cart-discount/action";
 // System Actions
 import { goToStationHome } from "./actions/go-to-station-home/action";
 import { openCashDrawer } from "./actions/open-cash-drawer/action";
@@ -135,6 +136,7 @@ export const command = {
     // Customer Actions
     addCustomerNote,
     removeCustomerFromCart,
+    removeCartDiscount,
     // System Actions
     goToStationHome,
     openCashDrawer,
@@ -290,6 +292,7 @@ export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/e
 // Customer Actions
 export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
 export type { RemoveCustomerFromCart, RemoveCustomerFromCartResponse } from "./actions/remove-customer-from-cart/types";
+export type { RemoveCartDiscount, RemoveCartDiscountResponse } from "./actions/remove-cart-discount/types";
 // System Actions
 export type { GoToStationHome, GoToStationHomeResponse } from "./actions/go-to-station-home/types";
 export type { OpenCashDrawer, OpenCashDrawerResponse } from "./actions/open-cash-drawer/types";
