@@ -2,6 +2,8 @@ import { RemoveCartDiscount, RemoveCartDiscountResponse } from "./types";
 import { MOCK_CART, mockPublishEvent } from "../../demo/database";
 
 export const mockRemoveCartDiscount: RemoveCartDiscount = async (): Promise<RemoveCartDiscountResponse> => {
+    console.log("[Mock] removeCartDiscount called");
+
     if (MOCK_CART.discount) {
         delete MOCK_CART.discount;
         MOCK_CART.total = MOCK_CART.subtotal;
