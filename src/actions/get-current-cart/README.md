@@ -40,6 +40,7 @@ The cart object (`ActiveCart`) includes:
 - `orderId`: Order ID if cart is associated with an order (optional string)
 - `cartTotal`: Cart total (optional number)
 - `orderTotal`: Order total (optional number)
+- `nonRevenueItems`: Optional array of non-revenue lines (e.g. gift card load). Each line uses `externalId` as the stable line id; the extension reference from [`addNonRevenueItem`](../add-non-revenue-item/README.md) is typically in `metadata.refId`.
 
 ## Example Usage
 

@@ -5,10 +5,22 @@ import { ManageProviderActions } from "./types";
 export interface ManageClient extends ManageProviderActions {}
 
 export class ManageClient extends CommandFrameClient {
-    constructor(options: { timeout?: number; origin?: string; debug?: boolean; mockMode?: boolean } = {}) {
+    constructor(
+        options: {
+            timeout?: number;
+            origin?: string;
+            debug?: boolean;
+            mockMode?: boolean;
+            mockRegistry?: Partial<ManageProviderActions>;
+        } = {}
+    ) {
+        const { mockRegistry: mockRegistryOverrides, ...baseOptions } = options;
         super({
-            ...options,
-            mockRegistry: MANAGE_MOCKS as unknown as Record<string, (params?: any) => Promise<any>>
+            ...baseOptions,
+            mockRegistry: {
+                ...MANAGE_MOCKS,
+                ...mockRegistryOverrides
+            } as unknown as Record<string, (params?: any) => Promise<any>>
         });
     }
 }
