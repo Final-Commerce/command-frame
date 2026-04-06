@@ -17,7 +17,7 @@ export const mockGetCurrentCompanyCustomExtensions: GetCurrentCompanyCustomExten
                 "https://example.com/images/loyalty-1.png",
                 "https://example.com/images/loyalty-2.png"
             ],
-            price: "$29.99",
+            price: 2999,
             website: "https://loyalty-extension.example.com",
             isDeleted: false,
             createdAt: "2024-01-01T10:00:00.000Z",
@@ -32,7 +32,7 @@ export const mockGetCurrentCompanyCustomExtensions: GetCurrentCompanyCustomExten
             short_description: "Real-time inventory insights",
             long_description: "Get detailed insights into your inventory with real-time tracking, low stock alerts, and comprehensive reporting.",
             main_image: "https://example.com/images/inventory-extension.png",
-            price: "$49.99",
+            price: 4999,
             isDeleted: false,
             createdAt: "2024-01-05T08:00:00.000Z",
             updatedAt: "2024-01-05T08:00:00.000Z",

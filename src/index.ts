@@ -86,6 +86,13 @@ import { deleteProduct } from "./actions/delete-product/action";
 // Entity Actions
 import { getOutlets } from "./actions/get-outlets/action";
 import { getStations } from "./actions/get-stations/action";
+// Manage extension actions (optional hosts: Deerlake, etc.)
+import { navigateTo } from "./actions/navigate-to/action";
+import { refreshResource } from "./actions/refresh-resource/action";
+import { getMedia } from "./actions/get-media/action";
+import { uploadMedia } from "./actions/upload-media/action";
+import { getTaxTables } from "./actions/get-tax-tables/action";
+import { getBranding } from "./actions/get-branding/action";
 
 // Export actions as command object
 export const command = {
@@ -174,6 +181,13 @@ export const command = {
     getSecretsKeys,
     getSecretVal,
     setSecretVal,
+    // Manage extension actions (optional on ManageProviderActions)
+    navigateTo,
+    refreshResource,
+    getMedia,
+    uploadMedia,
+    getTaxTables,
+    getBranding,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -280,6 +294,12 @@ export type { RemoveCustomerFromCart, RemoveCustomerFromCartResponse } from "./a
 export type { GoToStationHome, GoToStationHomeResponse } from "./actions/go-to-station-home/types";
 export type { OpenCashDrawer, OpenCashDrawerResponse } from "./actions/open-cash-drawer/types";
 export type { ShowNotification, ShowNotificationParams, ShowNotificationResponse } from "./actions/show-notification/types";
+export type { NavigateTo, NavigateToParams, NavigateToResponse } from "./actions/navigate-to/types";
+export type { RefreshResource, RefreshResourceParams, RefreshResourceResponse } from "./actions/refresh-resource/types";
+export type { GetMedia, GetMediaParams, GetMediaResponse, MediaItemPayload } from "./actions/get-media/types";
+export type { UploadMedia, UploadMediaParams, UploadMediaResponse } from "./actions/upload-media/types";
+export type { GetTaxTables, GetTaxTablesResponse, TaxRatePayload, TaxTablePayload } from "./actions/get-tax-tables/types";
+export type { BorderRadiusPreset, GetBranding, GetBrandingResponse } from "./actions/get-branding/types";
 export type { ShowConfirmation, ShowConfirmationParams, ShowConfirmationResponse } from "./actions/show-confirmation/types";
 export type { AuthenticateUser, AuthenticateUserParams, AuthenticateUserResponse } from "./actions/authenticate-user/types";
 export type { PartialPayment, PartialPaymentParams, PartialPaymentResponse } from "./actions/partial-payment/types";
@@ -292,6 +312,10 @@ export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWeb
 
 // Export Common Types
 export * from "./CommonTypes";
+
+// Mock database override (standalone / extension dev)
+export { setMockDatabase } from "./demo/database";
+export type { MockDatabaseConfig } from "./demo/database";
 
 // Export Provider
 export { CommandFrameProvider } from "./provider";

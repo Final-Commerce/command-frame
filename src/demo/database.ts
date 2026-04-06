@@ -15,9 +15,23 @@ import {
     CFUserTypes,
     CFActiveCart,
     CFCategory,
+    CurrencyCode,
 } from "../CommonTypes";
 
-export * from './mocks';
+export * from "./mocks";
+
+/** Replace mock catalog / context data in place (same array references mock handlers use). */
+export interface MockDatabaseConfig {
+    company?: Partial<CFActiveCompany>;
+    outlets?: CFActiveOutlet[];
+    stations?: CFActiveStation[];
+    users?: CFActiveUser[];
+    customers?: CFCustomer[];
+    categories?: CFCategory[];
+    products?: CFProduct[];
+    orders?: CFActiveOrder[];
+    parkedOrders?: CFActiveOrder[];
+}
 
 // Asset Imports - Using Remote URLs to avoid build complexity with asset copying
 const ASSETS_BASE_URL = "https://raw.githubusercontent.com/Final-Commerce/command-frame/refs/heads/main/src/demo/assets";
@@ -48,8 +62,6 @@ export const MOCK_COMPANY: CFActiveCompany = {
         decimals: { $numberInt: "2" }
     }
 };
-
-const COMPANY_ID = MOCK_COMPANY.id!;
 
 // --- OUTLETS ---
 export const MOCK_OUTLET_MAIN: CFActiveOutlet = {
@@ -96,7 +108,7 @@ export const MOCK_USER_MARIO: CFActiveUser = {
         permissions: []
     },
     outlets: [MOCK_OUTLET_MAIN.id],
-    companies: [COMPANY_ID]
+    companies: [MOCK_COMPANY.id!]
 };
 
 export const MOCK_USER_LUIGI: CFActiveUser = {
@@ -110,13 +122,13 @@ export const MOCK_USER_LUIGI: CFActiveUser = {
         permissions: []
     },
     outlets: [MOCK_OUTLET_MAIN.id],
-    companies: [COMPANY_ID]
+    companies: [MOCK_COMPANY.id!]
 };
 
 // --- CUSTOMERS ---
 export const MOCK_CUSTOMER_1: CFCustomer = {
     _id: "cust_giuseppe",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     email: "giuseppe@example.com",
     firstName: "Giuseppe",
     lastName: "Verdi",
@@ -135,7 +147,7 @@ export const MOCK_CUSTOMER_1: CFCustomer = {
 
 export const MOCK_CUSTOMER_2: CFCustomer = {
     _id: "cust_sofia",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     email: "sofia@example.com",
     firstName: "Sofia",
     lastName: "Loren",
@@ -146,7 +158,7 @@ export const MOCK_CUSTOMER_2: CFCustomer = {
 
 export const MOCK_CUSTOMER_3: CFCustomer = {
     _id: "cust_alessandro",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     email: "alessandro@example.com",
     firstName: "Alessandro",
     lastName: "Volta",
@@ -157,7 +169,7 @@ export const MOCK_CUSTOMER_3: CFCustomer = {
 
 export const MOCK_CUSTOMER_4: CFCustomer = {
     _id: "cust_isabella",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     email: "isabella@example.com",
     firstName: "Isabella",
     lastName: "Rossellini",
@@ -168,7 +180,7 @@ export const MOCK_CUSTOMER_4: CFCustomer = {
 
 export const MOCK_CUSTOMER_5: CFCustomer = {
     _id: "cust_leonardo",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     email: "leonardo@example.com",
     firstName: "Leonardo",
     lastName: "Da Vinci",
@@ -182,7 +194,7 @@ export const MOCK_CATEGORY_PASTES: CFCategory = {
     _id: "cat_pastes",
     name: "Pastes",
     externalId: "ext_cat_pastes",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     parentId: null
 };
 
@@ -190,7 +202,7 @@ export const MOCK_CATEGORY_SPECIALTY: CFCategory = {
     _id: "cat_specialty",
     name: "Specialty",
     externalId: "ext_cat_specialty",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     parentId: "cat_pastes"
 };
 
@@ -198,7 +210,7 @@ export const MOCK_CATEGORY_BASIC: CFCategory = {
     _id: "cat_basic",
     name: "Basic",
     externalId: "ext_cat_basic",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     parentId: "cat_pastes"
 };
 
@@ -206,7 +218,7 @@ export const MOCK_CATEGORY_VEGAN: CFCategory = {
     _id: "cat_vegan",
     name: "Vegan",
     externalId: "ext_cat_vegan",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     parentId: null
 };
 
@@ -214,7 +226,7 @@ export const MOCK_CATEGORY_SPICY: CFCategory = {
     _id: "cat_spicy",
     name: "Spicy",
     externalId: "ext_cat_spicy",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     parentId: null
 };
 
@@ -225,7 +237,7 @@ const createInventory = (stock: number) => [{ outletId: MOCK_OUTLET_MAIN.id, sto
 const createSimpleProduct = (
     id: string,
     name: string,
-    price: string,
+    price: number,
     image: string,
     categories: CFCategory[],
     description: string
@@ -234,9 +246,11 @@ const createSimpleProduct = (
     return {
         _id: id,
         name,
-        companyId: COMPANY_ID,
+        companyId: MOCK_COMPANY.id!,
         externalId: `ext_${id}`,
         sku,
+        currency: CurrencyCode.USD,
+        minorUnits: 2,
         minPrice: price,
         maxPrice: price,
         status: "active",
@@ -244,7 +258,6 @@ const createSimpleProduct = (
         taxTable: "tax_standard",
         description,
         images: [image],
-        // Render stores product categories as an array of category IDs
         categories: categories.map(c => c._id),
         attributes: [],
         variants: [
@@ -252,7 +265,7 @@ const createSimpleProduct = (
                 _id: `${id}_var_main`,
                 sku,
                 price,
-                salePrice: "0",
+                salePrice: 0,
                 isOnSale: false,
                 manageStock: true,
                 externalId: `ext_${id}_var`,
@@ -267,8 +280,8 @@ const createSimpleProduct = (
 const createVariableProduct = (
     id: string,
     name: string,
-    basePrice: string,
-    largePrice: string,
+    basePrice: number,
+    largePrice: number,
     image: string,
     categories: CFCategory[],
     description: string
@@ -277,9 +290,11 @@ const createVariableProduct = (
     return {
         _id: id,
         name,
-        companyId: COMPANY_ID,
+        companyId: MOCK_COMPANY.id!,
         externalId: `ext_${id}`,
         sku: skuBase,
+        currency: CurrencyCode.USD,
+        minorUnits: 2,
         minPrice: basePrice,
         maxPrice: largePrice,
         status: "active",
@@ -287,7 +302,6 @@ const createVariableProduct = (
         taxTable: "tax_standard",
         description,
         images: [image],
-        // Render stores product categories as an array of category IDs
         categories: categories.map(c => c._id),
         attributes: [{ name: "Size", values: ["Small", "Large"] }],
         variants: [
@@ -295,7 +309,7 @@ const createVariableProduct = (
                 _id: `${id}_var_small`,
                 sku: `${skuBase}-S`,
                 price: basePrice,
-                salePrice: "0",
+                salePrice: 0,
                 isOnSale: false,
                 manageStock: true,
                 externalId: `ext_${id}_var_s`,
@@ -306,7 +320,7 @@ const createVariableProduct = (
                 _id: `${id}_var_large`,
                 sku: `${skuBase}-L`,
                 price: largePrice,
-                salePrice: "0",
+                salePrice: 0,
                 isOnSale: false,
                 manageStock: true,
                 externalId: `ext_${id}_var_l`,
@@ -320,7 +334,7 @@ const createVariableProduct = (
 export const MOCK_PRODUCT_BASIL_ALMOND = createSimpleProduct(
     "prod_basil_almond",
     "Basil Almond Paste",
-    "12.00",
+    1200,
     basilAlmondImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
     "A rich blend of fresh basil and roasted almonds."
@@ -329,8 +343,8 @@ export const MOCK_PRODUCT_BASIL_ALMOND = createSimpleProduct(
 export const MOCK_PRODUCT_BEER = createVariableProduct(
     "prod_beer",
     "Beer Paste",
-    "15.00",
-    "25.00",
+    1500,
+    2500,
     beerImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY],
     "Unique paste infused with dark lager."
@@ -339,7 +353,7 @@ export const MOCK_PRODUCT_BEER = createVariableProduct(
 export const MOCK_PRODUCT_BEET = createSimpleProduct(
     "prod_beet",
     "Beet Paste",
-    "10.00",
+    1000,
     beetImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Earthy and sweet beet paste, perfect for salads."
@@ -348,8 +362,8 @@ export const MOCK_PRODUCT_BEET = createSimpleProduct(
 export const MOCK_PRODUCT_CARAMELIZED = createVariableProduct(
     "prod_caramelized",
     "Caramelized Paste",
-    "14.00",
-    "22.00",
+    1400,
+    2200,
     caramelizedImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
     "Slow-cooked caramelized onion paste."
@@ -358,8 +372,8 @@ export const MOCK_PRODUCT_CARAMELIZED = createVariableProduct(
 export const MOCK_PRODUCT_GARLIC_ONION = createVariableProduct(
     "prod_garlic_onion",
     "Garlic Onion Paste",
-    "11.00",
-    "18.00",
+    1100,
+    1800,
     garlicOnionImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Classic savory base for any dish."
@@ -368,7 +382,7 @@ export const MOCK_PRODUCT_GARLIC_ONION = createVariableProduct(
 export const MOCK_PRODUCT_GARLIC = createSimpleProduct(
     "prod_garlic",
     "Garlic Paste",
-    "9.00",
+    900,
     garlicImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Pure, intense garlic paste."
@@ -377,8 +391,8 @@ export const MOCK_PRODUCT_GARLIC = createSimpleProduct(
 export const MOCK_PRODUCT_GINGER_LIME = createVariableProduct(
     "prod_ginger_lime",
     "Ginger Lime Paste",
-    "13.00",
-    "20.00",
+    1300,
+    2000,
     gingerLimeImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_SPICY, MOCK_CATEGORY_VEGAN],
     "Zesty and spicy, great for asian cuisine."
@@ -387,7 +401,7 @@ export const MOCK_PRODUCT_GINGER_LIME = createVariableProduct(
 export const MOCK_PRODUCT_LEMON = createSimpleProduct(
     "prod_lemon",
     "Lemon Paste",
-    "10.50",
+    1050,
     lemonImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Bright citrus flavor concentrate."
@@ -396,8 +410,8 @@ export const MOCK_PRODUCT_LEMON = createSimpleProduct(
 export const MOCK_PRODUCT_RED_PEPPER = createVariableProduct(
     "prod_red_pepper",
     "Red Pepper Paste",
-    "12.50",
-    "19.00",
+    1250,
+    1900,
     redPepperImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_SPICY, MOCK_CATEGORY_VEGAN],
     "Roasted red peppers with a hint of spice."
@@ -406,8 +420,8 @@ export const MOCK_PRODUCT_RED_PEPPER = createVariableProduct(
 export const MOCK_PRODUCT_ROASTED_TOMATO = createVariableProduct(
     "prod_roasted_tomato",
     "Roasted Tomato Paste",
-    "11.50",
-    "18.50",
+    1150,
+    1850,
     roastedTomatoImg,
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
     "Deep, umami-rich tomato flavor."
@@ -416,7 +430,7 @@ export const MOCK_PRODUCT_ROASTED_TOMATO = createVariableProduct(
 export const MOCK_PRODUCT_MINT_LEMON = createSimpleProduct(
     "prod_mint_lemon",
     "Mint Lemon Paste",
-    "12.00",
+    1200,
     lemonImg, // Reusing lemon image for now
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
     "Refreshing mint and lemon blend."
@@ -425,8 +439,8 @@ export const MOCK_PRODUCT_MINT_LEMON = createSimpleProduct(
 export const MOCK_PRODUCT_CHILI_GARLIC = createVariableProduct(
     "prod_chili_garlic",
     "Chili Garlic Paste",
-    "10.50",
-    "16.50",
+    1050,
+    1650,
     redPepperImg, // Reusing red pepper image
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_SPICY, MOCK_CATEGORY_VEGAN],
     "Spicy garlic paste with chili flakes."
@@ -435,7 +449,7 @@ export const MOCK_PRODUCT_CHILI_GARLIC = createVariableProduct(
 export const MOCK_PRODUCT_HABANERO = createSimpleProduct(
     "prod_habanero",
     "Habanero Paste",
-    "14.00",
+    1400,
     redPepperImg, // Reusing red pepper image
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPICY, MOCK_CATEGORY_VEGAN],
     "Extremely spicy habanero concentrate."
@@ -444,7 +458,7 @@ export const MOCK_PRODUCT_HABANERO = createSimpleProduct(
 export const MOCK_PRODUCT_BLACK_GARLIC = createSimpleProduct(
     "prod_black_garlic",
     "Black Garlic Paste",
-    "18.00",
+    1800,
     garlicImg, // Reusing garlic image
     [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
     "Fermented black garlic paste, sweet and savory."
@@ -462,12 +476,12 @@ const createLineItem = (product: CFProduct, variantIndex: number = 0, quantity: 
         price: variant.price,
         taxes: [],
         discount: {
-            itemDiscount: { percentage: 0, amount: "0" },
-            cartDiscount: { percentage: 0, amount: "0" }
+            itemDiscount: { percentage: 0, amount: 0 },
+            cartDiscount: { percentage: 0, amount: 0 }
         },
-        fee: { itemFee: { percentage: 0, amount: "0", tax: "0", taxTableId: "" } },
-        totalTax: "0",
-        total: (parseFloat(variant.price) * quantity).toFixed(2),
+        fee: { itemFee: { percentage: 0, amount: 0, tax: 0, taxTableId: "" } },
+        totalTax: 0,
+        total: variant.price * quantity,
         metadata: [],
         image: product.images?.[0] || "",
         sku: variant.sku,
@@ -478,17 +492,19 @@ const createLineItem = (product: CFProduct, variantIndex: number = 0, quantity: 
 
 export const MOCK_ORDER_1: CFActiveOrder = {
     _id: "order_1001",
+    currency: CurrencyCode.USD,
+    minorUnits: 2,
     receiptId: "1001-0001",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     externalId: null,
     status: "completed",
     customer: MOCK_CUSTOMER_1,
     summary: {
-        total: "21.00",
-        subTotal: "21.00",
-        discountTotal: "0",
-        shippingTotal: "0",
-        totalTaxes: "0",
+        total: 2100,
+        subTotal: 2100,
+        discountTotal: 0,
+        shippingTotal: 0,
+        totalTaxes: 0,
         taxes: [],
         isTaxInclusive: false
     },
@@ -498,7 +514,7 @@ export const MOCK_ORDER_1: CFActiveOrder = {
         {
             transactionId: "trans_cash_1",
             paymentType: "cash",
-            amount: "21.00",
+            amount: 2100,
             timestamp: new Date().toISOString(),
             processor: "cash"
         }
@@ -514,11 +530,11 @@ export const MOCK_ORDER_1: CFActiveOrder = {
     billing: MOCK_CUSTOMER_1.billing || null,
     shipping: null,
     lineItems: [
-        createLineItem(MOCK_PRODUCT_GARLIC, 0, 1), // 9.00
-        createLineItem(MOCK_PRODUCT_BASIL_ALMOND, 0, 1) // 12.00
+        createLineItem(MOCK_PRODUCT_GARLIC, 0, 1),
+        createLineItem(MOCK_PRODUCT_BASIL_ALMOND, 0, 1)
     ],
     customSales: [],
-    balance: "0",
+    balance: 0,
     user: MOCK_USER_LUIGI,
     outlet: MOCK_OUTLET_MAIN,
     station: MOCK_STATION_1,
@@ -527,17 +543,19 @@ export const MOCK_ORDER_1: CFActiveOrder = {
 
 export const MOCK_ORDER_2: CFActiveOrder = {
     _id: "order_1002",
+    currency: CurrencyCode.USD,
+    minorUnits: 2,
     receiptId: "1001-0002",
-    companyId: COMPANY_ID,
+    companyId: MOCK_COMPANY.id!,
     externalId: null,
     status: "completed",
     customer: MOCK_CUSTOMER_2,
     summary: {
-        total: "30.00",
-        subTotal: "30.00",
-        discountTotal: "0",
-        shippingTotal: "0",
-        totalTaxes: "0",
+        total: 3000,
+        subTotal: 3000,
+        discountTotal: 0,
+        shippingTotal: 0,
+        totalTaxes: 0,
         taxes: [],
         isTaxInclusive: false
     },
@@ -547,7 +565,7 @@ export const MOCK_ORDER_2: CFActiveOrder = {
         {
             transactionId: "trans_card_1",
             paymentType: "credit_card",
-            amount: "30.00",
+            amount: 3000,
             timestamp: new Date(Date.now() - 3600000).toISOString(),
             processor: "stripe"
         }
@@ -563,10 +581,10 @@ export const MOCK_ORDER_2: CFActiveOrder = {
     billing: null,
     shipping: null,
     lineItems: [
-        createLineItem(MOCK_PRODUCT_BEER, 0, 2) // 15.00 * 2 = 30.00
+        createLineItem(MOCK_PRODUCT_BEER, 0, 2)
     ],
     customSales: [],
-    balance: "0",
+    balance: 0,
     user: MOCK_USER_MARIO,
     outlet: MOCK_OUTLET_MAIN,
     station: MOCK_STATION_2,
@@ -611,10 +629,10 @@ export const MOCK_PRODUCTS = [
 export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2];
 export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [];
 
-// Compatibility Exports
-export const MOCK_USER = MOCK_USERS[0];
-export const MOCK_STATION = MOCK_STATIONS[0];
-export const MOCK_OUTLET = MOCK_OUTLETS[0];
+// Compatibility Exports (reassigned by setMockDatabase)
+export let MOCK_USER: CFActiveUser = MOCK_USERS[0]!;
+export let MOCK_STATION: CFActiveStation = MOCK_STATIONS[0]!;
+export let MOCK_OUTLET: CFActiveOutlet = MOCK_OUTLETS[0]!;
 
 export let MOCK_CART: CFActiveCart = {
     total: 0,
@@ -640,6 +658,65 @@ export const resetMockCart = () => {
         customer: null
     };
 };
+
+function resolveMockOrderCurrency(): CurrencyCode {
+    const raw = MOCK_COMPANY.settings?.currency;
+    if (typeof raw === "string" && (Object.values(CurrencyCode) as string[]).includes(raw)) {
+        return raw as CurrencyCode;
+    }
+    return CurrencyCode.USD;
+}
+
+/**
+ * Replace in-memory mock data used by default mock handlers. Arrays are mutated in place
+ * so existing imports from this module keep working.
+ */
+export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
+    if (config.company !== undefined) {
+        Object.assign(MOCK_COMPANY, config.company);
+    }
+    if (config.outlets !== undefined) {
+        MOCK_OUTLETS.splice(0, MOCK_OUTLETS.length, ...config.outlets);
+    }
+    if (config.stations !== undefined) {
+        MOCK_STATIONS.splice(0, MOCK_STATIONS.length, ...config.stations);
+    }
+    if (config.users !== undefined) {
+        MOCK_USERS.splice(0, MOCK_USERS.length, ...config.users);
+    }
+    if (config.customers !== undefined) {
+        MOCK_CUSTOMERS.splice(0, MOCK_CUSTOMERS.length, ...config.customers);
+    }
+    if (config.categories !== undefined) {
+        MOCK_CATEGORIES.splice(0, MOCK_CATEGORIES.length, ...config.categories);
+    }
+    if (config.products !== undefined) {
+        MOCK_PRODUCTS.splice(0, MOCK_PRODUCTS.length, ...config.products);
+    }
+    if (config.orders !== undefined) {
+        MOCK_ORDERS.splice(0, MOCK_ORDERS.length, ...config.orders);
+    }
+    if (config.parkedOrders !== undefined) {
+        MOCK_PARKED_ORDERS.splice(0, MOCK_PARKED_ORDERS.length, ...config.parkedOrders);
+    }
+
+    if (MOCK_OUTLETS.length > 0) {
+        Object.assign(MOCK_OUTLET_MAIN, MOCK_OUTLETS[0]);
+        if (MOCK_OUTLET_MAIN.id === undefined && MOCK_OUTLET_MAIN._id !== undefined) {
+            MOCK_OUTLET_MAIN.id = MOCK_OUTLET_MAIN._id;
+        }
+    }
+    if (MOCK_USERS.length > 0) {
+        MOCK_USER = MOCK_USERS[0]!;
+    }
+    if (MOCK_STATIONS.length > 0) {
+        MOCK_STATION = MOCK_STATIONS[0]!;
+    }
+    if (MOCK_OUTLETS.length > 0) {
+        MOCK_OUTLET = MOCK_OUTLETS[0]!;
+    }
+    resetMockCart();
+}
 
 // Helper to simulate safe JSON serialization
 export const safeSerialize = <T>(data: T): T => {
@@ -678,73 +755,79 @@ export const mockSubscribeToTopic = (topic: string, callback: MockEventCallback)
 // Helper to create order from cart
 export const createOrderFromCart = (
     paymentType: string,
-    amount: number | string,
+    amount: number,
     processor: string = "cash"
 ): CFActiveOrder => {
+    const primaryOutlet = MOCK_OUTLETS[0] ?? MOCK_OUTLET_MAIN;
+    const primaryStation = MOCK_STATIONS[0] ?? MOCK_STATION;
+    const employeeUser =
+        MOCK_USERS.find(u => u.type === CFUserTypes.CASHIER) ?? MOCK_USERS[0] ?? MOCK_USER;
+    const orderCurrency = resolveMockOrderCurrency();
+
     // Generate new Order ID
     const orderId = `order_${Date.now()}`;
     const receiptId = `receipt_${Date.now()}`;
 
     // Map cart products to line items
     const lineItems = MOCK_CART.products.map(p => {
-        // Find original product to get attributes/variants if needed
-        // For simplicity, we use what's in cart
         return {
             productId: p.id,
             variantId: p.variantId,
             name: p.name,
             quantity: p.quantity,
-            price: String(p.price),
+            price: p.price,
             taxes: [],
             discount: {
-                itemDiscount: { percentage: 0, amount: "0", const: "0" },
-                cartDiscount: { percentage: 0, amount: "0", const: "0" }
+                itemDiscount: { percentage: 0, amount: 0, const: "0" },
+                cartDiscount: { percentage: 0, amount: 0, const: "0" }
             },
-            fee: { itemFee: { percentage: 0, amount: "0", tax: "0", taxTableId: "" } },
-            totalTax: "0",
-            total: (p.price * p.quantity).toFixed(2),
+            fee: { itemFee: { percentage: 0, amount: 0, tax: 0, taxTableId: "" } },
+            totalTax: 0,
+            total: p.price * p.quantity,
             metadata: [],
             image: p.images?.[0] || "",
             sku: p.sku || "",
-            stock: 100, // Mock stock
+            stock: 100,
             attributes: p.attributes || ""
         };
     });
 
-    const totalStr = String(MOCK_CART.total.toFixed(2));
+    const totalNum = MOCK_CART.total;
     
     const newOrder: CFActiveOrder = {
         _id: orderId,
+        currency: orderCurrency,
+        minorUnits: 2,
         receiptId,
-        companyId: COMPANY_ID,
+        companyId: MOCK_COMPANY.id!,
         externalId: null,
         status: "completed",
         customer: MOCK_CART.customer ? (MOCK_CART.customer as CFCustomer) : null,
         summary: {
-            total: totalStr,
-            subTotal: totalStr,
-            discountTotal: "0",
-            shippingTotal: "0",
-            totalTaxes: "0",
+            total: totalNum,
+            subTotal: totalNum,
+            discountTotal: 0,
+            shippingTotal: 0,
+            totalTaxes: 0,
             taxes: [],
             isTaxInclusive: false
         },
-        cartDiscount: MOCK_CART.discount ? { label: MOCK_CART.discount.label || "Discount", amount: "0", percentage: MOCK_CART.discount.value } : null,
+        cartDiscount: MOCK_CART.discount ? { label: MOCK_CART.discount.label || "Discount", amount: 0, percentage: MOCK_CART.discount.value } : null,
         cartFees: [],
         paymentMethods: [
             {
                 transactionId: `trans_${Date.now()}`,
                 paymentType,
-                amount: String(amount),
+                amount,
                 timestamp: new Date().toISOString(),
                 processor
             }
         ],
         source: "pos",
         posData: {
-            outlet: MOCK_OUTLET_MAIN.id,
-            station: MOCK_STATION_1._id,
-            employee: MOCK_USER_LUIGI.id
+            outlet: primaryOutlet.id,
+            station: primaryStation._id,
+            employee: employeeUser.id
         },
         sessionId: `session_${Date.now()}`,
         metadata: [],
@@ -752,10 +835,10 @@ export const createOrderFromCart = (
         shipping: MOCK_CART.customer?.shipping || null,
         lineItems,
         customSales: [],
-        balance: "0",
-        user: MOCK_USER_LUIGI,
-        outlet: MOCK_OUTLET_MAIN,
-        station: MOCK_STATION_1,
+        balance: 0,
+        user: employeeUser,
+        outlet: primaryOutlet,
+        station: primaryStation,
         createdAt: new Date().toISOString()
     };
 

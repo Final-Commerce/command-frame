@@ -23,6 +23,13 @@ import type {
     GetOrders,
     GetUsers,
     GetRoles,
+    ShowNotification,
+    NavigateTo,
+    RefreshResource,
+    GetMedia,
+    UploadMedia,
+    GetTaxTables,
+    GetBranding,
 } from "../../index";
 
 export interface ManageProviderActions {
@@ -55,4 +62,18 @@ export interface ManageProviderActions {
     getOutlets: GetOutlets;
     getStations: GetStations;
     getOrders: GetOrders;
+    /** Optional: toast / notification in host shell (e.g. Deerlake). */
+    showNotification?: ShowNotification;
+    /** Optional: SPA navigation (e.g. Deerlake). */
+    navigateTo?: NavigateTo;
+    /** Optional: invalidate cached data for a resource key (e.g. Deerlake). */
+    refreshResource?: RefreshResource;
+    /** Optional: list media library (e.g. Deerlake). */
+    getMedia?: GetMedia;
+    /** Optional: upload media via host (e.g. Deerlake). */
+    uploadMedia?: UploadMedia;
+    /** Optional: tax tables for company (e.g. Deerlake). */
+    getTaxTables?: GetTaxTables;
+    /** Optional: theme tokens for iframe styling (e.g. Deerlake). */
+    getBranding?: GetBranding;
 }

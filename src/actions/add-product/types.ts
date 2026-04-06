@@ -8,9 +8,9 @@ export interface AddProductParams {
     images?: string[];
     status?: 'active' | 'inactive';
     /** For simple products: set price directly */
-    price?: string;
+    price?: number;
     sku?: string;
-    costPrice?: string;
+    costPrice?: number;
     manageStock?: boolean;
     /** For variable products: provide variants array */
     variants?: Omit<CFProductVariant, '_id'>[];

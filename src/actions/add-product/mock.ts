@@ -1,4 +1,4 @@
-import { CFProductType } from "../../CommonTypes";
+import { CFProductType, CurrencyCode } from "../../CommonTypes";
 import { AddProduct, AddProductParams, AddProductResponse } from "./types";
 
 export const mockAddProduct: AddProduct = async (params: AddProductParams): Promise<AddProductResponse> => {
@@ -7,6 +7,8 @@ export const mockAddProduct: AddProduct = async (params: AddProductParams): Prom
     return {
         product: {
             _id: "mock_product_" + Date.now(),
+            currency: CurrencyCode.USD,
+            minorUnits: 2,
             name: params.name,
             description: params.description,
             categories: params.categories || [],
@@ -16,15 +18,15 @@ export const mockAddProduct: AddProduct = async (params: AddProductParams): Prom
             sku: params.sku,
             productType: hasVariants ? CFProductType.VARIABLE : CFProductType.SIMPLE,
             attributes: [],
-            minPrice: params.price || "0",
-            maxPrice: params.price || "0",
+            minPrice: params.price || 0,
+            maxPrice: params.price || 0,
             variants: hasVariants
                 ? params.variants!.map((v, i) => ({ ...v, _id: `mock_variant_${Date.now()}_${i}` }))
                 : [{
                     _id: `mock_variant_${Date.now()}_0`,
                     sku: params.sku || "",
-                    price: params.price || "0",
-                    salePrice: "0",
+                    price: params.price || 0,
+                    salePrice: 0,
                     isOnSale: false,
                     manageStock: params.manageStock || false,
                     attributes: [],

@@ -5,10 +5,22 @@ import { RenderProviderActions } from "./types";
 export interface RenderClient extends RenderProviderActions {}
 
 export class RenderClient extends CommandFrameClient {
-    constructor(options: { timeout?: number; origin?: string; debug?: boolean; mockMode?: boolean } = {}) {
+    constructor(
+        options: {
+            timeout?: number;
+            origin?: string;
+            debug?: boolean;
+            mockMode?: boolean;
+            mockRegistry?: Partial<RenderProviderActions>;
+        } = {}
+    ) {
+        const { mockRegistry: mockRegistryOverrides, ...baseOptions } = options;
         super({
-            ...options,
-            mockRegistry: RENDER_MOCKS as unknown as Record<string, (params?: any) => Promise<any>>
+            ...baseOptions,
+            mockRegistry: {
+                ...RENDER_MOCKS,
+                ...mockRegistryOverrides
+            } as unknown as Record<string, (params?: any) => Promise<any>>
         });
     }
 }

@@ -21,7 +21,7 @@ interface CartDiscountAddedPayload {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `discount` | [`CFDiscount`](../../../types/README.md#cfdiscount) | The discount object that was added to the cart with `value`, `label`, and `isPercent` fields. |
+| `discount` | [`CFDiscount`](../../../../types/README.md#cfdiscount) | The discount object that was added to the cart with `value`, `label`, and `isPercent` fields. |
 
 ## Example Usage
 
@@ -52,7 +52,7 @@ topicPublisher.publish('cart', 'cart-discount-added', {
 
 ## Related Types
 
-- [`CFDiscount`](../../../types/README.md#cfdiscount) - Discount type from CommonTypes
+- [`CFDiscount`](../../../../types/README.md#cfdiscount) - Discount type from CommonTypes
 - `CartDiscountAddedPayload` - Event payload type
 - `CartDiscountAddedEvent` - Full event type with topic, type, data, and timestamp
 

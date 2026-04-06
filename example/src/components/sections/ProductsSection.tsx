@@ -88,8 +88,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
     if (product.variants && product.variants.length > 0) {
       const prices = product.variants
         .map((v: any) => v.price)
-        .filter((p: any): p is string => p != null && !isNaN(Number(p)))
-        .map((p: string) => Number(p));
+        .filter((p: any): p is number => p != null && !isNaN(Number(p)))
+        .map(Number);
       
       if (prices.length > 0) {
         const minPrice = Math.min(...prices);
@@ -204,8 +204,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
                       className="data-table__row--clickable"
                     >
                       <td>{variant.name || variant.sku || 'Unnamed Variant'}</td>
-                      <td className="text-right">{variant.price ? `$${parseFloat(variant.price).toFixed(2)}` : '—'}</td>
-                      <td className="text-right">{variant.salePrice ? `$${parseFloat(variant.salePrice).toFixed(2)}` : '—'}</td>
+                      <td className="text-right">{variant.price != null ? `$${Number(variant.price).toFixed(2)}` : '—'}</td>
+                      <td className="text-right">{variant.salePrice ? `$${Number(variant.salePrice).toFixed(2)}` : '—'}</td>
                       <td>{variant.barcode || '—'}</td>
                       <td className="text-muted">{variantIdValue || 'N/A'}</td>
                     </tr>
