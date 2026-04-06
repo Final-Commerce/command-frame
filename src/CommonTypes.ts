@@ -525,9 +525,10 @@ export interface CFActiveCustomSales {
     fee?: any;
 }
 
-/** Non-revenue cart line (e.g. gift card load) — aligned with Render NonRevenueItem */
+/** Non-revenue cart line (e.g. gift card load) — aligned with Render `NonRevenueItem.externalId` (order line id). */
 export interface CFNonRevenueItem {
-    id: string;
+    /** Unique cart/order line id (Mongo-style id from host). Extension reference is usually `metadata.refId`. */
+    externalId: string;
     amount: number | string;
     label?: string;
     metadata?: Record<string, unknown>;

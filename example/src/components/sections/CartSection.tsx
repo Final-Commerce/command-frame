@@ -200,6 +200,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       <CommandSection title="Add non-revenue item (gift card load)">
         <p className="section-description">
           Calls <code>addNonRevenueItem</code> — same API extensions use to add a liability line (e.g. gift card purchase).
+          The success payload includes <code>externalId</code> (unique line id) and <code>refId</code> (your param <code>id</code>).
           Cart total updates; complete checkout from the <strong>Payments</strong> tab (e.g. Cash Payment).
         </p>
         <div className="form-group">

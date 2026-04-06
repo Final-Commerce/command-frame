@@ -53,6 +53,7 @@ The library provides a `command` namespace object containing all available comma
 - **[addCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-discount/README.md)** - Add a discount to the entire cart
 - **[addOrderNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-order-note/README.md)** - Add a note to the current order/cart
 - **[addCartFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-fee/README.md)** - Add a fee to the entire cart
+- **[addNonRevenueItem](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-non-revenue-item/README.md)** - Add a non-revenue line (e.g. gift card load); response and `getCurrentCart().nonRevenueItems` use `externalId` for the line id
 - **[clearCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/clear-cart/README.md)** - Clear all items from the current cart
 - **[parkOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/park-order/README.md)** - Park (save) the current order for later retrieval
 - **[resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)** - Resume a previously parked order
@@ -273,6 +274,10 @@ Adds a note to the current order/cart.
 ### [addCartFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-fee/README.md)
 
 Adds a fee to the entire cart. Supports both fixed amount and percentage-based fees.
+
+### [addNonRevenueItem](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-non-revenue-item/README.md)
+
+Adds a non-revenue cart line (for example gift card liability). The host returns `externalId` as the unique line id; your extension reference is passed as param `id` and stored in line metadata as `refId`.
 
 ### [clearCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/clear-cart/README.md)
 
