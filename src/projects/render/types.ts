@@ -64,7 +64,8 @@ import type {
     GetSecretVal,
     SetSecretVal,
     GetUsers,
-    GetRoles
+    GetRoles,
+    RemoveCartDiscount
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -103,6 +104,7 @@ export interface RenderProviderActions {
     addNonRevenueItem: AddNonRevenueItem;
     addCustomerNote: AddCustomerNote;
     removeCustomerFromCart: RemoveCustomerFromCart;
+    removeCartDiscount: RemoveCartDiscount;
     goToStationHome: GoToStationHome;
     openCashDrawer: OpenCashDrawer;
     showNotification: ShowNotification;

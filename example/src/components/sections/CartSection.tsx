@@ -34,6 +34,10 @@ export function CartSection({ isInIframe }: CartSectionProps) {
   const [addCartDiscountLoading, setAddCartDiscountLoading] = useState(false);
   const [addCartDiscountResponse, setAddCartDiscountResponse] = useState<string>('');
 
+  // Remove Cart Discount
+  const [removeCartDiscountLoading, setRemoveCartDiscountLoading] = useState(false);
+  const [removeCartDiscountResponse, setRemoveCartDiscountResponse] = useState<string>('');
+
   // Order Note
   const [orderNote, setOrderNote] = useState<string>('');
   const [addOrderNoteLoading, setAddOrderNoteLoading] = useState(false);
@@ -140,6 +144,27 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       setAddCartDiscountResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setAddCartDiscountLoading(false);
+    }
+  };
+
+  const handleRemoveCartDiscount = async () => {
+    if (!isInIframe) {
+      setRemoveCartDiscountResponse('Error: Not running in iframe');
+      return;
+    }
+
+    setRemoveCartDiscountLoading(true);
+    setRemoveCartDiscountResponse('');
+
+    try {
+      const result = await command.removeCartDiscount();
+      setRemoveCartDiscountResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setRemoveCartDiscountResponse(
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    } finally {
+      setRemoveCartDiscountLoading(false);
     }
   };
 
@@ -359,6 +384,26 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           <JsonViewer
             data={addCartDiscountResponse}
             title={addCartDiscountResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Cart Discount */}
+      <CommandSection title="Remove Cart Discount">
+        <p className="section-description">
+          Removes the cart discount
+        </p>
+        <button
+          onClick={handleRemoveCartDiscount}
+          disabled={removeCartDiscountLoading}
+          className="btn btn--primary"
+        >
+          {removeCartDiscountLoading ? 'Removing...' : 'Remove Cart Discount'}
+        </button>
+        {removeCartDiscountResponse && (
+          <JsonViewer
+            data={removeCartDiscountResponse}
+            title={removeCartDiscountResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>
