@@ -18,7 +18,7 @@ export const mockAddNonRevenueItem: AddNonRevenueItem = async (
         refId
     };
     const row = {
-        id: lineId,
+        externalId: lineId,
         amount,
         applyTaxes: params.applyTaxes === true,
         ...(params.taxTableId ? { taxTableId: params.taxTableId } : {}),
@@ -38,7 +38,7 @@ export const mockAddNonRevenueItem: AddNonRevenueItem = async (
 
     return {
         success: true,
-        id: lineId,
+        externalId: lineId,
         refId,
         amount,
         label: params.label,

@@ -23,8 +23,8 @@ export interface AddNonRevenueItemParams {
 
 export interface AddNonRevenueItemResponse {
     success: true;
-    /** Unique cart line id (use for remove / correlation) */
-    id: string;
+    /** Unique cart line id (same as `cart.nonRevenueItems[].externalId`; use for remove / correlation). */
+    externalId: string;
     /** Same as request `id` — extension reference */
     refId: string;
     amount: number;
