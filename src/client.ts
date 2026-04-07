@@ -1,6 +1,6 @@
 /**
  * Command Frame Client for iframe communication
- * Allows the iframe to call functions on the parent window via postMessage
+ * Allows the iframe to call functions on the host (top) window via postMessage
  */
 
 export interface PostMessageRequest<T = any> {
@@ -55,7 +55,7 @@ export class CommandFrameClient {
 
         // If running standalone (no parent window), force Mock Mode immediately
         // This prevents the 2s delay and ensures immediate response in dev/standalone mode
-        if (typeof window !== 'undefined' && (!window.parent || window.parent === window)) {
+        if (typeof window !== 'undefined' && (!window.top || window.top === window)) {
             if (this.isDebugEnabled()) {
                 console.log("[ActionsClient] Standalone mode detected. Enabling Mock Mode immediately.");
             }
@@ -170,14 +170,14 @@ export class CommandFrameClient {
                 });
             }
 
-            if (typeof window !== 'undefined' && window.parent) {
-                window.parent.postMessage(message, this.origin);
+            if (typeof window !== 'undefined' && window.top) {
+                window.top.postMessage(message, this.origin);
             } else {
                 clearTimeout(timeoutHandle);
                 this.pendingRequests.delete(requestId);
-                const error = new Error("No parent window found. This app must run in an iframe.");
+                const error = new Error("No host window found. This app must run in an iframe.");
                 if (this.isDebugEnabled()) {
-                    console.error("[ActionsClient] No parent window", error);
+                    console.error("[ActionsClient] No host window", error);
                 }
                 reject(error);
             }
@@ -187,7 +187,7 @@ export class CommandFrameClient {
     // Private check to determine environment
     private detectContext(): Promise<any> {
         return new Promise((resolve) => {
-            if (typeof window === 'undefined' || !window.parent || window.parent === window) return resolve(null);
+            if (typeof window === 'undefined' || !window.top || window.top === window) return resolve(null);
 
             const requestId = this.generateRequestId();
             const timeout = setTimeout(() => {
@@ -202,7 +202,7 @@ export class CommandFrameClient {
             });
 
             try {
-                window.parent.postMessage({ action: "getFinalContext", requestId }, this.origin);
+                window.top.postMessage({ action: "getFinalContext", requestId }, this.origin);
             } catch {
                 clearTimeout(timeout);
                 this.pendingRequests.delete(requestId);

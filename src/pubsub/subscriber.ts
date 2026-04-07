@@ -45,8 +45,8 @@ export class TopicSubscriber {
         this.debug = options.debug ?? false;
         this.useGlobalDebug = options.debug === undefined;
 
-        // Detect standalone mode (no parent iframe)
-        if (typeof window !== 'undefined' && (!window.parent || window.parent === window)) {
+        // Detect standalone mode (not inside any iframe)
+        if (typeof window !== 'undefined' && (!window.top || window.top === window)) {
             this.mockMode = true;
             if (this.isDebugEnabled()) {
                 console.log("[TopicSubscriber] Mock Mode enabled (standalone mode detected)");
@@ -111,7 +111,7 @@ export class TopicSubscriber {
      * Request the list of available topics from the host
      */
     private requestTopics(): void {
-        if (typeof window !== "undefined" && window.parent && window.parent !== window) {
+        if (typeof window !== "undefined" && window.top && window.top !== window) {
             const message = {
                 type: "pubsub-request-topics",
                 requestId: `topics_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -121,7 +121,7 @@ export class TopicSubscriber {
                 console.log("[TopicSubscriber] Requesting topics list", message);
             }
 
-            window.parent.postMessage(message, this.origin);
+            window.top.postMessage(message, this.origin);
         }
     }
 
@@ -239,7 +239,7 @@ export class TopicSubscriber {
      * Notify host about subscription changes
      */
     private notifySubscription(topic: string, isSubscribed: boolean): void {
-        if (typeof window !== "undefined" && window.parent && window.parent !== window) {
+        if (typeof window !== "undefined" && window.top && window.top !== window) {
             const message = {
                 type: isSubscribed ? "pubsub-subscribe" : "pubsub-unsubscribe",
                 topic,
@@ -250,7 +250,7 @@ export class TopicSubscriber {
                 console.log("[TopicSubscriber] Notifying subscription change", message);
             }
 
-            window.parent.postMessage(message, this.origin);
+            window.top.postMessage(message, this.origin);
         }
     }
 
@@ -270,7 +270,7 @@ export class TopicSubscriber {
 
         const data = event.data;
 
-        // Clear detection timeout on first valid message from parent
+        // Clear detection timeout on first valid message from host
         if (this.detectionTimeout && data && (data.type === "pubsub-event" || data.type === "pubsub-topics-list")) {
             clearTimeout(this.detectionTimeout);
             this.detectionTimeout = undefined;
