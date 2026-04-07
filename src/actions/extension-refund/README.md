@@ -23,9 +23,9 @@ installExtensionRefundListener(async (params: ExtensionRefundParams): Promise<Ex
 });
 ```
 
-- Only processes messages where **`event.source === window.parent`** (ignores stray `postMessage` sources).
+- Only processes messages where **`event.source === window.top`** (ignores stray `postMessage` sources).
 - Validates required fields on `params` before calling your handler.
-- Replies to **`event.source`** using **`event.origin`** as the target origin (standard parent reply).
+- Replies to **`event.source`** using **`event.origin`** as the target origin (standard host reply).
 - Returns an **unsubscribe** function to remove the listener.
 
 ### `ExtensionRefundParams` (incoming)

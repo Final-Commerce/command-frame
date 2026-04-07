@@ -16,8 +16,8 @@ function register(topic: string, callback: HookFunction, options: HookRegisterOp
     const hookId = options.hookId;
     const functionBody = callback.toString();
 
-    if (typeof window !== "undefined" && window.parent && window.parent !== window) {
-        window.parent.postMessage(
+    if (typeof window !== "undefined" && window.top && window.top !== window) {
+        window.top.postMessage(
             {
                 type: "hook-register",
                 topic,
@@ -36,8 +36,8 @@ function register(topic: string, callback: HookFunction, options: HookRegisterOp
  * Unregister a hook by ID. Sends a message to the host to remove the hook.
  */
 function unregister(hookId: string): void {
-    if (typeof window !== "undefined" && window.parent && window.parent !== window) {
-        window.parent.postMessage(
+    if (typeof window !== "undefined" && window.top && window.top !== window) {
+        window.top.postMessage(
             {
                 type: "hook-unregister",
                 hookId
