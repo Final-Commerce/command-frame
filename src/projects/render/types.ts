@@ -17,6 +17,7 @@ import type {
     GetFinalContext,
     AddProductNote,
     AddProductFee,
+    GetActiveProduct,
     AdjustInventory,
     AddOrderNote,
     AddCartFee,
@@ -87,6 +88,7 @@ export interface RenderProviderActions {
     getFinalContext: GetFinalContext;
     addProductNote: AddProductNote;
     addProductFee: AddProductFee;
+    getActiveProduct: GetActiveProduct;
     adjustInventory: AdjustInventory;
     addOrderNote: AddOrderNote;
     addCartFee: AddCartFee;

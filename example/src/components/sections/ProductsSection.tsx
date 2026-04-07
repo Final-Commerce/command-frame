@@ -26,6 +26,10 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [addProductNoteLoading, setAddProductNoteLoading] = useState(false);
   const [addProductNoteResponse, setAddProductNoteResponse] = useState<string>('');
 
+  // Get Active Product
+  const [getActiveProductLoading, setGetActiveProductLoading] = useState(false);
+  const [getActiveProductResponse, setGetActiveProductResponse] = useState<string>('');
+
   // Product Fee
   const [productFeeAmount, setProductFeeAmount] = useState<string>('5.00');
   const [productFeeIsPercent, setProductFeeIsPercent] = useState<boolean>(false);
@@ -221,6 +225,37 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           <p className="no-data-message">Select a product to view variants</p>
         )}
       </CommandSection>
+      {/* get active product */}
+      <CommandSection title="Get Active Product">
+        <p className='section-description'> 
+          Get Active Product 
+        </p>
+        <button
+          onClick={async () => {
+            setGetActiveProductLoading(true);
+            setGetActiveProductResponse('');
+            try {
+              const result = await command.getActiveProduct();
+              setGetActiveProductResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setGetActiveProductResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setGetActiveProductLoading(false);
+            }
+          }}
+          disabled={getActiveProductLoading}
+          className="btn btn--primary"
+        >
+          {getActiveProductLoading ? 'Getting...' : 'Get Active Product'}
+        </button>
+        {getActiveProductResponse && (
+          <JsonViewer
+            data={getActiveProductResponse}
+            title={getActiveProductResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
 
       <CommandSection title="Selected Variant">
         <p className="section-description">
