@@ -18,6 +18,7 @@ import type {
     AddProductNote,
     AddProductFee,
     GetActiveProduct,
+    SetActiveProduct,
     AdjustInventory,
     AddOrderNote,
     AddCartFee,
@@ -89,6 +90,7 @@ export interface RenderProviderActions {
     addProductNote: AddProductNote;
     addProductFee: AddProductFee;
     getActiveProduct: GetActiveProduct;
+    setActiveProduct: SetActiveProduct;
     adjustInventory: AdjustInventory;
     addOrderNote: AddOrderNote;
     addCartFee: AddCartFee;

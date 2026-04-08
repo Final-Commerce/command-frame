@@ -19,6 +19,7 @@ import { updateCartItemQuantity } from "./actions/update-cart-item-quantity/acti
 import { addProductNote } from "./actions/add-product-note/action";
 import { addProductFee } from "./actions/add-product-fee/action";
 import { getActiveProduct } from "./actions/get-active-product/action";
+import { setActiveProduct } from "./actions/set-active-product/action";
 import { adjustInventory } from "./actions/adjust-inventory/action";
 // Order Actions
 import { addOrderNote } from "./actions/add-order-note/action";
@@ -120,6 +121,7 @@ export const command = {
     addProductNote,
     addProductFee,
     getActiveProduct,
+    setActiveProduct,
     adjustInventory,
     // Order Actions
     addOrderNote,
@@ -271,6 +273,7 @@ export type { GetFinalContext, GetFinalContextResponse } from "./actions/get-fin
 export type { AddProductNote, AddProductNoteParams, AddProductNoteResponse } from "./actions/add-product-note/types";
 export type { AddProductFee, AddProductFeeParams, AddProductFeeResponse } from "./actions/add-product-fee/types";
 export type { GetActiveProduct, GetActiveProductResponse } from "./actions/get-active-product/types";
+export type { SetActiveProduct, SetActiveProductParams, SetActiveProductResponse } from "./actions/set-active-product/types";
 export type { AdjustInventory, AdjustInventoryParams, AdjustInventoryResponse } from "./actions/adjust-inventory/types";
 // Order Actions
 export type { AddOrderNote, AddOrderNoteParams, AddOrderNoteResponse } from "./actions/add-order-note/types";

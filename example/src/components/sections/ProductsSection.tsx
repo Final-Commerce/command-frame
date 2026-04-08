@@ -14,6 +14,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [productsError, setProductsError] = useState<string>('');
   
   const [variants, setVariants] = useState<any[]>([]);
+  const [productId, setProductId] = useState<string>('');
   // const [variantsLoading, setVariantsLoading] = useState(false);
   // const [variantsError, setVariantsError] = useState<string>('');
   const [variantId, setVariantId] = useState<string>('');
@@ -25,6 +26,10 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [productNote, setProductNote] = useState<string>('');
   const [addProductNoteLoading, setAddProductNoteLoading] = useState(false);
   const [addProductNoteResponse, setAddProductNoteResponse] = useState<string>('');
+
+  // Set Active Product
+  const [setActiveProductLoading, setSetActiveProductLoading] = useState(false);
+  const [setActiveProductResponse, setSetActiveProductResponse] = useState<string>('');
 
   // Get Active Product
   const [getActiveProductLoading, setGetActiveProductLoading] = useState(false);
@@ -78,6 +83,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const handleProductSelect = (product: any) => {
     const productId = product._id || product.id;
     if (productId) {
+      setProductId(productId);
       // setVariantProductId(productId);
       // Automatically show variants from the product object
       if (product.variants && Array.isArray(product.variants)) {
@@ -225,6 +231,51 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           <p className="no-data-message">Select a product to view variants</p>
         )}
       </CommandSection>
+      {/* Set Active Product */}
+      <CommandSection title="Set Active Product">
+        <p className="section-description">
+          Set an active product from the table above or enter an ID manually.
+        </p>
+        <div className="form-group">
+          <label className="form-label">Product ID:</label>
+          <input
+            type="text"
+            value={productId}
+            onChange={(e) => setProductId(e.target.value)}
+            className="form-input"
+            placeholder="Enter Product ID"
+          />
+        </div>
+        <button
+          onClick={async () => {
+            if (!productId) {
+              setSetActiveProductResponse('Error: Product ID is required');
+              return;
+            }
+            setSetActiveProductLoading(true);
+            setSetActiveProductResponse('');
+            try {
+              const result = await command.setActiveProduct({ productId });
+              setSetActiveProductResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setSetActiveProductResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setSetActiveProductLoading(false);
+            }
+          }}
+          
+          className="btn btn--primary"
+        >
+          {setActiveProductLoading ? 'Setting...' : 'Set Active Product'}
+        </button>
+        {setActiveProductResponse && (
+          <JsonViewer
+            data={setActiveProductResponse}
+            title={setActiveProductResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
       {/* get active product */}
       <CommandSection title="Get Active Product">
         <p className='section-description'> 
