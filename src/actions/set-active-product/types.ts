@@ -1,12 +1,12 @@
-import { CFProduct } from "../../CommonTypes";
+import { CFActiveProduct } from "../../CommonTypes";
 
 export interface SetActiveProductParams {
-    productId: string;
+    variantId: string;
 }
 
 export interface SetActiveProductResponse {
     success: boolean;
-    product: CFProduct;
+    product: CFActiveProduct;
     timestamp: string;
 }
 

@@ -1,35 +1,39 @@
 import type { SetActiveProduct, SetActiveProductParams, SetActiveProductResponse } from "./types";
-import { CFProductType, CurrencyCode } from "../../CommonTypes";
 
 export const mockSetActiveProduct: SetActiveProduct = async (params?: SetActiveProductParams): Promise<SetActiveProductResponse> => {
     console.log("[Mock] setActiveProduct called", params);
 
-    if (!params?.productId) {
-        throw new Error("Product ID is required");
+    if (!params?.variantId) {
+        throw new Error("Variant ID is required");
     }
 
     // Mock product response
     return {
         success: true,
-        product: {
-            _id: params.productId,
-            taxTable: "",
+        product:{
+            id: "mock_product",
+            internalId: "mock_internal_id",
+            externalId: "mock_external_id",
+            productExternalId: "mock_product_external_id",
+            variantId: params.variantId,
             name: "Mock Product",
-            categories: [],
-            attributes: [],
-            productType:CFProductType.SIMPLE,
-            variants: [{
-                _id: "mock_variant",
-                sku: "mock_sku",
-                price: 100,
-                salePrice: 0,
-                isOnSale: false,
-                manageStock: false,
-                attributes: [],
-            }],
-            currency: CurrencyCode.USD,
-            minorUnits: 2,
+            sku: "mock_sku",
+            price: 100,
+            images: [],
+            taxTableId: "mock_tax_table_id",
+            quantity: 1,
+            note: "Mock Note",
+            discount: undefined,
+            description: "Mock Description",
+            barcodeId: "mock_barcode_id",
+            stock: 100,
+            allowBackOrder: false,
+            fee: undefined,
+            isUnlimited: false,
+            attributes: "Mock Attributes",
+            localQuantity: 1,
         },
+        
         timestamp: new Date().toISOString()
     }
 }

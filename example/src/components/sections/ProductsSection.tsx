@@ -14,7 +14,6 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [productsError, setProductsError] = useState<string>('');
   
   const [variants, setVariants] = useState<any[]>([]);
-  const [productId, setProductId] = useState<string>('');
   // const [variantsLoading, setVariantsLoading] = useState(false);
   // const [variantsError, setVariantsError] = useState<string>('');
   const [variantId, setVariantId] = useState<string>('');
@@ -83,7 +82,6 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const handleProductSelect = (product: any) => {
     const productId = product._id || product.id;
     if (productId) {
-      setProductId(productId);
       // setVariantProductId(productId);
       // Automatically show variants from the product object
       if (product.variants && Array.isArray(product.variants)) {
@@ -231,31 +229,38 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           <p className="no-data-message">Select a product to view variants</p>
         )}
       </CommandSection>
+      
+      <CommandSection title="Selected Variant">
+        <p className="section-description">
+          Select a variant from the table above or enter an ID manually to use for actions below.
+        </p>
+        <div className="form-group">
+          <label className="form-label">Variant ID:</label>
+          <input
+            type="text"
+            value={variantId}
+            onChange={(e) => setVariantId(e.target.value)}
+            className="form-input"
+            placeholder="Enter Variant ID"
+          />
+        </div>
+      </CommandSection>
+
       {/* Set Active Product */}
       <CommandSection title="Set Active Product">
         <p className="section-description">
-          Set an active product from the table above or enter an ID manually.
+          Set an active product from the selected variant.
         </p>
-        <div className="form-group">
-          <label className="form-label">Product ID:</label>
-          <input
-            type="text"
-            value={productId}
-            onChange={(e) => setProductId(e.target.value)}
-            className="form-input"
-            placeholder="Enter Product ID"
-          />
-        </div>
         <button
           onClick={async () => {
-            if (!productId) {
-              setSetActiveProductResponse('Error: Product ID is required');
+            if (!variantId) {
+              setSetActiveProductResponse('Error: Variant ID is required');
               return;
             }
             setSetActiveProductLoading(true);
             setSetActiveProductResponse('');
             try {
-              const result = await command.setActiveProduct({ productId });
+              const result = await command.setActiveProduct({ variantId });
               setSetActiveProductResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setSetActiveProductResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -308,21 +313,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       </CommandSection>
 
 
-      <CommandSection title="Selected Variant">
-        <p className="section-description">
-          Select a variant from the table above or enter an ID manually to use for actions below.
-        </p>
-        <div className="form-group">
-          <label className="form-label">Variant ID:</label>
-          <input
-            type="text"
-            value={variantId}
-            onChange={(e) => setVariantId(e.target.value)}
-            className="form-input"
-            placeholder="Enter Variant ID"
-          />
-        </div>
-      </CommandSection>
+
 
       <CommandSection title="Add Product to Cart">
         <p className="section-description">
