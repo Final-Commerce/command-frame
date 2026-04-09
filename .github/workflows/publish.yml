@@ -151,6 +151,7 @@ jobs:
           scope: '@final-commerce'
 
       - name: Publish to npm
+        run: npm publish ${{ steps.dist_tag.outputs.flag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
