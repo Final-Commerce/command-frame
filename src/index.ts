@@ -6,6 +6,7 @@ import { addNonRevenueItem } from "./actions/add-non-revenue-item/action";
 import { getCustomers } from "./actions/get-customers/action";
 import { assignCustomer } from "./actions/assign-customer/action";
 import { addCustomer } from "./actions/add-customer/action";
+import { editCustomer } from "./actions/edit-customer/action";
 import { getCategories } from "./actions/get-categories/action";
 import { getOrders } from "./actions/get-orders/action";
 import { addCartDiscount } from "./actions/add-cart-discount/action";
@@ -107,6 +108,7 @@ export const command = {
     getCustomers,
     assignCustomer,
     addCustomer,
+    editCustomer,
     getCategories,
     getOrders,
     getRefunds,
@@ -216,6 +218,8 @@ export type { GetCustomers, GetCustomersParams, GetCustomersResponse } from "./a
 export type { AssignCustomer, AssignCustomerParams, AssignCustomerResponse } from "./actions/assign-customer/types";
 
 export type { AddCustomer, AddCustomerParams, AddCustomerResponse } from "./actions/add-customer/types";
+
+export type { EditCustomer, EditCustomerParams, EditCustomerResponse } from "./actions/edit-customer/types";
 
 export type { GetCategories, GetCategoriesParams, GetCategoriesResponse } from "./actions/get-categories/types";
 
