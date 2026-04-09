@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish:
-    uses: Final-Commerce/central-ops/.github/workflows/publish-package.yml@main
+    uses: Final-Commerce/central-ops/.github/workflows/publish-package.yml@v1.0.3
     with:
       publish_npm: true
       commit_version: true
