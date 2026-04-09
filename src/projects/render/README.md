@@ -53,6 +53,7 @@ The library provides a `command` namespace object containing all available comma
 
 - **[addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)** - Add a custom sale item to the cart
 - **[addCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-discount/README.md)** - Add a discount to the entire cart
+- **[removeCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-cart-discount/README.md)** - Remove the cart-level discount from the current cart
 - **[addOrderNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-order-note/README.md)** - Add a note to the current order/cart
 - **[addCartFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-fee/README.md)** - Add a fee to the entire cart
 - **[addNonRevenueItem](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-non-revenue-item/README.md)** - Add a non-revenue line (e.g. gift card load); response and `getCurrentCart().nonRevenueItems` use `externalId` for the line id
@@ -241,6 +242,9 @@ Adds a discount to a specific product in the cart (identified by `internalId`). 
 
 Adds a discount to the entire cart. Supports both fixed amount and percentage discounts. Applies to the cart subtotal and affects all items.
 
+### [removeCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-cart-discount/README.md)
+
+Removes the cart-level discount from the current cart. Clears any active cart discount and recalculates cart totals. Publishes a `cart-discount-removed` event on the `cart` topic.
 ### [getActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-product/README.md)
 
 Retrieves the currently selected/active product in the POS interface. Returns the product that is currently being viewed or interacted with by the user, or `null` if no product is selected.
@@ -604,6 +608,8 @@ import type {
     AddCartDiscountParams,
     AddCartDiscountResponse,
     AddCartDiscount,
+    RemoveCartDiscountResponse,
+    RemoveCartDiscount,
     AddOrderNoteParams,
     AddOrderNoteResponse,
     AddOrderNote,
