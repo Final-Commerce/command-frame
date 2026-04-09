@@ -5,6 +5,7 @@ import type {
     GetCustomers,
     AssignCustomer,
     AddCustomer,
+    EditCustomer,
     GetCategories,
     GetOrders,
     GetRefunds,
@@ -75,6 +76,7 @@ export interface RenderProviderActions {
     getCustomers: GetCustomers;
     assignCustomer: AssignCustomer;
     addCustomer: AddCustomer;
+    editCustomer: EditCustomer;
     getCategories: GetCategories;
     getOrders: GetOrders;
     getRefunds: GetRefunds;
