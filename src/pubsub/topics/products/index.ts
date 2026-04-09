@@ -19,6 +19,16 @@ export const productsTopic: TopicDefinition = {
             id: "product-updated",
             name: "Product Updated",
             description: "Published when a product is synced/updated"
+        },
+        {
+            id: "set-active-product",
+            name: "Set Active Product",
+            description: "Published when a product is set as the active product"
+        },
+        {
+            id: "get-active-product",
+            name: "Get Active Product",
+            description: "Published when a product is retrieved as the active product"
         }
     ]
 };
