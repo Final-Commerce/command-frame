@@ -7,10 +7,172 @@ on:
 
 jobs:
   publish:
-    uses: Final-Commerce/central-ops/.github/workflows/publish-package.yml@v1.0.3
-    with:
-      publish_npm: true
-      commit_version: true
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@final-commerce'
+          cache: 'npm'
+
+      - name: Extract and validate semver from tag
+        id: version
+        run: |
+          RAW_TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${RAW_TAG#v}
+
+          SEMVER_REGEX='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-([a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*))?(\+([a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*))?$'
+          if [[ ! "$VERSION" =~ $SEMVER_REGEX ]]; then
+            echo "::error::Tag '$RAW_TAG' is not valid semver: '$VERSION'"
+            echo "Expected format: MAJOR.MINOR.PATCH[-prerelease][+build]"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$RAW_TAG" >> $GITHUB_OUTPUT
+          echo "✅ Valid semver: $VERSION"
+
+      - name: Compare with previous tag
+        run: |
+          CURRENT="${{ steps.version.outputs.version }}"
+          CURRENT_TAG="${{ steps.version.outputs.tag }}"
+
+          PREVIOUS_TAG=$(git tag -l 'v*' --sort=-version:refname | grep -v "^${CURRENT_TAG}$" | head -n 1)
+
+          if [ -z "$PREVIOUS_TAG" ]; then
+            PREVIOUS_TAG=$(git tag -l '[0-9]*' --sort=-version:refname | grep -v "^${CURRENT_TAG}$" | head -n 1)
+          fi
+
+          if [ -z "$PREVIOUS_TAG" ]; then
+            echo "No previous version tag found — skipping comparison."
+            exit 0
+          fi
+
+          PREVIOUS=${PREVIOUS_TAG#v}
+          echo "Comparing: $CURRENT (new) vs $PREVIOUS (previous)"
+
+          node -e "
+            function parse(v) {
+              const i = v.indexOf('-');
+              const core = i === -1 ? v : v.substring(0, i);
+              const pre = i === -1 ? null : v.substring(i + 1).split('.');
+              const [major, minor, patch] = core.split('.').map(Number);
+              return { major, minor, patch, pre };
+            }
+
+            function cmpId(a, b) {
+              const aNum = /^\d+\$/.test(a);
+              const bNum = /^\d+\$/.test(b);
+              if (aNum && bNum) return parseInt(a) - parseInt(b);
+              if (aNum) return -1;
+              if (bNum) return 1;
+              return a < b ? -1 : a > b ? 1 : 0;
+            }
+
+            function cmp(a, b) {
+              const va = parse(a), vb = parse(b);
+              if (va.major !== vb.major) return va.major - vb.major;
+              if (va.minor !== vb.minor) return va.minor - vb.minor;
+              if (va.patch !== vb.patch) return va.patch - vb.patch;
+              if (!va.pre && !vb.pre) return 0;
+              if (!va.pre) return 1;
+              if (!vb.pre) return -1;
+              for (let i = 0; i < Math.max(va.pre.length, vb.pre.length); i++) {
+                if (i >= va.pre.length) return -1;
+                if (i >= vb.pre.length) return 1;
+                const c = cmpId(va.pre[i], vb.pre[i]);
+                if (c !== 0) return c;
+              }
+              return 0;
+            }
+
+            const result = cmp('$CURRENT', '$PREVIOUS');
+            if (result <= 0) {
+              console.error('::error::Version $CURRENT is not greater than previous version $PREVIOUS');
+              process.exit(1);
+            }
+            console.log('✅ Version $CURRENT > $PREVIOUS');
+          "
+
+      - name: Determine dist-tag
+        id: dist_tag
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          if [[ "$VERSION" == *-* ]]; then
+            PRE=${VERSION#*-}
+            DIST_TAG=$(echo "$PRE" | grep -oE '^[a-zA-Z]+')
+            if [ -n "$DIST_TAG" ]; then
+              echo "flag=--tag $DIST_TAG" >> $GITHUB_OUTPUT
+              echo "Auto-detected dist-tag: $DIST_TAG"
+              exit 0
+            fi
+          fi
+
+          echo "flag=" >> $GITHUB_OUTPUT
+          echo "Publishing as 'latest'"
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Inject version into package.json
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '${VERSION}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          echo "✅ package.json version: $(node -p "require('./package.json').version")"
+
+      - name: Publish to GitHub Packages
+        run: npm publish ${{ steps.dist_tag.outputs.flag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm
+        run: npm publish ${{ steps.dist_tag.outputs.flag }} --registry=https://registry.npmjs.org
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Commit version bump
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          BRANCH="${{ github.event.repository.default_branch }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin "$BRANCH"
+          git checkout "$BRANCH"
+
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '${VERSION}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          if git diff --quiet package.json; then
+            echo "ℹ️ package.json already at version $VERSION — nothing to commit"
+            exit 0
+          fi
+
+          git add package.json
+          git commit -m "chore: bump version to $VERSION [skip ci]"
+          git push origin "$BRANCH"
+          echo "✅ Committed version $VERSION to $BRANCH"
