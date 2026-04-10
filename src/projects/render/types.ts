@@ -69,7 +69,19 @@ import type {
     GetUsers,
     GetRoles,
     RemoveCartDiscount,
-    GetActiveOrder
+    GetActiveOrder,
+    GetActiveCustomer,
+    SetActiveCustomer,
+    GetActiveOutlet,
+    SetActiveOutlet,
+    GetActiveStation,
+    SetActiveStation,
+    GetActiveSession,
+    SetActiveSession,
+    GetActiveUser,
+    SetActiveUser,
+    GetActiveRefund,
+    SetActiveRefund
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -144,4 +156,16 @@ export interface RenderProviderActions {
     getUsers: GetUsers;
     getRoles: GetRoles;
     getActiveOrder: GetActiveOrder;
+    getActiveCustomer: GetActiveCustomer;
+    setActiveCustomer: SetActiveCustomer;
+    getActiveOutlet: GetActiveOutlet;
+    setActiveOutlet: SetActiveOutlet;
+    getActiveStation: GetActiveStation;
+    setActiveStation: SetActiveStation;
+    getActiveSession: GetActiveSession;
+    setActiveSession: SetActiveSession;
+    getActiveUser: GetActiveUser;
+    setActiveUser: SetActiveUser;
+    getActiveRefund: GetActiveRefund;
+    setActiveRefund: SetActiveRefund;
 }

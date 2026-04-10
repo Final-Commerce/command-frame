@@ -6,18 +6,26 @@
 // Re-export all event types
 export * from "./order-created/types";
 export * from "./order-updated/types";
+export * from "./set-active-order/types";
+export * from "./get-active-order/types";
 
 // Import payload types for union type
 import type { OrderCreatedPayload } from "./order-created/types";
 import type { OrderUpdatedPayload } from "./order-updated/types";
+import type { OrderActiveSetPayload } from "./set-active-order/types";
+import type { OrderActiveGetPayload } from "./get-active-order/types";
 
 // Union type for all order event payloads
-export type OrdersEventPayload = 
+export type OrdersEventPayload =
     | OrderCreatedPayload
-    | OrderUpdatedPayload;
+    | OrderUpdatedPayload
+    | OrderActiveSetPayload
+    | OrderActiveGetPayload;
 
 // Literal types for event IDs
-export type OrdersEventType = 
+export type OrdersEventType =
     | "order-created"
-    | "order-updated";
+    | "order-updated"
+    | "set-active-order"
+    | "get-active-order";
 

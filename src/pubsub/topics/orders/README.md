@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `orders` topic provides events related to order lifecycle. Subscribe to this topic to receive real-time notifications when orders are created or updated.
+The `orders` topic provides events related to order lifecycle. Subscribe to this topic to receive real-time notifications when orders are created or updated, when the active order changes, or when the host publishes an active-order snapshot.
 
 ## Topic Information
 
@@ -16,6 +16,8 @@ The `orders` topic provides events related to order lifecycle. Subscribe to this
 |-------|-------------|---------------|
 | [order-created](./order-created/README.md) | Published when a new order is created | [View Details](./order-created/README.md) |
 | [order-updated](./order-updated/README.md) | Published when an order is updated | [View Details](./order-updated/README.md) |
+| [set-active-order](./set-active-order/README.md) | Published when the active order is set in the host | [View Details](./set-active-order/README.md) |
+| [get-active-order](./get-active-order/README.md) | Reserved for host publish of active order snapshots | [View Details](./get-active-order/README.md) |
 
 ## Quick Start
 
@@ -33,6 +35,12 @@ const subscriptionId = topics.subscribe('orders', (event: TopicEvent) => {
         case 'order-updated':
             console.log('Order updated:', event.data.order);
             break;
+        case 'set-active-order':
+            console.log('Active order set:', event.data.order);
+            break;
+        case 'get-active-order':
+            console.log('Active order snapshot:', event.data.order);
+            break;
     }
 });
 ```
@@ -47,6 +55,10 @@ import type {
     OrderCreatedEvent,
     OrderUpdatedPayload,
     OrderUpdatedEvent,
+    OrderActiveSetPayload,
+    OrderActiveSetEvent,
+    OrderActiveGetPayload,
+    OrderActiveGetEvent,
     OrdersEventType,
     OrdersEventPayload
 } from '@final-commerce/command-frame';

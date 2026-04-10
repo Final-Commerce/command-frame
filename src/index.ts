@@ -51,6 +51,18 @@ import { switchUser } from "./actions/switch-user/action";
 import { print } from "./actions/print/action";
 import { setActiveOrder } from "./actions/set-active-order/action";
 import { getActiveOrder } from "./actions/get-active-order/action";
+import { getActiveCustomer } from "./actions/get-active-customer/action";
+import { setActiveCustomer } from "./actions/set-active-customer/action";
+import { getActiveOutlet } from "./actions/get-active-outlet/action";
+import { setActiveOutlet } from "./actions/set-active-outlet/action";
+import { getActiveStation } from "./actions/get-active-station/action";
+import { setActiveStation } from "./actions/set-active-station/action";
+import { getActiveSession } from "./actions/get-active-session/action";
+import { setActiveSession } from "./actions/set-active-session/action";
+import { getActiveUser } from "./actions/get-active-user/action";
+import { setActiveUser } from "./actions/set-active-user/action";
+import { getActiveRefund } from "./actions/get-active-refund/action";
+import { setActiveRefund } from "./actions/set-active-refund/action";
 // Integration Actions
 import { triggerWebhook } from "./actions/trigger-webhook/action";
 import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
@@ -155,6 +167,18 @@ export const command = {
     print,
     setActiveOrder,
     getActiveOrder,
+    getActiveCustomer,
+    setActiveCustomer,
+    getActiveOutlet,
+    setActiveOutlet,
+    getActiveStation,
+    setActiveStation,
+    getActiveSession,
+    setActiveSession,
+    getActiveUser,
+    setActiveUser,
+    getActiveRefund,
+    setActiveRefund,
     // Integration Actions
     triggerWebhook,
     triggerZapierWebhook,
@@ -322,6 +346,18 @@ export type { SwitchUser, SwitchUserParams, SwitchUserResponse } from "./actions
 export type { Print, PrintParams, PrintResponse } from "./actions/print/types";
 export type { SetActiveOrder, SetActiveOrderParams, SetActiveOrderResponse } from "./actions/set-active-order/types";
 export type { GetActiveOrder, GetActiveOrderResponse } from "./actions/get-active-order/types";
+export type { GetActiveCustomer, GetActiveCustomerResponse } from "./actions/get-active-customer/types";
+export type { SetActiveCustomer, SetActiveCustomerParams, SetActiveCustomerResponse } from "./actions/set-active-customer/types";
+export type { GetActiveOutlet, GetActiveOutletResponse } from "./actions/get-active-outlet/types";
+export type { SetActiveOutlet, SetActiveOutletParams, SetActiveOutletResponse } from "./actions/set-active-outlet/types";
+export type { GetActiveStation, GetActiveStationResponse } from "./actions/get-active-station/types";
+export type { SetActiveStation, SetActiveStationParams, SetActiveStationResponse } from "./actions/set-active-station/types";
+export type { GetActiveSession, GetActiveSessionResponse } from "./actions/get-active-session/types";
+export type { SetActiveSession, SetActiveSessionParams, SetActiveSessionResponse } from "./actions/set-active-session/types";
+export type { GetActiveUser, GetActiveUserResponse } from "./actions/get-active-user/types";
+export type { SetActiveUser, SetActiveUserParams, SetActiveUserResponse } from "./actions/set-active-user/types";
+export type { GetActiveRefund, GetActiveRefundResponse } from "./actions/get-active-refund/types";
+export type { SetActiveRefund, SetActiveRefundParams, SetActiveRefundResponse } from "./actions/set-active-refund/types";
 // Integration Actions
 export type { TriggerWebhook, TriggerWebhookPresetType, TriggerWebhookParams, TriggerWebhookResponse } from "./actions/trigger-webhook/types";
 export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWebhookResponse } from "./actions/trigger-zapier-webhook/types";
@@ -359,6 +395,7 @@ export type {
     HookOptions,
     HookRegistration
 } from "./pubsub/types";
+export type { TopicEventPayloadMap } from "./pubsub/topics/types";
 
 // Export Hooks (extension iframe API for session-scoped event callbacks)
 export { hooks } from "./hooks";
@@ -373,6 +410,10 @@ export { cartTopic } from "./pubsub/topics/cart";
 export { paymentsTopic } from "./pubsub/topics/payments";
 export { customTablesTopic } from "./pubsub/topics/custom-tables";
 export { printTopic } from "./pubsub/topics/print";
+export { outletTopic } from "./pubsub/topics/outlet";
+export { stationTopic } from "./pubsub/topics/station";
+export { sessionTopic } from "./pubsub/topics/session";
+export { usersTopic } from "./pubsub/topics/users";
 // Export Pub/Sub Event Types
 export type {
     // Customer event payloads
@@ -382,6 +423,8 @@ export type {
     CustomerNoteDeletedPayload,
     CustomerAssignedPayload,
     CustomerUnassignedPayload,
+    CustomerActiveSetPayload,
+    CustomerActiveGetPayload,
     // Customer event types
     CustomerCreatedEvent,
     CustomerUpdatedEvent,
@@ -389,6 +432,8 @@ export type {
     CustomerNoteDeletedEvent,
     CustomerAssignedEvent,
     CustomerUnassignedEvent,
+    CustomerActiveSetEvent,
+    CustomerActiveGetEvent,
     // Customer topic union types
     CustomersEventType,
     CustomersEventPayload
@@ -398,8 +443,12 @@ export type {
 export type {
     OrderCreatedPayload,
     OrderUpdatedPayload,
+    OrderActiveSetPayload,
+    OrderActiveGetPayload,
     OrderCreatedEvent,
     OrderUpdatedEvent,
+    OrderActiveSetEvent,
+    OrderActiveGetEvent,
     OrdersEventType,
     OrdersEventPayload
 } from "./pubsub/topics/orders/types";
@@ -408,8 +457,12 @@ export type {
 export type {
     RefundCreatedPayload,
     RefundUpdatedPayload,
+    RefundActiveSetPayload,
+    RefundActiveGetPayload,
     RefundCreatedEvent,
     RefundUpdatedEvent,
+    RefundActiveSetEvent,
+    RefundActiveGetEvent,
     RefundsEventType,
     RefundsEventPayload
 } from "./pubsub/topics/refunds/types";
@@ -418,11 +471,49 @@ export type {
 export type {
     ProductCreatedPayload,
     ProductUpdatedPayload,
+    ProductSetActivePayload,
+    ProductGetActivePayload,
     ProductCreatedEvent,
     ProductUpdatedEvent,
+    ProductSetActiveEvent,
+    ProductGetActiveEvent,
     ProductsEventType,
     ProductsEventPayload
 } from "./pubsub/topics/products/types";
+
+// Outlet / station / session / users topic types
+export type {
+    OutletActiveSetPayload,
+    OutletActiveGetPayload,
+    OutletActiveSetEvent,
+    OutletActiveGetEvent,
+    OutletEventType,
+    OutletEventPayload
+} from "./pubsub/topics/outlet/types";
+export type {
+    StationActiveSetPayload,
+    StationActiveGetPayload,
+    StationActiveSetEvent,
+    StationActiveGetEvent,
+    StationEventType,
+    StationEventPayload
+} from "./pubsub/topics/station/types";
+export type {
+    SessionActiveSetPayload,
+    SessionActiveGetPayload,
+    SessionActiveSetEvent,
+    SessionActiveGetEvent,
+    SessionEventType,
+    SessionEventPayload
+} from "./pubsub/topics/session/types";
+export type {
+    UserActiveSetPayload,
+    UserActiveGetPayload,
+    UserActiveSetEvent,
+    UserActiveGetEvent,
+    UsersEventType,
+    UsersEventPayload
+} from "./pubsub/topics/users/types";
 
 // Export Cart Event Types
 export type {

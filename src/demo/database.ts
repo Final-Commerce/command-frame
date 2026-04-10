@@ -17,6 +17,8 @@ import {
     CFCategory,
     CurrencyCode,
     CFActiveProduct,
+    CFSession,
+    CFActiveRefundDetails
 } from "../CommonTypes";
 
 export * from "./mocks";
@@ -95,6 +97,26 @@ export const MOCK_STATION_2: CFActiveStation = {
     status: "open",
     sequenceNumber: 2,
     stripeTerminalId: "tm_2"
+};
+
+// --- SESSION (cash register) ---
+export const MOCK_SESSION: CFSession = {
+    id: "sess_mock_1",
+    stationId: MOCK_STATION_1._id,
+    openingAmount: 100,
+    openedBy: "user_mario",
+    currency: CurrencyCode.USD,
+    minorUnits: 2
+};
+
+// --- ACTIVE REFUND DETAILS (refund UI state) ---
+export const MOCK_ACTIVE_REFUND_DETAILS: CFActiveRefundDetails = {
+    quantities: { line_mock_1: 1 },
+    options: {},
+    refundAmounts: {},
+    currentRefundTotal: 0,
+    amountRemaining: null,
+    isRefund: true
 };
 
 // --- USERS ---

@@ -14,6 +14,12 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
   const [initiateRefundLoading, setInitiateRefundLoading] = useState(false);
   const [initiateRefundResponse, setInitiateRefundResponse] = useState<string>('');
 
+  const [activeRefundOrderId, setActiveRefundOrderId] = useState<string>('');
+  const [setActiveRefundLoading, setSetActiveRefundLoading] = useState(false);
+  const [setActiveRefundResponse, setSetActiveRefundResponse] = useState<string>('');
+  const [getActiveRefundLoading, setGetActiveRefundLoading] = useState(false);
+  const [getActiveRefundResponse, setGetActiveRefundResponse] = useState<string>('');
+
   // Get Refunds
   const [refundsOrderId, setRefundsOrderId] = useState<string>('');
   const [refundsLimit, setRefundsLimit] = useState<string>('10');
@@ -90,6 +96,85 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
           <JsonViewer
             data={initiateRefundResponse}
             title={initiateRefundResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Get Active Refund">
+        <p className="section-description">Returns current refund selection state from the host.</p>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setGetActiveRefundResponse('Error: Not running in iframe');
+              return;
+            }
+            setGetActiveRefundLoading(true);
+            setGetActiveRefundResponse('');
+            try {
+              const result = await command.getActiveRefund();
+              setGetActiveRefundResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setGetActiveRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setGetActiveRefundLoading(false);
+            }
+          }}
+          disabled={getActiveRefundLoading}
+          className="btn btn--primary"
+        >
+          {getActiveRefundLoading ? 'Loading...' : 'Get Active Refund'}
+        </button>
+        {getActiveRefundResponse && (
+          <JsonViewer
+            data={getActiveRefundResponse}
+            title={getActiveRefundResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Set Active Refund">
+        <p className="section-description">Loads an order by id and opens the refund flow with initial selection state.</p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Order ID:</label>
+            <input
+              type="text"
+              value={activeRefundOrderId}
+              onChange={(e) => setActiveRefundOrderId(e.target.value)}
+              placeholder="order-id"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setSetActiveRefundResponse('Error: Not running in iframe');
+              return;
+            }
+            if (!activeRefundOrderId) {
+              setSetActiveRefundResponse('Error: Please enter an order ID');
+              return;
+            }
+            setSetActiveRefundLoading(true);
+            setSetActiveRefundResponse('');
+            try {
+              const result = await command.setActiveRefund({ orderId: activeRefundOrderId });
+              setSetActiveRefundResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setSetActiveRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setSetActiveRefundLoading(false);
+            }
+          }}
+          disabled={setActiveRefundLoading}
+          className="btn btn--primary"
+        >
+          {setActiveRefundLoading ? 'Setting...' : 'Set Active Refund'}
+        </button>
+        {setActiveRefundResponse && (
+          <JsonViewer
+            data={setActiveRefundResponse}
+            title={setActiveRefundResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>

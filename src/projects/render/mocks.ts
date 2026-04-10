@@ -69,6 +69,18 @@ import { mockSetSecretVal } from "../../actions/set-secret-val/mock";
 import { mockGetUsers } from "../../actions/get-users/mock";
 import { mockGetRoles } from "../../actions/get-roles/mock";
 import { mockGetActiveOrder } from "../../actions/get-active-order/mock";
+import { mockGetActiveCustomer } from "../../actions/get-active-customer/mock";
+import { mockSetActiveCustomer } from "../../actions/set-active-customer/mock";
+import { mockGetActiveOutlet } from "../../actions/get-active-outlet/mock";
+import { mockSetActiveOutlet } from "../../actions/set-active-outlet/mock";
+import { mockGetActiveStation } from "../../actions/get-active-station/mock";
+import { mockSetActiveStation } from "../../actions/set-active-station/mock";
+import { mockGetActiveSession } from "../../actions/get-active-session/mock";
+import { mockSetActiveSession } from "../../actions/set-active-session/mock";
+import { mockGetActiveUser } from "../../actions/get-active-user/mock";
+import { mockSetActiveUser } from "../../actions/set-active-user/mock";
+import { mockGetActiveRefund } from "../../actions/get-active-refund/mock";
+import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -143,4 +155,16 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getUsers: mockGetUsers,
     getRoles: mockGetRoles,
     getActiveOrder: mockGetActiveOrder,
+    getActiveCustomer: mockGetActiveCustomer,
+    setActiveCustomer: mockSetActiveCustomer,
+    getActiveOutlet: mockGetActiveOutlet,
+    setActiveOutlet: mockSetActiveOutlet,
+    getActiveStation: mockGetActiveStation,
+    setActiveStation: mockSetActiveStation,
+    getActiveSession: mockGetActiveSession,
+    setActiveSession: mockSetActiveSession,
+    getActiveUser: mockGetActiveUser,
+    setActiveUser: mockSetActiveUser,
+    getActiveRefund: mockGetActiveRefund,
+    setActiveRefund: mockSetActiveRefund
 };

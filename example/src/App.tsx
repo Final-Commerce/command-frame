@@ -7,6 +7,9 @@ import { ProductsSection } from './components/sections/ProductsSection';
 import { CustomersSection } from './components/sections/CustomersSection';
 import { CartSection } from './components/sections/CartSection';
 import { OrdersSection } from './components/sections/OrdersSection';
+import { OutletSection } from './components/sections/OutletSection';
+import { StationSection } from './components/sections/StationSection';
+import { SessionSection } from './components/sections/SessionSection';
 import { RefundsSection } from './components/sections/RefundsSection';
 import { PaymentsSection } from './components/sections/PaymentsSection';
 import { SystemSection } from './components/sections/SystemSection';
@@ -38,6 +41,12 @@ function App() {
         return <CartSection isInIframe={isInIframe} />;
       case 'orders':
         return <OrdersSection isInIframe={isInIframe} />;
+      case 'outlet':
+        return <OutletSection isInIframe={isInIframe} />;
+      case 'station':
+        return <StationSection isInIframe={isInIframe} />;
+      case 'session':
+        return <SessionSection isInIframe={isInIframe} />;
       case 'refunds':
         return <RefundsSection isInIframe={isInIframe} />;
       case 'payments':

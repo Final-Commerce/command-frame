@@ -103,6 +103,20 @@ console.log('Full company object (without settings):', context.company);
 console.log('Full station object:', context.station);
 console.log('Full outlet object:', context.outlet);
 
+// Active entity getters/setters
+const activeCustomer = await command.getActiveCustomer();
+await command.setActiveCustomer({ customerId: 'customer-123' });
+const activeOutlet = await command.getActiveOutlet();
+await command.setActiveOutlet({ outletId: 'outlet-123' });
+const activeStation = await command.getActiveStation();
+await command.setActiveStation({ stationId: 'station-123' });
+const activeSession = await command.getActiveSession();
+await command.setActiveSession({ sessionId: 'session-123' });
+const activeUser = await command.getActiveUser();
+await command.setActiveUser({ userId: 'user-123' });
+const activeRefund = await command.getActiveRefund();
+await command.setActiveRefund({ orderId: 'order-123' });
+
 // Product Actions
 await command.addProductNote({ note: 'Customer requested extra packaging' });
 await command.addProductFee({ amount: 5.00, label: 'Service Fee', applyTaxes: true });

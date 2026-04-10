@@ -504,6 +504,42 @@ export interface CFActiveStation {
     stripeTerminalId?: string;
 }
 
+/** Cash register session (station session), aligned with Render `Session`. */
+export interface CFSession {
+    id: string;
+    stationId: string;
+    openingAmount?: number;
+    closingAmount?: number;
+    openedBy?: string;
+    closedBy?: string;
+    notes?: string[];
+    currency?: CurrencyCode;
+    minorUnits?: number;
+}
+
+/** Refund UI / selection state in POS, aligned with Render `ActiveRefundOrder`. */
+export interface CFRefundProcessingStatus {
+    status: string;
+    isCardPresent?: boolean;
+    message?: string;
+}
+
+export interface CFActiveRefundDetails {
+    quantities?: Record<string, number>;
+    options?: Record<string, string>;
+    refundAmounts?: Record<string, number>;
+    refundPayments?: CFPaymentMethod[] | null;
+    currentRefundTotal?: number;
+    amountRemaining?: number | null;
+    buttonsDisabled?: Record<string, boolean>;
+    isRefund?: boolean;
+    customSalesQuantities?: Record<string, number>;
+    cartFeesRefunds?: Record<string, number>;
+    tipsRefunds?: Record<string, number>;
+    refundProcessingStatus?: CFRefundProcessingStatus | null;
+    sessionRefundedTotal?: number;
+}
+
 export interface CFActiveOrder extends CFOrder {
     id?: string;
     internalId?: string;

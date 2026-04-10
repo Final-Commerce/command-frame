@@ -20,6 +20,8 @@ The `customers` topic provides events related to customer lifecycle and cart ass
 | [customer-note-deleted](./customer-note-deleted/README.md) | Published when a note is deleted from a customer | [View Details](./customer-note-deleted/README.md) |
 | [customer-assigned](./customer-assigned/README.md) | Published when a customer is assigned to the cart | [View Details](./customer-assigned/README.md) |
 | [customer-unassigned](./customer-unassigned/README.md) | Published when a customer is unassigned from the cart | [View Details](./customer-unassigned/README.md) |
+| [set-active-customer](./set-active-customer/README.md) | Published when the active customer is set in the host | [View Details](./set-active-customer/README.md) |
+| [get-active-customer](./get-active-customer/README.md) | Reserved for host publish of active customer snapshots | [View Details](./get-active-customer/README.md) |
 
 ## Quick Start
 
@@ -48,6 +50,12 @@ const subscriptionId = topics.subscribe('customers', (event: TopicEvent) => {
             break;
         case 'customer-unassigned':
             console.log('Customer unassigned from cart:', event.data.customer);
+            break;
+        case 'set-active-customer':
+            console.log('Active customer set:', event.data.customer);
+            break;
+        case 'get-active-customer':
+            console.log('Active customer snapshot:', event.data.customer);
             break;
     }
 });
@@ -89,6 +97,10 @@ import type {
     CustomerAssignedEvent,
     CustomerUnassignedPayload,
     CustomerUnassignedEvent,
+    CustomerActiveSetPayload,
+    CustomerActiveSetEvent,
+    CustomerActiveGetPayload,
+    CustomerActiveGetEvent,
     CustomersEventType,
     CustomersEventPayload
 } from '@final-commerce/command-frame';

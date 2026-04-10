@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `refunds` topic provides events related to refund lifecycle. Subscribe to this topic to receive real-time notifications when refunds are created or updated.
+The `refunds` topic provides events related to refund lifecycle. Subscribe to this topic to receive real-time notifications when refunds are created or updated, when active refund selection state changes, or when the host publishes a refund snapshot.
 
 ## Topic Information
 
@@ -16,6 +16,8 @@ The `refunds` topic provides events related to refund lifecycle. Subscribe to th
 |-------|-------------|---------------|
 | [refund-created](./refund-created/README.md) | Published when a new refund is created | [View Details](./refund-created/README.md) |
 | [refund-updated](./refund-updated/README.md) | Published when a refund is updated | [View Details](./refund-updated/README.md) |
+| [set-active-refund](./set-active-refund/README.md) | Published when active refund selection state changes | [View Details](./set-active-refund/README.md) |
+| [get-active-refund](./get-active-refund/README.md) | Reserved for host publish of refund snapshots | [View Details](./get-active-refund/README.md) |
 
 ## Quick Start
 
@@ -33,6 +35,12 @@ const subscriptionId = topics.subscribe('refunds', (event: TopicEvent) => {
         case 'refund-updated':
             console.log('Refund updated:', event.data.refund);
             break;
+        case 'set-active-refund':
+            console.log('Active refund state:', event.data.refund);
+            break;
+        case 'get-active-refund':
+            console.log('Active refund snapshot:', event.data.refund);
+            break;
     }
 });
 ```
@@ -47,6 +55,10 @@ import type {
     RefundCreatedEvent,
     RefundUpdatedPayload,
     RefundUpdatedEvent,
+    RefundActiveSetPayload,
+    RefundActiveSetEvent,
+    RefundActiveGetPayload,
+    RefundActiveGetEvent,
     RefundsEventType,
     RefundsEventPayload
 } from '@final-commerce/command-frame';
