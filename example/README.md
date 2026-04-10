@@ -155,7 +155,6 @@ await command.showNotification({ message: 'Order completed!' });
 await command.toggleSlideOut({ slideOutId: 'slideout-123' });
 await command.showConfirmation({ message: 'Are you sure?' });
 await command.authenticateUser({ roleIds: ['role-123'] });
-await command.updateCustomerFacingDisplay({ pageId: 'page-123' });
 await command.switchUser({ mode: 'dialog' });
 await command.switchUser({ mode: 'role', roleIds: ['role-123'] });
 await command.switchUser({ mode: 'specific', userId: 'user-123' });

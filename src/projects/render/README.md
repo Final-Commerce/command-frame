@@ -1,6 +1,6 @@
 # @final-commerce/command-frame
 
-A TypeScript library for communication between iframes and their parent windows using postMessage with type safety and error handling. test.
+A TypeScript library for communication between iframes and their parent windows using postMessage with type safety and error handling.
 
 ## Installation
 
@@ -132,6 +132,15 @@ The library provides a `command` namespace object containing all available comma
 
 - **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
 - **[triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)** - Trigger a Zapier webhook with the current context data
+
+#### Additional Commands on `command`
+
+The `command` object also exports several actions that are documented in their own pages and are typically host-specific (Render-only, Manage-only, or optional host extensions):
+
+- **Manage / optional host actions:** [generateAPIKey](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/generate-api-key/README.md), [navigateTo](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/navigate-to/README.md), [refreshResource](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/refresh-resource/README.md), [getMedia](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-media/README.md), [uploadMedia](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/upload-media/README.md), [getTaxTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-tax-tables/README.md), [getBranding](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-branding/README.md)
+- **Entity / company lookups:** [getOutlets](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-outlets/README.md), [getStations](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-stations/README.md), [getUsers](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-users/README.md), [getRoles](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-roles/README.md)
+- **Catalog management:** [addProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product/README.md), [editCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/edit-customer/README.md), [editProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/edit-product/README.md), [editProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/edit-product-variants/README.md), [deleteProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-product/README.md)
+- **Refund/payment variants:** [getRefunds](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-refunds/README.md), [redeemPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/redeem-payment/README.md), [extensionPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/extension-payment/README.md)
 
 #### Reference
 

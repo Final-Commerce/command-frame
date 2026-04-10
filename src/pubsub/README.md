@@ -27,8 +27,9 @@ topics.unsubscribe('customers', subscriptionId);
 | [orders](./topics/orders/README.md) | Order lifecycle events | 4 events | [View Details](./topics/orders/README.md) |
 | [refunds](./topics/refunds/README.md) | Refund lifecycle events | 4 events | [View Details](./topics/refunds/README.md) |
 | [products](./topics/products/README.md) | Product sync events | 4 events | [View Details](./topics/products/README.md) |
-| [cart](./topics/cart/README.md) | Cart operation events | 8 events | [View Details](./topics/cart/README.md) |
+| [cart](./topics/cart/README.md) | Cart operation events | 9 events | [View Details](./topics/cart/README.md) |
 | [payments](./topics/payments/README.md) | Payment processing events | 2 events | [View Details](./topics/payments/README.md) |
+| [custom-tables](./topics/custom-tables/README.md) | Custom table row lifecycle events | 3 events | [View Details](./topics/custom-tables/README.md) |
 | [print](./topics/print/README.md) | Print action events | 3 events | [View Details](./topics/print/README.md) |
 | [outlet](./topics/outlet/README.md) | Active outlet context | 2 events | [View Details](./topics/outlet/README.md) |
 | [station](./topics/station/README.md) | Active station context | 2 events | [View Details](./topics/station/README.md) |
@@ -213,6 +214,7 @@ For detailed documentation on each topic and its events, see:
 - [Products Topic](./topics/products/README.md)
 - [Cart Topic](./topics/cart/README.md)
 - [Payments Topic](./topics/payments/README.md)
+- [Custom Tables Topic](./topics/custom-tables/README.md)
 - [Print Topic](./topics/print/README.md)
 - [Outlet Topic](./topics/outlet/README.md)
 - [Station Topic](./topics/station/README.md)

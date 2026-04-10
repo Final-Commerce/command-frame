@@ -1,33 +1,16 @@
-update-customer-facing-display# updateCustomerFacingDisplay
+# updateCustomerFacingDisplay (deprecated / not exported)
 
-Updates the customer-facing display to show a specific page.
+`command.updateCustomerFacingDisplay` is **not exported** from the current package API (`src/index.ts`).
 
-## Parameters
+This page is kept only as historical context for older integrations that may have implemented a host-side custom action with this name.
 
-- `pageId` (string, required): The ID of the page to display on the customer-facing display
+## Current status
 
-## Response
+- Not available on the `command` object from `@final-commerce/command-frame`.
+- No first-class action implementation exists in `src/actions/*/action.ts`.
 
-```typescript
-{
-  success: boolean;
-  pageId: string;
-  timestamp: string;
-}
-```
+## Recommended alternatives
 
-## Usage
-
-```typescript
-import { command } from '@final-commerce/command-frame';
-
-// Update customer facing display
-await command.updateCustomerFacingDisplay({
-  pageId: 'page-123'
-});
-```
-
-## Error Handling
-
-- Throws an error if pageId is missing
+- For POS-facing UI feedback, use [`showNotification`](../show-notification/README.md) and [`showConfirmation`](../show-confirmation/README.md).
+- For custom host workflows, implement a host-specific action and document it within your integration project.
 

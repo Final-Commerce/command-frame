@@ -1,8 +1,10 @@
 # Types Reference
 
-Complete field-level reference for all types exported from `@final-commerce/command-frame`.
+Field-level reference for the core domain model types exported from `@final-commerce/command-frame` (orders, cart, customers, products, refunds, context, and related primitives).
 
-All types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
+These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
+
+Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
 
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
