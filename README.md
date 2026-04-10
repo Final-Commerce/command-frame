@@ -117,7 +117,7 @@ hooks.unregister('my-extension:cart-log');
 ### What you should do
 
 1. **Recommended:** call **`installExtensionRefundListener`** once when your extension boots (e.g. next to your `RenderClient` setup). Pass an `async` handler that calls your provider (gift card API, wallet, etc.) and returns an **`ExtensionRefundResponse`** (`success`, optional `error`, optional `extensionTransactionId` for receipts / support).
-2. The helper validates `event.source === window.parent`, parses params, and replies with the same **`PostMessageResponse`** envelope as the rest of Command Frame (`requestId`, `success`, `data` / `error`).
+2. The helper validates `event.source === window.top`, parses params, and replies with the same **`PostMessageResponse`** envelope as the rest of Command Frame (`requestId`, `success`, `data` / `error`).
 3. **Alternative:** implement a `window` `message` listener yourself using the same contract (action name: **`extensionRefundRequest`**, or import **`EXTENSION_REFUND_REQUEST_ACTION`** from this package).
 
 Exported APIs: `installExtensionRefundListener`, `EXTENSION_REFUND_REQUEST_ACTION`, types **`ExtensionRefundParams`** / **`ExtensionRefundResponse`**.

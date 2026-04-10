@@ -22,9 +22,10 @@ import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-com
 - [Cart Types](#cart-types) -- CFActiveCart, CFNonRevenueItem, CFActiveProduct, CFActiveCustomSales
 - [Product Types](#product-types) -- CFProduct, CFProductVariant, CFCategory, CFInventory
 - [Refund Types](#refund-types) -- CFRefundItem, CFRefundedTipPayment
-- [System Types](#system-types) -- CFActiveUser, CFActiveUserRole, CFActiveOutlet, CFActiveStation, CFActiveCompany, CFPosDataItem, CFOrderNote
+- [System Types](#system-types) -- CFActiveUser, CFActiveUserRole, CFActiveOutlet, CFActiveStation, CFSession, CFActiveRefundDetails, CFRefundProcessingStatus, CFActiveCompany, CFPosDataItem, CFOrderNote
 - [Address & Metadata](#address--metadata) -- CFAddress, CFMetadataItem, CFTax
 - [Context Types](#context-types) -- CFContextRender, CFContextManage, CFOutletInfo, CFProjectName, CFContext
+- [Custom Data Types](#custom-data-types) -- CFCustomTable, CFCustomTableField, CustomExtension, AttributeType
 
 ## Type Relationships
 
@@ -764,6 +765,52 @@ A POS station (register/terminal).
 | `updatedAt` | `string` | No | ISO timestamp of last update |
 | `stripeTerminalId` | `string` | No | Stripe terminal identifier |
 
+### CFSession
+
+Active register session (cash session), used by `getActiveSession` / `setActiveSession`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | Yes | Session identifier |
+| `stationId` | `string` | Yes | Station identifier this session belongs to |
+| `openingAmount` | `number` | No | Opening cash amount |
+| `closingAmount` | `number` | No | Closing cash amount |
+| `openedBy` | `string` | No | User id who opened the session |
+| `closedBy` | `string` | No | User id who closed the session |
+| `notes` | `string[]` | No | Session notes |
+| `currency` | [`CurrencyCode`](#currencycode) | No | Session currency |
+| `minorUnits` | `number` | No | Currency minor units |
+
+### CFRefundProcessingStatus
+
+Refund processing UI status for active refund flows.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | `string` | Yes | Host-defined status value |
+| `isCardPresent` | `boolean` | No | Whether card-present flow is active |
+| `message` | `string` | No | Host status or error message |
+
+### CFActiveRefundDetails
+
+Current refund selection state used by `getActiveRefund` / `setActiveRefund`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `quantities` | `Record<string, number>` | No | Per-line-item quantities selected for refund |
+| `options` | `Record<string, string>` | No | Per-item option selections (e.g. stock action) |
+| `refundAmounts` | `Record<string, number>` | No | Per-item custom refund amounts |
+| `refundPayments` | [`CFPaymentMethod`](#cfpaymentmethod)`[] \| null` | No | Selected refund payment methods |
+| `currentRefundTotal` | `number` | No | Current computed refund total |
+| `amountRemaining` | `number \| null` | No | Amount left to allocate/refund |
+| `buttonsDisabled` | `Record<string, boolean>` | No | Host UI button disabled flags |
+| `isRefund` | `boolean` | No | Whether refund mode is active |
+| `customSalesQuantities` | `Record<string, number>` | No | Selected custom-sale quantities |
+| `cartFeesRefunds` | `Record<string, number>` | No | Selected cart-fee refund amounts |
+| `tipsRefunds` | `Record<string, number>` | No | Selected tip refund amounts |
+| `refundProcessingStatus` | [`CFRefundProcessingStatus`](#cfrefundprocessingstatus)` \| null` | No | Current processing status |
+| `sessionRefundedTotal` | `number` | No | Total refunded in current session |
+
 ### CFActiveCompany
 
 The active company in the POS session.
@@ -905,3 +952,73 @@ Type alias: `"Render" | "Manage"` -- identifies which host environment is active
 ### CFContext
 
 Type alias for [`CFContextRender`](#cfcontextrender). Kept for backward compatibility.
+
+---
+
+## Custom Data Types
+
+These types come from `src/common-types/*` and are re-exported from the package root (`@final-commerce/command-frame`).
+
+### CFCustomTable
+
+Custom table definition used by `getCustomTables` and related commands.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Custom table identifier |
+| `createdAt` | `string` | Yes | ISO creation timestamp |
+| `updatedAt` | `string` | Yes | ISO update timestamp |
+| `name` | `string` | Yes | Internal table name |
+| `description` | `string` | No | Human-readable description |
+| `metadata` | `{ key: string; value: any }[]` | No | Host-defined metadata entries |
+
+### CFCustomTableField
+
+Field schema for a custom table, returned by `getCustomTableFields`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Field identifier |
+| `createdAt` | `string` | Yes | ISO creation timestamp |
+| `updatedAt` | `string` | Yes | ISO update timestamp |
+| `tableId` | `string` | Yes | Parent custom table id |
+| `name` | `string` | Yes | Field name |
+| `type` | [`AttributeType`](#attributetype) | Yes | Field value type |
+| `required` | `boolean` | No | Whether value is required |
+| `defaultValue` | `any` | No | Default value for new rows |
+| `referenceLinkedCollection` | `string` | No | Referenced collection name |
+| `referenceLinkedField` | `string` | No | Referenced field name |
+
+### CustomExtension
+
+Custom extension metadata returned by extension lookup commands.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | `string` | Yes | Extension identifier |
+| `createdAt` | `string` | Yes | ISO creation timestamp |
+| `updatedAt` | `string` | Yes | ISO update timestamp |
+| `label` | `string` | Yes | Extension display label |
+| `description` | `string` | No | Long description |
+| `backgroundUrl` | `string` | No | Background asset URL |
+| `gallery` | `string[]` | No | Gallery asset URLs |
+| `category` | `string` | Yes | Extension category |
+| `short_description` | `string` | No | Short marketplace description |
+| `long_description` | `string` | No | Extended marketplace description |
+| `main_image` | `string` | No | Primary image URL |
+| `price` | `number` | Yes | Price value |
+| `isDeleted` | `boolean` | Yes | Soft-delete flag |
+| `__v` | `number` | Yes | Version key |
+| `website` | `string` | No | Extension website URL |
+
+### AttributeType
+
+Enum for custom table field value types.
+
+| Value | Description |
+|-------|-------------|
+| `STRING` | `"string"` -- Plain text |
+| `NUMBER` | `"number"` -- Numeric values |
+| `BOOLEAN` | `"boolean"` -- True/false values |
+| `DATE` | `"date"` -- Date/datetime values |
+| `JSON_STRING` | `"json-string"` -- JSON-encoded string payload |

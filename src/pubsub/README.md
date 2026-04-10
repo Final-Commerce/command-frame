@@ -7,7 +7,7 @@ The pub/sub system allows iframe applications to subscribe to topics and receive
 ```typescript
 import { topics } from '@final-commerce/command-frame';
 
-// Get available topics
+// Request topics from host and read the current cached list
 const availableTopics = await topics.getTopics();
 
 // Subscribe to a topic with a callback
@@ -40,14 +40,16 @@ topics.unsubscribe('customers', subscriptionId);
 
 ### `topics.getTopics()`
 
-Retrieves the list of available topics from the host application.
+Requests a fresh list of available topics from the host and returns the current cached list.
+
+`getTopics()` does not block waiting for a host reply; the host updates the local cache asynchronously through `postMessage`.
 
 **Returns:** `Promise<TopicDefinition[]>`
 
 **Example:**
 ```typescript
-const topics = await topics.getTopics();
-topics.forEach(topic => {
+const availableTopics = await topics.getTopics();
+availableTopics.forEach(topic => {
     console.log(`Topic: ${topic.name} (${topic.id})`);
     console.log(`Event types: ${topic.eventTypes.map(et => et.id).join(', ')}`);
 });
@@ -71,6 +73,11 @@ const subscriptionId = topics.subscribe('customers', (event) => {
     console.log('Timestamp:', event.timestamp);
 });
 ```
+
+**Constraints:**
+- Topic IDs are kebab-case strings from host topic definitions (for example: `'custom-tables'`, `'payment-done'` event on `'payments'` topic).
+- Subscriptions are page-scoped and tied to the current iframe lifecycle.
+- In standalone development (not embedded in an iframe), subscriptions run in built-in mock mode.
 
 ### `topics.unsubscribe(topic, subscriptionId)`
 
@@ -129,6 +136,16 @@ import type {
 } from '@final-commerce/command-frame';
 ```
 
+### Topic ID mapping note
+
+`topics.subscribe(...)` uses wire topic IDs (for example `'custom-tables'`), while `TopicEventPayloadMap` uses TypeScript keys (for example `customTables`).
+
+```typescript
+import type { TopicEventPayloadMap } from '@final-commerce/command-frame';
+
+type CustomTablesPayload = TopicEventPayloadMap['customTables'];
+```
+
 ## Example: React Component with Pub/Sub
 
 ```typescript
@@ -163,6 +180,12 @@ function CustomerEvents() {
     );
 }
 ```
+
+## Runtime behavior
+
+- The subscriber starts in iframe mode and requests topics from the host.
+- If no host pub/sub messages are received within a short detection window, it falls back to mock mode automatically for local development.
+- `topics.getTopics()` returns a snapshot of the current cache; call it again after host initialization if you need the refreshed list.
 
 ## Host Application (Render) - Publishing Events
 

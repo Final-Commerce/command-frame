@@ -11,6 +11,21 @@ The hooks system allows iframe extensions to register **session-scoped event cal
 
 Pub/sub subscriptions are **page-scoped** (tied to the iframe lifecycle). Hooks are **session-scoped** and receive `hostCommands` and `callCommand` when they execute in the host.
 
+## Registration transport
+
+`hooks.register()` and `hooks.unregister()` post messages to `window.top` with message types:
+
+- `hook-register`
+- `hook-unregister`
+
+By default they use target origin `"*"`. If you need a stricter target origin, set:
+
+```typescript
+(window as any).__COMMAND_FRAME_ORIGIN__ = "https://your-host-origin.example";
+```
+
+before registering hooks.
+
 ## Quick Start
 
 ```typescript
@@ -35,6 +50,8 @@ hooks.unregister('my-extension:cart-log');
 3. From that point on, the hook runs in the host context on every matching event, regardless of which page the user navigates to.
 4. The iframe must load **at least once** for the hook to be registered. After that, the hook persists for the rest of the session.
 
+If the extension is not running in an iframe (`window.top === window`), registration/unregistration are no-ops (the functions return without sending hook messages).
+
 ## Deduplication
 
 You must provide a **stable `hookId`** in the options. The host uses it as a dedup key:
@@ -51,7 +68,7 @@ Choose a descriptive `hookId` that won't collide with other extensions, e.g. `yo
 Registers a session-scoped hook for a topic. The callback is serialized and sent to the host.
 
 **Parameters:**
-- `topic: string` - The topic ID to hook into (e.g. `'cart'`, `'payments'`, `'orders'`)
+- `topic: string` - The topic ID to hook into (e.g. `'cart'`, `'payments'`, `'orders'`, `'custom-tables'`)
 - `callback: HookFunction` - The function to run on each event. Receives `(event, hostCommands, callCommand)`.
 - `options: HookRegisterOptions` - Required options object:
   - `hookId: string` (required) - Stable identifier for deduplication
