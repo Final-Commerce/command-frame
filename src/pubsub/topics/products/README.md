@@ -55,14 +55,13 @@ import type {
     ProductCreatedEvent,
     ProductUpdatedPayload,
     ProductUpdatedEvent,
-    ProductSetActivePayload,
-    ProductSetActiveEvent,
-    ProductGetActivePayload,
-    ProductGetActiveEvent,
     ProductsEventType,
     ProductsEventPayload
 } from '@final-commerce/command-frame';
 ```
+
+`ProductsEventType` and `ProductsEventPayload` currently model `product-created` and `product-updated`.
+Use topic-level `TopicEvent` handling for `set-active-product` and `get-active-product` until those unions are expanded.
 
 ## Related Types
 

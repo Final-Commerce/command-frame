@@ -1,8 +1,11 @@
 # Types Reference
 
-Complete field-level reference for all types exported from `@final-commerce/command-frame`.
+Complete field-level reference for all common `CF*` types exported from `@final-commerce/command-frame`.
 
-All types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
+Common types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
+
+> Scope note: this page documents the shared domain types (`CFOrder`, `CFProduct`, `CFContext*`, etc.).
+> Action-specific request/response contracts (for example `GetProductsParams`, `TriggerWebhookParams`) live in each action folder under `src/actions/*/types.ts` and are documented in each action README.
 
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';

@@ -17,6 +17,7 @@ The `cart` topic provides events related to cart operations. Subscribe to this t
 | [cart-created](./cart-created/README.md) | Published when a new cart is created | [View Details](./cart-created/README.md) |
 | [customer-assigned](./customer-assigned/README.md) | Published when a customer is assigned to the cart | [View Details](./customer-assigned/README.md) |
 | [product-added](./product-added/README.md) | Published when a product is added to the cart | [View Details](./product-added/README.md) |
+| [product-updated](./product-updated/README.md) | Published when a product quantity is updated in the cart | [View Details](./product-updated/README.md) |
 | [product-deleted](./product-deleted/README.md) | Published when a product is removed from the cart | [View Details](./product-deleted/README.md) |
 | [cart-discount-added](./cart-discount-added/README.md) | Published when a discount is added to the cart | [View Details](./cart-discount-added/README.md) |
 | [cart-discount-removed](./cart-discount-removed/README.md) | Published when a discount is removed from the cart | [View Details](./cart-discount-removed/README.md) |
@@ -41,6 +42,9 @@ const subscriptionId = topics.subscribe('cart', (event: TopicEvent) => {
             break;
         case 'product-added':
             console.log('Product added:', event.data.product);
+            break;
+        case 'product-updated':
+            console.log('Product quantity updated:', event.data.product, event.data.previousQuantity, event.data.newQuantity);
             break;
         case 'product-deleted':
             console.log('Product removed:', event.data.product);
@@ -73,6 +77,8 @@ import type {
     CartCustomerAssignedEvent,
     ProductAddedPayload,
     ProductAddedEvent,
+    CartProductUpdatedPayload,
+    CartProductUpdatedEvent,
     ProductDeletedPayload,
     ProductDeletedEvent,
     CartDiscountAddedPayload,

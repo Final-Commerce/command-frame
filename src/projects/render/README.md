@@ -1,6 +1,6 @@
 # @final-commerce/command-frame
 
-A TypeScript library for communication between iframes and their parent windows using postMessage with type safety and error handling. test.
+A TypeScript library for communication between iframes and their parent windows using postMessage with type safety and error handling.
 
 ## Installation
 
@@ -494,9 +494,11 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
 
 #### Product Events
 
-- **[products](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/products/README.md)** - Product sync events
+- **[products](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/products/README.md)** - Product sync and active-product events
     - `product-created` - Published when a product is created
     - `product-updated` - Published when a product is updated
+    - `set-active-product` - Published when the active product is set in the POS interface
+    - `get-active-product` - Published when the active product is retrieved
 
 #### Cart Events
 
@@ -516,6 +518,13 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
 - **[payments](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/payments/README.md)** - Payment processing events
     - `payment-done` - Published when a payment is successfully completed
     - `payment-err` - Published when a payment fails
+
+#### Custom Tables Events
+
+- **[custom-tables](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/custom-tables/README.md)** - Custom table row lifecycle events
+    - `row-created` - Published when a custom table row is created
+    - `row-updated` - Published when a custom table row is updated
+    - `row-deleted` - Published when a custom table row is deleted
 
 #### Print Events
 

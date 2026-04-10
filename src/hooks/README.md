@@ -211,10 +211,11 @@ function MyExtension() {
 
 Hooks use the same topics as the pub/sub system. See the [Pub/Sub documentation](../pubsub/README.md) for the full list of topics and event types:
 
-- [Cart](../pubsub/topics/cart/README.md) - Cart operation events (8 events)
+- [Cart](../pubsub/topics/cart/README.md) - Cart operation events (9 events)
 - [Customers](../pubsub/topics/customers/README.md) - Customer lifecycle events (6 events)
 - [Orders](../pubsub/topics/orders/README.md) - Order lifecycle events (2 events)
 - [Payments](../pubsub/topics/payments/README.md) - Payment processing events (2 events)
-- [Products](../pubsub/topics/products/README.md) - Product sync events (2 events)
+- [Products](../pubsub/topics/products/README.md) - Product sync and active-product events (4 events)
 - [Refunds](../pubsub/topics/refunds/README.md) - Refund lifecycle events (2 events)
+- [Custom Tables](../pubsub/topics/custom-tables/README.md) - Custom table row lifecycle events (3 events)
 - [Print](../pubsub/topics/print/README.md) - Print events (3 events)

@@ -1,6 +1,7 @@
 # Pub/Sub System
 
 The pub/sub system allows iframe applications to subscribe to topics and receive real-time events published by the host application (Render).
+Subscriptions are **page-scoped**: callbacks run while the current iframe instance is mounted.
 
 ## Quick Start
 
@@ -26,9 +27,11 @@ topics.unsubscribe('customers', subscriptionId);
 | [customers](./topics/customers/README.md) | Customer lifecycle events | 6 events | [View Details](./topics/customers/README.md) |
 | [orders](./topics/orders/README.md) | Order lifecycle events | 2 events | [View Details](./topics/orders/README.md) |
 | [refunds](./topics/refunds/README.md) | Refund lifecycle events | 2 events | [View Details](./topics/refunds/README.md) |
-| [products](./topics/products/README.md) | Product sync events | 2 events | [View Details](./topics/products/README.md) |
-| [cart](./topics/cart/README.md) | Cart operation events | 8 events | [View Details](./topics/cart/README.md) |
+| [products](./topics/products/README.md) | Product sync and active-product events | 4 events | [View Details](./topics/products/README.md) |
+| [cart](./topics/cart/README.md) | Cart operation events | 9 events | [View Details](./topics/cart/README.md) |
 | [payments](./topics/payments/README.md) | Payment processing events | 2 events | [View Details](./topics/payments/README.md) |
+| [custom-tables](./topics/custom-tables/README.md) | Custom table row lifecycle events | 3 events | [View Details](./topics/custom-tables/README.md) |
+| [print](./topics/print/README.md) | Print lifecycle events | 3 events | [View Details](./topics/print/README.md) |
 
 ## API Reference
 
@@ -37,6 +40,8 @@ topics.unsubscribe('customers', subscriptionId);
 Retrieves the list of available topics from the host application.
 
 **Returns:** `Promise<TopicDefinition[]>`
+
+**Behavior note:** `getTopics()` requests a fresh list from the host and immediately returns the current cached snapshot. Call it again after host initialization if the first call is empty.
 
 **Example:**
 ```typescript
@@ -208,4 +213,6 @@ For detailed documentation on each topic and its events, see:
 - [Products Topic](./topics/products/README.md)
 - [Cart Topic](./topics/cart/README.md)
 - [Payments Topic](./topics/payments/README.md)
+- [Custom Tables Topic](./topics/custom-tables/README.md)
+- [Print Topic](./topics/print/README.md)
 
