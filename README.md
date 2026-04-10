@@ -170,7 +170,3 @@ Alternatively, set the global flag before initialization:
 ```typescript
 (window as any).__POSTMESSAGE_DEBUG__ = true;
 ```
-
-## License
-
-MIT
