@@ -37,6 +37,7 @@ The library provides a `command` namespace object containing all available comma
 - **[getActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-order/README.md)** - Retrieve the currently active order from the POS session
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
 - **[getFinalContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-final-context/README.md)** - Get final context information (project name)
+- **[getActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-product/README.md)** - Retrieve the currently active/selected product in the POS interface
 
 #### Product Actions
 
@@ -47,11 +48,13 @@ The library provides a `command` namespace object containing all available comma
 - **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `internalId`)
 - **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `internalId`)
 - **[adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)** - Adjust inventory/stock level for a specific product variant
+- **[setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)** - Set a product as the active product in the POS interface by variant ID
 
 #### Order Actions
 
 - **[addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)** - Add a custom sale item to the cart
 - **[addCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-discount/README.md)** - Add a discount to the entire cart
+- **[removeCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-cart-discount/README.md)** - Remove the cart-level discount from the current cart
 - **[addOrderNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-order-note/README.md)** - Add a note to the current order/cart
 - **[addCartFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-fee/README.md)** - Add a fee to the entire cart
 - **[addNonRevenueItem](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-non-revenue-item/README.md)** - Add a non-revenue line (e.g. gift card load); response and `getCurrentCart().nonRevenueItems` use `externalId` for the line id
@@ -244,6 +247,13 @@ Adds a discount to a specific product in the cart (identified by `internalId`). 
 
 Adds a discount to the entire cart. Supports both fixed amount and percentage discounts. Applies to the cart subtotal and affects all items.
 
+### [removeCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-cart-discount/README.md)
+
+Removes the cart-level discount from the current cart. Clears any active cart discount and recalculates cart totals. Publishes a `cart-discount-removed` event on the `cart` topic.
+### [getActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-product/README.md)
+
+Retrieves the currently selected/active product in the POS interface. Returns the product that is currently being viewed or interacted with by the user, or `null` if no product is selected.
+
 ### [getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)
 
 Retrieves the current environment/context information from the parent application. Returns user, company, device, station, outlet, and build information including IDs, names, and other relevant details.
@@ -269,6 +279,10 @@ Adds a fee to a specific product in the cart (identified by `internalId`). Suppo
 ### [adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)
 
 Adjusts the inventory/stock level for a specific product variant. Supports adding, subtracting, or setting stock to a specific value.
+
+### [setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)
+
+Sets a product as the active product in the POS interface by its variant ID. The active product represents the item currently being viewed or interacted with by the user.
 
 ### Order Actions
 
@@ -567,6 +581,8 @@ import type {
     GetCurrentCartResponse,
     GetActiveOrder,
     GetActiveOrderResponse,
+    GetActiveProductResponse,
+    GetActiveProduct,
     // Product Actions
     AddProductDiscountParams,
     AddProductDiscountResponse,
@@ -589,6 +605,9 @@ import type {
     AdjustInventoryParams,
     AdjustInventoryResponse,
     AdjustInventory,
+    SetActiveProductParams,
+    SetActiveProductResponse,
+    SetActiveProduct,
     // Order Actions
     AddCustomSaleParams,
     AddCustomSaleResponse,
@@ -596,6 +615,8 @@ import type {
     AddCartDiscountParams,
     AddCartDiscountResponse,
     AddCartDiscount,
+    RemoveCartDiscountResponse,
+    RemoveCartDiscount,
     AddOrderNoteParams,
     AddOrderNoteResponse,
     AddOrderNote,

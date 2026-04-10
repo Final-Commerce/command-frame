@@ -16,6 +16,7 @@ import {
     CFActiveCart,
     CFCategory,
     CurrencyCode,
+    CFActiveProduct,
 } from "../CommonTypes";
 
 export * from "./mocks";
@@ -643,6 +644,12 @@ export let MOCK_CART: CFActiveCart = {
     customSales: [],
     nonRevenueItems: [],
     customer: null
+};
+
+export let MOCK_ACTIVE_PRODUCT: CFActiveProduct;
+
+export const setMockActiveProduct = (activeProduct: CFActiveProduct) => {
+    MOCK_ACTIVE_PRODUCT = activeProduct;
 };
 
 // Helper to reset cart

@@ -5,6 +5,7 @@ import type {
     GetCustomers,
     AssignCustomer,
     AddCustomer,
+    EditCustomer,
     GetCategories,
     GetOrders,
     GetRefunds,
@@ -17,6 +18,8 @@ import type {
     GetFinalContext,
     AddProductNote,
     AddProductFee,
+    GetActiveProduct,
+    SetActiveProduct,
     AdjustInventory,
     AddOrderNote,
     AddCartFee,
@@ -76,6 +79,7 @@ export interface RenderProviderActions {
     getCustomers: GetCustomers;
     assignCustomer: AssignCustomer;
     addCustomer: AddCustomer;
+    editCustomer: EditCustomer;
     getCategories: GetCategories;
     getOrders: GetOrders;
     getRefunds: GetRefunds;
@@ -88,6 +92,8 @@ export interface RenderProviderActions {
     getFinalContext: GetFinalContext;
     addProductNote: AddProductNote;
     addProductFee: AddProductFee;
+    getActiveProduct: GetActiveProduct;
+    setActiveProduct: SetActiveProduct;
     adjustInventory: AdjustInventory;
     addOrderNote: AddOrderNote;
     addCartFee: AddCartFee;

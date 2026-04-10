@@ -8,9 +8,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 /**
  * Install a message listener in the **extension iframe** so the host can request refunds.
- * Validates `event.source === window.parent` before handling.
+ * Validates `event.source === window.top` before handling.
  *
- * Replies with {@link PostMessageResponse}, using `event.origin` as the target origin when posting back to the parent.
+ * Replies with {@link PostMessageResponse}, using `event.origin` as the target origin when posting back to the host.
  *
  * @param handler - Perform the extension-side refund (API call, etc.)
  * @returns Unsubscribe function
@@ -27,7 +27,7 @@ export function installExtensionRefundListener(
         if (typeof requestId !== "string") {
             return;
         }
-        if (event.source !== window.parent || !event.source) {
+        if (event.source !== window.top || !event.source) {
             return;
         }
 

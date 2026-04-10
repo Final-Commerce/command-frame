@@ -3,9 +3,12 @@ import { mockAddCartFee } from "../../actions/add-cart-fee/mock";
 import { mockAddCustomSale } from "../../actions/add-custom-sale/mock";
 import { mockAddCustomer } from "../../actions/add-customer/mock";
 import { mockAddCustomerNote } from "../../actions/add-customer-note/mock";
+import { mockEditCustomer } from "../../actions/edit-customer/mock";
 import { mockAddOrderNote } from "../../actions/add-order-note/mock";
 import { mockAddProductDiscount } from "../../actions/add-product-discount/mock";
 import { mockAddProductFee } from "../../actions/add-product-fee/mock";
+import { mockGetActiveProduct } from "../../actions/get-active-product/mock";
+import { mockSetActiveProduct } from "../../actions/set-active-product/mock";
 import { mockAddProductNote } from "../../actions/add-product-note/mock";
 import { mockAddProductToCart } from "../../actions/add-product-to-cart/mock";
 import { mockRemoveProductFromCart } from "../../actions/remove-product-from-cart/mock";
@@ -73,10 +76,13 @@ export const RENDER_MOCKS: RenderProviderActions = {
     addCartFee: mockAddCartFee,
     addCustomSale: mockAddCustomSale,
     addCustomer: mockAddCustomer,
+    editCustomer: mockEditCustomer,
     addCustomerNote: mockAddCustomerNote,
     addOrderNote: mockAddOrderNote,
     addProductDiscount: mockAddProductDiscount,
     addProductFee: mockAddProductFee,
+    getActiveProduct: mockGetActiveProduct,
+    setActiveProduct: mockSetActiveProduct,
     addProductNote: mockAddProductNote,
     addProductToCart: mockAddProductToCart,
     removeProductFromCart: mockRemoveProductFromCart,

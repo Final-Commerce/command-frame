@@ -6,6 +6,7 @@ import { addNonRevenueItem } from "./actions/add-non-revenue-item/action";
 import { getCustomers } from "./actions/get-customers/action";
 import { assignCustomer } from "./actions/assign-customer/action";
 import { addCustomer } from "./actions/add-customer/action";
+import { editCustomer } from "./actions/edit-customer/action";
 import { getCategories } from "./actions/get-categories/action";
 import { getOrders } from "./actions/get-orders/action";
 import { addCartDiscount } from "./actions/add-cart-discount/action";
@@ -18,6 +19,8 @@ import { updateCartItemQuantity } from "./actions/update-cart-item-quantity/acti
 // Product Actions
 import { addProductNote } from "./actions/add-product-note/action";
 import { addProductFee } from "./actions/add-product-fee/action";
+import { getActiveProduct } from "./actions/get-active-product/action";
+import { setActiveProduct } from "./actions/set-active-product/action";
 import { adjustInventory } from "./actions/adjust-inventory/action";
 // Order Actions
 import { addOrderNote } from "./actions/add-order-note/action";
@@ -106,6 +109,7 @@ export const command = {
     getCustomers,
     assignCustomer,
     addCustomer,
+    editCustomer,
     getCategories,
     getOrders,
     getRefunds,
@@ -119,6 +123,8 @@ export const command = {
     // Product Actions
     addProductNote,
     addProductFee,
+    getActiveProduct,
+    setActiveProduct,
     adjustInventory,
     // Order Actions
     addOrderNote,
@@ -215,6 +221,8 @@ export type { AssignCustomer, AssignCustomerParams, AssignCustomerResponse } fro
 
 export type { AddCustomer, AddCustomerParams, AddCustomerResponse } from "./actions/add-customer/types";
 
+export type { EditCustomer, EditCustomerParams, EditCustomerResponse } from "./actions/edit-customer/types";
+
 export type { GetCategories, GetCategoriesParams, GetCategoriesResponse } from "./actions/get-categories/types";
 
 export type { AddProduct, AddProductParams, AddProductResponse } from "./actions/add-product/types";
@@ -270,6 +278,8 @@ export type { GetFinalContext, GetFinalContextResponse } from "./actions/get-fin
 // Product Actions
 export type { AddProductNote, AddProductNoteParams, AddProductNoteResponse } from "./actions/add-product-note/types";
 export type { AddProductFee, AddProductFeeParams, AddProductFeeResponse } from "./actions/add-product-fee/types";
+export type { GetActiveProduct, GetActiveProductResponse } from "./actions/get-active-product/types";
+export type { SetActiveProduct, SetActiveProductParams, SetActiveProductResponse } from "./actions/set-active-product/types";
 export type { AdjustInventory, AdjustInventoryParams, AdjustInventoryResponse } from "./actions/adjust-inventory/types";
 // Order Actions
 export type { AddOrderNote, AddOrderNoteParams, AddOrderNoteResponse } from "./actions/add-order-note/types";
@@ -320,7 +330,7 @@ export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWeb
 export * from "./CommonTypes";
 
 // Mock database override (standalone / extension dev)
-export { setMockDatabase } from "./demo/database";
+export { setMockDatabase, setMockActiveProduct } from "./demo/database";
 export type { MockDatabaseConfig } from "./demo/database";
 
 // Export Provider
