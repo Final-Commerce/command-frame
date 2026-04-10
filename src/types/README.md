@@ -10,7 +10,7 @@ import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-com
 
 ## Table of Contents
 
-- [Enums](#enums) -- CFProductType, CFUserTypes
+- [Enums](#enums) -- CurrencyCode, CFProductType, CFUserTypes
 - [Order Types](#order-types) -- CFOrder, CFActiveOrder
 - [Line Item Types](#line-item-types) -- CFLineItem, CFCustomSale, CFRefundedLineItem, CFRefundedCustomSale
 - [Discount Types](#discount-types) -- CFDiscount, CFDiscountDetail, CFDiscountLineItem
@@ -99,6 +99,54 @@ graph TD
 
 ## Enums
 
+### CurrencyCode
+
+ISO 4217 currency codes supported by the system.
+
+| Value | Description |
+|-------|-------------|
+| `USD` | `"USD"` -- US Dollar |
+| `EUR` | `"EUR"` -- Euro |
+| `GBP` | `"GBP"` -- British Pound |
+| `CAD` | `"CAD"` -- Canadian Dollar |
+| `AUD` | `"AUD"` -- Australian Dollar |
+| `NZD` | `"NZD"` -- New Zealand Dollar |
+| `CHF` | `"CHF"` -- Swiss Franc |
+| `CNY` | `"CNY"` -- Chinese Yuan |
+| `INR` | `"INR"` -- Indian Rupee |
+| `MXN` | `"MXN"` -- Mexican Peso |
+| `BRL` | `"BRL"` -- Brazilian Real |
+| `ZAR` | `"ZAR"` -- South African Rand |
+| `SGD` | `"SGD"` -- Singapore Dollar |
+| `HKD` | `"HKD"` -- Hong Kong Dollar |
+| `SEK` | `"SEK"` -- Swedish Krona |
+| `NOK` | `"NOK"` -- Norwegian Krone |
+| `DKK` | `"DKK"` -- Danish Krone |
+| `PLN` | `"PLN"` -- Polish Zloty |
+| `THB` | `"THB"` -- Thai Baht |
+| `MYR` | `"MYR"` -- Malaysian Ringgit |
+| `PHP` | `"PHP"` -- Philippine Peso |
+| `IDR` | `"IDR"` -- Indonesian Rupiah |
+| `AED` | `"AED"` -- UAE Dirham |
+| `SAR` | `"SAR"` -- Saudi Riyal |
+| `ILS` | `"ILS"` -- Israeli Shekel |
+| `TRY` | `"TRY"` -- Turkish Lira |
+| `RUB` | `"RUB"` -- Russian Ruble |
+| `JPY` | `"JPY"` -- Japanese Yen |
+| `KRW` | `"KRW"` -- South Korean Won |
+| `VND` | `"VND"` -- Vietnamese Dong |
+| `CLP` | `"CLP"` -- Chilean Peso |
+| `ISK` | `"ISK"` -- Icelandic Krona |
+| `HUF` | `"HUF"` -- Hungarian Forint |
+| `TWD` | `"TWD"` -- New Taiwan Dollar |
+| `KWD` | `"KWD"` -- Kuwaiti Dinar |
+| `BHD` | `"BHD"` -- Bahraini Dinar |
+| `OMR` | `"OMR"` -- Omani Rial |
+| `JOD` | `"JOD"` -- Jordanian Dinar |
+| `TND` | `"TND"` -- Tunisian Dinar |
+| `LYD` | `"LYD"` -- Libyan Dinar |
+| `IQD` | `"IQD"` -- Iraqi Dinar |
+
 ### CFProductType
 
 | Value | Description |
@@ -134,6 +182,8 @@ The core order object returned by `getOrders`, published in `order-created` / `o
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `_id` | `string` | Yes | Unique order identifier |
+| `currency` | [`CurrencyCode`](#currencycode) | Yes | Currency code for the order |
+| `minorUnits` | `number` | Yes | Number of minor units (decimal places) for the currency |
 | `receiptId` | `string` | No | Receipt identifier |
 | `companyId` | `string` | Yes | Company this order belongs to |
 | `externalId` | `string \| null` | Yes | External system identifier |
@@ -157,7 +207,7 @@ The core order object returned by `getOrders`, published in `order-created` / `o
 | `customSales` | [`CFCustomSale`](#cfcustomsale)`[]` | Yes | Custom sale items |
 | `nonRevenueItems` | [`CFNonRevenueItem`](#cfnonrevenueitem)`[]` | No | Non-revenue lines (e.g. gift card load), same shape as cart |
 | `refund` | [`CFRefundItem`](#cfrefunditem)`[]` | No | Refund records |
-| `balance` | `string` | Yes | Remaining balance |
+| `balance` | `number` | Yes | Remaining balance |
 | `signature` | `string \| null` | No | Customer signature data |
 
 ### CFActiveOrder
@@ -173,7 +223,6 @@ Extends [`CFOrder`](#cforder) with runtime fields used in the POS session.
 | `outlet` | [`CFActiveOutlet`](#cfactiveoutlet) | No | Outlet where the order was placed |
 | `isDeleted` | `boolean` | No | Soft-delete flag |
 | `newOrder` | `boolean` | No | Whether this is a newly created order |
-| `currency` | `string` | No | Currency code |
 | `station` | [`CFActiveStation`](#cfactivestation) | No | Station where the order was placed |
 
 ---
@@ -192,12 +241,12 @@ A product line item within an order.
 | `internalId` | `string` | No | Internal runtime identifier for cart operations |
 | `name` | `string` | Yes | Product display name |
 | `quantity` | `number` | Yes | Quantity ordered |
-| `price` | `string` | Yes | Unit price |
+| `price` | `number` | Yes | Unit price |
 | `taxes` | [`CFTax`](#cftax)`[]` | Yes | Taxes applied to this item |
 | `discount` | [`CFDiscountLineItem`](#cfdiscountlineitem) | Yes | Item-level and cart-level discounts |
 | `fee` | [`CFFeeLineItem`](#cffeelineitem) | Yes | Item-level and cart-level fees |
-| `totalTax` | `string` | Yes | Total tax amount |
-| `total` | `string` | Yes | Total after discounts, fees, and taxes |
+| `totalTax` | `number` | Yes | Total tax amount |
+| `total` | `number` | Yes | Total after discounts, fees, and taxes |
 | `metadata` | [`CFMetadataItem`](#cfmetadataitem)`[]` | Yes | Key-value metadata pairs |
 | `image` | `string` | Yes | Primary image URL |
 | `sku` | `string` | Yes | Stock keeping unit |
@@ -216,18 +265,18 @@ A non-product sale item (e.g. service charge, manual entry).
 |-------|------|----------|-------------|
 | `customSaleId` | `string` | Yes | Unique custom sale identifier |
 | `name` | `string` | Yes | Display name |
-| `price` | `string` | Yes | Unit price |
+| `price` | `number` | Yes | Unit price |
 | `quantity` | `number` | Yes | Quantity |
 | `applyTaxes` | `boolean` | Yes | Whether taxes are applied |
-| `total` | `string` | Yes | Total amount |
-| `totalTax` | `string` | Yes | Total tax amount |
+| `total` | `number` | Yes | Total amount |
+| `totalTax` | `number` | Yes | Total tax amount |
 | `taxes` | [`CFTax`](#cftax)`[]` | Yes | Taxes applied |
 | `discount.cartDiscount` | [`CFDiscountDetail`](#cfdiscountdetail) | Yes | Cart-level discount applied to this item |
 | `fee.cartFee` | [`CFFeeDetail`](#cffeedetail) | Yes | Cart-level fee applied to this item |
 
 ### CFRefundedLineItem
 
-A line item included in a refund. Same shape as [`CFLineItem`](#cflineitem) with `variantId` required and without `metadata`.
+A line item included in a refund. Same shape as [`CFLineItem`](#cflineitem) with `variantId` required and without `metadata` or `stock`.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -238,11 +287,11 @@ A line item included in a refund. Same shape as [`CFLineItem`](#cflineitem) with
 | `internalId` | `string` | No | Internal runtime identifier |
 | `name` | `string` | Yes | Product display name |
 | `quantity` | `number` | Yes | Quantity refunded |
-| `price` | `string` | Yes | Unit price |
+| `price` | `number` | Yes | Unit price |
 | `taxes` | [`CFTax`](#cftax)`[]` | Yes | Taxes on the refunded item |
 | `discount` | [`CFDiscountLineItem`](#cfdiscountlineitem) | Yes | Discounts that were applied |
-| `totalTax` | `string` | Yes | Total tax amount |
-| `total` | `string` | Yes | Total refund amount for this item |
+| `totalTax` | `number` | Yes | Total tax amount |
+| `total` | `number` | Yes | Total refund amount for this item |
 | `image` | `string` | Yes | Primary image URL |
 | `sku` | `string` | Yes | Stock keeping unit |
 | `note` | `string` | No | Note attached to this item |
@@ -275,7 +324,7 @@ A computed discount as it appears on an order line item or custom sale.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `percentage` | `number` | Yes | Discount percentage (0 if fixed amount) |
-| `amount` | `string` | Yes | Calculated discount amount |
+| `amount` | `number` | Yes | Calculated discount amount |
 | `label` | `string` | No | Display label for the discount |
 
 ### CFDiscountLineItem
@@ -310,8 +359,8 @@ A computed fee as it appears on an order line item or custom sale.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `percentage` | `number` | Yes | Fee percentage (0 if fixed amount) |
-| `amount` | `string` | Yes | Calculated fee amount |
-| `tax` | `string` | Yes | Tax amount on the fee |
+| `amount` | `number` | Yes | Calculated fee amount |
+| `tax` | `number` | Yes | Tax amount on the fee |
 | `taxTableId` | `string` | Yes | Tax table used |
 | `label` | `string` | No | Display label for the fee |
 
@@ -334,14 +383,15 @@ Aggregate totals for an order.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `discountTotal` | `string` | Yes | Total discount amount |
-| `shippingTotal` | `string \| null` | No | Total shipping amount |
-| `total` | `string` | Yes | Grand total |
-| `totalTaxes` | `string` | Yes | Total tax amount |
-| `subTotal` | `string` | Yes | Subtotal before taxes and discounts |
+| `discountTotal` | `number` | Yes | Total discount amount |
+| `shippingTotal` | `number \| null` | No | Total shipping amount |
+| `total` | `number` | Yes | Grand total |
+| `totalTaxes` | `number` | Yes | Total tax amount |
+| `subTotal` | `number` | Yes | Subtotal before taxes and discounts |
 | `taxes` | [`CFTax`](#cftax)`[]` | Yes | Itemized tax breakdown |
 | `tip` | [`CFTip`](#cftip)` \| null` | No | Tip information |
 | `isTaxInclusive` | `boolean` | Yes | Whether prices include tax |
+| `nonRevenueTotal` | `string` | No | Portion of order total that is non-revenue (e.g. gift card load) |
 
 ### CFTip
 
@@ -349,7 +399,7 @@ Tip information on an order summary.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `amount` | `string` | Yes | Tip amount |
+| `amount` | `number` | Yes | Tip amount |
 | `percentage` | `number` | Yes | Tip percentage |
 
 ### CFPaymentMethod
@@ -360,11 +410,11 @@ A payment transaction recorded on an order.
 |-------|------|----------|-------------|
 | `transactionId` | `string` | Yes | Unique transaction identifier |
 | `paymentType` | `string` | Yes | Type of payment (e.g. `"cash"`, `"card"`) |
-| `amount` | `string` | Yes | Amount paid |
+| `amount` | `number` | Yes | Amount paid |
 | `timestamp` | `string` | Yes | ISO timestamp of the payment |
 | `processor` | `string` | Yes | Payment processor name |
 | `saleId` | `string` | No | Sale identifier from the processor |
-| `change` | `string \| null` | No | Change given (cash payments) |
+| `change` | `number \| null` | No | Change given (cash payments) |
 | `tip` | [`CFTipPayment`](#cftippayment)` \| null` | No | Tip included in this payment |
 | `cashRounding` | `number` | No | Cash rounding adjustment |
 | `emv` | `string \| null` | No | EMV card data |
@@ -375,7 +425,7 @@ Tip details within a payment transaction.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `amount` | `string` | Yes | Tip amount |
+| `amount` | `number` | Yes | Tip amount |
 | `tipTo` | `string` | Yes | Recipient of the tip |
 | `percentage` | `number` | Yes | Tip percentage |
 
@@ -386,7 +436,7 @@ A cart-level discount as stored on the order.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `label` | `string` | Yes | Discount label |
-| `amount` | `string` | Yes | Discount amount |
+| `amount` | `number` | Yes | Discount amount |
 | `percentage` | `number` | Yes | Discount percentage |
 
 ### CFCartFeeItem
@@ -397,10 +447,10 @@ A cart-level fee as stored on the order.
 |-------|------|----------|-------------|
 | `id` | `string` | Yes | Fee identifier |
 | `label` | `string` | Yes | Fee label |
-| `amount` | `string` | Yes | Fee amount |
+| `amount` | `number` | Yes | Fee amount |
 | `percentage` | `number` | Yes | Fee percentage |
 | `taxTableId` | `string` | No | Tax table used for the fee |
-| `tax` | `string` | No | Tax amount on the fee |
+| `tax` | `number` | No | Tax amount on the fee |
 | `taxName` | `string` | Yes | Name of the tax applied |
 
 ---
@@ -556,8 +606,10 @@ A product from the catalog.
 | `sku` | `string` | No | Stock keeping unit |
 | `productType` | [`CFProductType`](#cfproducttype) | Yes | `"simple"` or `"variable"` |
 | `variants` | [`CFProductVariant`](#cfproductvariant)`[]` | Yes | Product variants |
-| `minPrice` | `string` | No | Minimum variant price |
-| `maxPrice` | `string` | No | Maximum variant price |
+| `currency` | [`CurrencyCode`](#currencycode) | Yes | Currency code for the product |
+| `minorUnits` | `number` | Yes | Number of minor units (decimal places) for the currency |
+| `minPrice` | `number` | No | Minimum variant price |
+| `maxPrice` | `number` | No | Maximum variant price |
 | `status` | `string` | No | Product status |
 | `isDeleted` | `boolean` | No | Soft-delete flag |
 
@@ -569,11 +621,11 @@ A specific variant of a product.
 |-------|------|----------|-------------|
 | `_id` | `string` | Yes | Unique variant identifier |
 | `sku` | `string` | Yes | Stock keeping unit |
-| `price` | `string` | Yes | Regular price |
-| `salePrice` | `string` | Yes | Sale price |
+| `price` | `number` | Yes | Regular price |
+| `salePrice` | `number` | Yes | Sale price |
 | `isOnSale` | `boolean` | Yes | Whether the variant is on sale |
 | `barcode` | `string` | No | Barcode value |
-| `costPrice` | `string` | No | Cost price |
+| `costPrice` | `number` | No | Cost price |
 | `manageStock` | `boolean` | Yes | Whether stock is tracked |
 | `externalId` | `string` | No | External system identifier |
 | `inventory` | [`CFInventory`](#cfinventory)`[]` | No | Stock levels per outlet |
@@ -623,9 +675,10 @@ A refund record attached to an order.
 | `timestamp` | `string \| undefined` | Yes | ISO timestamp of the refund |
 | `summary` | [`CFSummary`](#cfsummary) | No | Refund summary totals |
 | `refundPayment` | [`CFPaymentMethod`](#cfpaymentmethod)`[]` | Yes | Refund payment methods |
-| `balance` | `string` | No | Remaining balance after refund |
+| `balance` | `number` | No | Remaining balance after refund |
 | `receiptId` | `string` | No | Refund receipt identifier |
-| `currency` | `string` | No | Currency code |
+| `currency` | [`CurrencyCode`](#currencycode) | Yes | Currency code for the refund |
+| `minorUnits` | `number` | Yes | Number of minor units (decimal places) for the currency |
 
 ### CFRefundedTipPayment
 
@@ -633,7 +686,7 @@ A tip that was refunded.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `amount` | `string` | Yes | Refunded tip amount |
+| `amount` | `number` | Yes | Refunded tip amount |
 | `percentage` | `number` | Yes | Original tip percentage |
 | `transactionId` | `string` | Yes | Original transaction identifier |
 | `tipTo` | `string` | Yes | Original tip recipient |
@@ -782,7 +835,7 @@ A tax entry applied to an item or summary.
 | `id` | `string` | Yes | Tax identifier |
 | `name` | `string` | Yes | Tax name |
 | `percentage` | `number` | Yes | Tax rate percentage |
-| `amount` | `string` | Yes | Calculated tax amount |
+| `amount` | `number` | Yes | Calculated tax amount |
 | `taxTableName` | `string` | Yes | Name of the tax table |
 | `taxTableId` | `string` | Yes | Tax table identifier |
 
@@ -811,7 +864,7 @@ Context information for the Render (POS terminal) environment.
 | `buildIsPremium` | `boolean` | Yes | Whether the build is premium |
 | `isOffline` | `boolean` | Yes | Whether the device is offline |
 | `user` | `Record<string, any> \| null` | Yes | Full user object |
-| `company` | `Record<string, any> \| null` | Yes | Full company object (without settings) |
+| `company` | `Omit<Record<string, any>, 'settings'> \| null` | Yes | Full company object (without settings) |
 | `station` | `Record<string, any> \| null` | Yes | Full station object |
 | `outlet` | `Record<string, any> \| null` | Yes | Full outlet object |
 | `timestamp` | `string` | Yes | ISO timestamp |
