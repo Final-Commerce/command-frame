@@ -211,10 +211,15 @@ function MyExtension() {
 
 Hooks use the same topics as the pub/sub system. See the [Pub/Sub documentation](../pubsub/README.md) for the full list of topics and event types:
 
-- [Cart](../pubsub/topics/cart/README.md) - Cart operation events (8 events)
-- [Customers](../pubsub/topics/customers/README.md) - Customer lifecycle events (6 events)
-- [Orders](../pubsub/topics/orders/README.md) - Order lifecycle events (2 events)
+- [Cart](../pubsub/topics/cart/README.md) - Cart operation events (9 events)
+- [Customers](../pubsub/topics/customers/README.md) - Customer lifecycle events (8 events)
+- [Orders](../pubsub/topics/orders/README.md) - Order lifecycle events (4 events)
 - [Payments](../pubsub/topics/payments/README.md) - Payment processing events (2 events)
-- [Products](../pubsub/topics/products/README.md) - Product sync events (2 events)
-- [Refunds](../pubsub/topics/refunds/README.md) - Refund lifecycle events (2 events)
+- [Products](../pubsub/topics/products/README.md) - Product sync events (4 events)
+- [Refunds](../pubsub/topics/refunds/README.md) - Refund lifecycle events (4 events)
 - [Print](../pubsub/topics/print/README.md) - Print events (3 events)
+- [Custom Tables](../pubsub/topics/custom-tables/README.md) - Custom table row lifecycle events (3 events)
+- [Outlet](../pubsub/topics/outlet/README.md) - Active outlet context (2 events)
+- [Station](../pubsub/topics/station/README.md) - Active station context (2 events)
+- [Session](../pubsub/topics/session/README.md) - Register session context (2 events)
+- [Users](../pubsub/topics/users/README.md) - Active POS user context (2 events)
