@@ -6,6 +6,10 @@ import { CartEventType, CartEventPayload } from "./cart/types";
 import { PaymentsEventType, PaymentsEventPayload } from "./payments/types";
 import { CustomTablesEventPayload, CustomTablesEventType } from "./custom-tables/types";
 import { PrintEventType, PrintEventPayload } from "./print/types";
+import { OutletEventType, OutletEventPayload } from "./outlet/types";
+import { StationEventType, StationEventPayload } from "./station/types";
+import { SessionEventType, SessionEventPayload } from "./session/types";
+import { UsersEventType, UsersEventPayload } from "./users/types";
 
 export interface TopicEventPayloadMap {
     customers: Record<CustomersEventType, CustomersEventPayload>;
@@ -16,4 +20,8 @@ export interface TopicEventPayloadMap {
     payments: Record<PaymentsEventType, PaymentsEventPayload>;
     customTables: Record<CustomTablesEventType, CustomTablesEventPayload>;
     print: Record<PrintEventType, PrintEventPayload>;
+    outlet: Record<OutletEventType, OutletEventPayload>;
+    station: Record<StationEventType, StationEventPayload>;
+    session: Record<SessionEventType, SessionEventPayload>;
+    users: Record<UsersEventType, UsersEventPayload>;
 }

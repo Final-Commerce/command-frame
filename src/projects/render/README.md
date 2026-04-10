@@ -35,6 +35,12 @@ The library provides a `command` namespace object containing all available comma
 - **[getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)** - Retrieve a list of orders from the system with optional filtering, sorting, and pagination
 - **[getCurrentCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-cart/README.md)** - Retrieve the current cart object with all its contents
 - **[getActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-order/README.md)** - Retrieve the currently active order from the POS session
+- **[getActiveCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-customer/README.md)** - Retrieve the active customer on the session/cart
+- **[getActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-outlet/README.md)** - Retrieve the active outlet
+- **[getActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-station/README.md)** - Retrieve the active station
+- **[getActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-session/README.md)** - Retrieve the active register session (cash session)
+- **[getActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-user/README.md)** - Retrieve the active POS user (employee)
+- **[getActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-refund/README.md)** - Retrieve current refund selection state
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
 - **[getFinalContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-final-context/README.md)** - Get final context information (project name)
 - **[getActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-product/README.md)** - Retrieve the currently active/selected product in the POS interface
@@ -67,11 +73,13 @@ The library provides a `command` namespace object containing all available comma
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
 - **[vendaraPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/vendara-payment/README.md)** - Initiate a Vendara payment
 - **[partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)** - Initiate a partial/split payment
+- **[setActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-order/README.md)** - Load an order by id and set it as the active order
 
 #### Customer Actions
 
 - **[addCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-customer/README.md)** - Add a new customer to the local database
 - **[assignCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-customer/README.md)** - Assign an existing customer to the current session/cart
+- **[setActiveCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-customer/README.md)** - Set the active customer by id (loads from local DB)
 - **[addCustomerNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-customer-note/README.md)** - Add a note to a customer's record
 - **[removeCustomerFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-customer-from-cart/README.md)** - Remove the currently assigned customer from the cart
 
@@ -84,10 +92,18 @@ The library provides a `command` namespace object containing all available comma
 - **[showConfirmation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-confirmation/README.md)** - Show a confirmation dialog
 - **[authenticateUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/authenticate-user/README.md)** - Trigger user authentication for specific roles
 - **[switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)** - Switch the current user to a different user
+- **[setActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-user/README.md)** - Set the active POS user by id (loads from local DB; respects outlet access when an outlet is active)
+
+#### Active outlet, station, and session
+
+- **[setActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-outlet/README.md)** - Set the active outlet by id
+- **[setActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-station/README.md)** - Set the active station by id
+- **[setActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-session/README.md)** - Set the active register session by id
 
 #### Refund Actions
 
 - **[initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)** - Open the refund UI for an order
+- **[setActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-refund/README.md)** - Load an order by id, open refund UI, and initialize refund selection state
 - **[selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)** - Select all remaining refundable items for a full refund
 - **[resetRefundDetails](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reset-refund-details/README.md)** - Clear all refund selections
 - **[setRefundStockAction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-refund-stock-action/README.md)** - Set stock handling option (restock/damage) for a refunded item
@@ -230,6 +246,34 @@ Retrieves the current cart object with all its contents including products, cust
 ### [getActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-order/README.md)
 
 Retrieves the currently active order from the POS session. Returns the order set via `setActiveOrder`, or `null` if no order is active. Useful for checking order context before refunds, reprints, or other order-specific operations.
+
+### [setActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-order/README.md)
+
+Loads an order from the host local database by `orderId` and sets it as the active order in Redux.
+
+### [getActiveCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-customer/README.md) / [setActiveCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-customer/README.md)
+
+Read or set the active customer by id (`setActiveCustomer` loads from IndexedDB). Mirrors cart/session customer selection.
+
+### [getActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-outlet/README.md) / [setActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-outlet/README.md)
+
+Read or set the active outlet by id for the POS context.
+
+### [getActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-station/README.md) / [setActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-station/README.md)
+
+Read or set the active station by id.
+
+### [getActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-session/README.md) / [setActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-session/README.md)
+
+Read or set the active register (cash) session by id.
+
+### [getActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-user/README.md) / [setActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-user/README.md)
+
+Read or set the active POS employee user; `setActiveUser` resolves role permissions when applicable.
+
+### [getActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-refund/README.md) / [setActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-refund/README.md)
+
+Read refund UI state or start a refund flow for a given `orderId` (sets active order, opens refund UI, seeds selection).
 
 ### [addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)
 
@@ -479,24 +523,32 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
     - `customer-note-deleted` - Published when a note is deleted from a customer
     - `customer-assigned` - Published when a customer is assigned to the cart
     - `customer-unassigned` - Published when a customer is unassigned from the cart
+    - `set-active-customer` - Published when the active customer is set
+    - `get-active-customer` - Reserved for host publish of active customer snapshots (see topic README)
 
 #### Order Events
 
 - **[orders](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/orders/README.md)** - Order lifecycle events
     - `order-created` - Published when a new order is created
-    - `order-updated` - Published when an order is updated
+    - `order-updated` - Published when an order is updated (includes merged active order after partial updates)
+    - `set-active-order` - Published when the active order is set
+    - `get-active-order` - Reserved for host publish of active order snapshots (see topic README)
 
 #### Refund Events
 
 - **[refunds](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/refunds/README.md)** - Refund lifecycle events
     - `refund-created` - Published when a refund is created
     - `refund-updated` - Published when a refund is updated
+    - `set-active-refund` - Published when refund selection / active refund state changes
+    - `get-active-refund` - Reserved for host publish (see topic README)
 
 #### Product Events
 
 - **[products](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/products/README.md)** - Product sync events
     - `product-created` - Published when a product is created
     - `product-updated` - Published when a product is updated
+    - `set-active-product` - Published when the active product changes
+    - `get-active-product` - Reserved for host publish (see topic README)
 
 #### Cart Events
 
@@ -523,6 +575,13 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
     - `print-started` - Published when a print action is initiated
     - `print-completed` - Published when a print action completes successfully
     - `print-error` - Published when a print action encounters an error
+
+#### Outlet, station, session, and user context
+
+- **[outlet](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/outlet/README.md)** - `set-active-outlet`, `get-active-outlet`
+- **[station](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/station/README.md)** - `set-active-station`, `get-active-station`
+- **[session](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/session/README.md)** - `set-active-session`, `get-active-session`
+- **[users](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/users/README.md)** - `set-active-user`, `get-active-user`
 
 For detailed documentation on each topic and its events, including payload structures and usage examples, see the [Pub/Sub Documentation](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/README.md).
 
@@ -581,6 +640,39 @@ import type {
     GetCurrentCartResponse,
     GetActiveOrder,
     GetActiveOrderResponse,
+    SetActiveOrder,
+    SetActiveOrderParams,
+    SetActiveOrderResponse,
+    GetActiveCustomer,
+    GetActiveCustomerResponse,
+    SetActiveCustomer,
+    SetActiveCustomerParams,
+    SetActiveCustomerResponse,
+    GetActiveOutlet,
+    GetActiveOutletResponse,
+    SetActiveOutlet,
+    SetActiveOutletParams,
+    SetActiveOutletResponse,
+    GetActiveStation,
+    GetActiveStationResponse,
+    SetActiveStation,
+    SetActiveStationParams,
+    SetActiveStationResponse,
+    GetActiveSession,
+    GetActiveSessionResponse,
+    SetActiveSession,
+    SetActiveSessionParams,
+    SetActiveSessionResponse,
+    GetActiveUser,
+    GetActiveUserResponse,
+    SetActiveUser,
+    SetActiveUserParams,
+    SetActiveUserResponse,
+    GetActiveRefund,
+    GetActiveRefundResponse,
+    SetActiveRefund,
+    SetActiveRefundParams,
+    SetActiveRefundResponse,
     GetActiveProductResponse,
     GetActiveProduct,
     // Product Actions
@@ -744,6 +836,8 @@ import type {
     CFActiveUser,
     CFActiveOutlet,
     CFActiveStation,
+    CFSession,
+    CFActiveRefundDetails,
     CFContext
 } from "@final-commerce/command-frame";
 ```

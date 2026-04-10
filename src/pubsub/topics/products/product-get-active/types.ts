@@ -10,5 +10,5 @@ export interface ProductGetActivePayload {
 
 /**
  * Typed event for product-get-active
- */ 
+ */
 export type ProductGetActiveEvent = TopicEvent<ProductGetActivePayload>;

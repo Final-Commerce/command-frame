@@ -19,6 +19,16 @@ export const refundsTopic: TopicDefinition = {
             id: "refund-updated",
             name: "Refund Updated",
             description: "Published when a refund is updated"
+        },
+        {
+            id: "set-active-refund",
+            name: "Set Active Refund",
+            description: "Published when active refund details change in POS state"
+        },
+        {
+            id: "get-active-refund",
+            name: "Get Active Refund",
+            description: "Published when refund details are published to listeners"
         }
     ]
 };

@@ -39,6 +39,16 @@ export const customersTopic: TopicDefinition = {
             id: "customer-unassigned",
             name: "Customer Unassigned",
             description: "Published when a customer is unassigned from the cart"
+        },
+        {
+            id: "set-active-customer",
+            name: "Set Active Customer",
+            description: "Published when the active customer is set in POS state"
+        },
+        {
+            id: "get-active-customer",
+            name: "Get Active Customer",
+            description: "Published when the active customer is published to listeners"
         }
     ]
 };

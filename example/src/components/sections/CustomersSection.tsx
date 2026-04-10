@@ -8,7 +8,7 @@ interface CustomersSectionProps {
   isInIframe: boolean;
 }
 
-export function CustomersSection({ isInIframe: _ }: CustomersSectionProps) {
+export function CustomersSection({ isInIframe }: CustomersSectionProps) {
   const [customers, setCustomers] = useState<any[]>([]);
   const [customersLoading, setCustomersLoading] = useState(false);
   const [customersError, setCustomersError] = useState<string>('');
@@ -37,6 +37,12 @@ export function CustomersSection({ isInIframe: _ }: CustomersSectionProps) {
   const [customerNote, setCustomerNote] = useState<string>('');
   const [addCustomerNoteLoading, setAddCustomerNoteLoading] = useState(false);
   const [addCustomerNoteResponse, setAddCustomerNoteResponse] = useState<string>('');
+
+  const [activeCustomerId, setActiveCustomerId] = useState<string>('');
+  const [setActiveCustomerLoading, setSetActiveCustomerLoading] = useState(false);
+  const [setActiveCustomerResponse, setSetActiveCustomerResponse] = useState<string>('');
+  const [getActiveCustomerLoading, setGetActiveCustomerLoading] = useState(false);
+  const [getActiveCustomerResponse, setGetActiveCustomerResponse] = useState<string>('');
 
   // Remove Customer from Cart
   const [removeCustomerLoading, setRemoveCustomerLoading] = useState(false);
@@ -204,7 +210,9 @@ export function CustomersSection({ isInIframe: _ }: CustomersSectionProps) {
                     <td className="text-right">
                       <button 
                         onClick={() => {
-                          setAssignCustomerId(customer._id || customer.id);
+                          const id = customer._id || customer.id;
+                          setAssignCustomerId(id);
+                          setActiveCustomerId(id);
                         }}
                         className="btn btn--small"
                       >
@@ -242,6 +250,84 @@ export function CustomersSection({ isInIframe: _ }: CustomersSectionProps) {
           <JsonViewer 
             data={assignCustomerResponse} 
             title={assignCustomerResponse.startsWith('Error') ? 'Error' : 'Success'} 
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Get Active Customer">
+        <p className="section-description">Returns the active customer from POS state (may differ from cart assign in some flows).</p>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setGetActiveCustomerResponse('Error: Not running in iframe');
+              return;
+            }
+            setGetActiveCustomerLoading(true);
+            setGetActiveCustomerResponse('');
+            try {
+              const result = await command.getActiveCustomer();
+              setGetActiveCustomerResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setGetActiveCustomerResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setGetActiveCustomerLoading(false);
+            }
+          }}
+          disabled={getActiveCustomerLoading}
+          className="btn btn--primary"
+        >
+          {getActiveCustomerLoading ? 'Loading...' : 'Get Active Customer'}
+        </button>
+        {getActiveCustomerResponse && (
+          <JsonViewer
+            data={getActiveCustomerResponse}
+            title={getActiveCustomerResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      <CommandSection title="Set Active Customer">
+        <p className="section-description">Loads a customer by id from local DB and sets as active customer.</p>
+        <div className="form-group">
+          <label className="form-label">Customer ID:</label>
+          <input
+            type="text"
+            value={activeCustomerId}
+            onChange={(e) => setActiveCustomerId(e.target.value)}
+            className="form-input"
+            placeholder="customer-id"
+          />
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setSetActiveCustomerResponse('Error: Not running in iframe');
+              return;
+            }
+            if (!activeCustomerId) {
+              setSetActiveCustomerResponse('Error: Please enter a customer ID');
+              return;
+            }
+            setSetActiveCustomerLoading(true);
+            setSetActiveCustomerResponse('');
+            try {
+              const result = await command.setActiveCustomer({ customerId: activeCustomerId });
+              setSetActiveCustomerResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setSetActiveCustomerResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setSetActiveCustomerLoading(false);
+            }
+          }}
+          disabled={setActiveCustomerLoading}
+          className="btn btn--primary"
+        >
+          {setActiveCustomerLoading ? 'Setting...' : 'Set Active Customer'}
+        </button>
+        {setActiveCustomerResponse && (
+          <JsonViewer
+            data={setActiveCustomerResponse}
+            title={setActiveCustomerResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>
