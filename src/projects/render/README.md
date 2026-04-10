@@ -34,6 +34,7 @@ The library provides a `command` namespace object containing all available comma
 - **[getCategories](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-categories/README.md)** - Retrieve a list of categories from the parent application
 - **[getOrders](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders/README.md)** - Retrieve a list of orders from the system with optional filtering, sorting, and pagination
 - **[getCurrentCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-cart/README.md)** - Retrieve the current cart object with all its contents
+- **[getActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-order/README.md)** - Retrieve the currently active order from the POS session
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
 - **[getFinalContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-final-context/README.md)** - Get final context information (project name)
 - **[getActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-product/README.md)** - Retrieve the currently active/selected product in the POS interface
@@ -225,6 +226,10 @@ Retrieves a list of orders from the system with optional filtering, sorting, and
 ### [getCurrentCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-current-cart/README.md)
 
 Retrieves the current cart object with all its contents including products, custom sales, discounts, fees, totals, and customer information.
+
+### [getActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-order/README.md)
+
+Retrieves the currently active order from the POS session. Returns the order set via `setActiveOrder`, or `null` if no order is active. Useful for checking order context before refunds, reprints, or other order-specific operations.
 
 ### [addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)
 
@@ -574,6 +579,8 @@ import type {
     GetFinalContextResponse,
     GetCurrentCart,
     GetCurrentCartResponse,
+    GetActiveOrder,
+    GetActiveOrderResponse,
     GetActiveProductResponse,
     GetActiveProduct,
     // Product Actions

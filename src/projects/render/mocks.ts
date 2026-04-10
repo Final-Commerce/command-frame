@@ -68,6 +68,7 @@ import { mockGetSecretVal } from "../../actions/get-secret-val/mock";
 import { mockSetSecretVal } from "../../actions/set-secret-val/mock";
 import { mockGetUsers } from "../../actions/get-users/mock";
 import { mockGetRoles } from "../../actions/get-roles/mock";
+import { mockGetActiveOrder } from "../../actions/get-active-order/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -141,4 +142,5 @@ export const RENDER_MOCKS: RenderProviderActions = {
     setSecretVal: mockSetSecretVal,
     getUsers: mockGetUsers,
     getRoles: mockGetRoles,
+    getActiveOrder: mockGetActiveOrder,
 };

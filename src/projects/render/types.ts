@@ -68,7 +68,8 @@ import type {
     SetSecretVal,
     GetUsers,
     GetRoles,
-    RemoveCartDiscount
+    RemoveCartDiscount,
+    GetActiveOrder
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -142,4 +143,5 @@ export interface RenderProviderActions {
     setSecretVal: SetSecretVal;
     getUsers: GetUsers;
     getRoles: GetRoles;
+    getActiveOrder: GetActiveOrder;
 }
