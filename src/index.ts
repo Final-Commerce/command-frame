@@ -47,6 +47,7 @@ import { partialPayment } from "./actions/partial-payment/action";
 import { switchUser } from "./actions/switch-user/action";
 import { print } from "./actions/print/action";
 import { setActiveOrder } from "./actions/set-active-order/action";
+import { getActiveOrder } from "./actions/get-active-order/action";
 // Integration Actions
 import { triggerWebhook } from "./actions/trigger-webhook/action";
 import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
@@ -147,6 +148,7 @@ export const command = {
     switchUser,
     print,
     setActiveOrder,
+    getActiveOrder,
     // Integration Actions
     triggerWebhook,
     triggerZapierWebhook,
@@ -309,6 +311,7 @@ export type { PartialPayment, PartialPaymentParams, PartialPaymentResponse } fro
 export type { SwitchUser, SwitchUserParams, SwitchUserResponse } from "./actions/switch-user/types";
 export type { Print, PrintParams, PrintResponse } from "./actions/print/types";
 export type { SetActiveOrder, SetActiveOrderParams, SetActiveOrderResponse } from "./actions/set-active-order/types";
+export type { GetActiveOrder, GetActiveOrderResponse } from "./actions/get-active-order/types";
 // Integration Actions
 export type { TriggerWebhook, TriggerWebhookPresetType, TriggerWebhookParams, TriggerWebhookResponse } from "./actions/trigger-webhook/types";
 export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWebhookResponse } from "./actions/trigger-zapier-webhook/types";

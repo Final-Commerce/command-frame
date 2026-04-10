@@ -29,6 +29,10 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
   const [setActiveOrderLoading, setSetActiveOrderLoading] = useState(false);
   const [setActiveOrderResponse, setSetActiveOrderResponse] = useState<string>('');
 
+  // Get Active Order
+  const [getActiveOrderLoading, setGetActiveOrderLoading] = useState(false);
+  const [getActiveOrderResponse, setGetActiveOrderResponse] = useState<string>('');
+
   // Get Orders
   const [ordersStatus, setOrdersStatus] = useState<string>('');
   const [ordersCustomerId, setOrdersCustomerId] = useState<string>('');
@@ -220,6 +224,41 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
           <JsonViewer
             data={setActiveOrderResponse}
             title={setActiveOrderResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Get Active Order */}
+      <CommandSection title="Get Active Order">
+        <p className="section-description">
+          Returns the currently active order from state. Use Set Active Order first to load an order.
+        </p>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setGetActiveOrderResponse('Error: Not running in iframe');
+              return;
+            }
+            setGetActiveOrderLoading(true);
+            setGetActiveOrderResponse('');
+            try {
+              const result = await command.getActiveOrder();
+              setGetActiveOrderResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setGetActiveOrderResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setGetActiveOrderLoading(false);
+            }
+          }}
+          disabled={getActiveOrderLoading}
+          className="btn btn--primary"
+        >
+          {getActiveOrderLoading ? 'Loading...' : 'Get Active Order'}
+        </button>
+        {getActiveOrderResponse && (
+          <JsonViewer
+            data={getActiveOrderResponse}
+            title={getActiveOrderResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>
