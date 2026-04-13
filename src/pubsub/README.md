@@ -27,7 +27,7 @@ topics.unsubscribe('customers', subscriptionId);
 | [orders](./topics/orders/README.md) | Order lifecycle events | 4 events | [View Details](./topics/orders/README.md) |
 | [refunds](./topics/refunds/README.md) | Refund lifecycle events | 4 events | [View Details](./topics/refunds/README.md) |
 | [products](./topics/products/README.md) | Product sync events | 4 events | [View Details](./topics/products/README.md) |
-| [cart](./topics/cart/README.md) | Cart operation events | 9 events | [View Details](./topics/cart/README.md) |
+| [cart](./topics/cart/README.md) | Cart operation events | 10 events | [View Details](./topics/cart/README.md) |
 | [payments](./topics/payments/README.md) | Payment processing events | 2 events | [View Details](./topics/payments/README.md) |
 | [custom-tables](./topics/custom-tables/README.md) | Custom table row lifecycle events | 3 events | [View Details](./topics/custom-tables/README.md) |
 | [print](./topics/print/README.md) | Print action events | 3 events | [View Details](./topics/print/README.md) |
@@ -40,9 +40,7 @@ topics.unsubscribe('customers', subscriptionId);
 
 ### `topics.getTopics()`
 
-Requests a fresh list of available topics from the host and returns the current cached list.
-
-`getTopics()` does not block waiting for a host reply; the host updates the local cache asynchronously through `postMessage`.
+Calls `requestTopics()` so the host is asked for definitions, then **returns a snapshot** of the subscriber’s cached topic list (`subscriber.getTopics()` in `src/pubsub/subscriber.ts`). The cache updates when the host sends `pubsub-topics-list` over `postMessage`, so the array you get may still reflect the previous cache until that message arrives. Call again after initialization if you need the refreshed list.
 
 **Returns:** `Promise<TopicDefinition[]>`
 
@@ -75,7 +73,7 @@ const subscriptionId = topics.subscribe('customers', (event) => {
 ```
 
 **Constraints:**
-- Topic IDs are kebab-case strings from host topic definitions (for example: `'custom-tables'`, `'payment-done'` event on `'payments'` topic).
+- Topic IDs are kebab-case strings from host topic definitions (for example `'custom-tables'`, `'payments'`). Event type IDs are also kebab-case (for example `'payment-done'` on the `payments` topic).
 - Subscriptions are page-scoped and tied to the current iframe lifecycle.
 - In standalone development (not embedded in an iframe), subscriptions run in built-in mock mode.
 
