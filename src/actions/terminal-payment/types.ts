@@ -4,6 +4,8 @@ import { CFOrder } from "../../CommonTypes";
 export interface TerminalPaymentParams {
     /** If not provided, uses the cart total. */
     amount?: number;
+    /** "Bluetooth" or "Cloud". Defaults to "Cloud". */
+    paymentType?: 'Bluetooth' | 'Cloud';
 }
 
 export interface TerminalPaymentResponse {

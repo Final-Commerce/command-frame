@@ -4,8 +4,10 @@ import { createOrderFromCart, MOCK_CART } from "../../demo/database";
 export const mockTerminalPayment: TerminalPayment = async (params?: TerminalPaymentParams): Promise<TerminalPaymentResponse> => {
     console.log("[Mock] terminalPayment called", params);
     
+    const connectionType = params?.paymentType || "Cloud";
+
     // Simulate terminal interaction
-    window.alert("Demo: Processing Terminal Payment...\n(Please tap, insert, or swipe card on terminal)");
+    window.alert(`Demo: Processing ${connectionType} Terminal Payment...\n(Please tap, insert, or swipe card on terminal)`);
 
     const amount = params?.amount || MOCK_CART.total;
     // Mocking terminal payment success immediately
