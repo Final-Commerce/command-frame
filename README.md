@@ -6,10 +6,11 @@ A TypeScript library for type-safe communication between iframes and their paren
 
 Command Frame provides a structured way to build integrations that run inside Final Commerce applications (like Render POS or Manage Dashboard). It handles the underlying `postMessage` communication while enforcing strict type safety for both the host application (Provider) and the embedded app (Client).
 
-The library provides three main capabilities:
+The library provides these main capabilities:
 
 | Capability | Purpose | Scope |
 |-----------|---------|-------|
+| **Types** | Domain models (`CFOrder`, cart, customers, …), command params/responses, pub/sub payloads | Compile-time imports from the package root ([field reference](./src/types/README.md)) |
 | **Commands** | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call |
 | **Pub/Sub** | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted) |
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
@@ -41,6 +42,8 @@ npm install @final-commerce/command-frame
 ## Commands
 
 Commands let the extension iframe call typed functions on the host. Each host environment (Render, Manage) exposes its own set of commands.
+
+**How to call them:** The package exports a **`command`** object whose keys match the underlying action names (see [`src/index.ts`](./src/index.ts)). **`RenderClient`** and **`ManageClient`** wrap the same contract: each method forwards to `postMessage` with the matching action string. Prefer the clients in application code; use `command` when you need the raw namespace (tests, thin wrappers, or dynamic dispatch).
 
 ### Render (POS System)
 
@@ -75,7 +78,7 @@ const context = await client.getContext();
 The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (9), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** Cart (10), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';
