@@ -14,9 +14,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [productsError, setProductsError] = useState<string>('');
   
   const [variants, setVariants] = useState<any[]>([]);
-  // const [variantsLoading, setVariantsLoading] = useState(false);
-  // const [variantsError, setVariantsError] = useState<string>('');
   const [variantId, setVariantId] = useState<string>('');
+  const [productId, setProductId] = useState<string>('');
 
   const [addProductLoading, setAddProductLoading] = useState(false);
   const [addProductResponse, setAddProductResponse] = useState<string>('');
@@ -80,10 +79,9 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   };
 
   const handleProductSelect = (product: any) => {
-    const productId = product._id || product.id;
-    if (productId) {
-      // setVariantProductId(productId);
-      // Automatically show variants from the product object
+    const selectedProductId = product._id || product.id;
+    if (selectedProductId) {
+      setProductId(selectedProductId);
       if (product.variants && Array.isArray(product.variants)) {
         setVariants(product.variants);
       } else {
@@ -232,25 +230,48 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       
       <CommandSection title="Selected Variant">
         <p className="section-description">
-          Select a variant from the table above or enter an ID manually to use for actions below.
+          Select a variant from the table above or enter IDs manually to use for actions below.
         </p>
         <div className="form-group">
-          <label className="form-label">Variant ID:</label>
-          <input
-            type="text"
-            value={variantId}
-            onChange={(e) => setVariantId(e.target.value)}
-            className="form-input"
-            placeholder="Enter Variant ID"
-          />
+          <div className="form-field">
+            <label className="form-label">Product ID:</label>
+            <input
+              type="text"
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+              className="form-input"
+              placeholder="Enter Product ID"
+            />
+          </div>
+          <div className="form-field">
+            <label className="form-label">Variant ID:</label>
+            <input
+              type="text"
+              value={variantId}
+              onChange={(e) => setVariantId(e.target.value)}
+              className="form-input"
+              placeholder="Enter Variant ID"
+            />
+          </div>
         </div>
       </CommandSection>
 
       {/* Set Active Product */}
       <CommandSection title="Set Active Product">
         <p className="section-description">
-          Set an active product from the selected variant.
+          Set an active product using the selected variant ID.
         </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Variant ID:</label>
+            <input
+              type="text"
+              value={variantId}
+              onChange={(e) => setVariantId(e.target.value)}
+              placeholder="Enter Variant ID"
+            />
+          </div>
+        </div>
         <button
           onClick={async () => {
             if (!variantId) {
@@ -268,7 +289,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
               setSetActiveProductLoading(false);
             }
           }}
-          
+          disabled={setActiveProductLoading}
           className="btn btn--primary"
         >
           {setActiveProductLoading ? 'Setting...' : 'Set Active Product'}
@@ -292,6 +313,9 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             setGetActiveProductResponse('');
             try {
               const result = await command.getActiveProduct();
+              if (result?.product?.variantId) {
+                setVariantId(result.product.variantId);
+              }
               setGetActiveProductResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setGetActiveProductResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
