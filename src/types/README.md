@@ -2,9 +2,18 @@
 
 Field-level reference for the core domain model types exported from `@final-commerce/command-frame` (orders, cart, customers, products, refunds, context, and related primitives).
 
-These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
+These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root via `export * from "./CommonTypes"` in [`src/index.ts`](../index.ts).
 
-Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
+**Other exports from the same package import:**
+
+| Category | Where defined | Examples |
+|----------|----------------|----------|
+| Per-command types | `export type { … }` in [`src/index.ts`](../index.ts) | `GetProductsParams`, `AddProductToCartResponse`, `GetContextResponseRender` |
+| Pub/sub | [`src/pubsub/`](../pubsub/README.md), topic `types.ts` files | `TopicEvent`, `CartEventPayload`, `CustomerCreatedPayload` |
+| Hooks | [`src/hooks/types.ts`](../hooks/types.ts) | `HookFunction`, `HookRegisterOptions` |
+| Custom tables / extensions | [`src/common-types/`](../common-types) | `CFCustomTable`, `AttributeType` |
+
+Subsystem READMEs (pub/sub, hooks, action folders) document behavior; [`src/index.ts`](../index.ts) is the single source of truth for what the published package exports.
 
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';

@@ -12,6 +12,8 @@ The `cart` topic provides events related to cart operations. Subscribe to this t
 
 ## Events
 
+Ten event types are defined in [`index.ts`](./index.ts) (same order as the host topic definition):
+
 | Event | Description | Documentation |
 |-------|-------------|---------------|
 | [cart-created](./cart-created/README.md) | Published when a new cart is created | [View Details](./cart-created/README.md) |
