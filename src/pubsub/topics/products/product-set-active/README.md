@@ -4,6 +4,8 @@
 
 Published when a product is set as the active product in the POS interface. This event notifies iframe apps that the user has selected or changed the currently active product.
 
+Extensions can also drive the same flow with the [`setActiveProduct`](../../../../actions/set-active-product/README.md) command (`variantId`); the host publishes this event when the active product changes, including after that command succeeds.
+
 ## Event Type
 
 - **Topic**: `products`

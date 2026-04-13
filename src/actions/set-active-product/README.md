@@ -2,6 +2,8 @@
 
 Sets a product as the active product in the POS interface by its variant ID. The active product represents the item currently being viewed or interacted with by the user.
 
+When the host applies the change, it may also publish the [`set-active-product`](../../pubsub/topics/products/product-set-active/README.md) event on the `products` topic (same payload shape as the command response `product`). Subscribe with [`topics.subscribe('products', ...)`](../../pubsub/topics/products/README.md) for real-time UI updates; use this command when your extension should drive the selection.
+
 ## Parameters
 
 ```typescript
@@ -62,7 +64,9 @@ The returned `CFActiveProduct` object includes:
 ## Example Usage
 
 ```typescript
-import { command } from '@final-commerce/command-frame';
+import { renderClient } from '@final-commerce/command-frame';
+
+const command = renderClient;
 
 try {
   const result = await command.setActiveProduct({ variantId: "variant-456" });
@@ -94,9 +98,7 @@ try {
 
 ## Error Handling
 
-The command will throw an error if:
-- `variantId` is not provided
-- The product with the given variant ID is not found
+[`CommandFrameClient`](../../client.ts) rejects the returned promise when the host responds with `success: false` (message includes `error`) or when the request times out (default 60s). Exact validation (e.g. missing `variantId`, unknown variant) is enforced by the host.
 
 ## Notes
 

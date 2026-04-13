@@ -192,11 +192,11 @@ hooks.register(
     'cart',
     async (event, hostCommands) => {
         await hostCommands.upsertCustomTableData({
-            tableName: 'product-changes',
+            tableName: 'cart-line-changes',
             data: { type: event.type, data: event.data, timestamp: event.timestamp },
         });
     },
-    { hookId: 'my-extension:product-changes', eventTypes: ['product-added', 'product-deleted'] }
+    { hookId: 'my-extension:cart-line-changes', eventTypes: ['product-added', 'product-deleted'] }
 );
 ```
 
