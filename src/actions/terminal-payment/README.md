@@ -1,6 +1,6 @@
 # terminalPayment
 
-Initiates a terminal payment for the current cart.
+Initiates a card-present payment on the configured Stripe terminal for the current cart. The host handles reader selection, customer flow, and order creation; this command only starts that flow and returns the outcome.
 
 ## Parameters
 
@@ -8,7 +8,8 @@ Initiates a terminal payment for the current cart.
 
 | Parameter | Type     | Required | Description                                                              |
 | :-------- | :------- | :------- | :----------------------------------------------------------------------- |
-| `amount`  | `number` | `false`  | The payment amount. If not provided, uses the cart total.                |
+| `amount`  | `number` | `false`  | Payment amount. If omitted, the host uses the cart total (see `types.ts`). |
+| `paymentType` | `'Bluetooth' \| 'Cloud'` | `false` | How the host reaches the terminal reader. Defaults to `'Cloud'`. |
 
 ## Response
 
@@ -18,7 +19,7 @@ Initiates a terminal payment for the current cart.
 | :---------- | :------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the payment was initiated successfully. |
 | `amount`    | `number \| null` | The payment amount.                       |
-| `paymentType` | `string` | The payment type ('terminal').            |
+| `paymentType` | `string` | Host-defined payment classification (not the same field as request `paymentType`). The local demo mock returns `'terminal'`. |
 | `order`     | `ActiveOrder \| null` | The created order object after payment processing. May be null if order creation is delayed. |
 | `timestamp` | `string` | ISO date string of when the action occurred. |
 
@@ -51,6 +52,11 @@ try {
     amount: 50.00
   });
 
+  // Prefer Bluetooth-connected reader (when supported by the host)
+  await command.terminalPayment({
+    paymentType: 'Bluetooth',
+  });
+
 } catch (error) {
   console.error('Failed to process terminal payment:', error);
 }
@@ -59,6 +65,7 @@ try {
 ## Notes
 
 - The actual payment processing happens through the parent application's payment system
+- Request `paymentType` (`Bluetooth` / `Cloud`) is forwarded to the host; response `paymentType` is a separate string field on the result object (see `TerminalPaymentResponse` in `types.ts`).
 - Requires the cart to have items
 - May request tip if tip functionality is enabled
 - The order is created asynchronously after payment processing completes
