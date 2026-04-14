@@ -3,12 +3,7 @@
  * Manages subscriptions to topics and receives events from the host window
  */
 
-import type {
-    TopicDefinition,
-    TopicEvent,
-    TopicSubscription,
-    TopicSubscriptionCallback
-} from "./types";
+import type { TopicDefinition, TopicEvent, TopicSubscription, TopicSubscriptionCallback } from "./types";
 import { mockSubscribeToTopic } from "../demo/database";
 
 /**
@@ -46,7 +41,7 @@ export class TopicSubscriber {
         this.useGlobalDebug = options.debug === undefined;
 
         // Detect standalone mode (not inside any iframe)
-        if (typeof window !== 'undefined' && (!window.top || window.top === window)) {
+        if (typeof window !== "undefined" && (!window.top || window.top === window)) {
             this.mockMode = true;
             if (this.isDebugEnabled()) {
                 console.log("[TopicSubscriber] Mock Mode enabled (standalone mode detected)");
@@ -346,4 +341,3 @@ export class TopicSubscriber {
         }
     }
 }
-
