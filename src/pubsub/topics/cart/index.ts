@@ -21,6 +21,11 @@ export const cartTopic: TopicDefinition = {
             description: "Published when a customer is assigned to the cart"
         },
         {
+            id: "customer-unassigned",
+            name: "Customer Unassigned",
+            description: "Published when a customer is removed from the cart"
+        },
+        {
             id: "product-added",
             name: "Product Added",
             description: "Published when a product is added to the cart"
