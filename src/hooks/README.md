@@ -82,7 +82,8 @@ hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
         await hostCommands.triggerWebhook({
             webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+            presetData: true,
+            presetType: 'order',
         });
     }
 }, { hookId: 'my-extension:payment-webhook' });
@@ -179,7 +180,8 @@ hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
         await hostCommands.triggerWebhook({
             webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+            presetData: true,
+            presetType: 'order',
         });
     }
 }, { hookId: 'my-extension:payment-webhook' });
