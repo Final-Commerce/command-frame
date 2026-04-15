@@ -187,6 +187,25 @@ function CustomerEvents() {
 - If no host pub/sub messages are received within a short detection window, it falls back to mock mode automatically for local development.
 - `topics.getTopics()` returns a snapshot of the current cache; call it again after host initialization if you need the refreshed list.
 
+## Wire protocol (extension iframe)
+
+Messages use `window.top.postMessage` with a `type` field. The iframe sends:
+
+| `type` | When |
+|--------|------|
+| `pubsub-request-topics` | Topic list is requested (including from `getTopics()`). |
+| `pubsub-subscribe` | First subscription is added for a topic (includes `topic`). |
+| `pubsub-unsubscribe` | Last subscription for a topic is removed (includes `topic`). |
+
+The host should reply with:
+
+| `type` | Payload |
+|--------|---------|
+| `pubsub-topics-list` | `TopicDefinition[]` (updates the cached list used by `getTopics()`). |
+| `pubsub-event` | `TopicEvent` (`topic`, `type`, `data`, `timestamp`). |
+
+If `origin` is not `"*"`, the subscriber filters incoming messages by `event.origin` (same pattern as [`CommandFrameClient`](../client.ts)).
+
 ## Host Application (Render) - Publishing Events
 
 In the Render application, use the `topicPublisher` to publish events:
@@ -204,6 +223,8 @@ topicPublisher.publish('customers', 'customer-created', {
 The host application must register topics before they can be used. Topics are registered automatically when the `TopicPublisher` is initialized.
 
 ## Base Types
+
+These shapes match [`src/pubsub/types.ts`](../pubsub/types.ts). The `payload` inside `pubsub-event` / `pubsub-topics-list` messages follows them.
 
 ```typescript
 interface TopicDefinition {

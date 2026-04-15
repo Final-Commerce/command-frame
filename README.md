@@ -15,6 +15,15 @@ The library provides three main capabilities:
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
 | **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
 
+### Documentation map
+
+| Area | What it covers | Primary docs |
+|------|----------------|--------------|
+| **Types** | Domain models (`CFOrder`, `CFProduct`, …), enums, and context shapes exported from the package | [`src/types/README.md`](./src/types/README.md) (field reference for [`src/CommonTypes.ts`](./src/CommonTypes.ts)); command param/response types are exported from [`src/index.ts`](./src/index.ts) and documented per command under `src/actions/<command>/README.md` |
+| **Commands** | Typed `postMessage` calls from the iframe to the host (request/response) | **APIs:** [`RenderClient`](./src/projects/render/client.ts) / [`ManageClient`](./src/projects/manage/client.ts) (camelCase methods → `action` names); **namespace:** `command` object in [`src/index.ts`](./src/index.ts) (same functions for non-class usage); **catalog:** [Render](./src/projects/render/README.md), [Manage](./src/projects/manage/README.md), and each action’s README |
+| **Pub/Sub** | Subscribe to host-published topic events while the iframe is mounted | [`src/pubsub/README.md`](./src/pubsub/README.md), topic folders under [`src/pubsub/topics/`](./src/pubsub/topics/) |
+| **Hooks** | Session-scoped callbacks serialized to the host (Render) | [`src/hooks/README.md`](./src/hooks/README.md), [`src/hooks/types.ts`](./src/hooks/types.ts) |
+
 ## Installation
 
 ### From npm (public registry)
