@@ -793,7 +793,7 @@ Refund processing UI status for active refund flows.
 
 ### CFActiveRefundDetails
 
-Current refund selection state used by `getActiveRefund` / `setActiveRefund`.
+Current refund selection state: the host publishes updates on the `refunds` topic (`set-active-refund`, `get-active-refund` events); the `setActiveRefund` command loads an order and opens the refund UI (see [set-active-refund action](../actions/set-active-refund/README.md)).
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
