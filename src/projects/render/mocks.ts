@@ -81,7 +81,6 @@ import { mockGetActiveSession } from "../../actions/get-active-session/mock";
 import { mockSetActiveSession } from "../../actions/set-active-session/mock";
 import { mockGetActiveUser } from "../../actions/get-active-user/mock";
 import { mockSetActiveUser } from "../../actions/set-active-user/mock";
-import { mockGetActiveRefund } from "../../actions/get-active-refund/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
 import { RenderProviderActions } from "./types";
 
@@ -169,6 +168,12 @@ export const RENDER_MOCKS: RenderProviderActions = {
     setActiveSession: mockSetActiveSession,
     getActiveUser: mockGetActiveUser,
     setActiveUser: mockSetActiveUser,
-    getActiveRefund: mockGetActiveRefund,
-    setActiveRefund: mockSetActiveRefund
+    setActiveRefund: mockSetActiveRefund,
+    removeProductDiscount: async () => ({ success: true, timestamp: new Date().toISOString() }),
+    removeProductFee: async () => ({ success: true, timestamp: new Date().toISOString() }),
+    removeProductNote: async () => ({ success: true, timestamp: new Date().toISOString() }),
+    removeCartFee: async () => ({ success: true, timestamp: new Date().toISOString() }),
+    removeOrderNote: async () => ({ success: true, timestamp: new Date().toISOString() }),
+    removeCustomSale: async (params) => ({ success: true, id: params.id, timestamp: new Date().toISOString() }),
+    removeNonRevenueItem: async (params) => ({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() })
 };

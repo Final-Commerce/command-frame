@@ -47,6 +47,44 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [adjustInventoryLoading, setAdjustInventoryLoading] = useState(false);
   const [adjustInventoryResponse, setAdjustInventoryResponse] = useState<string>('');
 
+  // Add Product Discount (standalone)
+  const [discountAmount, setDiscountAmount] = useState<string>('5.00');
+  const [discountIsPercent, setDiscountIsPercent] = useState<boolean>(false);
+  const [discountLabel, setDiscountLabel] = useState<string>('Discount');
+  const [discountInternalId, setDiscountInternalId] = useState<string>('');
+  const [addDiscountLoading, setAddDiscountLoading] = useState(false);
+  const [addDiscountResponse, setAddDiscountResponse] = useState<string>('');
+
+  // Remove Product Discount
+  const [removeDiscountInternalId, setRemoveDiscountInternalId] = useState<string>('');
+  const [removeDiscountLoading, setRemoveDiscountLoading] = useState(false);
+  const [removeDiscountResponse, setRemoveDiscountResponse] = useState<string>('');
+
+  // Add Product Fee (standalone)
+  const [standaloneFeeAmount, setStandaloneFeeAmount] = useState<string>('2.00');
+  const [standaloneFeeIsPercent, setStandaloneFeeIsPercent] = useState<boolean>(false);
+  const [standaloneFeeLabel, setStandaloneFeeLabel] = useState<string>('Extra Fee');
+  const [standaloneFeeApplyTaxes, setStandaloneFeeApplyTaxes] = useState<boolean>(false);
+  const [standaloneFeeInternalId, setStandaloneFeeInternalId] = useState<string>('');
+  const [addStandaloneFeeLoading, setAddStandaloneFeeLoading] = useState(false);
+  const [addStandaloneFeeResponse, setAddStandaloneFeeResponse] = useState<string>('');
+
+  // Remove Product Fee
+  const [removeFeeInternalId, setRemoveFeeInternalId] = useState<string>('');
+  const [removeFeeLoading, setRemoveFeeLoading] = useState(false);
+  const [removeFeeResponse, setRemoveFeeResponse] = useState<string>('');
+
+  // Add Product Note (standalone)
+  const [standaloneNote, setStandaloneNote] = useState<string>('');
+  const [standaloneNoteInternalId, setStandaloneNoteInternalId] = useState<string>('');
+  const [addStandaloneNoteLoading, setAddStandaloneNoteLoading] = useState(false);
+  const [addStandaloneNoteResponse, setAddStandaloneNoteResponse] = useState<string>('');
+
+  // Remove Product Note
+  const [removeNoteInternalId, setRemoveNoteInternalId] = useState<string>('');
+  const [removeNoteLoading, setRemoveNoteLoading] = useState(false);
+  const [removeNoteResponse, setRemoveNoteResponse] = useState<string>('');
+
   const handleGetProducts = async () => {
     // if (!isInIframe) {
     //   setProductsError('Error: Not running in iframe');
@@ -593,6 +631,367 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           <JsonViewer
             data={adjustInventoryResponse}
             title={adjustInventoryResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Add Product Discount (standalone) */}
+      <CommandSection title="Add Product Discount">
+        <p className="section-description">
+          Adds a discount to a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Amount:</label>
+            <input
+              type="number"
+              step="0.01"
+              value={discountAmount}
+              onChange={(e) => setDiscountAmount(e.target.value)}
+              placeholder="0.00"
+            />
+          </div>
+          <div className="form-field">
+            <label>Label:</label>
+            <input
+              type="text"
+              value={discountLabel}
+              onChange={(e) => setDiscountLabel(e.target.value)}
+              placeholder="Discount label"
+            />
+          </div>
+          <div className="form-field">
+            <label>Internal ID (optional):</label>
+            <input
+              type="text"
+              value={discountInternalId}
+              onChange={(e) => setDiscountInternalId(e.target.value)}
+              placeholder="Cart item internalId"
+            />
+          </div>
+          <div className="form-field">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={discountIsPercent}
+                onChange={(e) => setDiscountIsPercent(e.target.checked)}
+              />
+              <span>Is Percentage</span>
+            </label>
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!discountAmount) {
+              setAddDiscountResponse('Error: Amount is required');
+              return;
+            }
+            setAddDiscountLoading(true);
+            setAddDiscountResponse('');
+            try {
+              const result = await command.addProductDiscount({
+                amount: parseFloat(discountAmount) || 0,
+                isPercent: discountIsPercent,
+                label: discountLabel,
+                ...(discountInternalId ? { internalId: discountInternalId } : {})
+              });
+              setAddDiscountResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setAddDiscountResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setAddDiscountLoading(false);
+            }
+          }}
+          disabled={addDiscountLoading}
+          className="btn btn--primary"
+        >
+          {addDiscountLoading ? 'Adding...' : 'Add Product Discount'}
+        </button>
+        {addDiscountResponse && (
+          <JsonViewer
+            data={addDiscountResponse}
+            title={addDiscountResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Product Discount */}
+      <CommandSection title="Remove Product Discount">
+        <p className="section-description">
+          Removes a discount from a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Internal ID (optional):</label>
+            <input
+              type="text"
+              value={removeDiscountInternalId}
+              onChange={(e) => setRemoveDiscountInternalId(e.target.value)}
+              placeholder="Cart item internalId"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            setRemoveDiscountLoading(true);
+            setRemoveDiscountResponse('');
+            try {
+              const result = await command.removeProductDiscount(
+                removeDiscountInternalId ? { internalId: removeDiscountInternalId } : undefined
+              );
+              setRemoveDiscountResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveDiscountResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveDiscountLoading(false);
+            }
+          }}
+          disabled={removeDiscountLoading}
+          className="btn btn--danger"
+        >
+          {removeDiscountLoading ? 'Removing...' : 'Remove Product Discount'}
+        </button>
+        {removeDiscountResponse && (
+          <JsonViewer
+            data={removeDiscountResponse}
+            title={removeDiscountResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Add Product Fee (standalone) */}
+      <CommandSection title="Add Product Fee">
+        <p className="section-description">
+          Adds a fee to a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Amount:</label>
+            <input
+              type="number"
+              step="0.01"
+              value={standaloneFeeAmount}
+              onChange={(e) => setStandaloneFeeAmount(e.target.value)}
+              placeholder="0.00"
+            />
+          </div>
+          <div className="form-field">
+            <label>Label:</label>
+            <input
+              type="text"
+              value={standaloneFeeLabel}
+              onChange={(e) => setStandaloneFeeLabel(e.target.value)}
+              placeholder="Fee label"
+            />
+          </div>
+          <div className="form-field">
+            <label>Internal ID (optional):</label>
+            <input
+              type="text"
+              value={standaloneFeeInternalId}
+              onChange={(e) => setStandaloneFeeInternalId(e.target.value)}
+              placeholder="Cart item internalId"
+            />
+          </div>
+          <div className="form-field">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={standaloneFeeIsPercent}
+                onChange={(e) => setStandaloneFeeIsPercent(e.target.checked)}
+              />
+              <span>Is Percentage</span>
+            </label>
+          </div>
+          <div className="form-field">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={standaloneFeeApplyTaxes}
+                onChange={(e) => setStandaloneFeeApplyTaxes(e.target.checked)}
+              />
+              <span>Apply Taxes</span>
+            </label>
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!standaloneFeeAmount) {
+              setAddStandaloneFeeResponse('Error: Amount is required');
+              return;
+            }
+            setAddStandaloneFeeLoading(true);
+            setAddStandaloneFeeResponse('');
+            try {
+              const result = await command.addProductFee({
+                amount: parseFloat(standaloneFeeAmount) || 0,
+                isPercent: standaloneFeeIsPercent,
+                label: standaloneFeeLabel,
+                applyTaxes: standaloneFeeApplyTaxes,
+                ...(standaloneFeeInternalId ? { internalId: standaloneFeeInternalId } : {})
+              });
+              setAddStandaloneFeeResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setAddStandaloneFeeResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setAddStandaloneFeeLoading(false);
+            }
+          }}
+          disabled={addStandaloneFeeLoading}
+          className="btn btn--primary"
+        >
+          {addStandaloneFeeLoading ? 'Adding...' : 'Add Product Fee'}
+        </button>
+        {addStandaloneFeeResponse && (
+          <JsonViewer
+            data={addStandaloneFeeResponse}
+            title={addStandaloneFeeResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Product Fee */}
+      <CommandSection title="Remove Product Fee">
+        <p className="section-description">
+          Removes a fee from a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Internal ID (optional):</label>
+            <input
+              type="text"
+              value={removeFeeInternalId}
+              onChange={(e) => setRemoveFeeInternalId(e.target.value)}
+              placeholder="Cart item internalId"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            setRemoveFeeLoading(true);
+            setRemoveFeeResponse('');
+            try {
+              const result = await command.removeProductFee(
+                removeFeeInternalId ? { internalId: removeFeeInternalId } : undefined
+              );
+              setRemoveFeeResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveFeeResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveFeeLoading(false);
+            }
+          }}
+          disabled={removeFeeLoading}
+          className="btn btn--danger"
+        >
+          {removeFeeLoading ? 'Removing...' : 'Remove Product Fee'}
+        </button>
+        {removeFeeResponse && (
+          <JsonViewer
+            data={removeFeeResponse}
+            title={removeFeeResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Add Product Note (standalone) */}
+      <CommandSection title="Add Product Note">
+        <p className="section-description">
+          Adds a note to a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Note:</label>
+            <textarea
+              value={standaloneNote}
+              onChange={(e) => setStandaloneNote(e.target.value)}
+              placeholder="Enter note text"
+              rows={3}
+            />
+          </div>
+          <div className="form-field">
+            <label>Internal ID (optional):</label>
+            <input
+              type="text"
+              value={standaloneNoteInternalId}
+              onChange={(e) => setStandaloneNoteInternalId(e.target.value)}
+              placeholder="Cart item internalId"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!standaloneNote) {
+              setAddStandaloneNoteResponse('Error: Note is required');
+              return;
+            }
+            setAddStandaloneNoteLoading(true);
+            setAddStandaloneNoteResponse('');
+            try {
+              const result = await command.addProductNote({
+                note: standaloneNote,
+                ...(standaloneNoteInternalId ? { internalId: standaloneNoteInternalId } : {})
+              });
+              setAddStandaloneNoteResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setAddStandaloneNoteResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setAddStandaloneNoteLoading(false);
+            }
+          }}
+          disabled={addStandaloneNoteLoading}
+          className="btn btn--primary"
+        >
+          {addStandaloneNoteLoading ? 'Adding...' : 'Add Product Note'}
+        </button>
+        {addStandaloneNoteResponse && (
+          <JsonViewer
+            data={addStandaloneNoteResponse}
+            title={addStandaloneNoteResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Product Note */}
+      <CommandSection title="Remove Product Note">
+        <p className="section-description">
+          Removes a note from a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Internal ID (optional):</label>
+            <input
+              type="text"
+              value={removeNoteInternalId}
+              onChange={(e) => setRemoveNoteInternalId(e.target.value)}
+              placeholder="Cart item internalId"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            setRemoveNoteLoading(true);
+            setRemoveNoteResponse('');
+            try {
+              const result = await command.removeProductNote(
+                removeNoteInternalId ? { internalId: removeNoteInternalId } : undefined
+              );
+              setRemoveNoteResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveNoteResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveNoteLoading(false);
+            }
+          }}
+          disabled={removeNoteLoading}
+          className="btn btn--danger"
+        >
+          {removeNoteLoading ? 'Removing...' : 'Remove Product Note'}
+        </button>
+        {removeNoteResponse && (
+          <JsonViewer
+            data={removeNoteResponse}
+            title={removeNoteResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>

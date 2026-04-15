@@ -70,6 +70,25 @@ export function CartSection({ isInIframe }: CartSectionProps) {
   const [updateQuantityLoading, setUpdateQuantityLoading] = useState(false);
   const [updateQuantityResponse, setUpdateQuantityResponse] = useState<string>('');
 
+  // Remove Cart Fee
+  const [removeCartFeeIndex, setRemoveCartFeeIndex] = useState<string>('0');
+  const [removeCartFeeLoading, setRemoveCartFeeLoading] = useState(false);
+  const [removeCartFeeResponse, setRemoveCartFeeResponse] = useState<string>('');
+
+  // Remove Order Note
+  const [removeOrderNoteLoading, setRemoveOrderNoteLoading] = useState(false);
+  const [removeOrderNoteResponse, setRemoveOrderNoteResponse] = useState<string>('');
+
+  // Remove Custom Sale
+  const [removeCustomSaleId, setRemoveCustomSaleId] = useState<string>('');
+  const [removeCustomSaleLoading, setRemoveCustomSaleLoading] = useState(false);
+  const [removeCustomSaleResponse, setRemoveCustomSaleResponse] = useState<string>('');
+
+  // Remove Non-Revenue Item
+  const [removeNonRevenueExternalId, setRemoveNonRevenueExternalId] = useState<string>('');
+  const [removeNonRevenueLoading, setRemoveNonRevenueLoading] = useState(false);
+  const [removeNonRevenueResponse, setRemoveNonRevenueResponse] = useState<string>('');
+
   const handleAddCustomSale = async () => {
     if (!isInIframe) {
       setCustomSaleResponse('Error: Not running in iframe');
@@ -726,6 +745,188 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           <JsonViewer
             data={updateQuantityResponse}
             title={updateQuantityResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Cart Fee */}
+      <CommandSection title="Remove Cart Fee">
+        <p className="section-description">
+          Removes a fee from the cart by its index in the customFee array.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Fee Index:</label>
+            <input
+              type="number"
+              value={removeCartFeeIndex}
+              onChange={(e) => setRemoveCartFeeIndex(e.target.value)}
+              placeholder="0"
+              min="0"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setRemoveCartFeeResponse('Error: Not running in iframe');
+              return;
+            }
+            setRemoveCartFeeLoading(true);
+            setRemoveCartFeeResponse('');
+            try {
+              const result = await command.removeCartFee({ index: parseInt(removeCartFeeIndex) });
+              setRemoveCartFeeResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveCartFeeResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveCartFeeLoading(false);
+            }
+          }}
+          disabled={removeCartFeeLoading}
+          className="btn btn--danger"
+        >
+          {removeCartFeeLoading ? 'Removing...' : 'Remove Cart Fee'}
+        </button>
+        {removeCartFeeResponse && (
+          <JsonViewer
+            data={removeCartFeeResponse}
+            title={removeCartFeeResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Order Note */}
+      <CommandSection title="Remove Order Note">
+        <p className="section-description">
+          Removes the order note from the cart.
+        </p>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setRemoveOrderNoteResponse('Error: Not running in iframe');
+              return;
+            }
+            setRemoveOrderNoteLoading(true);
+            setRemoveOrderNoteResponse('');
+            try {
+              const result = await command.removeOrderNote();
+              setRemoveOrderNoteResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveOrderNoteResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveOrderNoteLoading(false);
+            }
+          }}
+          disabled={removeOrderNoteLoading}
+          className="btn btn--danger"
+        >
+          {removeOrderNoteLoading ? 'Removing...' : 'Remove Order Note'}
+        </button>
+        {removeOrderNoteResponse && (
+          <JsonViewer
+            data={removeOrderNoteResponse}
+            title={removeOrderNoteResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Custom Sale */}
+      <CommandSection title="Remove Custom Sale">
+        <p className="section-description">
+          Removes a custom sale from the cart by its id.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Custom Sale ID:</label>
+            <input
+              type="text"
+              value={removeCustomSaleId}
+              onChange={(e) => setRemoveCustomSaleId(e.target.value)}
+              placeholder="Custom sale id"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setRemoveCustomSaleResponse('Error: Not running in iframe');
+              return;
+            }
+            if (!removeCustomSaleId) {
+              setRemoveCustomSaleResponse('Error: Please enter a custom sale id');
+              return;
+            }
+            setRemoveCustomSaleLoading(true);
+            setRemoveCustomSaleResponse('');
+            try {
+              const result = await command.removeCustomSale({ id: removeCustomSaleId });
+              setRemoveCustomSaleResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveCustomSaleResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveCustomSaleLoading(false);
+            }
+          }}
+          disabled={removeCustomSaleLoading}
+          className="btn btn--danger"
+        >
+          {removeCustomSaleLoading ? 'Removing...' : 'Remove Custom Sale'}
+        </button>
+        {removeCustomSaleResponse && (
+          <JsonViewer
+            data={removeCustomSaleResponse}
+            title={removeCustomSaleResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Remove Non-Revenue Item */}
+      <CommandSection title="Remove Non-Revenue Item">
+        <p className="section-description">
+          Removes a non-revenue item from the cart by its externalId.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>External ID:</label>
+            <input
+              type="text"
+              value={removeNonRevenueExternalId}
+              onChange={(e) => setRemoveNonRevenueExternalId(e.target.value)}
+              placeholder="Non-revenue item externalId"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setRemoveNonRevenueResponse('Error: Not running in iframe');
+              return;
+            }
+            if (!removeNonRevenueExternalId) {
+              setRemoveNonRevenueResponse('Error: Please enter an externalId');
+              return;
+            }
+            setRemoveNonRevenueLoading(true);
+            setRemoveNonRevenueResponse('');
+            try {
+              const result = await command.removeNonRevenueItem({ externalId: removeNonRevenueExternalId });
+              setRemoveNonRevenueResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveNonRevenueResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveNonRevenueLoading(false);
+            }
+          }}
+          disabled={removeNonRevenueLoading}
+          className="btn btn--danger"
+        >
+          {removeNonRevenueLoading ? 'Removing...' : 'Remove Non-Revenue Item'}
+        </button>
+        {removeNonRevenueResponse && (
+          <JsonViewer
+            data={removeNonRevenueResponse}
+            title={removeNonRevenueResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>

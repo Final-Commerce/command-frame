@@ -63,8 +63,15 @@ import { getActiveSession } from "./actions/get-active-session/action";
 import { setActiveSession } from "./actions/set-active-session/action";
 import { getActiveUser } from "./actions/get-active-user/action";
 import { setActiveUser } from "./actions/set-active-user/action";
-import { getActiveRefund } from "./actions/get-active-refund/action";
 import { setActiveRefund } from "./actions/set-active-refund/action";
+// Remove Actions
+import { removeProductDiscount } from "./actions/remove-product-discount/action";
+import { removeProductFee } from "./actions/remove-product-fee/action";
+import { removeProductNote } from "./actions/remove-product-note/action";
+import { removeCartFee } from "./actions/remove-cart-fee/action";
+import { removeOrderNote } from "./actions/remove-order-note/action";
+import { removeCustomSale } from "./actions/remove-custom-sale/action";
+import { removeNonRevenueItem } from "./actions/remove-non-revenue-item/action";
 // Integration Actions
 import { triggerWebhook } from "./actions/trigger-webhook/action";
 import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
@@ -181,8 +188,15 @@ export const command = {
     setActiveSession,
     getActiveUser,
     setActiveUser,
-    getActiveRefund,
     setActiveRefund,
+    // Remove Actions
+    removeProductDiscount,
+    removeProductFee,
+    removeProductNote,
+    removeCartFee,
+    removeOrderNote,
+    removeCustomSale,
+    removeNonRevenueItem,
     // Integration Actions
     triggerWebhook,
     triggerZapierWebhook,
@@ -362,8 +376,15 @@ export type { GetActiveSession, GetActiveSessionResponse } from "./actions/get-a
 export type { SetActiveSession, SetActiveSessionParams, SetActiveSessionResponse } from "./actions/set-active-session/types";
 export type { GetActiveUser, GetActiveUserResponse } from "./actions/get-active-user/types";
 export type { SetActiveUser, SetActiveUserParams, SetActiveUserResponse } from "./actions/set-active-user/types";
-export type { GetActiveRefund, GetActiveRefundResponse } from "./actions/get-active-refund/types";
 export type { SetActiveRefund, SetActiveRefundParams, SetActiveRefundResponse } from "./actions/set-active-refund/types";
+// Remove Actions
+export type { RemoveProductDiscount, RemoveProductDiscountParams, RemoveProductDiscountResponse } from "./actions/remove-product-discount/types";
+export type { RemoveProductFee, RemoveProductFeeParams, RemoveProductFeeResponse } from "./actions/remove-product-fee/types";
+export type { RemoveProductNote, RemoveProductNoteParams, RemoveProductNoteResponse } from "./actions/remove-product-note/types";
+export type { RemoveCartFee, RemoveCartFeeParams, RemoveCartFeeResponse } from "./actions/remove-cart-fee/types";
+export type { RemoveOrderNote, RemoveOrderNoteResponse } from "./actions/remove-order-note/types";
+export type { RemoveCustomSale, RemoveCustomSaleParams, RemoveCustomSaleResponse } from "./actions/remove-custom-sale/types";
+export type { RemoveNonRevenueItem, RemoveNonRevenueItemParams, RemoveNonRevenueItemResponse } from "./actions/remove-non-revenue-item/types";
 // Integration Actions
 export type { TriggerWebhook, TriggerWebhookPresetType, TriggerWebhookParams, TriggerWebhookResponse } from "./actions/trigger-webhook/types";
 export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWebhookResponse } from "./actions/trigger-zapier-webhook/types";
@@ -531,6 +552,12 @@ export type {
     CartDiscountRemovedPayload,
     CartFeeAddedPayload,
     CartFeeRemovedPayload,
+    ProductDiscountAddedPayload,
+    ProductDiscountRemovedPayload,
+    ProductFeeAddedPayload,
+    ProductFeeRemovedPayload,
+    ProductNoteAddedPayload,
+    ProductNoteRemovedPayload,
     CartCreatedEvent,
     CartCustomerAssignedEvent,
     ProductAddedEvent,
@@ -539,6 +566,12 @@ export type {
     CartDiscountRemovedEvent,
     CartFeeAddedEvent,
     CartFeeRemovedEvent,
+    ProductDiscountAddedEvent,
+    ProductDiscountRemovedEvent,
+    ProductFeeAddedEvent,
+    ProductFeeRemovedEvent,
+    ProductNoteAddedEvent,
+    ProductNoteRemovedEvent,
     CartEventType,
     CartEventPayload
 } from "./pubsub/topics/cart/types";
