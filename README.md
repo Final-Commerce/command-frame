@@ -75,7 +75,7 @@ const context = await client.getContext();
 The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (9), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** Cart (9), Customers (9), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';
@@ -95,6 +95,7 @@ Hooks are **session-scoped** event callbacks that run in the host (Render) conte
 - **[Hooks Documentation](./src/hooks/README.md)**
 - The callback is serialized and sent to the host; it must be **self-contained** (no closures, no imports).
 - A stable `hookId` is required for deduplication (safe on iframe reload).
+- Optional `eventTypes` limits the hook to specific event `type` strings for that topic.
 
 ```typescript
 import { hooks } from '@final-commerce/command-frame';
