@@ -183,25 +183,38 @@ function CustomerEvents() {
 
 ## Runtime behavior
 
-- The subscriber starts in iframe mode and requests topics from the host.
+- The subscriber starts in iframe mode and requests topics from the host (`postMessage` type `pubsub-request-topics`). The host replies with `pubsub-topics-list` and pushes events with `pubsub-event` (see **Wire protocol** below).
 - If no host pub/sub messages are received within a short detection window, it falls back to mock mode automatically for local development.
 - `topics.getTopics()` returns a snapshot of the current cache; call it again after host initialization if you need the refreshed list.
 
+## Wire protocol (iframe ↔ host)
+
+Message `type` values used by this package’s subscriber:
+
+| Direction | `type` | Purpose |
+|-----------|--------|---------|
+| Iframe → host | `pubsub-request-topics` | Ask for the topic catalog (`requestId` on the message). |
+| Iframe → host | `pubsub-subscribe` | First subscription to a topic (`topic` on the message). |
+| Iframe → host | `pubsub-unsubscribe` | Last subscription removed for a topic, or `unsubscribeAll`. |
+| Host → iframe | `pubsub-topics-list` | Payload: `TopicDefinition[]`. |
+| Host → iframe | `pubsub-event` | Payload: `TopicEvent` (`topic`, `type`, `data`, `timestamp`). |
+
+Subscription callbacks receive the payload from `pubsub-event` only; they are not invoked for `pubsub-topics-list`.
+
 ## Host Application (Render) - Publishing Events
 
-In the Render application, use the `topicPublisher` to publish events:
+In the Render application, the host-side package exposes `topicPublisher` (import path is typically `@render/command-frame`, not this npm package). Per-event READMEs show the expected `publish(topicId, eventType, payload)` call.
 
 ```typescript
 import { topicPublisher } from '@render/command-frame';
 import type { CustomerCreatedPayload } from '@final-commerce/command-frame';
 
-// When a customer is created
 topicPublisher.publish('customers', 'customer-created', {
     customer: newCustomer
 } as CustomerCreatedPayload);
 ```
 
-The host application must register topics before they can be used. Topics are registered automatically when the `TopicPublisher` is initialized.
+Topic registration and delivery to iframes are implemented in the host; this repository only defines the **extension-side** subscriber and types.
 
 ## Base Types
 

@@ -45,12 +45,12 @@ hooks.unregister('my-extension:cart-log');
 
 ## How It Works
 
-1. The extension calls `hooks.register()`. The callback is serialized (`.toString()`) and sent to the host via `postMessage`.
-2. The host (Render) reconstructs the function with `new Function()`, wraps it with `hostCommands` / `callCommand`, and stores it.
-3. From that point on, the hook runs in the host context on every matching event, regardless of which page the user navigates to.
-4. The iframe must load **at least once** for the hook to be registered. After that, the hook persists for the rest of the session.
+1. The extension calls `hooks.register()`. The callback body is serialized with `.toString()` and sent to the host via `postMessage` (see **Registration transport**).
+2. The host (Render) receives `hook-register`, installs the hook for the session, and invokes it when matching pub/sub events fire. **Installation and execution live in the host codebase** (not in this package).
+3. Session-scoped hooks can run even after the user navigates away from the page that mounted the iframe, as long as the host still holds the registration.
+4. The extension must run **at least once** in an iframe so the host receives `hook-register`. If the extension is not running in an iframe (`window.top === window`), registration and unregistration are no-ops (no messages are sent).
 
-If the extension is not running in an iframe (`window.top === window`), registration/unregistration are no-ops (the functions return without sending hook messages).
+Treat the callback as an opaque string the host will evaluate: it must not rely on lexicals from the extension bundle (see **Self-Contained Constraint**).
 
 ## Deduplication
 
@@ -116,11 +116,11 @@ type HookFunction = (
 
 ## Self-Contained Constraint
 
-The callback is **serialized** via `.toString()` and **reconstructed** in the host with `new Function()`. It must be **self-contained**:
+The callback is **serialized** via `.toString()` and evaluated in the **host** (outside your extension module). It must be **self-contained**:
 
-- **Allowed:** Use `event`, `hostCommands`, and `callCommand` only.
-- **Not allowed:** Closures, imports, or references to extension-local variables. These will cause `ReferenceError` at runtime (caught and logged by the host).
-- **Not allowed:** Module-only globals such as `import.meta`, dynamic `import()`, or top-level `await`. The host runs the reconstructed function in global scope (not an ES module), so these will throw `"Cannot use 'import.meta' outside a module"` and the hook will **not** be registered.
+- **Intended parameters:** The host passes `event`, `hostCommands`, and `callCommand` when invoking the hook (see **Callback Signature**). Do not rely on any other identifiers from your bundle.
+- **Not allowed:** Closures or references to extension-local variables (they are not in scope on the host). These typically surface as `ReferenceError` when the hook runs.
+- **Avoid:** Module-only globals such as `import.meta`, dynamic `import()`, or top-level `await`. Host evaluation is not an ES module context, so these often fail at registration or first run.
 
 If you need configuration values (e.g. table name, webhook URL), encode them as literals inside the function body.
 
