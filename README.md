@@ -15,6 +15,12 @@ The library provides three main capabilities:
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
 | **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
 
+## Types
+
+- **Domain model** (orders, cart, customers, products, context, custom tables, etc.): [Types reference](./src/types/README.md) — types live in [`src/CommonTypes.ts`](./src/CommonTypes.ts) and [`src/common-types/`](./src/common-types/) and are re-exported from the package entry point.
+- **Per-command contracts** (`Params` / `Response` / function types): each action under [`src/actions/`](./src/actions/) has a `types.ts` and README; everything exported is declared in [`src/index.ts`](./src/index.ts).
+- **Pub/sub and hooks**: event and hook typings are exported from [`src/index.ts`](./src/index.ts) and described in [Pub/Sub](./src/pubsub/README.md) and [Hooks](./src/hooks/README.md).
+
 ## Installation
 
 ### From npm (public registry)
@@ -40,7 +46,7 @@ npm install @final-commerce/command-frame
 
 ## Commands
 
-Commands let the extension iframe call typed functions on the host. Each host environment (Render, Manage) exposes its own set of commands.
+Commands let the extension iframe call typed functions on the host. The library exposes every action on the shared `command` object (see [`src/index.ts`](./src/index.ts) for the full list). Each host environment (Render, Manage) implements a subset appropriate to that app; optional commands fail at runtime if the host does not support them.
 
 ### Render (POS System)
 
@@ -75,7 +81,7 @@ const context = await client.getContext();
 The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (9), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** Cart (10), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';
