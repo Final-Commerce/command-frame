@@ -82,7 +82,8 @@ hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
         await hostCommands.triggerWebhook({
             webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+            presetData: true,
+            presetType: 'order',
         });
     }
 }, { hookId: 'my-extension:payment-webhook' });
@@ -179,7 +180,8 @@ hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
         await hostCommands.triggerWebhook({
             webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+            presetData: true,
+            presetType: 'order',
         });
     }
 }, { hookId: 'my-extension:payment-webhook' });
@@ -229,7 +231,7 @@ function MyExtension() {
 Hooks use the same topics as the pub/sub system. See the [Pub/Sub documentation](../pubsub/README.md) for the full list of topics and event types:
 
 - [Cart](../pubsub/topics/cart/README.md) - Cart operation events (9 events)
-- [Customers](../pubsub/topics/customers/README.md) - Customer lifecycle events (8 events)
+- [Customers](../pubsub/topics/customers/README.md) - Customer lifecycle events (9 events)
 - [Orders](../pubsub/topics/orders/README.md) - Order lifecycle events (4 events)
 - [Payments](../pubsub/topics/payments/README.md) - Payment processing events (2 events)
 - [Products](../pubsub/topics/products/README.md) - Product sync events (4 events)
