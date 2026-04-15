@@ -42,6 +42,8 @@ npm install @final-commerce/command-frame
 
 Commands let the extension iframe call typed functions on the host. Each host environment (Render, Manage) exposes its own set of commands.
 
+All actions are also available on the shared **`command`** object (see [`src/index.ts`](./src/index.ts)): each key is the camelCase action name and matches the `action` field in the underlying `postMessage` request. Use whichever fits your style (`command.getProducts()` vs `new RenderClient().getProducts()`).
+
 ### Render (POS System)
 
 For building applications that run inside the Render Point of Sale interface.
@@ -75,7 +77,7 @@ const context = await client.getContext();
 The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (9), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** Cart (9), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom tables (3), Outlet (2), Station (2), Session (2), Users (2).
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';
