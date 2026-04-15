@@ -15,6 +15,8 @@ The library provides three main capabilities:
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
 | **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
 
+**Documentation map:** [Domain types reference](./src/types/README.md) (`CF*` models from `CommonTypes.ts`) · [Commands (Render)](./src/projects/render/README.md) · [Commands (Manage)](./src/projects/manage/README.md) · [Pub/Sub](./src/pubsub/README.md) · [Hooks](./src/hooks/README.md)
+
 ## Installation
 
 ### From npm (public registry)
@@ -75,7 +77,7 @@ const context = await client.getContext();
 The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (9), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** Cart (17), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';

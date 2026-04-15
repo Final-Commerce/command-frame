@@ -27,7 +27,7 @@ topics.unsubscribe('customers', subscriptionId);
 | [orders](./topics/orders/README.md) | Order lifecycle events | 4 events | [View Details](./topics/orders/README.md) |
 | [refunds](./topics/refunds/README.md) | Refund lifecycle events | 4 events | [View Details](./topics/refunds/README.md) |
 | [products](./topics/products/README.md) | Product sync events | 4 events | [View Details](./topics/products/README.md) |
-| [cart](./topics/cart/README.md) | Cart operation events | 9 events | [View Details](./topics/cart/README.md) |
+| [cart](./topics/cart/README.md) | Cart operation events | 17 events | [View Details](./topics/cart/README.md) |
 | [payments](./topics/payments/README.md) | Payment processing events | 2 events | [View Details](./topics/payments/README.md) |
 | [custom-tables](./topics/custom-tables/README.md) | Custom table row lifecycle events | 3 events | [View Details](./topics/custom-tables/README.md) |
 | [print](./topics/print/README.md) | Print action events | 3 events | [View Details](./topics/print/README.md) |
@@ -138,7 +138,22 @@ import type {
 
 ### Topic ID mapping note
 
-`topics.subscribe(...)` uses wire topic IDs (for example `'custom-tables'`), while `TopicEventPayloadMap` uses TypeScript keys (for example `customTables`).
+`topics.subscribe(...)` uses **wire topic IDs** (kebab-case strings from the host, for example `'custom-tables'`). `TopicEventPayloadMap` uses **camelCase keys** that match those IDs (for example `customTables`). Event type strings in payloads and in `hooks.register(..., { eventTypes: [...] })` are the **`eventTypes[].id` values** from each topic definition (for example `'product-added'` on topic `'cart'`), not the human-readable `name` fields.
+
+| Wire topic ID (`topics.subscribe`) | `TopicEventPayloadMap` key |
+|-----------------------------------|----------------------------|
+| `customers` | `customers` |
+| `orders` | `orders` |
+| `refunds` | `refunds` |
+| `products` | `products` |
+| `cart` | `cart` |
+| `payments` | `payments` |
+| `custom-tables` | `customTables` |
+| `print` | `print` |
+| `outlet` | `outlet` |
+| `station` | `station` |
+| `session` | `session` |
+| `users` | `users` |
 
 ```typescript
 import type { TopicEventPayloadMap } from '@final-commerce/command-frame';
