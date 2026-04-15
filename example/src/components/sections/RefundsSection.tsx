@@ -17,8 +17,6 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
   const [activeRefundOrderId, setActiveRefundOrderId] = useState<string>('');
   const [setActiveRefundLoading, setSetActiveRefundLoading] = useState(false);
   const [setActiveRefundResponse, setSetActiveRefundResponse] = useState<string>('');
-  const [getActiveRefundLoading, setGetActiveRefundLoading] = useState(false);
-  const [getActiveRefundResponse, setGetActiveRefundResponse] = useState<string>('');
 
   // Get Refunds
   const [refundsOrderId, setRefundsOrderId] = useState<string>('');
@@ -96,38 +94,6 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
           <JsonViewer
             data={initiateRefundResponse}
             title={initiateRefundResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
-        )}
-      </CommandSection>
-
-      <CommandSection title="Get Active Refund">
-        <p className="section-description">Returns current refund selection state from the host.</p>
-        <button
-          onClick={async () => {
-            if (!isInIframe) {
-              setGetActiveRefundResponse('Error: Not running in iframe');
-              return;
-            }
-            setGetActiveRefundLoading(true);
-            setGetActiveRefundResponse('');
-            try {
-              const result = await command.getActiveRefund();
-              setGetActiveRefundResponse(JSON.stringify(result, null, 2));
-            } catch (error) {
-              setGetActiveRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-            } finally {
-              setGetActiveRefundLoading(false);
-            }
-          }}
-          disabled={getActiveRefundLoading}
-          className="btn btn--primary"
-        >
-          {getActiveRefundLoading ? 'Loading...' : 'Get Active Refund'}
-        </button>
-        {getActiveRefundResponse && (
-          <JsonViewer
-            data={getActiveRefundResponse}
-            title={getActiveRefundResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>

@@ -82,8 +82,14 @@ import type {
     SetActiveSession,
     GetActiveUser,
     SetActiveUser,
-    GetActiveRefund,
-    SetActiveRefund
+    SetActiveRefund,
+    RemoveProductDiscount,
+    RemoveProductFee,
+    RemoveProductNote,
+    RemoveCartFee,
+    RemoveOrderNote,
+    RemoveCustomSale,
+    RemoveNonRevenueItem
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -170,6 +176,12 @@ export interface RenderProviderActions {
     setActiveSession: SetActiveSession;
     getActiveUser: GetActiveUser;
     setActiveUser: SetActiveUser;
-    getActiveRefund: GetActiveRefund;
     setActiveRefund: SetActiveRefund;
+    removeProductDiscount: RemoveProductDiscount;
+    removeProductFee: RemoveProductFee;
+    removeProductNote: RemoveProductNote;
+    removeCartFee: RemoveCartFee;
+    removeOrderNote: RemoveOrderNote;
+    removeCustomSale: RemoveCustomSale;
+    removeNonRevenueItem: RemoveNonRevenueItem;
 }

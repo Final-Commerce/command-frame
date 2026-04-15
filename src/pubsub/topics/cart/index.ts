@@ -59,6 +59,36 @@ export const cartTopic: TopicDefinition = {
             id: "cart-fee-removed",
             name: "Cart Fee Removed",
             description: "Published when a fee is removed from the cart"
+        },
+        {
+            id: "product-discount-added",
+            name: "Product Discount Added",
+            description: "Published when a discount is added to a product in the cart"
+        },
+        {
+            id: "product-discount-removed",
+            name: "Product Discount Removed",
+            description: "Published when a discount is removed from a product in the cart"
+        },
+        {
+            id: "product-fee-added",
+            name: "Product Fee Added",
+            description: "Published when a fee is added to a product in the cart"
+        },
+        {
+            id: "product-fee-removed",
+            name: "Product Fee Removed",
+            description: "Published when a fee is removed from a product in the cart"
+        },
+        {
+            id: "product-note-added",
+            name: "Product Note Added",
+            description: "Published when a note is added to a product in the cart"
+        },
+        {
+            id: "product-note-removed",
+            name: "Product Note Removed",
+            description: "Published when a note is removed from a product in the cart"
         }
     ]
 };
