@@ -4,7 +4,7 @@ Field-level reference for the core domain model types exported from `@final-comm
 
 These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
 
-Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
+Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts). For pub/sub, wire topic IDs (for example `'custom-tables'`) differ from the `TopicEventPayloadMap` TypeScript keys (for example `customTables`); see [Pub/Sub: Type Safety](../pubsub/README.md#type-safety).
 
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
