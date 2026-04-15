@@ -42,6 +42,8 @@ npm install @final-commerce/command-frame
 
 Commands let the extension iframe call typed functions on the host. Each host environment (Render, Manage) exposes its own set of commands.
 
+**Wiring:** Each call sends a `postMessage` to `window.top` with `action` (the command name), `params`, and `requestId`; the host replies with `PostMessageResponse` (`requestId`, `success`, `data` / `error`). Use the **`command`** object (`import { command } from '@final-commerce/command-frame'`) for the flat API, or **`RenderClient`** / **`ManageClient`** for the same actions as typed methods on a `CommandFrameClient` instance (unknown method names still resolve to `call(action, params)` via a Proxy).
+
 ### Render (POS System)
 
 For building applications that run inside the Render Point of Sale interface.
