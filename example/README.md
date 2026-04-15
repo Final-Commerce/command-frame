@@ -114,7 +114,7 @@ const activeSession = await command.getActiveSession();
 await command.setActiveSession({ sessionId: 'session-123' });
 const activeUser = await command.getActiveUser();
 await command.setActiveUser({ userId: 'user-123' });
-const activeRefund = await command.getActiveRefund();
+// Refund selection state: subscribe to the `refunds` topic (`get-active-refund` / `set-active-refund` events), or call `setActiveRefund` to open the refund UI
 await command.setActiveRefund({ orderId: 'order-123' });
 
 // Product Actions
