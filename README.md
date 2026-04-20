@@ -10,9 +10,10 @@ The library provides three main capabilities:
 
 | Capability | Purpose | Scope |
 |-----------|---------|-------|
-| **Commands** | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call |
+| **Commands** | Call host functions from the iframe (e.g. get products, open cash drawer). Typed entry points: `command` (namespace), `RenderClient` / `ManageClient`, or `commandFrameClient.call(action, params)` | Request/response per call |
 | **Pub/Sub** | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted) |
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
+| **Domain types** | Shared models (orders, cart, customers, products, context) | [`src/types/README.md`](./src/types/README.md) (re-exported from the package root) |
 | **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
 
 ## Installation
