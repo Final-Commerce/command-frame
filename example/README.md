@@ -25,7 +25,9 @@ cd example
 npm install
 ```
 
-The example’s `package.json` uses `"@final-commerce/command-frame": "file:.."` so it always resolves the **parent** `command-frame` package (run `npm run build` in the repo root after changing the library). For published versions only, you can switch to a semver range from npm instead.
+The example’s `package.json` pins `@final-commerce/command-frame` to a **semver range** (see `dependencies` in that file), so `npm install` pulls the matching version from the registry you have configured (npm or GitHub Packages per the root README).
+
+To exercise a **local** checkout of this repo instead, replace that dependency with `"@final-commerce/command-frame": "file:.."`, run `npm install` in `example/`, and run `npm run build` in the repo root after library changes so `dist/` is up to date. See also [docs/LOCAL_LINKING.md](../docs/LOCAL_LINKING.md) for linking into Render or other apps.
 
 3. Start the development server:
 ```bash

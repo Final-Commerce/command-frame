@@ -75,7 +75,7 @@ const subscriptionId = topics.subscribe('customers', (event) => {
 ```
 
 **Constraints:**
-- Topic IDs are kebab-case strings from host topic definitions (for example: `'custom-tables'`, `'payment-done'` event on `'payments'` topic).
+- Topic IDs are kebab-case strings from host topic definitions (for example: `'custom-tables'`; on the `'payments'` topic, event type IDs include `'payment-done'` and `'payment-err'`).
 - Subscriptions are page-scoped and tied to the current iframe lifecycle.
 - In standalone development (not embedded in an iframe), subscriptions run in built-in mock mode.
 

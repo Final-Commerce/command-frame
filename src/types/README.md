@@ -2,6 +2,15 @@
 
 Field-level reference for the core domain model types exported from `@final-commerce/command-frame` (orders, cart, customers, products, refunds, context, and related primitives).
 
+## Where types live in the repo
+
+| Area | Source | Package surface |
+|------|--------|-----------------|
+| Domain model (orders, cart, customers, …) | [`CommonTypes.ts`](../CommonTypes.ts) and [`src/common-types/`](../common-types/) | Re-exported from the package root |
+| Command params / responses | Each action’s `types.ts` under [`src/actions/`](../actions/) | Re-exported from the package root where applicable (see [`src/index.ts`](../index.ts)) |
+| Pub/sub wire types and event maps | [`src/pubsub/types.ts`](../pubsub/types.ts), per-topic `types.ts` under [`src/pubsub/topics/`](../pubsub/topics/) | Re-exported from the package root |
+| Session hooks (iframe API) | [`src/hooks/types.ts`](../hooks/types.ts) | `HookFunction`, `HookRegisterOptions` |
+
 These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
 
 Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
