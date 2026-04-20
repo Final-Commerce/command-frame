@@ -39,28 +39,32 @@ jobs:
           fi
           echo "Deploying to: ${{ github.ref_name }} environment"
 
-      - name: Get library version
+      - name: Get deploy version
         id: lib_version
         run: |
-          VERSION=$(node -p "require('./package.json').version")
+          LIB_VERSION=$(node -p "require('./package.json').version")
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          VERSION="${LIB_VERSION}-${SHORT_SHA}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Library version: $VERSION"
+          echo "lib_version=$LIB_VERSION" >> $GITHUB_OUTPUT
+          echo "Deploy version: $VERSION (lib: $LIB_VERSION)"
 
       - name: Prepare example app
         working-directory: example
         run: |
-          LIB_VERSION="${{ steps.lib_version.outputs.version }}"
+          DEPLOY_VERSION="${{ steps.lib_version.outputs.version }}"
+          LIB_VERSION="${{ steps.lib_version.outputs.lib_version }}"
 
           node -e "
             const fs = require('fs');
             const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
             pkg.name = 'command-frame-example-web-app';
-            pkg.version = '${LIB_VERSION}';
+            pkg.version = '${DEPLOY_VERSION}';
             pkg.dependencies['@final-commerce/command-frame'] = '^${LIB_VERSION}';
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
-          echo "Example app set to version $LIB_VERSION"
+          echo "Example app version: $DEPLOY_VERSION (lib dependency: ^$LIB_VERSION)"
 
       - name: Install dependencies
         working-directory: example
