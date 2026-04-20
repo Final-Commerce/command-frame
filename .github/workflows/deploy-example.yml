@@ -1,0 +1,215 @@
+name: Deploy Example App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "example/**"
+      - "src/**"
+      - "package.json"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Get library version
+        id: lib_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Library version: $VERSION"
+
+      - name: Prepare example app
+        working-directory: example
+        run: |
+          LIB_VERSION="${{ steps.lib_version.outputs.version }}"
+
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.name = 'command-frame-example-web-app';
+            pkg.version = '${LIB_VERSION}';
+            pkg.dependencies['@final-commerce/command-frame'] = '^${LIB_VERSION}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          echo "Example app set to version $LIB_VERSION"
+
+      - name: Install dependencies
+        working-directory: example
+        run: npm install
+
+      - name: Build example app
+        working-directory: example
+        run: npm run build
+
+      - name: Create tarball
+        working-directory: example
+        run: tar -czvf dist.tar.gz ./dist
+
+      - name: Get existing apps from API
+        id: get_apps
+        run: |
+          RESPONSE=$(curl -s -X GET 'https://staging.services.finalpos.com/v1/api/web-hosting/apps' \
+            -H 'x-api-key: ${{ secrets.WEB_HOSTING_API_KEY }}' \
+            -H 'x-api-secret: ${{ secrets.WEB_HOSTING_API_SECRET }}')
+          echo "$RESPONSE" > /tmp/existing_apps.json
+
+      - name: Deploy to web hosting
+        working-directory: example
+        run: |
+          APP="command-frame-example-web-app"
+          VERSION="${{ steps.lib_version.outputs.version }}"
+          API_URL="https://staging.services.finalpos.com/v1/api"
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          DEVELOPER_EMAIL="${{ github.event.head_commit.author.email }}"
+          if [ -z "$DEVELOPER_EMAIL" ]; then
+            DEVELOPER_EMAIL="${{ github.event.pusher.email }}"
+          fi
+          if [ -z "$DEVELOPER_EMAIL" ]; then
+            DEVELOPER_EMAIL="${{ github.actor }}@users.noreply.github.com"
+          fi
+
+          echo "# Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| App | Version | Status | URL |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|---------|--------|-----|" >> $GITHUB_STEP_SUMMARY
+
+          APP_ID=$(node -e "
+            const fs = require('fs');
+            try {
+              const apps = JSON.parse(fs.readFileSync('/tmp/existing_apps.json', 'utf8'));
+              const app = Array.isArray(apps) ? apps.find(a => a.name === '$APP') : null;
+              console.log(app ? app._id : '');
+            } catch (e) { console.log(''); }
+          ")
+
+          if [ -z "$APP_ID" ]; then
+            echo "Creating new app: $APP"
+            HTTP_CODE=$(curl -s -o /tmp/create_response.json -w "%{http_code}" -X POST "${API_URL}/web-hosting/apps" \
+              -H "x-api-key: ${{ secrets.WEB_HOSTING_API_KEY }}" \
+              -H "x-api-secret: ${{ secrets.WEB_HOSTING_API_SECRET }}" \
+              -F "name=${APP}" \
+              -F "version=${VERSION}" \
+              -F "file=@dist.tar.gz;type=application/x-gzip")
+
+            if [ "$HTTP_CODE" != "201" ] && [ "$HTTP_CODE" != "200" ]; then
+              ERROR_RESPONSE=$(cat /tmp/create_response.json 2>/dev/null || echo "Unknown error")
+              ERROR_MSG="Extension Build Failed\n\nApp: $APP\nVersion: $VERSION\nDeveloper: $DEVELOPER_EMAIL\nError: Failed to create app (HTTP $HTTP_CODE)\nResponse: $ERROR_RESPONSE\n\nSee workflow run for details:\n$WORKFLOW_URL"
+              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_APP }}" \
+                -H "Content-Type: application/json; charset=UTF-8" \
+                -d "{\"text\": \"$ERROR_MSG\"}"
+              echo "| $APP | $VERSION | Failed | API error (HTTP $HTTP_CODE) |" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
+
+            RESPONSE=$(cat /tmp/create_response.json)
+            SUBDOMAIN=$(echo "$RESPONSE" | node -p "try { const data = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')); data.subdomain || ''; } catch (e) { ''; }")
+
+            if [ -n "$SUBDOMAIN" ]; then
+              echo "| $APP | $VERSION | Created | [https://$SUBDOMAIN](https://$SUBDOMAIN) |" >> $GITHUB_STEP_SUMMARY
+              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_APP }}" \
+                -H "Content-Type: application/json; charset=UTF-8" \
+                -d "{\"text\": \"New Extension Deployed\n\nApp: $APP\nVersion: $VERSION\nDeveloper: $DEVELOPER_EMAIL\nURL: https://$SUBDOMAIN \n\nPls, wait 3-5 minutes for DNS propagation and CDN cache invalidation\"}"
+            else
+              echo "| $APP | $VERSION | Created | Subdomain not returned |" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            SUBDOMAIN=$(node -e "
+              const fs = require('fs');
+              try {
+                const apps = JSON.parse(fs.readFileSync('/tmp/existing_apps.json', 'utf8'));
+                const app = Array.isArray(apps) ? apps.find(a => a.name === '$APP') : null;
+                console.log(app ? app.subdomain : '');
+              } catch (e) { console.log(''); }
+            ")
+
+            echo "Uploading new version for app: $APP (ID: $APP_ID)"
+            HTTP_CODE=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" -X POST "${API_URL}/web-hosting/apps/${APP_ID}/versions" \
+              -H "x-api-key: ${{ secrets.WEB_HOSTING_API_KEY }}" \
+              -H "x-api-secret: ${{ secrets.WEB_HOSTING_API_SECRET }}" \
+              -F "version=${VERSION}" \
+              -F "file=@dist.tar.gz;type=application/x-gzip")
+
+            if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
+              ERROR_RESPONSE=$(cat /tmp/upload_response.json 2>/dev/null || echo "Unknown error")
+              ERROR_MSG="Extension Deployment Failed\n\nApp: $APP\nVersion: $VERSION\nDeveloper: $DEVELOPER_EMAIL\nError: Failed to upload version (HTTP $HTTP_CODE)\nResponse: $ERROR_RESPONSE\n\nSee workflow run for details:\n$WORKFLOW_URL"
+              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_VERSION }}" \
+                -H "Content-Type: application/json; charset=UTF-8" \
+                -d "{\"text\": \"$ERROR_MSG\"}"
+              echo "| $APP | $VERSION | Failed | Upload error (HTTP $HTTP_CODE) |" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
+
+            echo "Switching to version: $VERSION"
+            HTTP_CODE=$(curl -s -o /tmp/switch_response.json -w "%{http_code}" -X PATCH "${API_URL}/web-hosting/apps/${APP_ID}/switch/${VERSION}" \
+              -H "x-api-key: ${{ secrets.WEB_HOSTING_API_KEY }}" \
+              -H "x-api-secret: ${{ secrets.WEB_HOSTING_API_SECRET }}")
+
+            if [ "$HTTP_CODE" != "200" ]; then
+              ERROR_RESPONSE=$(cat /tmp/switch_response.json 2>/dev/null || echo "Unknown error")
+              ERROR_MSG="Extension Deployment Failed\n\nApp: $APP\nVersion: $VERSION\nDeveloper: $DEVELOPER_EMAIL\nError: Failed to switch version (HTTP $HTTP_CODE)\nResponse: $ERROR_RESPONSE\n\nSee workflow run for details:\n$WORKFLOW_URL"
+              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_VERSION }}" \
+                -H "Content-Type: application/json; charset=UTF-8" \
+                -d "{\"text\": \"$ERROR_MSG\"}"
+              echo "| $APP | $VERSION | Failed | Switch error (HTTP $HTTP_CODE) |" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
+
+            if [ -n "$SUBDOMAIN" ]; then
+              echo "| $APP | $VERSION | Updated | [https://$SUBDOMAIN](https://$SUBDOMAIN) |" >> $GITHUB_STEP_SUMMARY
+              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_VERSION }}" \
+                -H "Content-Type: application/json; charset=UTF-8" \
+                -d "{\"text\": \"Extension Updated\n\nApp: $APP\nVersion: $VERSION\nDeveloper: $DEVELOPER_EMAIL\nURL: https://$SUBDOMAIN \n\nPls, wait 3-5 minutes for CDN cache invalidation\"}"
+            else
+              echo "| $APP | $VERSION | Updated | N/A |" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+      - name: Sync example to Extensions repo
+        run: |
+          LIB_VERSION="${{ steps.lib_version.outputs.version }}"
+          TARGET="_extensions/command-frame-example-web-app"
+
+          git clone --depth 1 https://x-access-token:${{ secrets.EXTENSIONS_REPO_TOKEN }}@github.com/Final-Commerce/Extensions.git _extensions
+
+          mkdir -p "$TARGET"
+          rsync -av --delete \
+            --exclude node_modules \
+            --exclude dist \
+            --exclude .git \
+            --exclude package-lock.json \
+            example/ "$TARGET/"
+
+          # Pin name and version to match the deployed version
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('$TARGET/package.json', 'utf8'));
+            pkg.name = 'command-frame-example-web-app';
+            pkg.version = '${LIB_VERSION}';
+            pkg.dependencies['@final-commerce/command-frame'] = '^${LIB_VERSION}';
+            fs.writeFileSync('$TARGET/package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          cd _extensions
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet; then
+            echo "No changes to sync to Extensions"
+            exit 0
+          fi
+
+          git add command-frame-example-web-app/
+          git commit -m "chore: sync command-frame example app v${LIB_VERSION}"
+          git push origin main
