@@ -40,6 +40,7 @@ import { extensionPayment } from "./actions/extension-payment/action";
 import { redeemPayment } from "./actions/redeem-payment/action";
 // Customer Actions
 import { addCustomerNote } from "./actions/add-customer-note/action";
+import { removeCustomerNote } from "./actions/remove-customer-note/action";
 import { removeCustomerFromCart } from "./actions/remove-customer-from-cart/action";
 import { removeCartDiscount } from "./actions/remove-cart-discount/action";
 // System Actions
@@ -165,6 +166,7 @@ export const command = {
     redeemPayment,
     // Customer Actions
     addCustomerNote,
+    removeCustomerNote,
     removeCustomerFromCart,
     removeCartDiscount,
     // System Actions
@@ -347,6 +349,11 @@ export { installExtensionRefundListener } from "./actions/extension-refund/exten
 export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/extension-refund/types";
 // Customer Actions
 export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
+export type {
+    RemoveCustomerNote,
+    RemoveCustomerNoteParams,
+    RemoveCustomerNoteResponse
+} from "./actions/remove-customer-note/types";
 export type { RemoveCustomerFromCart, RemoveCustomerFromCartResponse } from "./actions/remove-customer-from-cart/types";
 export type { RemoveCartDiscount, RemoveCartDiscountResponse } from "./actions/remove-cart-discount/types";
 // System Actions

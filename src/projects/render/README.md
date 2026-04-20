@@ -81,6 +81,7 @@ The library provides a `command` namespace object containing all available comma
 - **[assignCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-customer/README.md)** - Assign an existing customer to the current session/cart
 - **[setActiveCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-customer/README.md)** - Set the active customer by id (loads from local DB)
 - **[addCustomerNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-customer-note/README.md)** - Add a note to a customer's record
+- **[removeCustomerNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-customer-note/README.md)** - Remove a note from a customer's record by note id (host resolves the customer)
 - **[removeCustomerFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-customer-from-cart/README.md)** - Remove the currently assigned customer from the cart
 
 #### System Actions
@@ -392,6 +393,10 @@ Initiates a partial/split payment for the current cart. Can open the split payme
 ### [addCustomerNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-customer-note/README.md)
 
 Adds a note to a customer's record. Requires the customer ID.
+
+### [removeCustomerNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-customer-note/README.md)
+
+Removes a note from a customer's record. Only the note `_id` is required; Render resolves the parent customer in local storage, updates Redux when the affected customer is active/selected, and publishes `customer-note-deleted` on the `customers` topic.
 
 ### [removeCustomerFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-customer-from-cart/README.md)
 
