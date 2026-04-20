@@ -75,7 +75,7 @@ const context = await client.getContext();
 The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (9), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** 12 wire topics — cart (9 events), customers (8), orders (4), payments (2), products (4), refunds (4), custom-tables (3), print (3), outlet (2), station (2), session (2), users (2).
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';

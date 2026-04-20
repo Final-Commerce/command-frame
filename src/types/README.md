@@ -6,6 +6,18 @@ These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) an
 
 Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
 
+### Related type surfaces (where to look)
+
+| Surface | Location in repo | What it covers |
+|---------|------------------|----------------|
+| Domain / shared models | [`CommonTypes.ts`](../CommonTypes.ts), [`common-types/`](../common-types/) | Orders, cart, catalog, context, custom tables, etc. |
+| Commands | `src/actions/<action-name>/types.ts` (one folder per command) | Request/response types for each `command.*` action |
+| Pub/sub | [`pubsub/types.ts`](../pubsub/types.ts), [`pubsub/topics/*/types.ts`](../pubsub/topics/cart/types.ts) | `TopicEvent`, topic payloads, event unions |
+| Hooks | [`hooks/types.ts`](../hooks/types.ts) | `HookFunction`, `HookRegisterOptions` (extension-side API) |
+| Host pub/sub helpers | [`pubsub/types.ts`](../pubsub/types.ts) (`HookCallback`, etc.) | Types used when implementing a host publisher |
+
+**Subsystem docs:** [Pub/Sub](../pubsub/README.md) · [Hooks](../hooks/README.md) · [Render commands](../projects/render/README.md) · [Manage commands](../projects/manage/README.md)
+
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
 ```

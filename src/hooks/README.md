@@ -80,9 +80,16 @@ Registers a session-scoped hook for a topic. The callback is serialized and sent
 ```typescript
 hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
+        // triggerWebhook params match package type TriggerWebhookParams (no arbitrary payload field).
         await hostCommands.triggerWebhook({
             webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+            presetData: true,
+            presetType: 'order'
+        });
+        // To persist raw event data, use a command that accepts it (e.g. upsertCustomTableData).
+        await hostCommands.upsertCustomTableData({
+            tableName: 'payment-events',
+            data: { type: event.type, data: event.data, timestamp: event.timestamp }
         });
     }
 }, { hookId: 'my-extension:payment-webhook' });
@@ -179,7 +186,8 @@ hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
         await hostCommands.triggerWebhook({
             webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+            presetData: true,
+            presetType: 'order'
         });
     }
 }, { hookId: 'my-extension:payment-webhook' });
