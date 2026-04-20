@@ -15,6 +15,17 @@ The library provides three main capabilities:
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
 | **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
 
+## Documentation map
+
+| Area | Intent | Where to read |
+|------|--------|---------------|
+| **Domain types** | Shared POS/order/cart/customer/product shapes (`CF*` types) used by commands and pub/sub payloads | [`src/types/README.md`](./src/types/README.md) |
+| **Commands** | Typed `command.*` actions (iframe → host `postMessage` RPC) | Per-action READMEs under [`src/actions/`](./src/actions/); Render catalog: [`src/projects/render/README.md`](./src/projects/render/README.md); Manage: [`src/projects/manage/README.md`](./src/projects/manage/README.md) |
+| **Pub/Sub** | Page-scoped `topics.subscribe` for host-emitted events | [`src/pubsub/README.md`](./src/pubsub/README.md) and topic folders under [`src/pubsub/topics/`](./src/pubsub/topics/) |
+| **Hooks** | Session-scoped `hooks.register` callbacks (serialized to the host) | [`src/hooks/README.md`](./src/hooks/README.md) |
+
+Package surface (exports) is defined in [`src/index.ts`](./src/index.ts).
+
 ## Installation
 
 ### From npm (public registry)

@@ -2,9 +2,9 @@
 
 Field-level reference for the core domain model types exported from `@final-commerce/command-frame` (orders, cart, customers, products, refunds, context, and related primitives).
 
-These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
+These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts), which re-exports shared definitions from [`common-types/`](../common-types/) (`CFCustomTable`, `CustomExtension`, `AttributeType`, and related). Everything below is re-exported from the package root via `export * from "./CommonTypes"` in [`index.ts`](../index.ts).
 
-Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
+Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and enumerated in [`index.ts`](../index.ts).
 
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
