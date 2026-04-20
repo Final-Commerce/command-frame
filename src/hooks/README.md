@@ -35,7 +35,7 @@ import { hooks } from '@final-commerce/command-frame';
 hooks.register('cart', async (event, hostCommands) => {
     await hostCommands.upsertCustomTableData({
         tableName: 'cart-events-log',
-        data: { eventType: event.type, payload: event.data, timestamp: event.timestamp },
+        data: { eventType: event.type, eventData: event.data, timestamp: event.timestamp },
     });
 }, { hookId: 'my-extension:cart-log' });
 
@@ -82,7 +82,7 @@ hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
         await hostCommands.triggerWebhook({
             webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+            dynamicDataFields: [event.data]
         });
     }
 }, { hookId: 'my-extension:payment-webhook' });
@@ -165,7 +165,7 @@ hooks.register('cart', async (event, hostCommands) => {
         data: {
             eventType: event.type,
             topic: event.topic,
-            payload: event.data,
+            eventData: event.data,
             timestamp: event.timestamp,
         },
     });
@@ -174,12 +174,14 @@ hooks.register('cart', async (event, hostCommands) => {
 
 ### Webhook on payment completion
 
+See [`triggerWebhook`](../../actions/trigger-webhook/README.md) for full parameters (`presetData`, `presetType`, `payloadType`, etc.). `TriggerWebhookParams` does not include a `payload` field; pass structured data via `dynamicDataFields`, `customHookData`, or presets as the host expects.
+
 ```typescript
 hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
         await hostCommands.triggerWebhook({
             webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+            dynamicDataFields: [event.data]
         });
     }
 }, { hookId: 'my-extension:payment-webhook' });
@@ -193,7 +195,7 @@ hooks.register(
     async (event, hostCommands) => {
         await hostCommands.upsertCustomTableData({
             tableName: 'product-changes',
-            data: { type: event.type, data: event.data, timestamp: event.timestamp },
+            data: { type: event.type, eventData: event.data, timestamp: event.timestamp },
         });
     },
     { hookId: 'my-extension:product-changes', eventTypes: ['product-added', 'product-deleted'] }

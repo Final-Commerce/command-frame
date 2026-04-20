@@ -15,6 +15,15 @@ The library provides three main capabilities:
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
 | **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
 
+## Documentation map
+
+| Area | Intent | Where to read |
+|------|--------|---------------|
+| **Types** | Domain model (`CFOrder`, cart, catalog, context, custom tables) | [src/types/README.md](./src/types/README.md) (from [`CommonTypes.ts`](./src/CommonTypes.ts)); command, pub/sub, and hook types are re-exported from [`src/index.ts`](./src/index.ts) |
+| **Commands** | Typed `postMessage` RPC from iframe to host (`command.*`) | Per-action READMEs under [`src/actions/`](./src/actions/); catalogs: [Render](./src/projects/render/README.md), [Manage](./src/projects/manage/README.md) |
+| **Pub/Sub** | Page-scoped topic subscriptions (`topics.subscribe`) | [src/pubsub/README.md](./src/pubsub/README.md) |
+| **Hooks** | Session-scoped host callbacks (`hooks.register`) | [src/hooks/README.md](./src/hooks/README.md) |
+
 ## Installation
 
 ### From npm (public registry)
