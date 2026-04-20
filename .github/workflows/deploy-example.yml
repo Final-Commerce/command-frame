@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - release-staging
+      - release-staging2
     paths:
       - "example/**"
       - "src/**"
