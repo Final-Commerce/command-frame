@@ -1,51 +1,70 @@
 {
-  "name": "@final-commerce/command-frame",
-  "version": "0.1.61",
-  "description": "Commands Frame library",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist/",
-    "README.md",
-    "LICENSE",
-    "package.json"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "build:clean": "rm -rf dist && npm run build",
-    "dev": "tsc --watch",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "prepublishOnly": "npm run build",
-    "prepare": "npm run build",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "publish:npm": "npm publish --registry=https://registry.npmjs.org",
-    "publish:github": "npm publish --registry=https://npm.pkg.github.com",
-    "publish:all": "npm run publish:npm && npm run publish:github"
-  },
-  "keywords": [
-    "final commerce",
-    "finalpos",
-    "final",
-    "command",
-    "frame"
-  ],
-  "author": "Final Commerce",
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Final-Commerce/command-frame.git"
-  },
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.48.0",
-    "@typescript-eslint/parser": "^8.48.0",
-    "prettier": "^3.7.1",
-    "typescript": "^5.0.0",
-    "vitest": "^3.0.5"
-  }
+    "name": "@final-commerce/command-frame",
+    "version": "0.1.61",
+    "description": "Commands Frame library",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/",
+        "README.md",
+        "LICENSE",
+        "package.json"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "build:clean": "rm -rf dist && npm run build",
+        "dev": "tsc --watch",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "prepublishOnly": "npm run build",
+        "prepare": "husky && npm run build",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "publish:npm": "npm publish --registry=https://registry.npmjs.org",
+        "publish:github": "npm publish --registry=https://npm.pkg.github.com",
+        "publish:all": "npm run publish:npm && npm run publish:github"
+    },
+    "keywords": [
+        "final commerce",
+        "finalpos",
+        "final",
+        "command",
+        "frame"
+    ],
+    "author": "Final Commerce",
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Final-Commerce/command-frame.git"
+    },
+    "lint-staged": {
+        "**/*.{ts,tsx,js,json,md}": [
+            "prettier --write"
+        ],
+        "**/*.{ts,tsx}": [
+            "eslint --fix --no-warn-ignored"
+        ]
+    },
+    "jira-prepare-commit-msg": {
+        "messagePattern": "$J: $M",
+        "jiraTicketPattern": "([A-Z]+-\\d+)",
+        "ignoredBranchesPattern": "^(main|master|develop|release-staging.*|pre-prod)$",
+        "ignoreBranchesMissingTickets": true
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^8.48.0",
+        "@typescript-eslint/parser": "^8.48.0",
+        "eslint": "^8.57.0",
+        "husky": "^9.1.7",
+        "jira-prepare-commit-msg": "^1.7.2",
+        "lint-staged": "^16.2.7",
+        "prettier": "^3.7.1",
+        "typescript": "^5.0.0",
+        "vitest": "^3.0.5"
+    }
 }
