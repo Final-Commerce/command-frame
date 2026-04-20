@@ -11,6 +11,9 @@ on:
       - "src/**"
       - "package.json"
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -40,7 +43,6 @@ jobs:
             echo "api_url=https://services.finalpos.com/v1/api" >> $GITHUB_OUTPUT
             echo "environment=production" >> $GITHUB_OUTPUT
           fi
-          echo "Deploying to: ${{ github.ref_name }} environment"
 
       - name: Get versions
         id: versions
@@ -49,8 +51,6 @@ jobs:
           APP_VERSION=$(node -p "require('./example/package.json').version")
           echo "lib_version=$LIB_VERSION" >> $GITHUB_OUTPUT
           echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
-          echo "Library version: $LIB_VERSION"
-          echo "Example app version: $APP_VERSION"
 
       - name: Prepare example app
         working-directory: example
@@ -67,8 +67,6 @@ jobs:
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
-          echo "Example app version: $APP_VERSION (lib dependency: ^$LIB_VERSION)"
-
       - name: Install dependencies
         working-directory: example
         run: npm install
@@ -84,10 +82,9 @@ jobs:
       - name: Get existing apps from API
         id: get_apps
         run: |
-          RESPONSE=$(curl -s -X GET '${{ steps.env.outputs.api_url }}/web-hosting/apps' \
+          curl -s -X GET '${{ steps.env.outputs.api_url }}/web-hosting/apps' \
             -H "x-api-key: $WEB_HOSTING_API_KEY" \
-            -H "x-api-secret: $WEB_HOSTING_API_SECRET")
-          echo "$RESPONSE" > /tmp/existing_apps.json
+            -H "x-api-secret: $WEB_HOSTING_API_SECRET" > /tmp/existing_apps.json
 
       - name: Deploy to web hosting
         id: deploy
@@ -118,6 +115,28 @@ jobs:
                 -d @-
           }
 
+          bump_patch() {
+            local ver="$1"
+            local major minor patch
+            major=$(echo "$ver" | cut -d. -f1)
+            minor=$(echo "$ver" | cut -d. -f2)
+            patch=$(echo "$ver" | cut -d. -f3)
+            echo "${major}.${minor}.$((patch + 1))"
+          }
+
+          upload_version() {
+            local url="$1"
+            local ver="$2"
+            local tarball="$3"
+            local http_code
+            http_code=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" -X POST "$url" \
+              -H "x-api-key: $WEB_HOSTING_API_KEY" \
+              -H "x-api-secret: $WEB_HOSTING_API_SECRET" \
+              -F "version=${ver}" \
+              -F "file=@${tarball};type=application/x-gzip")
+            echo "$http_code"
+          }
+
           echo "# Deployment Summary ($ENV)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| App | Version | Environment | Status | URL |" >> $GITHUB_STEP_SUMMARY
@@ -132,44 +151,13 @@ jobs:
             } catch (e) { console.log(''); }
           ")
 
-          bump_patch() {
-            local ver="$1"
-            local major minor patch
-            major=$(echo "$ver" | cut -d. -f1)
-            minor=$(echo "$ver" | cut -d. -f2)
-            patch=$(echo "$ver" | cut -d. -f3)
-            echo "${major}.${minor}.$((patch + 1))"
-          }
-
-          upload_version() {
-            local url="$1"
-            local ver="$2"
-            local tarball="$3"
-            echo "POST ${url} (version=${ver})" >&2
-            local http_code
-            http_code=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" -X POST "$url" \
-              -H "x-api-key: $WEB_HOSTING_API_KEY" \
-              -H "x-api-secret: $WEB_HOSTING_API_SECRET" \
-              -F "version=${ver}" \
-              -F "file=@${tarball};type=application/x-gzip")
-            echo "Upload response (HTTP $http_code):" >&2
-            cat /tmp/upload_response.json >&2 2>/dev/null || true
-            echo "" >&2
-            echo "$http_code"
-          }
-
           if [ -z "$APP_ID" ]; then
-            echo "Creating new app: $APP ($ENV)"
-            echo "POST ${API_URL}/web-hosting/apps (name=${APP}, version=${VERSION})"
             HTTP_CODE=$(curl -s -o /tmp/create_response.json -w "%{http_code}" -X POST "${API_URL}/web-hosting/apps" \
               -H "x-api-key: $WEB_HOSTING_API_KEY" \
               -H "x-api-secret: $WEB_HOSTING_API_SECRET" \
               -F "name=${APP}" \
               -F "version=${VERSION}" \
               -F "file=@dist.tar.gz;type=application/x-gzip")
-            echo "Create response (HTTP $HTTP_CODE):"
-            cat /tmp/create_response.json 2>/dev/null || true
-            echo ""
 
             if [ "$HTTP_CODE" != "201" ] && [ "$HTTP_CODE" != "200" ]; then
               ERROR_RESPONSE=$(cat /tmp/create_response.json 2>/dev/null || echo "Unknown error")
@@ -229,7 +217,6 @@ jobs:
             UPLOAD_SUCCESS=false
 
             while [ "$ATTEMPT" -lt "$MAX_RETRIES" ]; do
-              echo "Uploading version $VERSION for app: $APP (ID: $APP_ID, $ENV) [attempt $((ATTEMPT + 1))]"
               HTTP_CODE=$(upload_version "$UPLOAD_URL" "$VERSION" "dist.tar.gz")
 
               if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "201" ]; then
@@ -239,11 +226,10 @@ jobs:
 
               RESPONSE_BODY=$(cat /tmp/upload_response.json 2>/dev/null || echo "")
               if echo "$RESPONSE_BODY" | grep -qi "already exists"; then
-                echo "Version $VERSION already exists, bumping patch..."
+                echo "Version $VERSION already exists, bumping to next patch..."
                 VERSION=$(bump_patch "$VERSION")
                 ATTEMPT=$((ATTEMPT + 1))
               else
-                ERROR_RESPONSE="$RESPONSE_BODY"
                 MSG=$(cat <<EOF
           Extension Deployment Failed ($ENV)
 
@@ -252,7 +238,7 @@ jobs:
           Environment: $ENV
           Developer: $DEVELOPER_EMAIL
           Error: Failed to upload version (HTTP $HTTP_CODE)
-          Response: $ERROR_RESPONSE
+          Response: $RESPONSE_BODY
 
           See workflow run for details:
           $WORKFLOW_URL
@@ -283,17 +269,11 @@ jobs:
               exit 1
             fi
 
-            echo "Deployed version: $VERSION"
             echo "deployed_version=$VERSION" >> $GITHUB_OUTPUT
 
-            echo "Switching to version: $VERSION"
-            echo "PATCH ${API_URL}/web-hosting/apps/${APP_ID}/switch/${VERSION}"
             HTTP_CODE=$(curl -s -o /tmp/switch_response.json -w "%{http_code}" -X PATCH "${API_URL}/web-hosting/apps/${APP_ID}/switch/${VERSION}" \
               -H "x-api-key: $WEB_HOSTING_API_KEY" \
               -H "x-api-secret: $WEB_HOSTING_API_SECRET")
-            echo "Switch response (HTTP $HTTP_CODE):"
-            cat /tmp/switch_response.json 2>/dev/null || true
-            echo ""
 
             if [ "$HTTP_CODE" != "200" ]; then
               ERROR_RESPONSE=$(cat /tmp/switch_response.json 2>/dev/null || echo "Unknown error")
