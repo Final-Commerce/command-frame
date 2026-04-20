@@ -2,7 +2,9 @@
 
 ## Overview
 
-The `cart` topic provides events related to cart operations. Subscribe to this topic to receive real-time notifications when the cart is created, products are added/removed, discounts or fees are applied, or customers are assigned.
+The `cart` topic provides events related to cart operations. Subscribe to this topic to receive real-time notifications when the cart is created, products are added/removed/updated, cart- and line-level discounts or fees change, product notes change, or customers are assigned or unassigned.
+
+Event IDs match [`cartTopic`](./index.ts) (source of truth). The `customer-unassigned` event is included on this topic for cart listeners; its payload shape matches the [`customers`](../customers/README.md) topic’s `customer-unassigned` event.
 
 ## Topic Information
 
@@ -16,6 +18,7 @@ The `cart` topic provides events related to cart operations. Subscribe to this t
 |-------|-------------|---------------|
 | [cart-created](./cart-created/README.md) | Published when a new cart is created | [View Details](./cart-created/README.md) |
 | [customer-assigned](./customer-assigned/README.md) | Published when a customer is assigned to the cart | [View Details](./customer-assigned/README.md) |
+| `customer-unassigned` | Published when a customer is removed from the cart | (see [`customers`](../customers/customer-unassigned/README.md) payload) |
 | [product-added](./product-added/README.md) | Published when a product is added to the cart | [View Details](./product-added/README.md) |
 | [product-deleted](./product-deleted/README.md) | Published when a product is removed from the cart | [View Details](./product-deleted/README.md) |
 | [product-updated](./product-updated/README.md) | Published when a product quantity is updated in the cart | [View Details](./product-updated/README.md) |
@@ -23,6 +26,12 @@ The `cart` topic provides events related to cart operations. Subscribe to this t
 | [cart-discount-removed](./cart-discount-removed/README.md) | Published when a discount is removed from the cart | [View Details](./cart-discount-removed/README.md) |
 | [cart-fee-added](./cart-fee-added/README.md) | Published when a fee is added to the cart | [View Details](./cart-fee-added/README.md) |
 | [cart-fee-removed](./cart-fee-removed/README.md) | Published when a fee is removed from the cart | [View Details](./cart-fee-removed/README.md) |
+| `product-discount-added` | Line-level discount added to a cart product | Types: [`ProductDiscountAddedPayload`](./product-discount-added/types.ts) |
+| `product-discount-removed` | Line-level discount removed from a cart product | Types: [`ProductDiscountRemovedPayload`](./product-discount-removed/types.ts) |
+| `product-fee-added` | Line-level fee added to a cart product | Types: [`ProductFeeAddedPayload`](./product-fee-added/types.ts) |
+| `product-fee-removed` | Line-level fee removed from a cart product | Types: [`ProductFeeRemovedPayload`](./product-fee-removed/types.ts) |
+| `product-note-added` | Note added to a cart line | Types: [`ProductNoteAddedPayload`](./product-note-added/types.ts) |
+| `product-note-removed` | Note removed from a cart line | Types: [`ProductNoteRemovedPayload`](./product-note-removed/types.ts) |
 
 ## Quick Start
 
@@ -39,6 +48,9 @@ const subscriptionId = topics.subscribe('cart', (event: TopicEvent) => {
             break;
         case 'customer-assigned':
             console.log('Customer assigned:', event.data.customer);
+            break;
+        case 'customer-unassigned':
+            console.log('Customer unassigned:', event.data.customer);
             break;
         case 'product-added':
             console.log('Product added:', event.data.product);
@@ -60,6 +72,14 @@ const subscriptionId = topics.subscribe('cart', (event: TopicEvent) => {
             break;
         case 'cart-fee-removed':
             console.log('Fee removed at index:', event.data.feeIndex);
+            break;
+        case 'product-discount-added':
+        case 'product-discount-removed':
+        case 'product-fee-added':
+        case 'product-fee-removed':
+        case 'product-note-added':
+        case 'product-note-removed':
+            console.log('Line-level cart change:', event.type, event.data);
             break;
     }
 });

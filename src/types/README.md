@@ -6,6 +6,12 @@ These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) an
 
 Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
 
+| Area | Where to look |
+|------|----------------|
+| Command `*Params` / `*Response` / function types | Per-command [`src/actions/<name>/README.md`](../actions/) and `types.ts` |
+| Pub/sub wire payloads | [`TopicEventPayloadMap`](../pubsub/topics/types.ts) and topic READMEs under [`src/pubsub/topics/`](../pubsub/topics/) |
+| `hooks.register` callback types | [`src/hooks/types.ts`](../hooks/types.ts) and [Hooks](../hooks/README.md) |
+
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
 ```
