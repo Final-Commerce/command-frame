@@ -42,28 +42,32 @@ jobs:
           fi
           echo "Deploying to: ${{ github.ref_name }} environment"
 
-      - name: Get deploy version
-        id: lib_version
+      - name: Get versions
+        id: versions
         run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Deploy version: $VERSION"
+          LIB_VERSION=$(node -p "require('./package.json').version")
+          APP_VERSION=$(node -p "require('./example/package.json').version")
+          echo "lib_version=$LIB_VERSION" >> $GITHUB_OUTPUT
+          echo "app_version=$APP_VERSION" >> $GITHUB_OUTPUT
+          echo "Library version: $LIB_VERSION"
+          echo "Example app version: $APP_VERSION"
 
       - name: Prepare example app
         working-directory: example
         run: |
-          VERSION="${{ steps.lib_version.outputs.version }}"
+          APP_VERSION="${{ steps.versions.outputs.app_version }}"
+          LIB_VERSION="${{ steps.versions.outputs.lib_version }}"
 
           node -e "
             const fs = require('fs');
             const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
             pkg.name = 'command-frame-example-web-app';
-            pkg.version = '${VERSION}';
-            pkg.dependencies['@final-commerce/command-frame'] = '^${VERSION}';
+            pkg.version = '${APP_VERSION}';
+            pkg.dependencies['@final-commerce/command-frame'] = '^${LIB_VERSION}';
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
-          echo "Example app version: $VERSION"
+          echo "Example app version: $APP_VERSION (lib dependency: ^$LIB_VERSION)"
 
       - name: Install dependencies
         working-directory: example
@@ -93,7 +97,7 @@ jobs:
         working-directory: example
         run: |
           APP="command-frame-example-web-app"
-          VERSION="${{ steps.lib_version.outputs.version }}"
+          VERSION="${{ steps.versions.outputs.app_version }}"
           ENV="${{ steps.env.outputs.environment }}"
           API_URL="${{ steps.env.outputs.api_url }}"
           WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -141,16 +145,16 @@ jobs:
             local url="$1"
             local ver="$2"
             local tarball="$3"
-            echo "POST ${url} (version=${ver})"
+            echo "POST ${url} (version=${ver})" >&2
             local http_code
             http_code=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" -X POST "$url" \
               -H "x-api-key: $WEB_HOSTING_API_KEY" \
               -H "x-api-secret: $WEB_HOSTING_API_SECRET" \
               -F "version=${ver}" \
               -F "file=@${tarball};type=application/x-gzip")
-            echo "Upload response (HTTP $http_code):"
-            cat /tmp/upload_response.json 2>/dev/null || true
-            echo ""
+            echo "Upload response (HTTP $http_code):" >&2
+            cat /tmp/upload_response.json >&2 2>/dev/null || true
+            echo "" >&2
             echo "$http_code"
           }
 
@@ -336,7 +340,6 @@ jobs:
         if: steps.deploy.outputs.deployed_version != ''
         run: |
           DEPLOYED_VERSION="${{ steps.deploy.outputs.deployed_version }}"
-          BASE_VERSION="${{ steps.lib_version.outputs.version }}"
 
           node -e "
             const fs = require('fs');
