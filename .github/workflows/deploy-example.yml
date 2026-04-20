@@ -87,6 +87,9 @@ jobs:
           echo "$RESPONSE" > /tmp/existing_apps.json
 
       - name: Deploy to web hosting
+        env:
+          CHAT_WEBHOOK_NEW_APP: ${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_APP }}
+          CHAT_WEBHOOK_NEW_VERSION: ${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_VERSION }}
         working-directory: example
         run: |
           APP="command-frame-example-web-app"
@@ -101,6 +104,15 @@ jobs:
           if [ -z "$DEVELOPER_EMAIL" ]; then
             DEVELOPER_EMAIL="${{ github.actor }}@users.noreply.github.com"
           fi
+
+          send_chat() {
+            local webhook="$1"
+            local message="$2"
+            jq -n --arg text "$message" '{"text": $text}' | \
+              curl -s -X POST "$webhook" \
+                -H "Content-Type: application/json; charset=UTF-8" \
+                -d @-
+          }
 
           echo "# Deployment Summary ($ENV)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -118,19 +130,34 @@ jobs:
 
           if [ -z "$APP_ID" ]; then
             echo "Creating new app: $APP ($ENV)"
+            echo "POST ${API_URL}/web-hosting/apps (name=${APP}, version=${VERSION})"
             HTTP_CODE=$(curl -s -o /tmp/create_response.json -w "%{http_code}" -X POST "${API_URL}/web-hosting/apps" \
               -H "x-api-key: $WEB_HOSTING_API_KEY" \
               -H "x-api-secret: $WEB_HOSTING_API_SECRET" \
               -F "name=${APP}" \
               -F "version=${VERSION}" \
               -F "file=@dist.tar.gz;type=application/x-gzip")
+            echo "Create response (HTTP $HTTP_CODE):"
+            cat /tmp/create_response.json 2>/dev/null || true
+            echo ""
 
             if [ "$HTTP_CODE" != "201" ] && [ "$HTTP_CODE" != "200" ]; then
               ERROR_RESPONSE=$(cat /tmp/create_response.json 2>/dev/null || echo "Unknown error")
-              ERROR_MSG="Extension Build Failed ($ENV)\n\nApp: $APP\nVersion: $VERSION\nEnvironment: $ENV\nDeveloper: $DEVELOPER_EMAIL\nError: Failed to create app (HTTP $HTTP_CODE)\nResponse: $ERROR_RESPONSE\n\nSee workflow run for details:\n$WORKFLOW_URL"
-              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_APP }}" \
-                -H "Content-Type: application/json; charset=UTF-8" \
-                -d "{\"text\": \"$ERROR_MSG\"}"
+              MSG=$(cat <<EOF
+          Extension Build Failed ($ENV)
+
+          App: $APP
+          Version: $VERSION
+          Environment: $ENV
+          Developer: $DEVELOPER_EMAIL
+          Error: Failed to create app (HTTP $HTTP_CODE)
+          Response: $ERROR_RESPONSE
+
+          See workflow run for details:
+          $WORKFLOW_URL
+          EOF
+              )
+              send_chat "$CHAT_WEBHOOK_NEW_APP" "$MSG"
               echo "| $APP | $VERSION | $ENV | Failed | API error (HTTP $HTTP_CODE) |" >> $GITHUB_STEP_SUMMARY
               exit 1
             fi
@@ -140,9 +167,19 @@ jobs:
 
             if [ -n "$SUBDOMAIN" ]; then
               echo "| $APP | $VERSION | $ENV | Created | [https://$SUBDOMAIN](https://$SUBDOMAIN) |" >> $GITHUB_STEP_SUMMARY
-              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_APP }}" \
-                -H "Content-Type: application/json; charset=UTF-8" \
-                -d "{\"text\": \"New Extension Deployed ($ENV)\n\nApp: $APP\nVersion: $VERSION\nEnvironment: $ENV\nDeveloper: $DEVELOPER_EMAIL\nURL: https://$SUBDOMAIN \n\nPls, wait 3-5 minutes for DNS propagation and CDN cache invalidation\"}"
+              MSG=$(cat <<EOF
+          New Extension Deployed ($ENV)
+
+          App: $APP
+          Version: $VERSION
+          Environment: $ENV
+          Developer: $DEVELOPER_EMAIL
+          URL: https://$SUBDOMAIN
+
+          Pls, wait 3-5 minutes for DNS propagation and CDN cache invalidation
+          EOF
+              )
+              send_chat "$CHAT_WEBHOOK_NEW_APP" "$MSG"
             else
               echo "| $APP | $VERSION | $ENV | Created | Subdomain not returned |" >> $GITHUB_STEP_SUMMARY
             fi
@@ -157,42 +194,82 @@ jobs:
             ")
 
             echo "Uploading new version for app: $APP (ID: $APP_ID, $ENV)"
+            echo "POST ${API_URL}/web-hosting/apps/${APP_ID}/versions (version=${VERSION})"
             HTTP_CODE=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" -X POST "${API_URL}/web-hosting/apps/${APP_ID}/versions" \
               -H "x-api-key: $WEB_HOSTING_API_KEY" \
               -H "x-api-secret: $WEB_HOSTING_API_SECRET" \
               -F "version=${VERSION}" \
               -F "file=@dist.tar.gz;type=application/x-gzip")
+            echo "Upload response (HTTP $HTTP_CODE):"
+            cat /tmp/upload_response.json 2>/dev/null || true
+            echo ""
 
             if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
               ERROR_RESPONSE=$(cat /tmp/upload_response.json 2>/dev/null || echo "Unknown error")
-              ERROR_MSG="Extension Deployment Failed ($ENV)\n\nApp: $APP\nVersion: $VERSION\nEnvironment: $ENV\nDeveloper: $DEVELOPER_EMAIL\nError: Failed to upload version (HTTP $HTTP_CODE)\nResponse: $ERROR_RESPONSE\n\nSee workflow run for details:\n$WORKFLOW_URL"
-              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_VERSION }}" \
-                -H "Content-Type: application/json; charset=UTF-8" \
-                -d "{\"text\": \"$ERROR_MSG\"}"
+              MSG=$(cat <<EOF
+          Extension Deployment Failed ($ENV)
+
+          App: $APP
+          Version: $VERSION
+          Environment: $ENV
+          Developer: $DEVELOPER_EMAIL
+          Error: Failed to upload version (HTTP $HTTP_CODE)
+          Response: $ERROR_RESPONSE
+
+          See workflow run for details:
+          $WORKFLOW_URL
+          EOF
+              )
+              send_chat "$CHAT_WEBHOOK_NEW_VERSION" "$MSG"
               echo "| $APP | $VERSION | $ENV | Failed | Upload error (HTTP $HTTP_CODE) |" >> $GITHUB_STEP_SUMMARY
               exit 1
             fi
 
             echo "Switching to version: $VERSION"
+            echo "PATCH ${API_URL}/web-hosting/apps/${APP_ID}/switch/${VERSION}"
             HTTP_CODE=$(curl -s -o /tmp/switch_response.json -w "%{http_code}" -X PATCH "${API_URL}/web-hosting/apps/${APP_ID}/switch/${VERSION}" \
               -H "x-api-key: $WEB_HOSTING_API_KEY" \
               -H "x-api-secret: $WEB_HOSTING_API_SECRET")
+            echo "Switch response (HTTP $HTTP_CODE):"
+            cat /tmp/switch_response.json 2>/dev/null || true
+            echo ""
 
             if [ "$HTTP_CODE" != "200" ]; then
               ERROR_RESPONSE=$(cat /tmp/switch_response.json 2>/dev/null || echo "Unknown error")
-              ERROR_MSG="Extension Deployment Failed ($ENV)\n\nApp: $APP\nVersion: $VERSION\nEnvironment: $ENV\nDeveloper: $DEVELOPER_EMAIL\nError: Failed to switch version (HTTP $HTTP_CODE)\nResponse: $ERROR_RESPONSE\n\nSee workflow run for details:\n$WORKFLOW_URL"
-              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_VERSION }}" \
-                -H "Content-Type: application/json; charset=UTF-8" \
-                -d "{\"text\": \"$ERROR_MSG\"}"
+              MSG=$(cat <<EOF
+          Extension Deployment Failed ($ENV)
+
+          App: $APP
+          Version: $VERSION
+          Environment: $ENV
+          Developer: $DEVELOPER_EMAIL
+          Error: Failed to switch version (HTTP $HTTP_CODE)
+          Response: $ERROR_RESPONSE
+
+          See workflow run for details:
+          $WORKFLOW_URL
+          EOF
+              )
+              send_chat "$CHAT_WEBHOOK_NEW_VERSION" "$MSG"
               echo "| $APP | $VERSION | $ENV | Failed | Switch error (HTTP $HTTP_CODE) |" >> $GITHUB_STEP_SUMMARY
               exit 1
             fi
 
             if [ -n "$SUBDOMAIN" ]; then
               echo "| $APP | $VERSION | $ENV | Updated | [https://$SUBDOMAIN](https://$SUBDOMAIN) |" >> $GITHUB_STEP_SUMMARY
-              curl -s -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_VERSION }}" \
-                -H "Content-Type: application/json; charset=UTF-8" \
-                -d "{\"text\": \"Extension Updated ($ENV)\n\nApp: $APP\nVersion: $VERSION\nEnvironment: $ENV\nDeveloper: $DEVELOPER_EMAIL\nURL: https://$SUBDOMAIN \n\nPls, wait 3-5 minutes for CDN cache invalidation\"}"
+              MSG=$(cat <<EOF
+          Extension Updated ($ENV)
+
+          App: $APP
+          Version: $VERSION
+          Environment: $ENV
+          Developer: $DEVELOPER_EMAIL
+          URL: https://$SUBDOMAIN
+
+          Pls, wait 3-5 minutes for CDN cache invalidation
+          EOF
+              )
+              send_chat "$CHAT_WEBHOOK_NEW_VERSION" "$MSG"
             else
               echo "| $APP | $VERSION | $ENV | Updated | N/A |" >> $GITHUB_STEP_SUMMARY
             fi
