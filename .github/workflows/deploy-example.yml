@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -43,29 +45,25 @@ jobs:
       - name: Get deploy version
         id: lib_version
         run: |
-          LIB_VERSION=$(node -p "require('./package.json').version")
-          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-          VERSION="${LIB_VERSION}-${SHORT_SHA}"
+          VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "lib_version=$LIB_VERSION" >> $GITHUB_OUTPUT
-          echo "Deploy version: $VERSION (lib: $LIB_VERSION)"
+          echo "Deploy version: $VERSION"
 
       - name: Prepare example app
         working-directory: example
         run: |
-          DEPLOY_VERSION="${{ steps.lib_version.outputs.version }}"
-          LIB_VERSION="${{ steps.lib_version.outputs.lib_version }}"
+          VERSION="${{ steps.lib_version.outputs.version }}"
 
           node -e "
             const fs = require('fs');
             const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
             pkg.name = 'command-frame-example-web-app';
-            pkg.version = '${DEPLOY_VERSION}';
-            pkg.dependencies['@final-commerce/command-frame'] = '^${LIB_VERSION}';
+            pkg.version = '${VERSION}';
+            pkg.dependencies['@final-commerce/command-frame'] = '^${VERSION}';
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
-          echo "Example app version: $DEPLOY_VERSION (lib dependency: ^$LIB_VERSION)"
+          echo "Example app version: $VERSION"
 
       - name: Install dependencies
         working-directory: example
@@ -88,6 +86,7 @@ jobs:
           echo "$RESPONSE" > /tmp/existing_apps.json
 
       - name: Deploy to web hosting
+        id: deploy
         env:
           CHAT_WEBHOOK_NEW_APP: ${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_APP }}
           CHAT_WEBHOOK_NEW_VERSION: ${{ secrets.GOOGLE_CHAT_WEBHOOK_NEW_VERSION }}
@@ -128,6 +127,32 @@ jobs:
               console.log(app ? app._id : '');
             } catch (e) { console.log(''); }
           ")
+
+          bump_patch() {
+            local ver="$1"
+            local major minor patch
+            major=$(echo "$ver" | cut -d. -f1)
+            minor=$(echo "$ver" | cut -d. -f2)
+            patch=$(echo "$ver" | cut -d. -f3)
+            echo "${major}.${minor}.$((patch + 1))"
+          }
+
+          upload_version() {
+            local url="$1"
+            local ver="$2"
+            local tarball="$3"
+            echo "POST ${url} (version=${ver})"
+            local http_code
+            http_code=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" -X POST "$url" \
+              -H "x-api-key: $WEB_HOSTING_API_KEY" \
+              -H "x-api-secret: $WEB_HOSTING_API_SECRET" \
+              -F "version=${ver}" \
+              -F "file=@${tarball};type=application/x-gzip")
+            echo "Upload response (HTTP $http_code):"
+            cat /tmp/upload_response.json 2>/dev/null || true
+            echo ""
+            echo "$http_code"
+          }
 
           if [ -z "$APP_ID" ]; then
             echo "Creating new app: $APP ($ENV)"
@@ -194,20 +219,28 @@ jobs:
               } catch (e) { console.log(''); }
             ")
 
-            echo "Uploading new version for app: $APP (ID: $APP_ID, $ENV)"
-            echo "POST ${API_URL}/web-hosting/apps/${APP_ID}/versions (version=${VERSION})"
-            HTTP_CODE=$(curl -s -o /tmp/upload_response.json -w "%{http_code}" -X POST "${API_URL}/web-hosting/apps/${APP_ID}/versions" \
-              -H "x-api-key: $WEB_HOSTING_API_KEY" \
-              -H "x-api-secret: $WEB_HOSTING_API_SECRET" \
-              -F "version=${VERSION}" \
-              -F "file=@dist.tar.gz;type=application/x-gzip")
-            echo "Upload response (HTTP $HTTP_CODE):"
-            cat /tmp/upload_response.json 2>/dev/null || true
-            echo ""
+            UPLOAD_URL="${API_URL}/web-hosting/apps/${APP_ID}/versions"
+            MAX_RETRIES=10
+            ATTEMPT=0
+            UPLOAD_SUCCESS=false
 
-            if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
-              ERROR_RESPONSE=$(cat /tmp/upload_response.json 2>/dev/null || echo "Unknown error")
-              MSG=$(cat <<EOF
+            while [ "$ATTEMPT" -lt "$MAX_RETRIES" ]; do
+              echo "Uploading version $VERSION for app: $APP (ID: $APP_ID, $ENV) [attempt $((ATTEMPT + 1))]"
+              HTTP_CODE=$(upload_version "$UPLOAD_URL" "$VERSION" "dist.tar.gz")
+
+              if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "201" ]; then
+                UPLOAD_SUCCESS=true
+                break
+              fi
+
+              RESPONSE_BODY=$(cat /tmp/upload_response.json 2>/dev/null || echo "")
+              if echo "$RESPONSE_BODY" | grep -qi "already exists"; then
+                echo "Version $VERSION already exists, bumping patch..."
+                VERSION=$(bump_patch "$VERSION")
+                ATTEMPT=$((ATTEMPT + 1))
+              else
+                ERROR_RESPONSE="$RESPONSE_BODY"
+                MSG=$(cat <<EOF
           Extension Deployment Failed ($ENV)
 
           App: $APP
@@ -220,11 +253,34 @@ jobs:
           See workflow run for details:
           $WORKFLOW_URL
           EOF
+                )
+                send_chat "$CHAT_WEBHOOK_NEW_VERSION" "$MSG"
+                echo "| $APP | $VERSION | $ENV | Failed | Upload error (HTTP $HTTP_CODE) |" >> $GITHUB_STEP_SUMMARY
+                exit 1
+              fi
+            done
+
+            if [ "$UPLOAD_SUCCESS" != "true" ]; then
+              MSG=$(cat <<EOF
+          Extension Deployment Failed ($ENV)
+
+          App: $APP
+          Version: $VERSION
+          Environment: $ENV
+          Developer: $DEVELOPER_EMAIL
+          Error: Exhausted $MAX_RETRIES version bump attempts
+
+          See workflow run for details:
+          $WORKFLOW_URL
+          EOF
               )
               send_chat "$CHAT_WEBHOOK_NEW_VERSION" "$MSG"
-              echo "| $APP | $VERSION | $ENV | Failed | Upload error (HTTP $HTTP_CODE) |" >> $GITHUB_STEP_SUMMARY
+              echo "| $APP | $VERSION | $ENV | Failed | Exhausted version retries |" >> $GITHUB_STEP_SUMMARY
               exit 1
             fi
+
+            echo "Deployed version: $VERSION"
+            echo "deployed_version=$VERSION" >> $GITHUB_OUTPUT
 
             echo "Switching to version: $VERSION"
             echo "PATCH ${API_URL}/web-hosting/apps/${APP_ID}/switch/${VERSION}"
@@ -275,3 +331,28 @@ jobs:
               echo "| $APP | $VERSION | $ENV | Updated | N/A |" >> $GITHUB_STEP_SUMMARY
             fi
           fi
+
+      - name: Commit updated example version
+        if: steps.deploy.outputs.deployed_version != ''
+        run: |
+          DEPLOYED_VERSION="${{ steps.deploy.outputs.deployed_version }}"
+          BASE_VERSION="${{ steps.lib_version.outputs.version }}"
+
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('example/package.json', 'utf8'));
+            pkg.version = '${DEPLOYED_VERSION}';
+            fs.writeFileSync('example/package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet example/package.json; then
+            echo "No version change to commit"
+            exit 0
+          fi
+
+          git add example/package.json
+          git commit -m "chore(example): bump version to ${DEPLOYED_VERSION}"
+          git push origin ${{ github.ref_name }}
