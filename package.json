@@ -51,7 +51,7 @@
         ]
     },
     "jira-prepare-commit-msg": {
-        "messagePattern": "$J: $M",
+        "messagePattern": "$M [$J]",
         "jiraTicketPattern": "([A-Z]+-\\d+)",
         "ignoredBranchesPattern": "^(main|master|develop|release-staging.*|pre-prod)$",
         "ignoreBranchesMissingTickets": true
