@@ -26,6 +26,7 @@ import type { CartCustomerAssignedPayload } from "./customer-assigned/types";
 import type { ProductAddedPayload } from "./product-added/types";
 import type { ProductDeletedPayload } from "./product-deleted/types";
 import type { CartProductUpdatedPayload } from "./product-updated/types";
+import type { CustomerUnassignedPayload } from "../customers/customer-unassigned/types";
 import type { CartDiscountAddedPayload } from "./cart-discount-added/types";
 import type { CartDiscountRemovedPayload } from "./cart-discount-removed/types";
 import type { CartFeeAddedPayload } from "./cart-fee-added/types";
@@ -38,9 +39,10 @@ import type { ProductNoteAddedPayload } from "./product-note-added/types";
 import type { ProductNoteRemovedPayload } from "./product-note-removed/types";
 
 // Union type for all cart event payloads
-export type CartEventPayload = 
+export type CartEventPayload =
     | CartCreatedPayload
     | CartCustomerAssignedPayload
+    | CustomerUnassignedPayload
     | ProductAddedPayload
     | ProductDeletedPayload
     | CartProductUpdatedPayload

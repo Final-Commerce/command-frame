@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `cart` topic provides events related to cart operations. Subscribe to this topic to receive real-time notifications when the cart is created, products are added/removed, discounts or fees are applied, or customers are assigned.
+The `cart` topic provides events related to cart operations. Subscribe to this topic to receive real-time notifications when the cart is created, customers are assigned or removed, products are added/removed/updated, discounts or fees are applied, or notes change on line items.
 
 ## Topic Information
 
@@ -16,13 +16,22 @@ The `cart` topic provides events related to cart operations. Subscribe to this t
 |-------|-------------|---------------|
 | [cart-created](./cart-created/README.md) | Published when a new cart is created | [View Details](./cart-created/README.md) |
 | [customer-assigned](./customer-assigned/README.md) | Published when a customer is assigned to the cart | [View Details](./customer-assigned/README.md) |
+| [customer-unassigned](./customer-unassigned/README.md) | Published when a customer is removed from the cart | [View Details](./customer-unassigned/README.md) |
 | [product-added](./product-added/README.md) | Published when a product is added to the cart | [View Details](./product-added/README.md) |
 | [product-deleted](./product-deleted/README.md) | Published when a product is removed from the cart | [View Details](./product-deleted/README.md) |
-| [product-updated](./product-updated/README.md) | Published when a product quantity is updated in the cart | [View Details](./product-updated/README.md) |
+| [product-updated](./product-updated/README.md) | Published when a product's quantity is updated in the cart | [View Details](./product-updated/README.md) |
 | [cart-discount-added](./cart-discount-added/README.md) | Published when a discount is added to the cart | [View Details](./cart-discount-added/README.md) |
 | [cart-discount-removed](./cart-discount-removed/README.md) | Published when a discount is removed from the cart | [View Details](./cart-discount-removed/README.md) |
 | [cart-fee-added](./cart-fee-added/README.md) | Published when a fee is added to the cart | [View Details](./cart-fee-added/README.md) |
 | [cart-fee-removed](./cart-fee-removed/README.md) | Published when a fee is removed from the cart | [View Details](./cart-fee-removed/README.md) |
+| [product-discount-added](./product-discount-added/README.md) | Published when a discount is added to a product in the cart | [View Details](./product-discount-added/README.md) |
+| [product-discount-removed](./product-discount-removed/README.md) | Published when a discount is removed from a product in the cart | [View Details](./product-discount-removed/README.md) |
+| [product-fee-added](./product-fee-added/README.md) | Published when a fee is added to a product in the cart | [View Details](./product-fee-added/README.md) |
+| [product-fee-removed](./product-fee-removed/README.md) | Published when a fee is removed from a product in the cart | [View Details](./product-fee-removed/README.md) |
+| [product-note-added](./product-note-added/README.md) | Published when a note is added to a product in the cart | [View Details](./product-note-added/README.md) |
+| [product-note-removed](./product-note-removed/README.md) | Published when a note is removed from a product in the cart | [View Details](./product-note-removed/README.md) |
+
+The canonical list of event IDs is `cartTopic.eventTypes` in `src/pubsub/topics/cart/index.ts`.
 
 ## Quick Start
 
@@ -40,6 +49,9 @@ const subscriptionId = topics.subscribe('cart', (event: TopicEvent) => {
         case 'customer-assigned':
             console.log('Customer assigned:', event.data.customer);
             break;
+        case 'customer-unassigned':
+            console.log('Customer unassigned:', event.data.customer);
+            break;
         case 'product-added':
             console.log('Product added:', event.data.product);
             break;
@@ -47,7 +59,7 @@ const subscriptionId = topics.subscribe('cart', (event: TopicEvent) => {
             console.log('Product removed:', event.data.product);
             break;
         case 'product-updated':
-            console.log('Product updated:', event.data.product);
+            console.log('Product updated:', event.data.product, event.data.previousQuantity, event.data.newQuantity);
             break;
         case 'cart-discount-added':
             console.log('Discount added:', event.data.discount);
@@ -60,6 +72,14 @@ const subscriptionId = topics.subscribe('cart', (event: TopicEvent) => {
             break;
         case 'cart-fee-removed':
             console.log('Fee removed at index:', event.data.feeIndex);
+            break;
+        case 'product-discount-added':
+        case 'product-discount-removed':
+        case 'product-fee-added':
+        case 'product-fee-removed':
+        case 'product-note-added':
+        case 'product-note-removed':
+            console.log(event.type, event.data);
             break;
     }
 });
@@ -75,12 +95,12 @@ import type {
     CartCreatedEvent,
     CartCustomerAssignedPayload,
     CartCustomerAssignedEvent,
+    CartProductUpdatedPayload,
+    CartProductUpdatedEvent,
     ProductAddedPayload,
     ProductAddedEvent,
     ProductDeletedPayload,
     ProductDeletedEvent,
-    CartProductUpdatedPayload,
-    CartProductUpdatedEvent,
     CartDiscountAddedPayload,
     CartDiscountAddedEvent,
     CartDiscountRemovedPayload,
@@ -89,10 +109,24 @@ import type {
     CartFeeAddedEvent,
     CartFeeRemovedPayload,
     CartFeeRemovedEvent,
+    ProductDiscountAddedPayload,
+    ProductDiscountAddedEvent,
+    ProductDiscountRemovedPayload,
+    ProductDiscountRemovedEvent,
+    ProductFeeAddedPayload,
+    ProductFeeAddedEvent,
+    ProductFeeRemovedPayload,
+    ProductFeeRemovedEvent,
+    ProductNoteAddedPayload,
+    ProductNoteAddedEvent,
+    ProductNoteRemovedPayload,
+    ProductNoteRemovedEvent,
     CartEventType,
     CartEventPayload
 } from '@final-commerce/command-frame';
 ```
+
+For `customer-unassigned` on the `cart` topic, the payload matches the customers topic: import `CustomerUnassignedPayload` / `CustomerUnassignedEvent`.
 
 ## Related Types
 
@@ -103,4 +137,3 @@ import type {
 - [`CFCustomFee`](../../../types/README.md#cfcustomfee) - Fee type from CommonTypes
 - `CartEventType` - Union type of all cart event IDs
 - `CartEventPayload` - Union type of all cart event payloads
-

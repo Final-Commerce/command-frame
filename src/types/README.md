@@ -4,7 +4,15 @@ Field-level reference for the core domain model types exported from `@final-comm
 
 These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
 
-Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
+Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs. The package entry [`src/index.ts`](../index.ts) is the single export surface: domain types from [`CommonTypes.ts`](../CommonTypes.ts), `command` / `RenderClient` / `ManageClient`, `topics`, `hooks`, and per-topic payload unions.
+
+| Concern | Where it lives | Doc entry |
+|---------|----------------|-----------|
+| Domain model (`CF*` types) | [`CommonTypes.ts`](../CommonTypes.ts) | This file |
+| Command functions and `*Params` / `*Response` types | [`command`](../index.ts), [`src/actions/*/types.ts`](../actions/) | [Render](../projects/render/README.md), [Manage](../projects/manage/README.md), per-action READMEs |
+| Pub/sub wire API | [`topics`](../pubsub/topics.ts), [`TopicSubscriber`](../pubsub/subscriber.ts) | [Pub/Sub](../pubsub/README.md) |
+| Topic definitions and event payloads | [`src/pubsub/topics/*`](../pubsub/topics/) | Topic READMEs under `src/pubsub/topics/<topic>/` |
+| Session hooks (serialized callbacks) | [`hooks`](../hooks/index.ts) | [Hooks](../hooks/README.md) |
 
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';

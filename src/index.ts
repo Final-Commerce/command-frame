@@ -546,6 +546,7 @@ export type {
 export type {
     CartCreatedPayload,
     CartCustomerAssignedPayload,
+    CartProductUpdatedPayload,
     ProductAddedPayload,
     ProductDeletedPayload,
     CartDiscountAddedPayload,
@@ -560,6 +561,7 @@ export type {
     ProductNoteRemovedPayload,
     CartCreatedEvent,
     CartCustomerAssignedEvent,
+    CartProductUpdatedEvent,
     ProductAddedEvent,
     ProductDeletedEvent,
     CartDiscountAddedEvent,
