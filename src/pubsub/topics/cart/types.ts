@@ -6,6 +6,7 @@
 // Re-export all event types
 export * from "./cart-created/types";
 export * from "./customer-assigned/types";
+export * from "./customer-unassigned/types";
 export * from "./product-added/types";
 export * from "./product-deleted/types";
 export * from "./product-updated/types";
@@ -23,6 +24,7 @@ export * from "./product-note-removed/types";
 // Import payload types for union type
 import type { CartCreatedPayload } from "./cart-created/types";
 import type { CartCustomerAssignedPayload } from "./customer-assigned/types";
+import type { CartCustomerUnassignedPayload } from "./customer-unassigned/types";
 import type { ProductAddedPayload } from "./product-added/types";
 import type { ProductDeletedPayload } from "./product-deleted/types";
 import type { CartProductUpdatedPayload } from "./product-updated/types";
@@ -38,9 +40,10 @@ import type { ProductNoteAddedPayload } from "./product-note-added/types";
 import type { ProductNoteRemovedPayload } from "./product-note-removed/types";
 
 // Union type for all cart event payloads
-export type CartEventPayload = 
+export type CartEventPayload =
     | CartCreatedPayload
     | CartCustomerAssignedPayload
+    | CartCustomerUnassignedPayload
     | ProductAddedPayload
     | ProductDeletedPayload
     | CartProductUpdatedPayload
@@ -56,7 +59,7 @@ export type CartEventPayload =
     | ProductNoteRemovedPayload;
 
 // Literal types for event IDs
-export type CartEventType = 
+export type CartEventType =
     | "cart-created"
     | "customer-assigned"
     | "customer-unassigned"
