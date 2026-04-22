@@ -47,7 +47,7 @@
             "prettier --write"
         ],
         "**/*.{ts,tsx}": [
-            "eslint --fix --no-warn-ignored"
+            "eslint --fix"
         ]
     },
     "jira-prepare-commit-msg": {

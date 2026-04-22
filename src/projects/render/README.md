@@ -63,6 +63,7 @@ The library provides a `command` namespace object containing all available comma
 - **[removeCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-cart-discount/README.md)** - Remove the cart-level discount from the current cart
 - **[addOrderNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-order-note/README.md)** - Add a note to the current order/cart
 - **[addCartFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-fee/README.md)** - Add a fee to the entire cart
+- **[removeCartFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-cart-fee/README.md)** - Remove a cart-level fee by index in `customFee`
 - **[addNonRevenueItem](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-non-revenue-item/README.md)** - Add a non-revenue line (e.g. gift card load); response and `getCurrentCart().nonRevenueItems` use `externalId` for the line id
 - **[clearCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/clear-cart/README.md)** - Clear all items from the current cart
 - **[parkOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/park-order/README.md)** - Park (save) the current order for later retrieval
@@ -304,6 +305,7 @@ Adds a discount to the entire cart. Supports both fixed amount and percentage di
 ### [removeCartDiscount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-cart-discount/README.md)
 
 Removes the cart-level discount from the current cart. Clears any active cart discount and recalculates cart totals. Publishes a `cart-discount-removed` event on the `cart` topic.
+
 ### [getActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-product/README.md)
 
 Retrieves the currently selected/active product in the POS interface. Returns the product that is currently being viewed or interacted with by the user, or `null` if no product is selected.
@@ -347,6 +349,10 @@ Adds a note to the current order/cart.
 ### [addCartFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-cart-fee/README.md)
 
 Adds a fee to the entire cart. Supports both fixed amount and percentage-based fees.
+
+### [removeCartFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-cart-fee/README.md)
+
+Removes a cart-level fee by zero-based index in `customFee`. Publishes a `cart-fee-removed` event on the `cart` topic with `{ feeIndex }`.
 
 ### [addNonRevenueItem](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-non-revenue-item/README.md)
 
