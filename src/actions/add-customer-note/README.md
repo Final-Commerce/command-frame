@@ -35,3 +35,7 @@ await command.addCustomerNote({
 - Throws an error if customerId or note is missing
 - Throws an error if the customer is not found
 
+## See also
+
+- [removeCustomerNote](../remove-customer-note/README.md) - Delete a note by its `_id` without passing `customerId`
+

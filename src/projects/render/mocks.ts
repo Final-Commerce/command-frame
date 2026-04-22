@@ -3,6 +3,7 @@ import { mockAddCartFee } from "../../actions/add-cart-fee/mock";
 import { mockAddCustomSale } from "../../actions/add-custom-sale/mock";
 import { mockAddCustomer } from "../../actions/add-customer/mock";
 import { mockAddCustomerNote } from "../../actions/add-customer-note/mock";
+import { mockRemoveCustomerNote } from "../../actions/remove-customer-note/mock";
 import { mockEditCustomer } from "../../actions/edit-customer/mock";
 import { mockAddOrderNote } from "../../actions/add-order-note/mock";
 import { mockAddProductDiscount } from "../../actions/add-product-discount/mock";
@@ -91,6 +92,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     addCustomer: mockAddCustomer,
     editCustomer: mockEditCustomer,
     addCustomerNote: mockAddCustomerNote,
+    removeCustomerNote: mockRemoveCustomerNote,
     addOrderNote: mockAddOrderNote,
     addProductDiscount: mockAddProductDiscount,
     addProductFee: mockAddProductFee,

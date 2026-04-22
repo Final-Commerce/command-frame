@@ -38,6 +38,7 @@ import type {
     RedeemPayment,
     AddNonRevenueItem,
     AddCustomerNote,
+    RemoveCustomerNote,
     RemoveCustomerFromCart,
     GoToStationHome,
     OpenCashDrawer,
@@ -132,6 +133,7 @@ export interface RenderProviderActions {
     redeemPayment: RedeemPayment;
     addNonRevenueItem: AddNonRevenueItem;
     addCustomerNote: AddCustomerNote;
+    removeCustomerNote: RemoveCustomerNote;
     removeCustomerFromCart: RemoveCustomerFromCart;
     removeCartDiscount: RemoveCartDiscount;
     goToStationHome: GoToStationHome;

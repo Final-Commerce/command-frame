@@ -116,6 +116,7 @@ export interface CFInventory {
 }
 
 export interface CFCustomerNote {
+    _id?: string;
     createdAt: string;
     message: string;
 }

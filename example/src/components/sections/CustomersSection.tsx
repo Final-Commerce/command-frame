@@ -38,6 +38,11 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
   const [addCustomerNoteLoading, setAddCustomerNoteLoading] = useState(false);
   const [addCustomerNoteResponse, setAddCustomerNoteResponse] = useState<string>('');
 
+  // Remove Customer Note
+  const [removeCustomerNoteId, setRemoveCustomerNoteId] = useState<string>('');
+  const [removeCustomerNoteLoading, setRemoveCustomerNoteLoading] = useState(false);
+  const [removeCustomerNoteResponse, setRemoveCustomerNoteResponse] = useState<string>('');
+
   const [activeCustomerId, setActiveCustomerId] = useState<string>('');
   const [setActiveCustomerLoading, setSetActiveCustomerLoading] = useState(false);
   const [setActiveCustomerResponse, setSetActiveCustomerResponse] = useState<string>('');
@@ -448,6 +453,54 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
           <JsonViewer
             data={addCustomerNoteResponse}
             title={addCustomerNoteResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+
+      {/* remove customer note */}
+      <CommandSection title="Remove Customer Note">
+        <p className="section-description">
+          Removes a note from a customer's record.
+        </p>
+        <div className="form-group">
+            <div className="form-field">
+              <label>Note ID:</label>
+              <input
+                type="text"
+                value={removeCustomerNoteId}
+                onChange={(e) => setRemoveCustomerNoteId(e.target.value)}
+                placeholder="note-id-123"
+              />
+            </div>
+          </div>
+        <button
+          onClick={async () => {
+            if (!removeCustomerNoteId) {
+              setRemoveCustomerNoteResponse('Error: Note ID is required');
+              return;
+            }
+
+            setRemoveCustomerNoteLoading(true);
+            setRemoveCustomerNoteResponse('');
+            try {
+              const result = await command.removeCustomerNote({ noteId: removeCustomerNoteId });
+              setRemoveCustomerNoteResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRemoveCustomerNoteResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRemoveCustomerNoteLoading(false);
+            }
+          }}
+          disabled={removeCustomerNoteLoading}
+          className="btn btn--primary"
+        >
+          {removeCustomerNoteLoading ? 'Removing...' : 'Remove Customer Note'}
+        </button>
+        {removeCustomerNoteResponse && (
+          <JsonViewer
+            data={removeCustomerNoteResponse}
+            title={removeCustomerNoteResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>
