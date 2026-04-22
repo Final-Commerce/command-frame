@@ -27,7 +27,7 @@ topics.unsubscribe('customers', subscriptionId);
 | [orders](./topics/orders/README.md) | Order lifecycle events | 4 events | [View Details](./topics/orders/README.md) |
 | [refunds](./topics/refunds/README.md) | Refund lifecycle events | 4 events | [View Details](./topics/refunds/README.md) |
 | [products](./topics/products/README.md) | Product sync events | 4 events | [View Details](./topics/products/README.md) |
-| [cart](./topics/cart/README.md) | Cart operation events | 9 events | [View Details](./topics/cart/README.md) |
+| [cart](./topics/cart/README.md) | Cart operation events | 17 events | [View Details](./topics/cart/README.md) |
 | [payments](./topics/payments/README.md) | Payment processing events | 2 events | [View Details](./topics/payments/README.md) |
 | [custom-tables](./topics/custom-tables/README.md) | Custom table row lifecycle events | 3 events | [View Details](./topics/custom-tables/README.md) |
 | [print](./topics/print/README.md) | Print action events | 3 events | [View Details](./topics/print/README.md) |
@@ -184,7 +184,8 @@ function CustomerEvents() {
 ## Runtime behavior
 
 - The subscriber starts in iframe mode and requests topics from the host.
-- If no host pub/sub messages are received within a short detection window, it falls back to mock mode automatically for local development.
+- If no host pub/sub messages are received within **2 seconds** (`TopicSubscriber`), it falls back to mock mode automatically for local development.
+- **Standalone** (no parent iframe, `window.top === window`): mock mode is enabled immediately without waiting for the timeout.
 - `topics.getTopics()` returns a snapshot of the current cache; call it again after host initialization if you need the refreshed list.
 
 ## Host Application (Render) - Publishing Events

@@ -2,13 +2,22 @@
 
 Field-level reference for the core domain model types exported from `@final-commerce/command-frame` (orders, cart, customers, products, refunds, context, and related primitives).
 
-These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) and re-exported from the package root.
+These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) (at the repository root: `src/CommonTypes.ts`) and re-exported from the package root.
 
-Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
+Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and re-exported from [`index.ts`](../index.ts).
 
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
 ```
+
+## Commands and wire types
+
+Host-callable actions are grouped on the **`command`** export from `@final-commerce/command-frame` (see [`index.ts`](../index.ts)). Each action folder under `src/actions/<name>/` defines `Params` / `Response` types and a README; those types are re-exported from the package root for imports such as `GetProductsParams`.
+
+Project-specific clients wrap the same registry with host mocks:
+
+- **Render (POS):** `RenderClient` / `renderClient` in [`src/projects/render/client.ts`](../projects/render/client.ts)
+- **Manage (dashboard):** `ManageClient` / `manageClient` in [`src/projects/manage/client.ts`](../projects/manage/client.ts)
 
 ## Table of Contents
 

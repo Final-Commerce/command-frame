@@ -6,6 +6,8 @@
 // Re-export all event types
 export * from "./cart-created/types";
 export * from "./customer-assigned/types";
+// Same payload as `customers` topic; cart topic also publishes this id when a customer leaves the cart
+export type { CustomerUnassignedPayload, CustomerUnassignedEvent } from "../customers/customer-unassigned/types";
 export * from "./product-added/types";
 export * from "./product-deleted/types";
 export * from "./product-updated/types";
@@ -23,6 +25,7 @@ export * from "./product-note-removed/types";
 // Import payload types for union type
 import type { CartCreatedPayload } from "./cart-created/types";
 import type { CartCustomerAssignedPayload } from "./customer-assigned/types";
+import type { CustomerUnassignedPayload } from "../customers/customer-unassigned/types";
 import type { ProductAddedPayload } from "./product-added/types";
 import type { ProductDeletedPayload } from "./product-deleted/types";
 import type { CartProductUpdatedPayload } from "./product-updated/types";
@@ -41,6 +44,7 @@ import type { ProductNoteRemovedPayload } from "./product-note-removed/types";
 export type CartEventPayload = 
     | CartCreatedPayload
     | CartCustomerAssignedPayload
+    | CustomerUnassignedPayload
     | ProductAddedPayload
     | ProductDeletedPayload
     | CartProductUpdatedPayload
