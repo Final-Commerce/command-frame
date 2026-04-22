@@ -11,6 +11,7 @@ export const mockAddCustomerNote: AddCustomerNote = async (params?: AddCustomerN
                 customer.notes = [];
             }
             customer.notes.push({
+                _id: `mock_note_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
                 message: params.note,
                 createdAt: new Date().toISOString()
             });

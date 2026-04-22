@@ -147,7 +147,8 @@ await command.extensionPayment({ paymentType: "redeem", amount: 25, processor: "
 await command.initiateRefund({ orderId: "order-123" });
 
 // Customer Actions
-await command.addCustomerNote({ customerId: "customer-123", note: "VIP customer" });
+await command.addCustomerNote({ customerId: 'customer-123', note: 'VIP customer' });
+await command.removeCustomerNote({ noteId: 'note-id-from-customer-notes-array' });
 await command.removeCustomerFromCart();
 
 // System Actions

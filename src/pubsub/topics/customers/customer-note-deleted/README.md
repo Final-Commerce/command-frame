@@ -2,7 +2,7 @@
 
 ## Description
 
-Published when a note is deleted from a customer's record.
+Published when a note is deleted from a customer's record (for example after the iframe calls [`removeCustomerNote`](../../../../actions/remove-customer-note/README.md) on Render, or when the host removes a note through its own UI).
 
 ## Event Type
 
@@ -54,6 +54,10 @@ topicPublisher.publish('customers', 'customer-note-deleted', {
     note: deletedNote
 } as CustomerNoteDeletedPayload);
 ```
+
+## Related commands
+
+- [`removeCustomerNote`](../../../../actions/remove-customer-note/README.md) - Remove a note by id from the iframe (Render host)
 
 ## Related Types
 
