@@ -241,7 +241,7 @@ export const command = {
     getMedia,
     uploadMedia,
     getTaxTables,
-    getBranding,
+    getBranding
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -253,11 +253,7 @@ export type { GetProducts, GetProductsParams, GetProductsResponse } from "./acti
 
 export type { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from "./actions/add-custom-sale/types";
 
-export type {
-    AddNonRevenueItem,
-    AddNonRevenueItemParams,
-    AddNonRevenueItemResponse
-} from "./actions/add-non-revenue-item/types";
+export type { AddNonRevenueItem, AddNonRevenueItemParams, AddNonRevenueItemResponse } from "./actions/add-non-revenue-item/types";
 
 export type { GetCustomers, GetCustomersParams, GetCustomersResponse } from "./actions/get-customers/types";
 
@@ -323,7 +319,11 @@ export type { GetFinalContext, GetFinalContextResponse } from "./actions/get-fin
 export type { AddProductNote, AddProductNoteParams, AddProductNoteResponse } from "./actions/add-product-note/types";
 export type { AddProductFee, AddProductFeeParams, AddProductFeeResponse } from "./actions/add-product-fee/types";
 export type { SetActiveProductFee, SetActiveProductFeeParams, SetActiveProductFeeResponse } from "./actions/set-active-product-fee/types";
-export type { SetActiveProductDiscount, SetActiveProductDiscountParams, SetActiveProductDiscountResponse } from "./actions/set-active-product-discount/types";
+export type {
+    SetActiveProductDiscount,
+    SetActiveProductDiscountParams,
+    SetActiveProductDiscountResponse
+} from "./actions/set-active-product-discount/types";
 export type { GetActiveProduct, GetActiveProductResponse } from "./actions/get-active-product/types";
 export type { SetActiveProduct, SetActiveProductParams, SetActiveProductResponse } from "./actions/set-active-product/types";
 export type { AdjustInventory, AdjustInventoryParams, AdjustInventoryResponse } from "./actions/adjust-inventory/types";
@@ -338,22 +338,14 @@ export type { CashPayment, CashPaymentParams, CashPaymentResponse } from "./acti
 export type { TapToPayPayment, TapToPayPaymentParams, TapToPayPaymentResponse } from "./actions/tap-to-pay-payment/types";
 export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } from "./actions/terminal-payment/types";
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
-export type {
-    ExtensionPayment,
-    ExtensionPaymentParams,
-    ExtensionPaymentResponse
-} from "./actions/extension-payment/types";
+export type { ExtensionPayment, ExtensionPaymentParams, ExtensionPaymentResponse } from "./actions/extension-payment/types";
 export type { RedeemPayment, RedeemPaymentParams, RedeemPaymentResponse } from "./actions/redeem-payment/types";
 export { EXTENSION_REFUND_REQUEST_ACTION } from "./actions/extension-refund/constants";
 export { installExtensionRefundListener } from "./actions/extension-refund/extension-refund-listener";
 export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/extension-refund/types";
 // Customer Actions
 export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
-export type {
-    RemoveCustomerNote,
-    RemoveCustomerNoteParams,
-    RemoveCustomerNoteResponse
-} from "./actions/remove-customer-note/types";
+export type { RemoveCustomerNote, RemoveCustomerNoteParams, RemoveCustomerNoteResponse } from "./actions/remove-customer-note/types";
 export type { RemoveCustomerFromCart, RemoveCustomerFromCartResponse } from "./actions/remove-customer-from-cart/types";
 export type { RemoveCartDiscount, RemoveCartDiscountResponse } from "./actions/remove-cart-discount/types";
 // System Actions
@@ -553,6 +545,10 @@ export type {
 export type {
     CartCreatedPayload,
     CartCustomerAssignedPayload,
+    CartCustomerUnassignedPayload,
+    CartCustomerUnassignedEvent,
+    CartProductUpdatedPayload,
+    CartProductUpdatedEvent,
     ProductAddedPayload,
     ProductDeletedPayload,
     CartDiscountAddedPayload,
