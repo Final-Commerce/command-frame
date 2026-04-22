@@ -6,6 +6,8 @@ These domain model types are defined in [`CommonTypes.ts`](../CommonTypes.ts) an
 
 Additional package exports (command params/responses, pub/sub event payloads, and hooks types) are documented in their subsystem READMEs and listed from [`src/index.ts`](../index.ts).
 
+The shared `command` object (`import { command } from '@final-commerce/command-frame'`) exposes the same actions as the host wire protocol: each key is a camelCase action name matching `RenderClient` / `ManageClient` method names.
+
 ```typescript
 import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
 ```
