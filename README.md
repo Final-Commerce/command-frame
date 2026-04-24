@@ -8,16 +8,24 @@ Command Frame provides a structured way to build integrations that run inside Fi
 
 `RenderClient` and `ManageClient` extend `CommandFrameClient`: dynamic methods such as `getProducts()` map to `postMessage` actions named after the method (camelCase), with typed params and responses per project.
 
-The library provides three main capabilities:
+The library centers on **commands**, **pub/sub**, and **hooks** (table below). **Extension refunds** are a separate host-to-iframe protocol for redeem / gift-card reversals during POS refunds (see [Extension refund](./src/actions/extension-refund/README.md)).
 
-| Capability | Purpose | Scope |
-|-----------|---------|-------|
-| **Commands** | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call |
-| **Pub/Sub** | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted) |
-| **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
-| **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
+| Capability   | Purpose                                                                   | Scope                                     |
+| ------------ | ------------------------------------------------------------------------- | ----------------------------------------- |
+| **Commands** | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call                 |
+| **Pub/Sub**  | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted)     |
+| **Hooks**    | Register business-logic callbacks that persist across all pages           | Session-scoped (survives page navigation) |
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
+
+### Where types live in the repo
+
+| Kind                                       | Source                                                                                                                               | Notes                                                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Domain models (`CFOrder`, `CFCustomer`, …) | [`src/CommonTypes.ts`](./src/CommonTypes.ts), [`src/common-types/`](./src/common-types/)                                             | Re-exported from the package root                                                                                         |
+| Command params / responses                 | [`src/actions/<action>/types.ts`](./src/actions/), [`src/index.ts`](./src/index.ts)                                                  | Same names as `command.<camelCase>()` and client methods                                                                  |
+| Pub/sub payloads                           | [`src/pubsub/topics/`](./src/pubsub/topics/), `TopicEventPayloadMap` in [`src/pubsub/topics/types.ts`](./src/pubsub/topics/types.ts) | Subscribe with kebab-case topic ids; map keys are camelCase — see [Pub/Sub](./src/pubsub/README.md#topic-id-mapping-note) |
+| Hooks (iframe API)                         | [`src/hooks/types.ts`](./src/hooks/types.ts)                                                                                         | `HookFunction`, `HookRegisterOptions`; see [Hooks](./src/hooks/README.md)                                                 |
 
 ## Installation
 
@@ -54,7 +62,7 @@ For building applications that run inside the Render Point of Sale interface.
 - **Features:** Order management, Product catalog, Customer management, Payments, Hardware integration (Cash drawer, Printer), Custom tables, Secrets storage.
 
 ```typescript
-import { RenderClient } from '@final-commerce/command-frame';
+import { RenderClient } from "@final-commerce/command-frame";
 
 const client = new RenderClient();
 const products = await client.getProducts();
@@ -68,7 +76,7 @@ For building applications that run inside the Final Commerce Management Dashboar
 - **Features:** Context, catalog, entities, custom tables, secrets, and optional host-specific commands (navigation, media, tax, branding, notifications) when the dashboard implements them.
 
 ```typescript
-import { ManageClient } from '@final-commerce/command-frame';
+import { ManageClient } from "@final-commerce/command-frame";
 
 const client = new ManageClient();
 const context = await client.getContext();
@@ -82,14 +90,14 @@ The pub/sub system allows iframe extensions to subscribe to topics and receive r
 - **Topics:** Cart (16), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
 
 ```typescript
-import { topics } from '@final-commerce/command-frame';
+import { topics } from "@final-commerce/command-frame";
 
-const subscriptionId = topics.subscribe('cart', (event) => {
-    console.log('Cart event:', event.type, event.data);
+const subscriptionId = topics.subscribe("cart", event => {
+    console.log("Cart event:", event.type, event.data);
 });
 
 // Unsubscribe when done
-topics.unsubscribe('cart', subscriptionId);
+topics.unsubscribe("cart", subscriptionId);
 ```
 
 ## Hooks
@@ -101,17 +109,21 @@ Hooks are **session-scoped** event callbacks that run in the host (Render) conte
 - A stable `hookId` is required for deduplication (safe on iframe reload).
 
 ```typescript
-import { hooks } from '@final-commerce/command-frame';
+import { hooks } from "@final-commerce/command-frame";
 
-hooks.register('cart', async (event, hostCommands) => {
-    await hostCommands.upsertCustomTableData({
-        tableName: 'cart-events-log',
-        data: { eventType: event.type, payload: event.data, timestamp: event.timestamp },
-    });
-}, { hookId: 'my-extension:cart-log' });
+hooks.register(
+    "cart",
+    async (event, hostCommands) => {
+        await hostCommands.upsertCustomTableData({
+            tableName: "cart-events-log",
+            data: { eventType: event.type, payload: event.data, timestamp: event.timestamp }
+        });
+    },
+    { hookId: "my-extension:cart-log" }
+);
 
 // Unregister when no longer needed
-hooks.unregister('my-extension:cart-log');
+hooks.unregister("my-extension:cart-log");
 ```
 
 ## Host-initiated extension refunds (redeem / gift card)
@@ -127,18 +139,12 @@ hooks.unregister('my-extension:cart-log');
 Exported APIs: `installExtensionRefundListener`, `EXTENSION_REFUND_REQUEST_ACTION`, types **`ExtensionRefundParams`** / **`ExtensionRefundResponse`**.
 
 ```typescript
-import {
-    installExtensionRefundListener,
-    type ExtensionRefundParams,
-    type ExtensionRefundResponse
-} from '@final-commerce/command-frame';
+import { installExtensionRefundListener, type ExtensionRefundParams, type ExtensionRefundResponse } from "@final-commerce/command-frame";
 
 const unsubscribe = installExtensionRefundListener(async (params: ExtensionRefundParams): Promise<ExtensionRefundResponse> => {
     // params.paymentType === "redeem", params.amount in major currency units, params.saleId, params.processor, etc.
     const ok = await myGiftCardProvider.refund(params);
-    return ok
-        ? { success: true, extensionTransactionId: ok.providerRefundId }
-        : { success: false, error: 'Refund declined' };
+    return ok ? { success: true, extensionTransactionId: ok.providerRefundId } : { success: false, error: "Refund declined" };
 });
 
 // on teardown (optional)
