@@ -228,7 +228,7 @@ function MyExtension() {
 
 Hooks use the same topics as the pub/sub system. See the [Pub/Sub documentation](../pubsub/README.md) for the full list of topics and event types:
 
-- [Cart](../pubsub/topics/cart/README.md) - Cart operation events (9 events)
+- [Cart](../pubsub/topics/cart/README.md) - Cart operation events (16 events)
 - [Customers](../pubsub/topics/customers/README.md) - Customer lifecycle events (8 events)
 - [Orders](../pubsub/topics/orders/README.md) - Order lifecycle events (4 events)
 - [Payments](../pubsub/topics/payments/README.md) - Payment processing events (2 events)
