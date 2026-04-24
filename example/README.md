@@ -117,8 +117,9 @@ const activeSession = await command.getActiveSession();
 await command.setActiveSession({ sessionId: "session-123" });
 const activeUser = await command.getActiveUser();
 await command.setActiveUser({ userId: "user-123" });
-const activeRefund = await command.getActiveRefund();
-await command.setActiveRefund({ orderId: "order-123" });
+const setRefundResult = await command.setActiveRefund({ orderId: "order-123" });
+// Current refund UI state is in setRefundResult.refund (see setActiveRefund action README).
+// For live updates, subscribe to the `refunds` pub/sub topic (`get-active-refund` / `set-active-refund`).
 
 // Product Actions
 await command.addProductNote({ note: "Customer requested extra packaging" });
@@ -147,8 +148,8 @@ await command.extensionPayment({ paymentType: "redeem", amount: 25, processor: "
 await command.initiateRefund({ orderId: "order-123" });
 
 // Customer Actions
-await command.addCustomerNote({ customerId: 'customer-123', note: 'VIP customer' });
-await command.removeCustomerNote({ noteId: 'note-id-from-customer-notes-array' });
+await command.addCustomerNote({ customerId: "customer-123", note: "VIP customer" });
+await command.removeCustomerNote({ noteId: "note-id-from-customer-notes-array" });
 await command.removeCustomerFromCart();
 
 // System Actions
