@@ -1,7 +1,7 @@
 import type { CFActiveOrder } from "../../CommonTypes";
 
 // Print type discriminator
-export type PrintType = "image" | "html" | "selector" | "receipt";
+export type PrintType = "image" | "html" | "receipt";
 
 // Print parameters (discriminated union)
 export type PrintParams =
@@ -13,11 +13,6 @@ export type PrintParams =
     | {
           type: "html";
           data: { html: string };
-          options?: PrintOptions;
-      }
-    | {
-          type: "selector";
-          data: { selector: string };
           options?: PrintOptions;
       }
     | {

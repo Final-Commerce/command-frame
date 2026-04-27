@@ -20,11 +20,6 @@ export function PrintSection({ isInIframe }: PrintSectionProps) {
     const [htmlPrintLoading, setHtmlPrintLoading] = useState(false);
     const [htmlPrintResponse, setHtmlPrintResponse] = useState<string>("");
 
-    // Selector print
-    const [selector, setSelector] = useState<string>("#print-test-element");
-    const [selectorPrintLoading, setSelectorPrintLoading] = useState(false);
-    const [selectorPrintResponse, setSelectorPrintResponse] = useState<string>("");
-
     // Receipt print
     const [receiptPrintLoading, setReceiptPrintLoading] = useState(false);
     const [receiptPrintResponse, setReceiptPrintResponse] = useState<string>("");
@@ -96,33 +91,6 @@ export function PrintSection({ isInIframe }: PrintSectionProps) {
         }
     };
 
-    const handlePrintSelector = async () => {
-        if (!isInIframe) {
-            setSelectorPrintResponse("Error: Not running in iframe");
-            return;
-        }
-
-        if (!selector) {
-            setSelectorPrintResponse("Error: Selector is required");
-            return;
-        }
-
-        setSelectorPrintLoading(true);
-        setSelectorPrintResponse("");
-
-        try {
-            const result = await command.print({
-                type: "selector",
-                data: { selector }
-            });
-            setSelectorPrintResponse(JSON.stringify(result, null, 2));
-        } catch (error) {
-            setSelectorPrintResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
-        } finally {
-            setSelectorPrintLoading(false);
-        }
-    };
-
     const handlePrintReceipt = async () => {
         if (!isInIframe) {
             setReceiptPrintResponse("Error: Not running in iframe");
@@ -158,13 +126,6 @@ export function PrintSection({ isInIframe }: PrintSectionProps) {
 
     return (
         <div className="section-content">
-            {/* Test element for selector printing */}
-            <div id="print-test-element" style={{ display: "none", padding: "20px", border: "1px solid #ccc", margin: "20px 0" }}>
-                <h2>Test Element for Selector Printing</h2>
-                <p>This element can be printed using the selector: #print-test-element</p>
-                <p>Current time: {new Date().toLocaleString()}</p>
-            </div>
-
             <CommandSection title="Print Image">
                 <p className="section-description">Print a base64-encoded image directly to the printer.</p>
                 <div className="form-group">
@@ -207,25 +168,6 @@ export function PrintSection({ isInIframe }: PrintSectionProps) {
                     {htmlPrintLoading ? "Printing..." : "Print HTML"}
                 </button>
                 {htmlPrintResponse && <JsonViewer data={htmlPrintResponse} title={htmlPrintResponse.startsWith("Error") ? "Error" : "Success"} />}
-            </CommandSection>
-
-            <CommandSection title="Print Element by Selector">
-                <p className="section-description">Print an existing DOM element by query selector. The element must exist in the DOM.</p>
-                <div className="form-group">
-                    <div className="form-field">
-                        <label>CSS Selector:</label>
-                        <input type="text" value={selector} onChange={e => setSelector(e.target.value)} placeholder="#my-element or .my-class" />
-                    </div>
-                </div>
-                <p className="section-note">
-                    Try printing the test element above using: <code>#print-test-element</code>
-                </p>
-                <button onClick={handlePrintSelector} disabled={selectorPrintLoading} className="btn btn--primary">
-                    {selectorPrintLoading ? "Printing..." : "Print Element"}
-                </button>
-                {selectorPrintResponse && (
-                    <JsonViewer data={selectorPrintResponse} title={selectorPrintResponse.startsWith("Error") ? "Error" : "Success"} />
-                )}
             </CommandSection>
 
             <CommandSection title="Print Receipt">
