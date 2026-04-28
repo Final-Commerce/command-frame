@@ -9,6 +9,7 @@ import type {
     GetCategories,
     GetOrders,
     GetRefunds,
+    GetTaxTables,
     AddProductDiscount,
     AddProductToCart,
     RemoveProductFromCart,
@@ -104,6 +105,7 @@ export interface RenderProviderActions {
     getCategories: GetCategories;
     getOrders: GetOrders;
     getRefunds: GetRefunds;
+    getTaxTables: GetTaxTables;
     addProductDiscount: AddProductDiscount;
     addProductToCart: AddProductToCart;
     removeProductFromCart: RemoveProductFromCart;
