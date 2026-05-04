@@ -1,8 +1,10 @@
 import { mockAddCartDiscount } from "../../actions/add-cart-discount/mock";
 import { mockAddCartFee } from "../../actions/add-cart-fee/mock";
+import { mockRemoveCartFee } from "../../actions/remove-cart-fee/mock";
 import { mockAddCustomSale } from "../../actions/add-custom-sale/mock";
 import { mockAddCustomer } from "../../actions/add-customer/mock";
 import { mockAddCustomerNote } from "../../actions/add-customer-note/mock";
+import { mockRemoveCustomerNote } from "../../actions/remove-customer-note/mock";
 import { mockEditCustomer } from "../../actions/edit-customer/mock";
 import { mockAddOrderNote } from "../../actions/add-order-note/mock";
 import { mockAddProductDiscount } from "../../actions/add-product-discount/mock";
@@ -31,6 +33,7 @@ import { mockGetCustomers } from "../../actions/get-customers/mock";
 import { mockGetOrders } from "../../actions/get-orders/mock";
 import { mockGetProducts } from "../../actions/get-products/mock";
 import { mockGetRefunds } from "../../actions/get-refunds/mock";
+import { mockGetTaxTables } from "../../actions/get-tax-tables/mock";
 import { mockGetRemainingRefundableQuantities } from "../../actions/get-remaining-refundable-quantities/mock";
 import { mockGoToStationHome } from "../../actions/go-to-station-home/mock";
 import { mockInitiateRefund } from "../../actions/initiate-refund/mock";
@@ -82,7 +85,6 @@ import { mockSetActiveSession } from "../../actions/set-active-session/mock";
 import { mockGetActiveUser } from "../../actions/get-active-user/mock";
 import { mockSetActiveUser } from "../../actions/set-active-user/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
-import { mockRemoveCartFee } from "../../actions/remove-cart-fee/mock";
 import { canTransitionMock } from "../../actions/can-transition/mock";
 import { getAvailableTransitionsMock } from "../../actions/get-available-transitions/mock";
 import { RenderProviderActions } from "./types";
@@ -94,6 +96,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     addCustomer: mockAddCustomer,
     editCustomer: mockEditCustomer,
     addCustomerNote: mockAddCustomerNote,
+    removeCustomerNote: mockRemoveCustomerNote,
     addOrderNote: mockAddOrderNote,
     addProductDiscount: mockAddProductDiscount,
     addProductFee: mockAddProductFee,
@@ -120,6 +123,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getOrders: mockGetOrders,
     getProducts: mockGetProducts,
     getRefunds: mockGetRefunds,
+    getTaxTables: mockGetTaxTables,
     getRemainingRefundableQuantities: mockGetRemainingRefundableQuantities,
     goToStationHome: mockGoToStationHome,
     initiateRefund: mockInitiateRefund,
@@ -180,5 +184,5 @@ export const RENDER_MOCKS: RenderProviderActions = {
     removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
     removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
     canTransition: canTransitionMock,
-    getAvailableTransitions: getAvailableTransitionsMock,
+    getAvailableTransitions: getAvailableTransitionsMock
 };

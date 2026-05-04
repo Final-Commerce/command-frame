@@ -41,7 +41,7 @@ export enum CurrencyCode {
     JOD = "JOD",
     TND = "TND",
     LYD = "LYD",
-    IQD = "IQD",
+    IQD = "IQD"
 }
 
 // Enums
@@ -66,7 +66,7 @@ export enum CFUserTypes {
 }
 
 // Helper Interfaces
-export interface CFActiveEntity {}
+export type CFActiveEntity = object;
 
 export interface CFDiscount {
     value: number;
@@ -116,6 +116,7 @@ export interface CFInventory {
 }
 
 export interface CFCustomerNote {
+    _id?: string;
     createdAt: string;
     message: string;
 }
@@ -220,7 +221,7 @@ export interface CFActiveProduct extends CFActiveEntity {
 // Customer Interfaces
 export interface CFCustomer {
     _id: string;
-    companyId: any;
+    companyId: string;
     externalId?: string;
     email: string;
     firstName: string;
@@ -393,9 +394,7 @@ export interface CFRefundedLineItem {
     fee: CFFeeLineItem;
 }
 
-export interface CFRefundedCustomSale extends CFCustomSale {
-    // action: string;
-}
+export type CFRefundedCustomSale = CFCustomSale;
 
 export interface CFRefundItem {
     lineItems: CFRefundedLineItem[];
@@ -476,7 +475,7 @@ export interface CFActiveUser extends CFActiveEntity {
     _id?: string;
     outlets?: string[] | { _id: string }[];
     type?: CFUserTypes;
-    companies?: any;
+    companies?: unknown;
 }
 
 export interface CFActiveOutlet extends CFActiveEntity {
@@ -563,8 +562,8 @@ export interface CFActiveCustomSales {
     taxTableId?: string;
     quantity: number;
     price: number;
-    discount?: any;
-    fee?: any;
+    discount?: Record<string, unknown>;
+    fee?: Record<string, unknown>;
 }
 
 /** Non-revenue cart line (e.g. gift card load) — aligned with Render `NonRevenueItem.externalId` (order line id). */
@@ -601,7 +600,7 @@ export interface CFActiveCompany extends CFActiveEntity {
     id?: string;
     name?: string;
     logo?: string;
-    settings?: any;
+    settings?: Record<string, unknown>;
 }
 
 // Project name type for identifying which provider environment is active
@@ -623,10 +622,10 @@ export interface CFContextRender {
     buildSourceId: string | null;
     buildIsPremium: boolean;
     isOffline: boolean;
-    user: Record<string, any> | null;
-    company: Omit<Record<string, any>, 'settings'> | null;
-    station: Record<string, any> | null;
-    outlet: Record<string, any> | null;
+    user: Record<string, unknown> | null;
+    company: Omit<Record<string, unknown>, "settings"> | null;
+    station: Record<string, unknown> | null;
+    outlet: Record<string, unknown> | null;
     timestamp: string;
 }
 
@@ -635,27 +634,28 @@ export interface CFOutletInfo {
     _id?: string;
     id?: string;
     name: string;
-    address?: string | {
-        address1?: string;
-        address2?: string;
-        city?: string;
-        country?: string;
-        state?: string;
-        postCode?: string;
-    };
+    address?:
+        | string
+        | {
+              address1?: string;
+              address2?: string;
+              city?: string;
+              country?: string;
+              state?: string;
+              postCode?: string;
+          };
     city?: string;
     state?: string;
     country?: string;
 }
 
-
 // Context for Manage/BuilderHub project
 export interface CFContextManage {
-    user: any;
-    company: any;
-    menuItem?: any;
+    user: unknown;
+    company: unknown;
+    menuItem?: unknown;
     extensionId: string;
-    outlets?: any[];
+    outlets?: unknown[];
     timestamp: string;
 }
 

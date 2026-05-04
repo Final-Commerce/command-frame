@@ -9,6 +9,7 @@ import type {
     GetCategories,
     GetOrders,
     GetRefunds,
+    GetTaxTables,
     AddProductDiscount,
     AddProductToCart,
     RemoveProductFromCart,
@@ -38,6 +39,7 @@ import type {
     RedeemPayment,
     AddNonRevenueItem,
     AddCustomerNote,
+    RemoveCustomerNote,
     RemoveCustomerFromCart,
     GoToStationHome,
     OpenCashDrawer,
@@ -105,6 +107,7 @@ export interface RenderProviderActions {
     getCategories: GetCategories;
     getOrders: GetOrders;
     getRefunds: GetRefunds;
+    getTaxTables: GetTaxTables;
     addProductDiscount: AddProductDiscount;
     addProductToCart: AddProductToCart;
     removeProductFromCart: RemoveProductFromCart;
@@ -134,6 +137,7 @@ export interface RenderProviderActions {
     redeemPayment: RedeemPayment;
     addNonRevenueItem: AddNonRevenueItem;
     addCustomerNote: AddCustomerNote;
+    removeCustomerNote: RemoveCustomerNote;
     removeCustomerFromCart: RemoveCustomerFromCart;
     removeCartDiscount: RemoveCartDiscount;
     goToStationHome: GoToStationHome;
