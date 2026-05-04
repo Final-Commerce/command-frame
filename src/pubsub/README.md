@@ -5,36 +5,36 @@ The pub/sub system allows iframe applications to subscribe to topics and receive
 ## Quick Start
 
 ```typescript
-import { topics } from '@final-commerce/command-frame';
+import { topics } from "@final-commerce/command-frame";
 
 // Request topics from host and read the current cached list
 const availableTopics = await topics.getTopics();
 
 // Subscribe to a topic with a callback
-const subscriptionId = topics.subscribe('customers', (event) => {
-    console.log('Received event:', event.type, event.data);
+const subscriptionId = topics.subscribe("customers", event => {
+    console.log("Received event:", event.type, event.data);
 });
 
 // Unsubscribe when done
-topics.unsubscribe('customers', subscriptionId);
+topics.unsubscribe("customers", subscriptionId);
 ```
 
 ## Available Topics
 
-| Topic | Description | Events | Documentation |
-|-------|-------------|--------|---------------|
-| [customers](./topics/customers/README.md) | Customer lifecycle events | 8 events | [View Details](./topics/customers/README.md) |
-| [orders](./topics/orders/README.md) | Order lifecycle events | 4 events | [View Details](./topics/orders/README.md) |
-| [refunds](./topics/refunds/README.md) | Refund lifecycle events | 4 events | [View Details](./topics/refunds/README.md) |
-| [products](./topics/products/README.md) | Product sync events | 4 events | [View Details](./topics/products/README.md) |
-| [cart](./topics/cart/README.md) | Cart operation events | 9 events | [View Details](./topics/cart/README.md) |
-| [payments](./topics/payments/README.md) | Payment processing events | 2 events | [View Details](./topics/payments/README.md) |
-| [custom-tables](./topics/custom-tables/README.md) | Custom table row lifecycle events | 3 events | [View Details](./topics/custom-tables/README.md) |
-| [print](./topics/print/README.md) | Print action events | 3 events | [View Details](./topics/print/README.md) |
-| [outlet](./topics/outlet/README.md) | Active outlet context | 2 events | [View Details](./topics/outlet/README.md) |
-| [station](./topics/station/README.md) | Active station context | 2 events | [View Details](./topics/station/README.md) |
-| [session](./topics/session/README.md) | Register session context | 2 events | [View Details](./topics/session/README.md) |
-| [users](./topics/users/README.md) | Active POS user context | 2 events | [View Details](./topics/users/README.md) |
+| Topic                                             | Description                       | Events    | Documentation                                    |
+| ------------------------------------------------- | --------------------------------- | --------- | ------------------------------------------------ |
+| [customers](./topics/customers/README.md)         | Customer lifecycle events         | 8 events  | [View Details](./topics/customers/README.md)     |
+| [orders](./topics/orders/README.md)               | Order lifecycle events            | 4 events  | [View Details](./topics/orders/README.md)        |
+| [refunds](./topics/refunds/README.md)             | Refund lifecycle events           | 4 events  | [View Details](./topics/refunds/README.md)       |
+| [products](./topics/products/README.md)           | Product sync events               | 4 events  | [View Details](./topics/products/README.md)      |
+| [cart](./topics/cart/README.md)                   | Cart operation events             | 16 events | [View Details](./topics/cart/README.md)          |
+| [payments](./topics/payments/README.md)           | Payment processing events         | 2 events  | [View Details](./topics/payments/README.md)      |
+| [custom-tables](./topics/custom-tables/README.md) | Custom table row lifecycle events | 3 events  | [View Details](./topics/custom-tables/README.md) |
+| [print](./topics/print/README.md)                 | Print action events               | 3 events  | [View Details](./topics/print/README.md)         |
+| [outlet](./topics/outlet/README.md)               | Active outlet context             | 2 events  | [View Details](./topics/outlet/README.md)        |
+| [station](./topics/station/README.md)             | Active station context            | 2 events  | [View Details](./topics/station/README.md)       |
+| [session](./topics/session/README.md)             | Register session context          | 2 events  | [View Details](./topics/session/README.md)       |
+| [users](./topics/users/README.md)                 | Active POS user context           | 2 events  | [View Details](./topics/users/README.md)         |
 
 ## API Reference
 
@@ -47,11 +47,12 @@ Requests a fresh list of available topics from the host and returns the current 
 **Returns:** `Promise<TopicDefinition[]>`
 
 **Example:**
+
 ```typescript
 const availableTopics = await topics.getTopics();
 availableTopics.forEach(topic => {
     console.log(`Topic: ${topic.name} (${topic.id})`);
-    console.log(`Event types: ${topic.eventTypes.map(et => et.id).join(', ')}`);
+    console.log(`Event types: ${topic.eventTypes.map(et => et.id).join(", ")}`);
 });
 ```
 
@@ -60,22 +61,25 @@ availableTopics.forEach(topic => {
 Subscribes to a topic and receives events via the callback function.
 
 **Parameters:**
+
 - `topic: string` - The topic ID to subscribe to
 - `callback: (event: TopicEvent) => void` - Function called when an event is received
 
 **Returns:** `string` - Subscription ID (use this to unsubscribe)
 
 **Example:**
+
 ```typescript
-const subscriptionId = topics.subscribe('customers', (event) => {
-    console.log('Received event:', event.type);
-    console.log('Event data:', event.data);
-    console.log('Timestamp:', event.timestamp);
+const subscriptionId = topics.subscribe("customers", event => {
+    console.log("Received event:", event.type);
+    console.log("Event data:", event.data);
+    console.log("Timestamp:", event.timestamp);
 });
 ```
 
 **Constraints:**
-- Topic IDs are kebab-case strings from host topic definitions (for example: `'custom-tables'`, `'payment-done'` event on `'payments'` topic).
+
+- Topic IDs are kebab-case strings from host topic definitions (for example `'cart'`, `'custom-tables'`, `'payments'`). Event type strings such as `'payment-done'` appear on `event.type`, not as the first argument to `subscribe()`.
 - Subscriptions are page-scoped and tied to the current iframe lifecycle.
 - In standalone development (not embedded in an iframe), subscriptions run in built-in mock mode.
 
@@ -84,14 +88,16 @@ const subscriptionId = topics.subscribe('customers', (event) => {
 Unsubscribes from a topic using the subscription ID returned from `subscribe()`.
 
 **Parameters:**
+
 - `topic: string` - The topic ID
 - `subscriptionId: string` - The subscription ID returned from `subscribe()`
 
 **Returns:** `boolean` - `true` if successfully unsubscribed
 
 **Example:**
+
 ```typescript
-const success = topics.unsubscribe('customers', subscriptionId);
+const success = topics.unsubscribe("customers", subscriptionId);
 ```
 
 ### `topics.unsubscribeAll(topic)`
@@ -99,13 +105,15 @@ const success = topics.unsubscribe('customers', subscriptionId);
 Unsubscribes all callbacks for a specific topic.
 
 **Parameters:**
+
 - `topic: string` - The topic ID
 
 **Returns:** `number` - Number of subscriptions removed
 
 **Example:**
+
 ```typescript
-const removed = topics.unsubscribeAll('customers');
+const removed = topics.unsubscribeAll("customers");
 console.log(`Removed ${removed} subscriptions`);
 ```
 
@@ -133,7 +141,7 @@ import type {
     CustomerUnassignedEvent,
     CustomersEventType,
     CustomersEventPayload
-} from '@final-commerce/command-frame';
+} from "@final-commerce/command-frame";
 ```
 
 ### Topic ID mapping note
@@ -141,9 +149,9 @@ import type {
 `topics.subscribe(...)` uses wire topic IDs (for example `'custom-tables'`), while `TopicEventPayloadMap` uses TypeScript keys (for example `customTables`).
 
 ```typescript
-import type { TopicEventPayloadMap } from '@final-commerce/command-frame';
+import type { TopicEventPayloadMap } from "@final-commerce/command-frame";
 
-type CustomTablesPayload = TopicEventPayloadMap['customTables'];
+type CustomTablesPayload = TopicEventPayloadMap["customTables"];
 ```
 
 ## Example: React Component with Pub/Sub
@@ -192,11 +200,11 @@ function CustomerEvents() {
 In the Render application, use the `topicPublisher` to publish events:
 
 ```typescript
-import { topicPublisher } from '@render/command-frame';
-import type { CustomerCreatedPayload } from '@final-commerce/command-frame';
+import { topicPublisher } from "@render/command-frame";
+import type { CustomerCreatedPayload } from "@final-commerce/command-frame";
 
 // When a customer is created
-topicPublisher.publish('customers', 'customer-created', {
+topicPublisher.publish("customers", "customer-created", {
     customer: newCustomer
 } as CustomerCreatedPayload);
 ```
@@ -243,4 +251,3 @@ For detailed documentation on each topic and its events, see:
 - [Station Topic](./topics/station/README.md)
 - [Session Topic](./topics/session/README.md)
 - [Users Topic](./topics/users/README.md)
-

@@ -37,10 +37,10 @@ jobs:
         id: env
         run: |
           if [ "${{ github.ref_name }}" == "release-staging" ]; then
-            echo "api_url=https://staging.services.finalpos.com/v1/api" >> $GITHUB_OUTPUT
+            echo "api_url=https://staging.hosting.finalpos.com/v1/api" >> $GITHUB_OUTPUT
             echo "environment=staging" >> $GITHUB_OUTPUT
           else
-            echo "api_url=https://services.finalpos.com/v1/api" >> $GITHUB_OUTPUT
+            echo "api_url=https://hosting.finalpos.com/v1/api" >> $GITHUB_OUTPUT
             echo "environment=production" >> $GITHUB_OUTPUT
           fi
 

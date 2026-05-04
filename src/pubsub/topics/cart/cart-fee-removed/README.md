@@ -19,8 +19,8 @@ interface CartFeeRemovedPayload {
 
 ### Payload Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Field      | Type     | Description                                          |
+| ---------- | -------- | ---------------------------------------------------- |
 | `feeIndex` | `number` | The index of the fee that was removed from the cart. |
 
 ## Example Usage
@@ -28,12 +28,12 @@ interface CartFeeRemovedPayload {
 ### Subscribing in iframe app
 
 ```typescript
-import { topics } from '@final-commerce/command-frame';
-import type { CartFeeRemovedEvent } from '@final-commerce/command-frame';
+import { topics } from "@final-commerce/command-frame";
+import type { CartFeeRemovedEvent } from "@final-commerce/command-frame";
 
-const subscriptionId = topics.subscribe('cart', (event: CartFeeRemovedEvent) => {
-    if (event.type === 'cart-fee-removed') {
-        console.log('Fee removed from cart at index:', event.data.feeIndex);
+const subscriptionId = topics.subscribe("cart", (event: CartFeeRemovedEvent) => {
+    if (event.type === "cart-fee-removed") {
+        console.log("Fee removed from cart at index:", event.data.feeIndex);
     }
 });
 ```
@@ -41,17 +41,20 @@ const subscriptionId = topics.subscribe('cart', (event: CartFeeRemovedEvent) => 
 ### Publishing from Render app
 
 ```typescript
-import { topicPublisher } from '@render/command-frame';
-import type { CartFeeRemovedPayload } from '@final-commerce/command-frame';
+import { topicPublisher } from "@render/command-frame";
+import type { CartFeeRemovedPayload } from "@final-commerce/command-frame";
 
 // When a fee is removed from the cart
-topicPublisher.publish('cart', 'cart-fee-removed', {
+topicPublisher.publish("cart", "cart-fee-removed", {
     feeIndex: index
 } as CartFeeRemovedPayload);
 ```
+
+## Related commands
+
+Fees are often removed from the host via **`removeCartFee`** (see [removeCartFee command](../../../../actions/remove-cart-fee/README.md)), which dispatches the cart update and publishes this event.
 
 ## Related Types
 
 - `CartFeeRemovedPayload` - Event payload type
 - `CartFeeRemovedEvent` - Full event type with topic, type, data, and timestamp
-

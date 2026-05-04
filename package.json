@@ -1,6 +1,6 @@
 {
     "name": "@final-commerce/command-frame",
-    "version": "0.1.61",
+    "version": "0.1.63",
     "description": "Commands Frame library",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -47,7 +47,7 @@
             "prettier --write"
         ],
         "**/*.{ts,tsx}": [
-            "eslint --fix --no-warn-ignored"
+            "eslint --fix"
         ]
     },
     "jira-prepare-commit-msg": {
@@ -60,6 +60,9 @@
         "@typescript-eslint/eslint-plugin": "^8.48.0",
         "@typescript-eslint/parser": "^8.48.0",
         "eslint": "^8.57.0",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-react-refresh": "^0.4.26",
         "husky": "^9.1.7",
         "jira-prepare-commit-msg": "^1.7.2",
         "lint-staged": "^16.2.7",
