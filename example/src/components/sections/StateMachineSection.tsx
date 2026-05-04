@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
-import { command, topics } from "@final-commerce/command-frame";
+import { topics } from "@final-commerce/command-frame";
+import { canTransition } from "../../../../src/actions/can-transition/action";
 import { canTransitionMock } from "../../../../src/actions/can-transition/mock";
+import { getAvailableTransitions } from "../../../../src/actions/get-available-transitions/action";
 import { getAvailableTransitionsMock } from "../../../../src/actions/get-available-transitions/mock";
+import { cashPayment } from "../../../../src/actions/cash-payment/action";
 import { CommandSection } from "../CommandSection";
 import { JsonViewer } from "../JsonViewer";
 import "./Sections.css";
-
-interface StateMachineSectionProps {
-    isInIframe: boolean;
-}
 
 const PAYMENT_STATES = ["unpaid", "partially_paid", "paid", "refunded", "partially_refunded", "voided"];
 const FULFILLMENT_STATES = ["draft", "pending", "in_progress", "on_hold", "fulfilled", "partially_returned", "returned", "cancelled"];
@@ -20,7 +19,7 @@ const FULFILLMENT_STATES = ["draft", "pending", "in_progress", "on_hold", "fulfi
 async function callWithFallback<P, R>(
     hostCall: (params: P) => Promise<R>,
     mockCall: (params: P) => Promise<R>,
-    params: P,
+    params: P
 ): Promise<{ result: R; source: "host" | "mock" }> {
     try {
         const result = await hostCall(params);
@@ -34,7 +33,7 @@ async function callWithFallback<P, R>(
     }
 }
 
-export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
+export function StateMachineSection() {
     // canTransition
     const [ctOrderId, setCtOrderId] = useState("");
     const [ctPayment, setCtPayment] = useState("paid");
@@ -58,12 +57,9 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
 
     useEffect(() => {
         if (!subscribed) return;
-        const subId = topics.subscribe("orders", (event) => {
+        const subId = topics.subscribe("orders", event => {
             if (event.type === "state-transition-completed" || event.type === "state-transition-blocked") {
-                setEventLog((prev) => [
-                    `[${new Date().toLocaleTimeString()}] ${event.type}: ${JSON.stringify(event.data)}`,
-                    ...prev.slice(0, 49),
-                ]);
+                setEventLog(prev => [`[${new Date().toLocaleTimeString()}] ${event.type}: ${JSON.stringify(event.data)}`, ...prev.slice(0, 49)]);
             }
         });
         return () => {
@@ -75,32 +71,30 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
         <div className="section-content">
             <CommandSection title="Can Transition">
                 <p className="section-description">
-                    Check whether an order can transition to a target state pair.
-                    Leave Order ID blank to evaluate against a new (null) order.
+                    Check whether an order can transition to a target state pair. Leave Order ID blank to evaluate against a new (null) order.
                 </p>
                 <div className="form-group">
                     <div className="form-field">
                         <label>Order ID (optional):</label>
-                        <input
-                            type="text"
-                            value={ctOrderId}
-                            onChange={(e) => setCtOrderId(e.target.value)}
-                            placeholder="order_1001"
-                        />
+                        <input type="text" value={ctOrderId} onChange={e => setCtOrderId(e.target.value)} placeholder="order_1001" />
                     </div>
                     <div className="form-field">
                         <label>Target Payment State:</label>
-                        <select value={ctPayment} onChange={(e) => setCtPayment(e.target.value)}>
-                            {PAYMENT_STATES.map((s) => (
-                                <option key={s} value={s}>{s}</option>
+                        <select value={ctPayment} onChange={e => setCtPayment(e.target.value)}>
+                            {PAYMENT_STATES.map(s => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
                             ))}
                         </select>
                     </div>
                     <div className="form-field">
                         <label>Target Fulfillment State:</label>
-                        <select value={ctFulfillment} onChange={(e) => setCtFulfillment(e.target.value)}>
-                            {FULFILLMENT_STATES.map((s) => (
-                                <option key={s} value={s}>{s}</option>
+                        <select value={ctFulfillment} onChange={e => setCtFulfillment(e.target.value)}>
+                            {FULFILLMENT_STATES.map(s => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -112,13 +106,9 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
                         try {
                             const params = {
                                 ...(ctOrderId ? { orderId: ctOrderId } : {}),
-                                to: { payment: ctPayment, fulfillment: ctFulfillment },
-                            } as Parameters<typeof command.canTransition>[0];
-                            const { result, source } = await callWithFallback(
-                                command.canTransition.bind(command),
-                                canTransitionMock,
-                                params,
-                            );
+                                to: { payment: ctPayment, fulfillment: ctFulfillment }
+                            };
+                            const { result, source } = await callWithFallback(canTransition, canTransitionMock, params);
                             const output = { ...result, _source: source };
                             setCtResponse(JSON.stringify(output, null, 2));
                         } catch (error) {
@@ -136,25 +126,37 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
                 <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
                     <button
                         className="btn btn--secondary"
-                        onClick={() => { setCtPayment("paid"); setCtFulfillment("fulfilled"); }}
+                        onClick={() => {
+                            setCtPayment("paid");
+                            setCtFulfillment("fulfilled");
+                        }}
                     >
                         Try: paid + fulfilled
                     </button>
                     <button
                         className="btn btn--secondary"
-                        onClick={() => { setCtPayment("refunded"); setCtFulfillment("draft"); }}
+                        onClick={() => {
+                            setCtPayment("refunded");
+                            setCtFulfillment("draft");
+                        }}
                     >
                         Try: refunded + draft (blocked)
                     </button>
                     <button
                         className="btn btn--secondary"
-                        onClick={() => { setCtPayment("paid"); setCtFulfillment("cancelled"); }}
+                        onClick={() => {
+                            setCtPayment("paid");
+                            setCtFulfillment("cancelled");
+                        }}
                     >
                         Try: paid + cancelled (blocked)
                     </button>
                     <button
                         className="btn btn--secondary"
-                        onClick={() => { setCtPayment("unpaid"); setCtFulfillment("on_hold"); }}
+                        onClick={() => {
+                            setCtPayment("unpaid");
+                            setCtFulfillment("on_hold");
+                        }}
                     >
                         Try: unpaid + on_hold (park)
                     </button>
@@ -170,18 +172,13 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
 
             <CommandSection title="Get Available Transitions">
                 <p className="section-description">
-                    Retrieve all transitions currently available for an order. Returns each target state pair
-                    with a display label and condition statuses.
+                    Retrieve all transitions currently available for an order. Returns each target state pair with a display label and condition
+                    statuses.
                 </p>
                 <div className="form-group">
                     <div className="form-field">
                         <label>Order ID:</label>
-                        <input
-                            type="text"
-                            value={atOrderId}
-                            onChange={(e) => setAtOrderId(e.target.value)}
-                            placeholder="order_1001"
-                        />
+                        <input type="text" value={atOrderId} onChange={e => setAtOrderId(e.target.value)} placeholder="order_1001" />
                     </div>
                 </div>
                 <button
@@ -194,11 +191,7 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
                         setAtResponse("");
                         try {
                             const params = { orderId: atOrderId };
-                            const { result, source } = await callWithFallback(
-                                command.getAvailableTransitions.bind(command),
-                                getAvailableTransitionsMock,
-                                params,
-                            );
+                            const { result, source } = await callWithFallback(getAvailableTransitions, getAvailableTransitionsMock, params);
                             const output = { ...result, _source: source };
                             setAtResponse(JSON.stringify(output, null, 2));
                         } catch (error) {
@@ -212,28 +205,24 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
                 >
                     {atLoading ? "Loading..." : "Get Available Transitions"}
                 </button>
-                {atResponse && (
-                    <JsonViewer
-                        data={atResponse}
-                        title={atResponse.startsWith("Error") ? "Error" : "Transitions"}
-                    />
-                )}
+                {atResponse && <JsonViewer data={atResponse} title={atResponse.startsWith("Error") ? "Error" : "Transitions"} />}
             </CommandSection>
 
             <CommandSection title="Payment with Checkout Fulfillment Target">
                 <p className="section-description">
-                    Trigger a cash payment with an explicit <code>checkoutFulfillmentTarget</code>.
-                    This override tells Render what fulfillment state the order should land in after
-                    full payment (e.g. <code>in_progress</code> for restaurants, <code>fulfilled</code> for retail).
+                    Trigger a cash payment with an explicit <code>checkoutFulfillmentTarget</code>. This override tells Render what fulfillment state
+                    the order should land in after full payment (e.g. <code>in_progress</code> for restaurants, <code>fulfilled</code> for retail).
                     <br />
                     <strong>Note:</strong> Add items to cart first (use the Cart section).
                 </p>
                 <div className="form-group">
                     <div className="form-field">
                         <label>Checkout Fulfillment Target:</label>
-                        <select value={cftTarget} onChange={(e) => setCftTarget(e.target.value)}>
-                            {FULFILLMENT_STATES.map((s) => (
-                                <option key={s} value={s}>{s}</option>
+                        <select value={cftTarget} onChange={e => setCftTarget(e.target.value)}>
+                            {FULFILLMENT_STATES.map(s => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -243,9 +232,9 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
                         setCftLoading(true);
                         setCftResponse("");
                         try {
-                            const result = await command.cashPayment({
+                            const result = await cashPayment({
                                 openChangeCalculator: false,
-                                checkoutFulfillmentTarget: cftTarget,
+                                checkoutFulfillmentTarget: cftTarget
                             });
                             setCftResponse(JSON.stringify(result, null, 2));
                         } catch (error) {
@@ -259,24 +248,15 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
                 >
                     {cftLoading ? "Processing..." : `Cash Payment → ${cftTarget}`}
                 </button>
-                {cftResponse && (
-                    <JsonViewer
-                        data={cftResponse}
-                        title={cftResponse.startsWith("Error") ? "Error" : "Payment Result"}
-                    />
-                )}
+                {cftResponse && <JsonViewer data={cftResponse} title={cftResponse.startsWith("Error") ? "Error" : "Payment Result"} />}
             </CommandSection>
 
             <CommandSection title="State Transition Events">
                 <p className="section-description">
-                    Subscribe to <code>state-transition-completed</code> and <code>state-transition-blocked</code> events
-                    on the orders topic. Events appear here in real time when the host publishes them.
+                    Subscribe to <code>state-transition-completed</code> and <code>state-transition-blocked</code> events on the orders topic. Events
+                    appear here in real time when the host publishes them.
                 </p>
-                <button
-                    onClick={() => setSubscribed(true)}
-                    disabled={subscribed}
-                    className={`btn ${subscribed ? "btn--secondary" : "btn--primary"}`}
-                >
+                <button onClick={() => setSubscribed(true)} disabled={subscribed} className={`btn ${subscribed ? "btn--secondary" : "btn--primary"}`}>
                     {subscribed ? "Subscribed" : "Subscribe to State Events"}
                 </button>
                 {eventLog.length > 0 ? (
@@ -287,15 +267,17 @@ export function StateMachineSection({ isInIframe }: StateMachineSectionProps) {
                                 Clear
                             </button>
                         </div>
-                        <pre style={{
-                            background: "var(--color-bg-secondary, #1e1e2e)",
-                            padding: "12px",
-                            borderRadius: "8px",
-                            maxHeight: "300px",
-                            overflow: "auto",
-                            fontSize: "12px",
-                            lineHeight: "1.5",
-                        }}>
+                        <pre
+                            style={{
+                                background: "var(--color-bg-secondary, #1e1e2e)",
+                                padding: "12px",
+                                borderRadius: "8px",
+                                maxHeight: "300px",
+                                overflow: "auto",
+                                fontSize: "12px",
+                                lineHeight: "1.5"
+                            }}
+                        >
                             {eventLog.join("\n")}
                         </pre>
                     </div>

@@ -130,7 +130,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
                 try {
                     const context = await command.getContext();
                     if (context?.company) {
-                        customerData.companyId = context.company._id;
+                        customerData.companyId = (context.company as { _id?: string })._id ?? "";
                     }
                 } catch (error) {
                     // If context fetch fails, continue without companyId
@@ -203,7 +203,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
                             </thead>
                             <tbody>
                                 {customers.map((customer, index) => (
-                                    <tr key={customer._id || customer.id || index}>
+                                    <tr key={customer._id || index}>
                                         <td>
                                             {customer.firstName} {customer.lastName}
                                         </td>
@@ -212,7 +212,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
                                         <td className="text-right">
                                             <button
                                                 onClick={() => {
-                                                    const id = customer._id || customer.id;
+                                                    const id = customer._id;
                                                     setAssignCustomerId(id);
                                                     setActiveCustomerId(id);
                                                 }}
