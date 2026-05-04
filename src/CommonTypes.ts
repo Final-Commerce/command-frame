@@ -420,6 +420,12 @@ export interface CFOrder {
     companyId: string;
     externalId: string | null;
     status: string;
+    /** Financial state (state machine). Undefined on legacy orders pre-backfill. */
+    paymentState?: string;
+    /** Operational state (state machine). Undefined on legacy orders pre-backfill. */
+    fulfillmentState?: string;
+    /** Computed display label from paymentState + fulfillmentState matrix. */
+    displayState?: string;
     customer: Partial<CFActiveCustomer | null>;
     customerNote?: string;
     summary: CFSummary;

@@ -1,3 +1,5 @@
+import type { CFTransitionResult } from "../../common-types/order-state";
+
 // Process Partial Refund Types
 export interface ProcessPartialRefundParams {
     /** Optional refund reason. */
@@ -17,6 +19,8 @@ export interface ProcessPartialRefundResponse {
     success: boolean;
     refundId: string;
     timestamp: string;
+    /** Present when the state machine blocked or forced the transition. */
+    transitionResult?: CFTransitionResult;
 }
 
 export type ProcessPartialRefund = (params?: ProcessPartialRefundParams) => Promise<ProcessPartialRefundResponse>;

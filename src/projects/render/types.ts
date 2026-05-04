@@ -89,7 +89,9 @@ import type {
     RemoveCartFee,
     RemoveOrderNote,
     RemoveCustomSale,
-    RemoveNonRevenueItem
+    RemoveNonRevenueItem,
+    CanTransition,
+    GetAvailableTransitions
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -184,4 +186,6 @@ export interface RenderProviderActions {
     removeOrderNote: RemoveOrderNote;
     removeCustomSale: RemoveCustomSale;
     removeNonRevenueItem: RemoveNonRevenueItem;
+    canTransition: CanTransition;
+    getAvailableTransitions: GetAvailableTransitions;
 }

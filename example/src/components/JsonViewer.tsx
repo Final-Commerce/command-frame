@@ -7,6 +7,19 @@ interface JsonViewerProps {
   className?: string;
 }
 
+/**
+ * Attempts to repair JavaScript/TypeScript object literal syntax into valid JSON:
+ *   - Strips single-line comments
+ *   - Quotes unquoted object keys (e.g. `from:` → `"from":`)
+ *   - Removes trailing commas before `}` or `]`
+ */
+function repairJson(input: string): string {
+  return input
+    .replace(/\/\/[^\n]*/g, '')
+    .replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":')
+    .replace(/,\s*([}\]])/g, '$1');
+}
+
 export function JsonViewer({ data, title, className = '' }: JsonViewerProps) {
   const [copied, setCopied] = useState(false);
 
@@ -18,12 +31,15 @@ export function JsonViewer({ data, title, className = '' }: JsonViewerProps) {
     try {
       let parsed: any;
       if (typeof data === 'string') {
-        // Try to parse if it's a JSON string
         try {
           parsed = JSON.parse(data);
         } catch {
-          // If it's not valid JSON, return as-is
-          return data;
+          // Strict parse failed — try repairing unquoted keys / trailing commas
+          try {
+            parsed = JSON.parse(repairJson(data));
+          } catch {
+            return data;
+          }
         }
       } else {
         parsed = data;

@@ -82,6 +82,9 @@ import { mockSetActiveSession } from "../../actions/set-active-session/mock";
 import { mockGetActiveUser } from "../../actions/get-active-user/mock";
 import { mockSetActiveUser } from "../../actions/set-active-user/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
+import { mockRemoveCartFee } from "../../actions/remove-cart-fee/mock";
+import { canTransitionMock } from "../../actions/can-transition/mock";
+import { getAvailableTransitionsMock } from "../../actions/get-available-transitions/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -169,11 +172,13 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getActiveUser: mockGetActiveUser,
     setActiveUser: mockSetActiveUser,
     setActiveRefund: mockSetActiveRefund,
-    removeProductDiscount: async () => ({ success: true, timestamp: new Date().toISOString() }),
-    removeProductFee: async () => ({ success: true, timestamp: new Date().toISOString() }),
-    removeProductNote: async () => ({ success: true, timestamp: new Date().toISOString() }),
-    removeCartFee: async () => ({ success: true, timestamp: new Date().toISOString() }),
-    removeOrderNote: async () => ({ success: true, timestamp: new Date().toISOString() }),
-    removeCustomSale: async (params) => ({ success: true, id: params.id, timestamp: new Date().toISOString() }),
-    removeNonRevenueItem: async (params) => ({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() })
+    removeProductDiscount: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
+    removeProductFee: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
+    removeProductNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
+    removeCartFee: mockRemoveCartFee,
+    removeOrderNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
+    removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
+    removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
+    canTransition: canTransitionMock,
+    getAvailableTransitions: getAvailableTransitionsMock,
 };
