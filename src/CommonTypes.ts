@@ -550,6 +550,12 @@ export interface CFActiveStation {
     createdAt?: string;
     updatedAt?: string;
     stripeTerminalId?: string;
+    /** Stripe serial-reader identifier when paired. */
+    serialReaderId?: string;
+    /** User id of whoever enrolled the station. */
+    enrolledBy?: string;
+    /** Whether the station is virtual (no physical terminal). */
+    isVirtual?: boolean;
 }
 
 /** Cash register session (station session), aligned with Render `Session`. */
