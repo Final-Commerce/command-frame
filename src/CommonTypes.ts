@@ -630,6 +630,8 @@ export interface CFNonRevenueItem {
 
 export interface CFActiveCart extends CFActiveEntity {
     tax?: number;
+    /** Per-rate tax breakdown for the cart. Same shape as line item taxes. */
+    taxes?: CFTax[];
     total: number;
     subtotal: number;
     discount?: CFDiscount;
@@ -645,6 +647,10 @@ export interface CFActiveCart extends CFActiveEntity {
     cartTotal?: number;
     orderTotal?: number;
     orderId?: string;
+    /** Currency code for amounts on this cart. */
+    currency?: CurrencyCode;
+    /** Number of minor units (decimal places) for the cart's currency. */
+    minorUnits?: number;
 }
 
 export interface CFActiveCompany extends CFActiveEntity {
