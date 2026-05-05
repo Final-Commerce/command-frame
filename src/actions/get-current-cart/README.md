@@ -10,14 +10,15 @@ None.
 
 `Promise<GetCurrentCartResponse>`
 
-| Field       | Type     | Description                               |
-| :---------- | :------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the cart was retrieved successfully. |
-| `cart`      | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
+| Field     | Type         | Description                                                                                                           |
+| :-------- | :----------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `success` | `boolean`    | `true` if the cart was retrieved successfully.                                                                        |
+| `cart`    | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
 
 **Tip:** You can import [`CFActiveCart`](../../types/README.md#cfactivecart), [`CFActiveProduct`](../../types/README.md#cfactiveproduct), and [`CFActiveCustomSales`](../../types/README.md#cfactivecustomsales) types directly from the library:
+
 ```typescript
-import { type CFActiveCart, type CFActiveProduct } from '@final-commerce/command-frame';
+import { type CFActiveCart, type CFActiveProduct } from "@final-commerce/command-frame";
 ```
 
 | `timestamp` | `string` | ISO date string of when the action occurred. |
@@ -31,6 +32,7 @@ The cart object (`ActiveCart`) includes:
 - `total`: Total amount of the cart (number)
 - `subtotal`: Subtotal amount before taxes and discounts (number)
 - `tax`: Tax amount (number, optional)
+- `taxes`: Optional per-rate tax breakdown (`CFTax[]`) — e.g. gst, hst entries with `name`, `percentage`, `amount`, `taxTableId`
 - `discount`: Cart-level discount object (optional)
 - `customFee`: Array of custom fees (optional)
 - `customer`: Customer assigned to the cart (optional)
@@ -41,38 +43,39 @@ The cart object (`ActiveCart`) includes:
 - `cartTotal`: Cart total (optional number)
 - `orderTotal`: Order total (optional number)
 - `nonRevenueItems`: Optional array of non-revenue lines (e.g. gift card load). Each line uses `externalId` as the stable line id; the extension reference from [`addNonRevenueItem`](../add-non-revenue-item/README.md) is typically in `metadata.refId`.
+- `currency`: Optional `CurrencyCode` for amounts on the cart (ISO 4217)
+- `minorUnits`: Optional number of minor units (decimal places) for the cart currency
 
 ## Example Usage
 
 ```typescript
-import { command } from '@final-commerce/command-frame';
+import { command } from "@final-commerce/command-frame";
 
 try {
-  // Get the current cart
-  const result = await command.getCurrentCart();
-  console.log('Current cart:', result.cart);
-  console.log('Cart products:', result.cart.products);
-  console.log('Cart total:', result.cart.total);
-  console.log('Cart subtotal:', result.cart.subtotal);
-  
-  // Expected output:
-  // {
-  //   success: true,
-  //   cart: {
-  //     products: [...],
-  //     customSales: [...],
-  //     total: 25.50,
-  //     subtotal: 20.00,
-  //     tax: 5.50,
-  //     discount: {...},
-  //     customer: {...},
-  //     ...
-  //   },
-  //   timestamp: '2023-10-27T10:00:00.000Z'
-  // }
+    // Get the current cart
+    const result = await command.getCurrentCart();
+    console.log("Current cart:", result.cart);
+    console.log("Cart products:", result.cart.products);
+    console.log("Cart total:", result.cart.total);
+    console.log("Cart subtotal:", result.cart.subtotal);
 
+    // Expected output:
+    // {
+    //   success: true,
+    //   cart: {
+    //     products: [...],
+    //     customSales: [...],
+    //     total: 25.50,
+    //     subtotal: 20.00,
+    //     tax: 5.50,
+    //     discount: {...},
+    //     customer: {...},
+    //     ...
+    //   },
+    //   timestamp: '2023-10-27T10:00:00.000Z'
+    // }
 } catch (error) {
-  console.error('Failed to get current cart:', error);
+    console.error("Failed to get current cart:", error);
 }
 ```
 
@@ -85,4 +88,3 @@ This action typically does not throw errors unless there's an underlying system 
 - Returns the complete cart object as it exists in the Redux store.
 - The cart includes all products, custom sales, discounts, fees, and calculated totals.
 - Useful for displaying cart contents, calculating totals, or syncing cart state with external systems.
-
