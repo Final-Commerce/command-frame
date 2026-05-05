@@ -169,7 +169,8 @@ export interface CFProductVariant {
     barcode?: string;
     costPrice?: number;
     manageStock: boolean;
-    externalId?: string;
+    /** External variant identifier — required by host. */
+    externalId: string;
     inventory?: CFInventory[];
     allowBackorder?: boolean;
     images?: string[];
@@ -182,12 +183,16 @@ export interface CFProductVariant {
         value: string;
     }[];
     _id: string;
+    isDeleted?: boolean;
+    currency?: CurrencyCode;
+    minorUnits?: number;
 }
 
 export interface CFProduct {
     _id: string;
     companyId?: string;
-    externalId?: string;
+    /** External product identifier — required by host. */
+    externalId: string;
     taxTable: string;
     name: string;
     description?: string;
@@ -208,8 +213,12 @@ export interface CFProduct {
     minorUnits: number;
     minPrice?: number;
     maxPrice?: number;
+    /** Catalog-level price (rare; usually only on simple products). */
+    price?: number;
     status?: string;
     isDeleted?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface CFActiveProduct extends CFActiveEntity {
@@ -236,6 +245,13 @@ export interface CFActiveProduct extends CFActiveEntity {
     isUnlimited?: boolean;
     attributes?: string;
     localQuantity?: number;
+    /** Mongo-style id when the active product retains the catalog `_id`. */
+    _id?: string;
+    productType?: CFProductType;
+    /** Currency code for the line price. */
+    currency?: CurrencyCode;
+    /** Number of minor units (decimal places) for the line currency. */
+    minorUnits?: number;
 }
 
 // Customer Interfaces
