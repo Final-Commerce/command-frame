@@ -128,6 +128,8 @@ export interface CFCartFeeTaxEntry {
 }
 
 export interface CFInventory {
+    /** Warehouse identifier the stock is held at. */
+    warehouse: string;
     outletId: string;
     stock?: number | null;
     _id?: string;

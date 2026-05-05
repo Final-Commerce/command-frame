@@ -254,7 +254,7 @@ export const MOCK_CATEGORY_SPICY: CFCategory = {
 };
 
 // --- PRODUCTS ---
-const createInventory = (stock: number) => [{ outletId: MOCK_OUTLET_MAIN.id, stock }];
+const createInventory = (stock: number) => [{ warehouse: "main", outletId: MOCK_OUTLET_MAIN.id, stock }];
 
 // Helper for Simple Product
 const createSimpleProduct = (id: string, name: string, price: number, image: string, categories: CFCategory[], description: string): CFProduct => {
