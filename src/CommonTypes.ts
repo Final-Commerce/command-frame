@@ -108,6 +108,23 @@ export interface CFTax {
     amount: number;
     taxTableName: string;
     taxTableId: string;
+    /** Whether this tax compounds on top of others. */
+    compounding?: boolean;
+    /** Application order; lower numbers apply first. */
+    priority?: number;
+}
+
+/** Per-rate tax entry on a cart fee (gst, hst, etc.). Same shape as `CFTax`; declared
+ *  separately to match the host's distinct `CartFeeTaxEntry` type. */
+export interface CFCartFeeTaxEntry {
+    id: string;
+    name: string;
+    percentage: number;
+    amount: number;
+    taxTableId: string;
+    taxTableName: string;
+    compounding?: boolean;
+    priority?: number;
 }
 
 export interface CFInventory {
@@ -276,6 +293,8 @@ export interface CFCartFeeItem {
     taxTableId?: string;
     tax?: number;
     taxName: string;
+    /** Per-rate breakdown so summary/refund views can show correct amounts per rate. */
+    taxes?: CFCartFeeTaxEntry[];
 }
 
 export interface CFTipPayment {
