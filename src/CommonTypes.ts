@@ -339,6 +339,8 @@ export interface CFPaymentMethod {
     tip?: CFTipPayment | null;
     cashRounding?: number;
     emv?: string | null;
+    /** Processor fee charged on this payment. */
+    processorFee?: number | null;
 }
 
 export interface CFPosDataItem {
@@ -483,6 +485,10 @@ export interface CFOrder {
     refund?: CFRefundItem[];
     balance: number;
     signature?: string | null;
+    /** ISO timestamp at which a parked order's stock reservation expires. */
+    parkExpiryDate?: string;
+    /** Park stock-reduction policy (host-defined string flag). */
+    parkReduceStock?: string;
 }
 
 export interface CFActiveUserRole {
