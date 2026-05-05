@@ -653,6 +653,15 @@ export interface CFActiveCart extends CFActiveEntity {
     minorUnits?: number;
 }
 
+/** A parked order. Extends `CFActiveCart` with parking-specific fields. */
+export interface CFActivePark extends CFActiveCart {
+    /** Required on parked orders (overrides the optional `orderId` on the parent). */
+    orderId: string;
+    receiptId: string;
+    servedBy: string | { _id?: string; firstName: string; lastName: string } | undefined;
+    createdAt: string | number;
+}
+
 export interface CFActiveCompany extends CFActiveEntity {
     id?: string;
     name?: string;
