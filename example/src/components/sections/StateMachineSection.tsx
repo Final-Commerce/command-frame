@@ -33,7 +33,7 @@ async function callWithFallback<P, R>(
     }
 }
 
-export function StateMachineSection() {
+export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) {
     // canTransition
     const [ctOrderId, setCtOrderId] = useState("");
     const [ctPayment, setCtPayment] = useState("paid");
