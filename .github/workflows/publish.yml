@@ -5,6 +5,10 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   publish:
     uses: Final-Commerce/central-ops/.github/workflows/publish-package.yml@main
