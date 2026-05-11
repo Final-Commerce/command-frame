@@ -649,6 +649,14 @@ export interface CFContextRender {
     station: Record<string, unknown> | null;
     outlet: Record<string, unknown> | null;
     timestamp: string;
+    pathname: string;
+    search?: string;
+    href: string;
+    mode?: string;
+    resource?: string;
+    recordId?: string;
+    params?: Record<string, string>;
+    metadata?: Record<string, unknown>;
 }
 
 // Outlet info for Manage context
@@ -679,6 +687,14 @@ export interface CFContextManage {
     extensionId: string;
     outlets?: unknown[];
     timestamp: string;
+    pathname: string;
+    search?: string;
+    href: string;
+    mode?: string;
+    resource?: string;
+    recordId?: string;
+    params?: Record<string, string>;
+    metadata?: Record<string, unknown>;
 }
 
 // Legacy alias for backward compatibility

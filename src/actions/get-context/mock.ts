@@ -2,10 +2,10 @@ import { GetContext, GetContextResponse, GetContextResponseManage } from "./type
 import { MOCK_COMPANY, MOCK_OUTLET, MOCK_STATION, MOCK_USER } from "../../demo/database";
 
 // Mock for Render context (POS terminal)
-export const mockGetContext: GetContext = async (): Promise<GetContextResponse> => {
+export const mockGetContext: GetContext = (): Promise<GetContextResponse> => {
     console.log("[Mock] getContext called (Render)");
-    
-    return {
+
+    return Promise.resolve({
         userId: MOCK_USER.id || null,
         companyId: MOCK_COMPANY.id || null,
         companyName: MOCK_COMPANY.name || null,
@@ -24,15 +24,27 @@ export const mockGetContext: GetContext = async (): Promise<GetContextResponse> 
         company: null,
         station: null,
         outlet: null,
-        timestamp: new Date().toISOString()
-    };
+        timestamp: new Date().toISOString(),
+        pathname: "/mock-path",
+        search: "?mock=search",
+        href: "https://example.com/mock-path?mock=search",
+        mode: "mock_mode",
+        resource: "mock_resource",
+        recordId: "mock_record_id",
+        params: {
+            mockParam: "mockValue"
+        },
+        metadata: {
+            mockMetaKey: "mockMetaValue"
+        }
+    });
 };
 
 // Mock for Manage context (Hub/BuilderHub)
-export const mockGetContextManage = async (): Promise<GetContextResponseManage> => {
+export const mockGetContextManage = (): Promise<GetContextResponseManage> => {
     console.log("[Mock] getContext called (Manage)");
-    
-    return {
+
+    return Promise.resolve({
         user: {
             _id: MOCK_USER.id,
             id: MOCK_USER.id,
@@ -51,6 +63,18 @@ export const mockGetContextManage = async (): Promise<GetContextResponseManage> 
         },
         extensionId: "mock_extension_id",
         outlets: [MOCK_OUTLET],
-        timestamp: new Date().toISOString()
-    };
+        timestamp: new Date().toISOString(),
+        pathname: "/mock-manage-path",
+        search: "?mock=manage-search",
+        href: "https://example.com/mock-manage-path?mock=manage-search",
+        mode: "mock_mode",
+        resource: "mock_resource",
+        recordId: "mock_record_id",
+        params: {
+            mockParam: "mockValue"
+        },
+        metadata: {
+            mockMetaKey: "mockMetaValue"
+        }
+    });
 };
