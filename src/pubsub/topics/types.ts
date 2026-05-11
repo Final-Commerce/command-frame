@@ -10,6 +10,10 @@ import { OutletEventType, OutletEventPayload } from "./outlet/types";
 import { StationEventType, StationEventPayload } from "./station/types";
 import { SessionEventType, SessionEventPayload } from "./session/types";
 import { UsersEventType, UsersEventPayload } from "./users/types";
+import { VariantsEventType, VariantsEventPayload } from "./variants/types";
+import { TransactionsEventType, TransactionsEventPayload } from "./transactions/types";
+import { CategoriesEventType, CategoriesEventPayload } from "./categories/types";
+import { AttributesEventType, AttributesEventPayload } from "./attributes/types";
 
 export interface TopicEventPayloadMap {
     customers: Record<CustomersEventType, CustomersEventPayload>;
@@ -24,4 +28,8 @@ export interface TopicEventPayloadMap {
     station: Record<StationEventType, StationEventPayload>;
     session: Record<SessionEventType, SessionEventPayload>;
     users: Record<UsersEventType, UsersEventPayload>;
+    variants: Record<VariantsEventType, VariantsEventPayload>;
+    transactions: Record<TransactionsEventType, TransactionsEventPayload>;
+    categories: Record<CategoriesEventType, CategoriesEventPayload>;
+    attributes: Record<AttributesEventType, AttributesEventPayload>;
 }
