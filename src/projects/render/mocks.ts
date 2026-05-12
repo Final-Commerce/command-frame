@@ -33,6 +33,7 @@ import { mockGetCustomers } from "../../actions/get-customers/mock";
 import { mockGetOrders } from "../../actions/get-orders/mock";
 import { mockGetProducts } from "../../actions/get-products/mock";
 import { mockGetRefunds } from "../../actions/get-refunds/mock";
+import { mockGetTaxTables } from "../../actions/get-tax-tables/mock";
 import { mockGetRemainingRefundableQuantities } from "../../actions/get-remaining-refundable-quantities/mock";
 import { mockGoToStationHome } from "../../actions/go-to-station-home/mock";
 import { mockInitiateRefund } from "../../actions/initiate-refund/mock";
@@ -120,6 +121,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getOrders: mockGetOrders,
     getProducts: mockGetProducts,
     getRefunds: mockGetRefunds,
+    getTaxTables: mockGetTaxTables,
     getRemainingRefundableQuantities: mockGetRemainingRefundableQuantities,
     goToStationHome: mockGoToStationHome,
     initiateRefund: mockInitiateRefund,
