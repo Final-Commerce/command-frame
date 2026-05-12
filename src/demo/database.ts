@@ -254,17 +254,10 @@ export const MOCK_CATEGORY_SPICY: CFCategory = {
 };
 
 // --- PRODUCTS ---
-const createInventory = (stock: number) => [{ outletId: MOCK_OUTLET_MAIN.id, stock }];
+const createInventory = (stock: number) => [{ warehouse: "main", outletId: MOCK_OUTLET_MAIN.id, stock }];
 
 // Helper for Simple Product
-const createSimpleProduct = (
-    id: string,
-    name: string,
-    price: number,
-    image: string,
-    categories: CFCategory[],
-    description: string
-): CFProduct => {
+const createSimpleProduct = (id: string, name: string, price: number, image: string, categories: CFCategory[], description: string): CFProduct => {
     const sku = `SKU-${id.toUpperCase()}`;
     return {
         _id: id,
@@ -552,10 +545,7 @@ export const MOCK_ORDER_1: CFActiveOrder = {
     metadata: [],
     billing: MOCK_CUSTOMER_1.billing || null,
     shipping: null,
-    lineItems: [
-        createLineItem(MOCK_PRODUCT_GARLIC, 0, 1),
-        createLineItem(MOCK_PRODUCT_BASIL_ALMOND, 0, 1)
-    ],
+    lineItems: [createLineItem(MOCK_PRODUCT_GARLIC, 0, 1), createLineItem(MOCK_PRODUCT_BASIL_ALMOND, 0, 1)],
     customSales: [],
     balance: 0,
     user: MOCK_USER_LUIGI,
@@ -603,9 +593,7 @@ export const MOCK_ORDER_2: CFActiveOrder = {
     metadata: [],
     billing: null,
     shipping: null,
-    lineItems: [
-        createLineItem(MOCK_PRODUCT_BEER, 0, 2)
-    ],
+    lineItems: [createLineItem(MOCK_PRODUCT_BEER, 0, 2)],
     customSales: [],
     balance: 0,
     user: MOCK_USER_MARIO,
@@ -619,20 +607,8 @@ export const MOCK_ORDER_2: CFActiveOrder = {
 export const MOCK_USERS = [MOCK_USER_MARIO, MOCK_USER_LUIGI];
 export const MOCK_STATIONS = [MOCK_STATION_1, MOCK_STATION_2];
 export const MOCK_OUTLETS = [MOCK_OUTLET_MAIN];
-export const MOCK_CUSTOMERS = [
-    MOCK_CUSTOMER_1,
-    MOCK_CUSTOMER_2,
-    MOCK_CUSTOMER_3,
-    MOCK_CUSTOMER_4,
-    MOCK_CUSTOMER_5
-];
-export const MOCK_CATEGORIES = [
-    MOCK_CATEGORY_PASTES, 
-    MOCK_CATEGORY_SPECIALTY, 
-    MOCK_CATEGORY_BASIC,
-    MOCK_CATEGORY_VEGAN,
-    MOCK_CATEGORY_SPICY
-];
+export const MOCK_CUSTOMERS = [MOCK_CUSTOMER_1, MOCK_CUSTOMER_2, MOCK_CUSTOMER_3, MOCK_CUSTOMER_4, MOCK_CUSTOMER_5];
+export const MOCK_CATEGORIES = [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN, MOCK_CATEGORY_SPICY];
 export const MOCK_PRODUCTS = [
     MOCK_PRODUCT_BASIL_ALMOND,
     MOCK_PRODUCT_BEER,
@@ -653,9 +629,9 @@ export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2];
 export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [];
 
 // Compatibility Exports (reassigned by setMockDatabase)
-export let MOCK_USER: CFActiveUser = MOCK_USERS[0]!;
-export let MOCK_STATION: CFActiveStation = MOCK_STATIONS[0]!;
-export let MOCK_OUTLET: CFActiveOutlet = MOCK_OUTLETS[0]!;
+export let MOCK_USER: CFActiveUser = MOCK_USERS[0];
+export let MOCK_STATION: CFActiveStation = MOCK_STATIONS[0];
+export let MOCK_OUTLET: CFActiveOutlet = MOCK_OUTLETS[0];
 
 export let MOCK_CART: CFActiveCart = {
     total: 0,
@@ -689,7 +665,8 @@ export const resetMockCart = () => {
 };
 
 function resolveMockOrderCurrency(): CurrencyCode {
-    const raw = MOCK_COMPANY.settings?.currency;
+    const settings = MOCK_COMPANY.settings as { currency?: string } | undefined;
+    const raw = settings?.currency;
     if (typeof raw === "string" && (Object.values(CurrencyCode) as string[]).includes(raw)) {
         return raw as CurrencyCode;
     }
@@ -749,13 +726,15 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
 
 // Helper to simulate safe JSON serialization
 export const safeSerialize = <T>(data: T): T => {
-    return JSON.parse(JSON.stringify(data));
+    return JSON.parse(JSON.stringify(data)) as T;
 };
 
 // Mock Event Emitter for pub/sub simulation in mock mode
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MockEventCallback = (event: any) => void;
 const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const mockPublishEvent = (topic: string, eventType: string, data: any) => {
     const subscribers = mockTopicSubscribers[topic] || [];
     const event = {
@@ -764,7 +743,7 @@ export const mockPublishEvent = (topic: string, eventType: string, data: any) =>
         data,
         timestamp: new Date().toISOString()
     };
-    
+
     subscribers.forEach(callback => {
         try {
             callback(event);
@@ -782,15 +761,10 @@ export const mockSubscribeToTopic = (topic: string, callback: MockEventCallback)
 };
 
 // Helper to create order from cart
-export const createOrderFromCart = (
-    paymentType: string,
-    amount: number,
-    processor: string = "cash"
-): CFActiveOrder => {
+export const createOrderFromCart = (paymentType: string, amount: number, processor: string = "cash"): CFActiveOrder => {
     const primaryOutlet = MOCK_OUTLETS[0] ?? MOCK_OUTLET_MAIN;
     const primaryStation = MOCK_STATIONS[0] ?? MOCK_STATION;
-    const employeeUser =
-        MOCK_USERS.find(u => u.type === CFUserTypes.CASHIER) ?? MOCK_USERS[0] ?? MOCK_USER;
+    const employeeUser = MOCK_USERS.find(u => u.type === CFUserTypes.CASHIER) ?? MOCK_USERS[0] ?? MOCK_USER;
     const orderCurrency = resolveMockOrderCurrency();
 
     // Generate new Order ID
@@ -822,7 +796,7 @@ export const createOrderFromCart = (
     });
 
     const totalNum = MOCK_CART.total;
-    
+
     const newOrder: CFActiveOrder = {
         _id: orderId,
         currency: orderCurrency,
@@ -873,9 +847,9 @@ export const createOrderFromCart = (
 
     MOCK_ORDERS.push(newOrder);
     resetMockCart();
-    
+
     // Publish cart-created event after cart is reset (simulates new empty cart)
-    mockPublishEvent('cart', 'cart-created', {});
-    
+    mockPublishEvent("cart", "cart-created", {});
+
     return newOrder;
 };

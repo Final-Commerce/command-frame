@@ -107,9 +107,28 @@ export interface CFTax {
     amount: number;
     taxTableName: string;
     taxTableId: string;
+    /** Whether this tax compounds on top of others. */
+    compounding?: boolean;
+    /** Application order; lower numbers apply first. */
+    priority?: number;
+}
+
+/** Per-rate tax entry on a cart fee (gst, hst, etc.). Same shape as `CFTax`; declared
+ *  separately to match the host's distinct `CartFeeTaxEntry` type. */
+export interface CFCartFeeTaxEntry {
+    id: string;
+    name: string;
+    percentage: number;
+    amount: number;
+    taxTableId: string;
+    taxTableName: string;
+    compounding?: boolean;
+    priority?: number;
 }
 
 export interface CFInventory {
+    /** Warehouse identifier the stock is held at. */
+    warehouse: string;
     outletId: string;
     stock?: number | null;
     _id?: string;
@@ -177,7 +196,8 @@ export interface CFProductVariant {
     barcode?: string;
     costPrice?: number;
     manageStock: boolean;
-    externalId?: string;
+    /** External variant identifier — required by host. */
+    externalId: string;
     inventory?: CFInventory[];
     allowBackorder?: boolean;
     images?: string[];
@@ -190,12 +210,16 @@ export interface CFProductVariant {
         value: string;
     }[];
     _id: string;
+    isDeleted?: boolean;
+    currency?: CurrencyCode;
+    minorUnits?: number;
 }
 
 export interface CFProduct {
     _id: string;
     companyId?: string;
-    externalId?: string;
+    /** External product identifier — required by host. */
+    externalId: string;
     taxTable: string;
     name: string;
     description?: string;
@@ -216,8 +240,12 @@ export interface CFProduct {
     minorUnits: number;
     minPrice?: number;
     maxPrice?: number;
+    /** Catalog-level price (rare; usually only on simple products). */
+    price?: number;
     status?: string;
     isDeleted?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface CFActiveProduct extends CFActiveEntity {
@@ -244,12 +272,20 @@ export interface CFActiveProduct extends CFActiveEntity {
     isUnlimited?: boolean;
     attributes?: string;
     localQuantity?: number;
+    /** Mongo-style id when the active product retains the catalog `_id`. */
+    _id?: string;
+    productType?: CFProductType;
+    /** Currency code for the line price. */
+    currency?: CurrencyCode;
+    /** Number of minor units (decimal places) for the line currency. */
+    minorUnits?: number;
 }
 
 // Customer Interfaces
 export interface CFCustomer {
     _id: string;
-    companyId: unknown;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    companyId: any;
     externalId?: string;
     email: string;
     firstName: string;
@@ -302,6 +338,8 @@ export interface CFCartFeeItem {
     taxTableId?: string;
     tax?: number;
     taxName: string;
+    /** Per-rate breakdown so summary/refund views can show correct amounts per rate. */
+    taxes?: CFCartFeeTaxEntry[];
 }
 
 export interface CFTipPayment {
@@ -328,6 +366,8 @@ export interface CFPaymentMethod {
     tip?: CFTipPayment | null;
     cashRounding?: number;
     emv?: string | null;
+    /** Processor fee charged on this payment. */
+    processorFee?: number | null;
 }
 
 export interface CFPosDataItem {
@@ -422,7 +462,10 @@ export interface CFRefundedLineItem {
     fee: CFFeeLineItem;
 }
 
-export type CFRefundedCustomSale = CFCustomSale;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CFRefundedCustomSale extends CFCustomSale {
+    // action: string;
+}
 
 export interface CFRefundItem {
     lineItems: CFRefundedLineItem[];
@@ -469,6 +512,10 @@ export interface CFOrder {
     refund?: CFRefundItem[];
     balance: number;
     signature?: string | null;
+    /** ISO timestamp at which a parked order's stock reservation expires. */
+    parkExpiryDate?: string;
+    /** Park stock-reduction policy (host-defined string flag). */
+    parkReduceStock?: string;
 }
 
 export interface CFActiveUserRole {
@@ -497,7 +544,8 @@ export interface CFActiveUser extends CFActiveEntity {
     _id?: string;
     outlets?: string[] | { _id: string }[];
     type?: CFUserTypes;
-    companies?: unknown;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    companies?: any;
 }
 
 export interface CFActiveOutlet extends CFActiveEntity {
@@ -529,6 +577,12 @@ export interface CFActiveStation {
     createdAt?: string;
     updatedAt?: string;
     stripeTerminalId?: string;
+    /** Stripe serial-reader identifier when paired. */
+    serialReaderId?: string;
+    /** User id of whoever enrolled the station. */
+    enrolledBy?: string;
+    /** Whether the station is virtual (no physical terminal). */
+    isVirtual?: boolean;
 }
 
 /** Cash register session (station session), aligned with Render `Session`. */
@@ -584,8 +638,10 @@ export interface CFActiveCustomSales {
     taxTableId?: string;
     quantity: number;
     price: number;
-    discount?: Record<string, unknown>;
-    fee?: Record<string, unknown>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    discount?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fee?: any;
 }
 
 /** Non-revenue cart line (e.g. gift card load) — aligned with Render `NonRevenueItem.externalId` (order line id). */
@@ -601,6 +657,8 @@ export interface CFNonRevenueItem {
 
 export interface CFActiveCart extends CFActiveEntity {
     tax?: number;
+    /** Per-rate tax breakdown for the cart. Same shape as line item taxes. */
+    taxes?: CFTax[];
     total: number;
     subtotal: number;
     discount?: CFDiscount;
@@ -616,13 +674,27 @@ export interface CFActiveCart extends CFActiveEntity {
     cartTotal?: number;
     orderTotal?: number;
     orderId?: string;
+    /** Currency code for amounts on this cart. */
+    currency?: CurrencyCode;
+    /** Number of minor units (decimal places) for the cart's currency. */
+    minorUnits?: number;
+}
+
+/** A parked order. Extends `CFActiveCart` with parking-specific fields. */
+export interface CFActivePark extends CFActiveCart {
+    /** Required on parked orders (overrides the optional `orderId` on the parent). */
+    orderId: string;
+    receiptId: string;
+    servedBy: string | { _id?: string; firstName: string; lastName: string } | undefined;
+    createdAt: string | number;
 }
 
 export interface CFActiveCompany extends CFActiveEntity {
     id?: string;
     name?: string;
     logo?: string;
-    settings?: Record<string, unknown>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    settings?: any;
 }
 
 // Project name type for identifying which provider environment is active
