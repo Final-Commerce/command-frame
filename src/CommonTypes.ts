@@ -66,8 +66,7 @@ export enum CFUserTypes {
 }
 
 // Helper Interfaces
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CFActiveEntity {}
+export type CFActiveEntity = Record<string, unknown>;
 
 export interface CFDiscount {
     value: number;
@@ -148,6 +147,34 @@ export interface CFOrderNote {
     customerNote?: boolean;
     addedByUser?: string;
     dateCreated?: string;
+}
+
+// Attribute Interface
+export interface CFAttributeOption {
+    name: string;
+    order?: number;
+}
+
+export interface CFAttribute {
+    _id: string;
+    companyId?: string;
+    optionName: string;
+    sortingOrder: number;
+    options: CFAttributeOption[];
+}
+
+// Transaction Interface
+export interface CFTransaction {
+    _id: string;
+    companyId?: string;
+    orderId?: string;
+    amount: number;
+    currency?: string;
+    status?: string;
+    paymentMethod?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    [key: string]: unknown;
 }
 
 // Category Interface

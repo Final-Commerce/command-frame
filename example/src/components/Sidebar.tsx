@@ -17,12 +17,15 @@ export type SectionId =
     | "integration"
     | "events"
     | "examples"
-    | 'custom-extensions'
-    | 'custom-tables'
+    | "custom-extensions"
+    | "custom-tables"
     | "secrets"
     | "print"
     | "users"
-    | "roles";
+    | "roles"
+    | "variants"
+    | "transactions"
+    | "attributes";
 
 interface SidebarProps {
     activeSection: SectionId;
@@ -51,12 +54,15 @@ const sections: Section[] = [
     { id: "integration", label: "Integration" },
     { id: "events", label: "Events" },
     { id: "examples", label: "Examples" },
-    { id: 'custom-extensions', label: 'Custom Extensions' },
-    { id: 'custom-tables', label: 'Custom Tables' },
+    { id: "custom-extensions", label: "Custom Extensions" },
+    { id: "custom-tables", label: "Custom Tables" },
     { id: "secrets", label: "Secrets" },
     { id: "print", label: "Print" },
     { id: "users", label: "Users" },
-    { id: "roles", label: "Roles" }
+    { id: "roles", label: "Roles" },
+    { id: "variants", label: "Variants" },
+    { id: "transactions", label: "Transactions" },
+    { id: "attributes", label: "Attributes" }
 ];
 
 export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {

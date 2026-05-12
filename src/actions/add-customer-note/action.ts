@@ -4,13 +4,8 @@
  */
 
 import { commandFrameClient } from "../../client";
-import type {
-    AddCustomerNote,
-    AddCustomerNoteParams,
-    AddCustomerNoteResponse
-} from "./types";
+import type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./types";
 
-export const addCustomerNote: AddCustomerNote = async (params?: AddCustomerNoteParams): Promise<AddCustomerNoteResponse> => {
+export const addCustomerNote: AddCustomerNote = async (params: AddCustomerNoteParams): Promise<AddCustomerNoteResponse> => {
     return await commandFrameClient.call<AddCustomerNoteParams, AddCustomerNoteResponse>("addCustomerNote", params);
 };
-
