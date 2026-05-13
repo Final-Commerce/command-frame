@@ -716,6 +716,12 @@ export interface CFContextRender {
     buildSourceId: string | null;
     buildIsPremium: boolean;
     isOffline: boolean;
+    currency: string | null;
+    currencySymbol: string | null;
+    currencyPrefix: string | null;
+    currencySuffix: string | null;
+    thousandSeparator: string | null;
+    decimalSeparator: string | null;
     user: Record<string, unknown> | null;
     company: Omit<Record<string, unknown>, "settings"> | null;
     station: Record<string, unknown> | null;
