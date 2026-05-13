@@ -751,6 +751,14 @@ export interface CFContextManage {
     extensionId: string;
     outlets?: unknown[];
     timestamp: string;
+    pathname: string;
+    search?: string;
+    href: string;
+    mode?: string;
+    resource?: string;
+    recordId?: string;
+    params?: Record<string, string>;
+    metadata?: Record<string, unknown>;
 }
 
 // Legacy alias for backward compatibility
