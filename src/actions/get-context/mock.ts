@@ -24,19 +24,7 @@ export const mockGetContext: GetContext = (): Promise<GetContextResponse> => {
         company: null,
         station: null,
         outlet: null,
-        timestamp: new Date().toISOString(),
-        pathname: "/mock-path",
-        search: "?mock=search",
-        href: "https://example.com/mock-path?mock=search",
-        mode: "mock_mode",
-        resource: "mock_resource",
-        recordId: "mock_record_id",
-        params: {
-            mockParam: "mockValue"
-        },
-        metadata: {
-            mockMetaKey: "mockMetaValue"
-        }
+        timestamp: new Date().toISOString()
     });
 };
 
