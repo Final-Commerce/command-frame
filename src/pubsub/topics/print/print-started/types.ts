@@ -4,7 +4,7 @@ import type { TopicEvent } from "../../../types";
  * Payload for print-started event
  */
 export interface PrintStartedPayload {
-    type: "image" | "html" | "selector" | "receipt";
+    type: "image" | "html" | "receipt";
     options?: {
         margins?: {
             top?: number;

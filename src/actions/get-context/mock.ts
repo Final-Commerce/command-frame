@@ -2,10 +2,10 @@ import { GetContext, GetContextResponse, GetContextResponseManage } from "./type
 import { MOCK_COMPANY, MOCK_OUTLET, MOCK_STATION, MOCK_USER } from "../../demo/database";
 
 // Mock for Render context (POS terminal)
-export const mockGetContext: GetContext = async (): Promise<GetContextResponse> => {
+export const mockGetContext: GetContext = (): Promise<GetContextResponse> => {
     console.log("[Mock] getContext called (Render)");
-    
-    return {
+
+    return Promise.resolve({
         userId: MOCK_USER.id || null,
         companyId: MOCK_COMPANY.id || null,
         companyName: MOCK_COMPANY.name || null,
@@ -20,19 +20,25 @@ export const mockGetContext: GetContext = async (): Promise<GetContextResponse> 
         buildSourceId: "mock_source_id",
         buildIsPremium: true,
         isOffline: false,
+        currency: "USD",
+        currencySymbol: "$",
+        currencyPrefix: "$",
+        currencySuffix: "",
+        thousandSeparator: ",",
+        decimalSeparator: ".",
         user: null,
         company: null,
         station: null,
         outlet: null,
         timestamp: new Date().toISOString()
-    };
+    });
 };
 
 // Mock for Manage context (Hub/BuilderHub)
-export const mockGetContextManage = async (): Promise<GetContextResponseManage> => {
+export const mockGetContextManage = (): Promise<GetContextResponseManage> => {
     console.log("[Mock] getContext called (Manage)");
-    
-    return {
+
+    return Promise.resolve({
         user: {
             _id: MOCK_USER.id,
             id: MOCK_USER.id,
@@ -52,5 +58,5 @@ export const mockGetContextManage = async (): Promise<GetContextResponseManage> 
         extensionId: "mock_extension_id",
         outlets: [MOCK_OUTLET],
         timestamp: new Date().toISOString()
-    };
+    });
 };

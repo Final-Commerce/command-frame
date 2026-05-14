@@ -19,9 +19,9 @@ import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from "@final-com
 - [Line Item Types](#line-item-types) -- CFLineItem, CFCustomSale, CFRefundedLineItem, CFRefundedCustomSale
 - [Discount Types](#discount-types) -- CFDiscount, CFDiscountDetail, CFDiscountLineItem
 - [Fee Types](#fee-types) -- CFCustomFee, CFFeeDetail, CFFeeLineItem
-- [Summary & Payment Types](#summary--payment-types) -- CFSummary, CFTip, CFPaymentMethod, CFTipPayment, CFCartDiscountItem, CFCartFeeItem
+- [Summary & Payment Types](#summary--payment-types) -- CFSummary, CFTip, CFPaymentMethod, CFTipPayment, CFCartDiscountItem, CFCartFeeItem, CFCartFeeTaxEntry
 - [Customer Types](#customer-types) -- CFCustomer, CFActiveCustomer, CFCustomerNote
-- [Cart Types](#cart-types) -- CFActiveCart, CFNonRevenueItem, CFActiveProduct, CFActiveCustomSales
+- [Cart Types](#cart-types) -- CFActiveCart, CFActivePark, CFNonRevenueItem, CFActiveProduct, CFActiveCustomSales
 - [Product Types](#product-types) -- CFProduct, CFProductVariant, CFCategory, CFInventory
 - [Refund Types](#refund-types) -- CFRefundItem, CFRefundedTipPayment
 - [System Types](#system-types) -- CFActiveUser, CFActiveUserRole, CFActiveOutlet, CFActiveStation, CFSession, CFActiveRefundDetails, CFRefundProcessingStatus, CFActiveCompany, CFPosDataItem, CFOrderNote
@@ -86,6 +86,10 @@ graph TD
     CFActiveCart --> CFDiscount
     CFActiveCart --> CFCustomFee
     CFActiveCart --> CFCustomer
+    CFActiveCart --> CFTax
+    CFActiveCart --> CurrencyCode
+    CFActivePark --> CFActiveCart
+    CFCartFeeItem --> CFCartFeeTaxEntry
 
     CFActiveProduct --> CFDiscount
     CFActiveProduct --> CFCustomFee
@@ -184,36 +188,38 @@ ISO 4217 currency codes supported by the system.
 
 The core order object returned by `getOrders`, published in `order-created` / `order-updated` events.
 
-| Field             | Type                                                         | Required | Description                                                 |
-| ----------------- | ------------------------------------------------------------ | -------- | ----------------------------------------------------------- |
-| `_id`             | `string`                                                     | Yes      | Unique order identifier                                     |
-| `currency`        | [`CurrencyCode`](#currencycode)                              | Yes      | Currency code for the order                                 |
-| `minorUnits`      | `number`                                                     | Yes      | Number of minor units (decimal places) for the currency     |
-| `receiptId`       | `string`                                                     | No       | Receipt identifier                                          |
-| `companyId`       | `string`                                                     | Yes      | Company this order belongs to                               |
-| `externalId`      | `string \| null`                                             | Yes      | External system identifier                                  |
-| `status`          | `string`                                                     | Yes      | Order status (e.g. `"completed"`, `"pending"`)              |
-| `customer`        | `Partial<`[`CFActiveCustomer`](#cfactivecustomer)` \| null>` | Yes      | Customer attached to the order                              |
-| `customerNote`    | `string`                                                     | No       | Note from the customer                                      |
-| `summary`         | [`CFSummary`](#cfsummary)                                    | Yes      | Order totals, taxes, tip, discount summary                  |
-| `cartDiscount`    | [`CFCartDiscountItem`](#cfcartdiscountitem)` \| null`        | Yes      | Cart-level discount applied                                 |
-| `cartFees`        | [`CFCartFeeItem`](#cfcartfeeitem)`[] \| null`                | Yes      | Cart-level fees applied                                     |
-| `updatedAt`       | `string`                                                     | No       | ISO timestamp of last update (server-side)                  |
-| `createdAt`       | `string`                                                     | No       | ISO timestamp of creation                                   |
-| `paymentMethods`  | [`CFPaymentMethod`](#cfpaymentmethod)`[]`                    | Yes      | Payments made on the order                                  |
-| `source`          | `string`                                                     | Yes      | Origin of the order (e.g. `"pos"`)                          |
-| `posData`         | [`CFPosDataItem`](#cfposdataitem)` \| null`                  | Yes      | POS context (outlet, station, employee)                     |
-| `sessionId`       | `string`                                                     | Yes      | Session identifier                                          |
-| `metadata`        | [`CFMetadataItem`](#cfmetadataitem)`[]`                      | Yes      | Key-value metadata pairs                                    |
-| `notes`           | [`CFOrderNote`](#cfordernote)`[] \| null`                    | No       | Order notes                                                 |
-| `billing`         | [`CFAddress`](#cfaddress)` \| null`                          | Yes      | Billing address                                             |
-| `shipping`        | [`CFAddress`](#cfaddress)` \| null`                          | Yes      | Shipping address                                            |
-| `lineItems`       | [`CFLineItem`](#cflineitem)`[]`                              | Yes      | Product line items                                          |
-| `customSales`     | [`CFCustomSale`](#cfcustomsale)`[]`                          | Yes      | Custom sale items                                           |
-| `nonRevenueItems` | [`CFNonRevenueItem`](#cfnonrevenueitem)`[]`                  | No       | Non-revenue lines (e.g. gift card load), same shape as cart |
-| `refund`          | [`CFRefundItem`](#cfrefunditem)`[]`                          | No       | Refund records                                              |
-| `balance`         | `number`                                                     | Yes      | Remaining balance                                           |
-| `signature`       | `string \| null`                                             | No       | Customer signature data                                     |
+| Field             | Type                                                         | Required | Description                                                   |
+| ----------------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------- |
+| `_id`             | `string`                                                     | Yes      | Unique order identifier                                       |
+| `currency`        | [`CurrencyCode`](#currencycode)                              | Yes      | Currency code for the order                                   |
+| `minorUnits`      | `number`                                                     | Yes      | Number of minor units (decimal places) for the currency       |
+| `receiptId`       | `string`                                                     | No       | Receipt identifier                                            |
+| `companyId`       | `string`                                                     | Yes      | Company this order belongs to                                 |
+| `externalId`      | `string \| null`                                             | Yes      | External system identifier                                    |
+| `status`          | `string`                                                     | Yes      | Order status (e.g. `"completed"`, `"pending"`)                |
+| `customer`        | `Partial<`[`CFActiveCustomer`](#cfactivecustomer)` \| null>` | Yes      | Customer attached to the order                                |
+| `customerNote`    | `string`                                                     | No       | Note from the customer                                        |
+| `summary`         | [`CFSummary`](#cfsummary)                                    | Yes      | Order totals, taxes, tip, discount summary                    |
+| `cartDiscount`    | [`CFCartDiscountItem`](#cfcartdiscountitem)` \| null`        | Yes      | Cart-level discount applied                                   |
+| `cartFees`        | [`CFCartFeeItem`](#cfcartfeeitem)`[] \| null`                | Yes      | Cart-level fees applied                                       |
+| `updatedAt`       | `string`                                                     | No       | ISO timestamp of last update (server-side)                    |
+| `createdAt`       | `string`                                                     | No       | ISO timestamp of creation                                     |
+| `paymentMethods`  | [`CFPaymentMethod`](#cfpaymentmethod)`[]`                    | Yes      | Payments made on the order                                    |
+| `source`          | `string`                                                     | Yes      | Origin of the order (e.g. `"pos"`)                            |
+| `posData`         | [`CFPosDataItem`](#cfposdataitem)` \| null`                  | Yes      | POS context (outlet, station, employee)                       |
+| `sessionId`       | `string`                                                     | Yes      | Session identifier                                            |
+| `metadata`        | [`CFMetadataItem`](#cfmetadataitem)`[]`                      | Yes      | Key-value metadata pairs                                      |
+| `notes`           | [`CFOrderNote`](#cfordernote)`[] \| null`                    | No       | Order notes                                                   |
+| `billing`         | [`CFAddress`](#cfaddress)` \| null`                          | Yes      | Billing address                                               |
+| `shipping`        | [`CFAddress`](#cfaddress)` \| null`                          | Yes      | Shipping address                                              |
+| `lineItems`       | [`CFLineItem`](#cflineitem)`[]`                              | Yes      | Product line items                                            |
+| `customSales`     | [`CFCustomSale`](#cfcustomsale)`[]`                          | Yes      | Custom sale items                                             |
+| `nonRevenueItems` | [`CFNonRevenueItem`](#cfnonrevenueitem)`[]`                  | No       | Non-revenue lines (e.g. gift card load), same shape as cart   |
+| `refund`          | [`CFRefundItem`](#cfrefunditem)`[]`                          | No       | Refund records                                                |
+| `balance`         | `number`                                                     | Yes      | Remaining balance                                             |
+| `signature`       | `string \| null`                                             | No       | Customer signature data                                       |
+| `parkExpiryDate`  | `string`                                                     | No       | ISO timestamp when a parked order's stock reservation expires |
+| `parkReduceStock` | `string`                                                     | No       | Park stock-reduction policy flag                              |
 
 ### CFActiveOrder
 
@@ -423,6 +429,7 @@ A payment transaction recorded on an order.
 | `tip`           | [`CFTipPayment`](#cftippayment)` \| null` | No       | Tip included in this payment              |
 | `cashRounding`  | `number`                                  | No       | Cash rounding adjustment                  |
 | `emv`           | `string \| null`                          | No       | EMV card data                             |
+| `processorFee`  | `number \| null`                          | No       | Processor fee charged on this payment     |
 
 ### CFTipPayment
 
@@ -448,15 +455,31 @@ A cart-level discount as stored on the order.
 
 A cart-level fee as stored on the order.
 
-| Field        | Type     | Required | Description                |
-| ------------ | -------- | -------- | -------------------------- |
-| `id`         | `string` | Yes      | Fee identifier             |
-| `label`      | `string` | Yes      | Fee label                  |
-| `amount`     | `number` | Yes      | Fee amount                 |
-| `percentage` | `number` | Yes      | Fee percentage             |
-| `taxTableId` | `string` | No       | Tax table used for the fee |
-| `tax`        | `number` | No       | Tax amount on the fee      |
-| `taxName`    | `string` | Yes      | Name of the tax applied    |
+| Field        | Type                                          | Required | Description                |
+| ------------ | --------------------------------------------- | -------- | -------------------------- |
+| `id`         | `string`                                      | Yes      | Fee identifier             |
+| `label`      | `string`                                      | Yes      | Fee label                  |
+| `amount`     | `number`                                      | Yes      | Fee amount                 |
+| `percentage` | `number`                                      | Yes      | Fee percentage             |
+| `taxTableId` | `string`                                      | No       | Tax table used for the fee |
+| `tax`        | `number`                                      | No       | Tax amount on the fee      |
+| `taxName`    | `string`                                      | Yes      | Name of the tax applied    |
+| `taxes`      | [`CFCartFeeTaxEntry`](#cfcartfeetaxentry)`[]` | No       | Per-rate tax breakdown     |
+
+### CFCartFeeTaxEntry
+
+Per-rate tax entry on a cart fee (gst, hst, etc.). Same shape as [`CFTax`](#cftax); declared separately to mirror the host's distinct type.
+
+| Field          | Type      | Required | Description                |
+| -------------- | --------- | -------- | -------------------------- |
+| `id`           | `string`  | Yes      | Tax identifier             |
+| `name`         | `string`  | Yes      | Tax name                   |
+| `percentage`   | `number`  | Yes      | Tax rate percentage        |
+| `amount`       | `number`  | Yes      | Calculated tax amount      |
+| `taxTableId`   | `string`  | Yes      | Tax table identifier       |
+| `taxTableName` | `string`  | Yes      | Tax table name             |
+| `compounding`  | `boolean` | No       | Whether this tax compounds |
+| `priority`     | `number`  | No       | Application order          |
 
 ---
 
@@ -510,23 +533,38 @@ A note attached to a customer.
 
 The current cart state in the POS session.
 
-| Field               | Type                                                     | Required | Description                                        |
-| ------------------- | -------------------------------------------------------- | -------- | -------------------------------------------------- |
-| `tax`               | `number`                                                 | No       | Total tax amount                                   |
-| `total`             | `number`                                                 | Yes      | Cart total                                         |
-| `subtotal`          | `number`                                                 | Yes      | Subtotal before taxes and discounts                |
-| `discount`          | [`CFDiscount`](#cfdiscount)                              | No       | Cart-level discount                                |
-| `customFee`         | [`CFCustomFee`](#cfcustomfee)`[]`                        | No       | Cart-level custom fees                             |
-| `products`          | [`CFActiveProduct`](#cfactiveproduct)`[]`                | Yes      | Products in the cart                               |
-| `customSales`       | [`CFActiveCustomSales`](#cfactivecustomsales)`[]`        | No       | Custom sale items in the cart                      |
-| `remainingBalance`  | `number`                                                 | No       | Remaining balance for split payments               |
-| `amountToBeCharged` | `number`                                                 | Yes      | Amount to be charged                               |
-| `customer`          | `Partial<`[`CFCustomer`](#cfcustomer)` \| null> \| null` | No       | Customer assigned to the cart                      |
-| `orderNotes`        | `string`                                                 | No       | Order-level notes                                  |
-| `cartTotal`         | `number`                                                 | No       | Cart total (alternative calculation)               |
-| `orderTotal`        | `number`                                                 | No       | Order total (alternative calculation)              |
-| `orderId`           | `string`                                                 | No       | Associated order ID (for resumed orders)           |
-| `nonRevenueItems`   | [`CFNonRevenueItem`](#cfnonrevenueitem)`[]`              | No       | Gift card / liability lines included in cart total |
+| Field               | Type                                                     | Required | Description                                                    |
+| ------------------- | -------------------------------------------------------- | -------- | -------------------------------------------------------------- |
+| `tax`               | `number`                                                 | No       | Total tax amount                                               |
+| `taxes`             | [`CFTax`](#cftax)`[]`                                    | No       | Per-rate tax breakdown (e.g. gst, hst)                         |
+| `total`             | `number`                                                 | Yes      | Cart total                                                     |
+| `subtotal`          | `number`                                                 | Yes      | Subtotal before taxes and discounts                            |
+| `discount`          | [`CFDiscount`](#cfdiscount)                              | No       | Cart-level discount                                            |
+| `customFee`         | [`CFCustomFee`](#cfcustomfee)`[]`                        | No       | Cart-level custom fees                                         |
+| `products`          | [`CFActiveProduct`](#cfactiveproduct)`[]`                | Yes      | Products in the cart                                           |
+| `customSales`       | [`CFActiveCustomSales`](#cfactivecustomsales)`[]`        | No       | Custom sale items in the cart                                  |
+| `remainingBalance`  | `number`                                                 | No       | Remaining balance for split payments                           |
+| `amountToBeCharged` | `number`                                                 | Yes      | Amount to be charged                                           |
+| `customer`          | `Partial<`[`CFCustomer`](#cfcustomer)` \| null> \| null` | No       | Customer assigned to the cart                                  |
+| `orderNotes`        | `string`                                                 | No       | Order-level notes                                              |
+| `cartTotal`         | `number`                                                 | No       | Cart total (alternative calculation)                           |
+| `orderTotal`        | `number`                                                 | No       | Order total (alternative calculation)                          |
+| `orderId`           | `string`                                                 | No       | Associated order ID (for resumed orders)                       |
+| `nonRevenueItems`   | [`CFNonRevenueItem`](#cfnonrevenueitem)`[]`              | No       | Gift card / liability lines included in cart total             |
+| `currency`          | [`CurrencyCode`](#currencycode)                          | No       | Currency code for amounts on the cart                          |
+| `minorUnits`        | `number`                                                 | No       | Number of minor units (decimal places) for the cart's currency |
+
+### CFActivePark
+
+A parked order. Extends [`CFActiveCart`](#cfactivecart) with parking-specific fields.
+
+| Field                       | Type                                                                           | Required | Description                                 |
+| --------------------------- | ------------------------------------------------------------------------------ | -------- | ------------------------------------------- |
+| _(all CFActiveCart fields)_ |                                                                                |          |                                             |
+| `orderId`                   | `string`                                                                       | Yes      | Parked order id (required on parked orders) |
+| `receiptId`                 | `string`                                                                       | Yes      | Receipt id                                  |
+| `servedBy`                  | `string \| { _id?: string; firstName: string; lastName: string } \| undefined` | Yes      | Employee who served the order               |
+| `createdAt`                 | `string \| number`                                                             | Yes      | When the order was parked                   |
 
 ### CFNonRevenueItem
 
@@ -545,31 +583,35 @@ Non-revenue cart line (e.g. gift card load). Aligns with the host `NonRevenueIte
 
 A product in the active cart.
 
-| Field               | Type                          | Required | Description                       |
-| ------------------- | ----------------------------- | -------- | --------------------------------- |
-| `id`                | `string`                      | Yes      | Product identifier                |
-| `internalId`        | `string`                      | Yes      | Unique cart line-item identifier  |
-| `externalId`        | `string`                      | Yes      | External product identifier       |
-| `productExternalId` | `string`                      | Yes      | External product-level identifier |
-| `variantId`         | `string`                      | Yes      | Variant identifier                |
-| `name`              | `string`                      | Yes      | Product display name              |
-| `sku`               | `string`                      | Yes      | Stock keeping unit                |
-| `price`             | `number`                      | Yes      | Unit price                        |
-| `images`            | `string[]`                    | Yes      | Product image URLs                |
-| `taxTableId`        | `string`                      | Yes      | Tax table identifier              |
-| `quantity`          | `number`                      | Yes      | Quantity in the cart              |
-| `note`              | `string`                      | No       | Note for this item                |
-| `discount`          | [`CFDiscount`](#cfdiscount)   | No       | Discount applied to this item     |
-| `description`       | `string`                      | No       | Product description               |
-| `longDescription`   | `string`                      | No       | Long product description          |
-| `shortDescription`  | `string`                      | No       | Short product description         |
-| `barcodeId`         | `string`                      | No       | Barcode identifier                |
-| `stock`             | `number`                      | Yes      | Current stock level               |
-| `allowBackOrder`    | `boolean`                     | No       | Whether back-ordering is allowed  |
-| `fee`               | [`CFCustomFee`](#cfcustomfee) | No       | Fee applied to this item          |
-| `isUnlimited`       | `boolean`                     | No       | Whether stock is unlimited        |
-| `attributes`        | `string`                      | No       | Serialized variant attributes     |
-| `localQuantity`     | `number`                      | No       | Local quantity (offline sync)     |
+| Field               | Type                              | Required | Description                                   |
+| ------------------- | --------------------------------- | -------- | --------------------------------------------- |
+| `id`                | `string`                          | Yes      | Product identifier                            |
+| `internalId`        | `string`                          | Yes      | Unique cart line-item identifier              |
+| `externalId`        | `string`                          | Yes      | External product identifier                   |
+| `productExternalId` | `string`                          | Yes      | External product-level identifier             |
+| `variantId`         | `string`                          | Yes      | Variant identifier                            |
+| `name`              | `string`                          | Yes      | Product display name                          |
+| `sku`               | `string`                          | Yes      | Stock keeping unit                            |
+| `price`             | `number`                          | Yes      | Unit price                                    |
+| `images`            | `string[]`                        | Yes      | Product image URLs                            |
+| `taxTableId`        | `string`                          | Yes      | Tax table identifier                          |
+| `quantity`          | `number`                          | Yes      | Quantity in the cart                          |
+| `note`              | `string`                          | No       | Note for this item                            |
+| `discount`          | [`CFDiscount`](#cfdiscount)       | No       | Discount applied to this item                 |
+| `description`       | `string`                          | No       | Product description                           |
+| `longDescription`   | `string`                          | No       | Long product description                      |
+| `shortDescription`  | `string`                          | No       | Short product description                     |
+| `barcodeId`         | `string`                          | No       | Barcode identifier                            |
+| `stock`             | `number`                          | Yes      | Current stock level                           |
+| `allowBackOrder`    | `boolean`                         | No       | Whether back-ordering is allowed              |
+| `fee`               | [`CFCustomFee`](#cfcustomfee)     | No       | Fee applied to this item                      |
+| `isUnlimited`       | `boolean`                         | No       | Whether stock is unlimited                    |
+| `attributes`        | `string`                          | No       | Serialized variant attributes                 |
+| `localQuantity`     | `number`                          | No       | Local quantity (offline sync)                 |
+| `_id`               | `string`                          | No       | Mongo-style id when retained from the catalog |
+| `productType`       | [`CFProductType`](#cfproducttype) | No       | `"simple"` or `"variable"`                    |
+| `currency`          | [`CurrencyCode`](#currencycode)   | No       | Currency code for the line price              |
+| `minorUnits`        | `number`                          | No       | Decimal places for the line currency          |
 
 ### CFActiveCustomSales
 
@@ -594,50 +636,56 @@ A custom sale item in the active cart.
 
 A product from the catalog.
 
-| Field              | Type                                        | Required | Description                                             |
-| ------------------ | ------------------------------------------- | -------- | ------------------------------------------------------- |
-| `_id`              | `string`                                    | Yes      | Unique product identifier                               |
-| `companyId`        | `string`                                    | No       | Company identifier                                      |
-| `externalId`       | `string`                                    | No       | External system identifier                              |
-| `taxTable`         | `string`                                    | Yes      | Tax table identifier                                    |
-| `name`             | `string`                                    | Yes      | Product name                                            |
-| `description`      | `string`                                    | No       | Full description                                        |
-| `shortDescription` | `string`                                    | No       | Short description                                       |
-| `images`           | `string[]`                                  | No       | Image URLs                                              |
-| `categories`       | `string[]`                                  | Yes      | Category IDs this product belongs to                    |
-| `attributes`       | `{ name: string; values: string[] }[]`      | Yes      | Product attributes and their possible values            |
-| `tags`             | `string[]`                                  | No       | Product tags                                            |
-| `supplier`         | `string`                                    | No       | Supplier name                                           |
-| `sku`              | `string`                                    | No       | Stock keeping unit                                      |
-| `productType`      | [`CFProductType`](#cfproducttype)           | Yes      | `"simple"` or `"variable"`                              |
-| `variants`         | [`CFProductVariant`](#cfproductvariant)`[]` | Yes      | Product variants                                        |
-| `currency`         | [`CurrencyCode`](#currencycode)             | Yes      | Currency code for the product                           |
-| `minorUnits`       | `number`                                    | Yes      | Number of minor units (decimal places) for the currency |
-| `minPrice`         | `number`                                    | No       | Minimum variant price                                   |
-| `maxPrice`         | `number`                                    | No       | Maximum variant price                                   |
-| `status`           | `string`                                    | No       | Product status                                          |
-| `isDeleted`        | `boolean`                                   | No       | Soft-delete flag                                        |
+| Field              | Type                                        | Required | Description                                                 |
+| ------------------ | ------------------------------------------- | -------- | ----------------------------------------------------------- |
+| `_id`              | `string`                                    | Yes      | Unique product identifier                                   |
+| `companyId`        | `string`                                    | No       | Company identifier                                          |
+| `externalId`       | `string`                                    | Yes      | External system identifier                                  |
+| `taxTable`         | `string`                                    | Yes      | Tax table identifier                                        |
+| `name`             | `string`                                    | Yes      | Product name                                                |
+| `description`      | `string`                                    | No       | Full description                                            |
+| `shortDescription` | `string`                                    | No       | Short description                                           |
+| `images`           | `string[]`                                  | No       | Image URLs                                                  |
+| `categories`       | `string[]`                                  | Yes      | Category IDs this product belongs to                        |
+| `attributes`       | `{ name: string; values: string[] }[]`      | Yes      | Product attributes and their possible values                |
+| `tags`             | `string[]`                                  | No       | Product tags                                                |
+| `supplier`         | `string`                                    | No       | Supplier name                                               |
+| `sku`              | `string`                                    | No       | Stock keeping unit                                          |
+| `productType`      | [`CFProductType`](#cfproducttype)           | Yes      | `"simple"` or `"variable"`                                  |
+| `variants`         | [`CFProductVariant`](#cfproductvariant)`[]` | Yes      | Product variants                                            |
+| `currency`         | [`CurrencyCode`](#currencycode)             | Yes      | Currency code for the product                               |
+| `minorUnits`       | `number`                                    | Yes      | Number of minor units (decimal places) for the currency     |
+| `minPrice`         | `number`                                    | No       | Minimum variant price                                       |
+| `maxPrice`         | `number`                                    | No       | Maximum variant price                                       |
+| `price`            | `number`                                    | No       | Catalog-level price (rare; usually only on simple products) |
+| `status`           | `string`                                    | No       | Product status                                              |
+| `isDeleted`        | `boolean`                                   | No       | Soft-delete flag                                            |
+| `createdAt`        | `string`                                    | No       | ISO timestamp of creation                                   |
+| `updatedAt`        | `string`                                    | No       | ISO timestamp of last update                                |
 
 ### CFProductVariant
 
 A specific variant of a product.
 
-| Field            | Type                                 | Required | Description                       |
-| ---------------- | ------------------------------------ | -------- | --------------------------------- |
-| `_id`            | `string`                             | Yes      | Unique variant identifier         |
-| `sku`            | `string`                             | Yes      | Stock keeping unit                |
-| `price`          | `number`                             | Yes      | Regular price                     |
-| `salePrice`      | `number`                             | Yes      | Sale price                        |
-| `isOnSale`       | `boolean`                            | Yes      | Whether the variant is on sale    |
-| `barcode`        | `string`                             | No       | Barcode value                     |
-| `costPrice`      | `number`                             | No       | Cost price                        |
-| `manageStock`    | `boolean`                            | Yes      | Whether stock is tracked          |
-| `externalId`     | `string`                             | No       | External system identifier        |
-| `inventory`      | [`CFInventory`](#cfinventory)`[]`    | No       | Stock levels per outlet           |
-| `allowBackorder` | `boolean`                            | No       | Whether back-ordering is allowed  |
-| `images`         | `string[]`                           | No       | Variant-specific image URLs       |
-| `attributes`     | `{ name: string; value?: string }[]` | Yes      | Attribute values for this variant |
-| `metadata`       | `{ key: string; value: string }[]`   | No       | Key-value metadata                |
+| Field            | Type                                 | Required | Description                             |
+| ---------------- | ------------------------------------ | -------- | --------------------------------------- |
+| `_id`            | `string`                             | Yes      | Unique variant identifier               |
+| `sku`            | `string`                             | Yes      | Stock keeping unit                      |
+| `price`          | `number`                             | Yes      | Regular price                           |
+| `salePrice`      | `number`                             | Yes      | Sale price                              |
+| `isOnSale`       | `boolean`                            | Yes      | Whether the variant is on sale          |
+| `barcode`        | `string`                             | No       | Barcode value                           |
+| `costPrice`      | `number`                             | No       | Cost price                              |
+| `manageStock`    | `boolean`                            | Yes      | Whether stock is tracked                |
+| `externalId`     | `string`                             | Yes      | External system identifier              |
+| `inventory`      | [`CFInventory`](#cfinventory)`[]`    | No       | Stock levels per outlet                 |
+| `allowBackorder` | `boolean`                            | No       | Whether back-ordering is allowed        |
+| `images`         | `string[]`                           | No       | Variant-specific image URLs             |
+| `attributes`     | `{ name: string; value?: string }[]` | Yes      | Attribute values for this variant       |
+| `metadata`       | `{ key: string; value: string }[]`   | No       | Key-value metadata                      |
+| `isDeleted`      | `boolean`                            | No       | Soft-delete flag                        |
+| `currency`       | [`CurrencyCode`](#currencycode)      | No       | Variant currency                        |
+| `minorUnits`     | `number`                             | No       | Decimal places for the variant currency |
 
 ### CFCategory
 
@@ -656,11 +704,12 @@ A product category.
 
 Stock level for a variant at a specific outlet.
 
-| Field      | Type             | Required | Description         |
-| ---------- | ---------------- | -------- | ------------------- |
-| `outletId` | `string`         | Yes      | Outlet identifier   |
-| `stock`    | `number \| null` | No       | Current stock level |
-| `_id`      | `string`         | No       | Record identifier   |
+| Field       | Type             | Required | Description          |
+| ----------- | ---------------- | -------- | -------------------- |
+| `warehouse` | `string`         | Yes      | Warehouse identifier |
+| `outletId`  | `string`         | Yes      | Outlet identifier    |
+| `stock`     | `number \| null` | No       | Current stock level  |
+| `_id`       | `string`         | No       | Record identifier    |
 
 ---
 
@@ -754,18 +803,21 @@ An outlet (store location) in the POS session.
 
 A POS station (register/terminal).
 
-| Field              | Type     | Required | Description                  |
-| ------------------ | -------- | -------- | ---------------------------- |
-| `_id`              | `string` | Yes      | Station identifier           |
-| `sequenceNumber`   | `number` | No       | Station sequence number      |
-| `name`             | `string` | Yes      | Station name                 |
-| `status`           | `string` | Yes      | Station status               |
-| `buildSrcId`       | `string` | No       | Build source identifier      |
-| `buildVersion`     | `string` | No       | Build version                |
-| `publishBuildId`   | `string` | No       | Published build identifier   |
-| `createdAt`        | `string` | No       | ISO timestamp of creation    |
-| `updatedAt`        | `string` | No       | ISO timestamp of last update |
-| `stripeTerminalId` | `string` | No       | Stripe terminal identifier   |
+| Field              | Type      | Required | Description                                           |
+| ------------------ | --------- | -------- | ----------------------------------------------------- |
+| `_id`              | `string`  | Yes      | Station identifier                                    |
+| `sequenceNumber`   | `number`  | No       | Station sequence number                               |
+| `name`             | `string`  | Yes      | Station name                                          |
+| `status`           | `string`  | Yes      | Station status                                        |
+| `buildSrcId`       | `string`  | No       | Build source identifier                               |
+| `buildVersion`     | `string`  | No       | Build version                                         |
+| `publishBuildId`   | `string`  | No       | Published build identifier                            |
+| `createdAt`        | `string`  | No       | ISO timestamp of creation                             |
+| `updatedAt`        | `string`  | No       | ISO timestamp of last update                          |
+| `stripeTerminalId` | `string`  | No       | Stripe terminal identifier                            |
+| `serialReaderId`   | `string`  | No       | Stripe serial-reader identifier when paired           |
+| `enrolledBy`       | `string`  | No       | User id of whoever enrolled the station               |
+| `isVirtual`        | `boolean` | No       | Whether the station is virtual (no physical terminal) |
 
 ### CFSession
 
@@ -881,14 +933,16 @@ A key-value metadata pair.
 
 A tax entry applied to an item or summary.
 
-| Field          | Type     | Required | Description           |
-| -------------- | -------- | -------- | --------------------- |
-| `id`           | `string` | Yes      | Tax identifier        |
-| `name`         | `string` | Yes      | Tax name              |
-| `percentage`   | `number` | Yes      | Tax rate percentage   |
-| `amount`       | `number` | Yes      | Calculated tax amount |
-| `taxTableName` | `string` | Yes      | Name of the tax table |
-| `taxTableId`   | `string` | Yes      | Tax table identifier  |
+| Field          | Type      | Required | Description                                  |
+| -------------- | --------- | -------- | -------------------------------------------- |
+| `id`           | `string`  | Yes      | Tax identifier                               |
+| `name`         | `string`  | Yes      | Tax name                                     |
+| `percentage`   | `number`  | Yes      | Tax rate percentage                          |
+| `amount`       | `number`  | Yes      | Calculated tax amount                        |
+| `taxTableName` | `string`  | Yes      | Name of the tax table                        |
+| `taxTableId`   | `string`  | Yes      | Tax table identifier                         |
+| `compounding`  | `boolean` | No       | Whether this tax compounds on top of others  |
+| `priority`     | `number`  | No       | Application order; lower numbers apply first |
 
 ---
 

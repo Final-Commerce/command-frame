@@ -66,7 +66,7 @@ export enum CFUserTypes {
 }
 
 // Helper Interfaces
-export type CFActiveEntity = object;
+export type CFActiveEntity = Record<string, unknown>;
 
 export interface CFDiscount {
     value: number;
@@ -107,9 +107,28 @@ export interface CFTax {
     amount: number;
     taxTableName: string;
     taxTableId: string;
+    /** Whether this tax compounds on top of others. */
+    compounding?: boolean;
+    /** Application order; lower numbers apply first. */
+    priority?: number;
+}
+
+/** Per-rate tax entry on a cart fee (gst, hst, etc.). Same shape as `CFTax`; declared
+ *  separately to match the host's distinct `CartFeeTaxEntry` type. */
+export interface CFCartFeeTaxEntry {
+    id: string;
+    name: string;
+    percentage: number;
+    amount: number;
+    taxTableId: string;
+    taxTableName: string;
+    compounding?: boolean;
+    priority?: number;
 }
 
 export interface CFInventory {
+    /** Warehouse identifier the stock is held at. */
+    warehouse: string;
     outletId: string;
     stock?: number | null;
     _id?: string;
@@ -128,6 +147,34 @@ export interface CFOrderNote {
     customerNote?: boolean;
     addedByUser?: string;
     dateCreated?: string;
+}
+
+// Attribute Interface
+export interface CFAttributeOption {
+    name: string;
+    order?: number;
+}
+
+export interface CFAttribute {
+    _id: string;
+    companyId?: string;
+    optionName: string;
+    sortingOrder: number;
+    options: CFAttributeOption[];
+}
+
+// Transaction Interface
+export interface CFTransaction {
+    _id: string;
+    companyId?: string;
+    orderId?: string;
+    amount: number;
+    currency?: string;
+    status?: string;
+    paymentMethod?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    [key: string]: unknown;
 }
 
 // Category Interface
@@ -149,7 +196,8 @@ export interface CFProductVariant {
     barcode?: string;
     costPrice?: number;
     manageStock: boolean;
-    externalId?: string;
+    /** External variant identifier — required by host. */
+    externalId: string;
     inventory?: CFInventory[];
     allowBackorder?: boolean;
     images?: string[];
@@ -162,12 +210,16 @@ export interface CFProductVariant {
         value: string;
     }[];
     _id: string;
+    isDeleted?: boolean;
+    currency?: CurrencyCode;
+    minorUnits?: number;
 }
 
 export interface CFProduct {
     _id: string;
     companyId?: string;
-    externalId?: string;
+    /** External product identifier — required by host. */
+    externalId: string;
     taxTable: string;
     name: string;
     description?: string;
@@ -188,8 +240,12 @@ export interface CFProduct {
     minorUnits: number;
     minPrice?: number;
     maxPrice?: number;
+    /** Catalog-level price (rare; usually only on simple products). */
+    price?: number;
     status?: string;
     isDeleted?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface CFActiveProduct extends CFActiveEntity {
@@ -216,6 +272,13 @@ export interface CFActiveProduct extends CFActiveEntity {
     isUnlimited?: boolean;
     attributes?: string;
     localQuantity?: number;
+    /** Mongo-style id when the active product retains the catalog `_id`. */
+    _id?: string;
+    productType?: CFProductType;
+    /** Currency code for the line price. */
+    currency?: CurrencyCode;
+    /** Number of minor units (decimal places) for the line currency. */
+    minorUnits?: number;
 }
 
 // Customer Interfaces
@@ -274,6 +337,8 @@ export interface CFCartFeeItem {
     taxTableId?: string;
     tax?: number;
     taxName: string;
+    /** Per-rate breakdown so summary/refund views can show correct amounts per rate. */
+    taxes?: CFCartFeeTaxEntry[];
 }
 
 export interface CFTipPayment {
@@ -300,6 +365,8 @@ export interface CFPaymentMethod {
     tip?: CFTipPayment | null;
     cashRounding?: number;
     emv?: string | null;
+    /** Processor fee charged on this payment. */
+    processorFee?: number | null;
 }
 
 export interface CFPosDataItem {
@@ -447,6 +514,10 @@ export interface CFOrder {
     refund?: CFRefundItem[];
     balance: number;
     signature?: string | null;
+    /** ISO timestamp at which a parked order's stock reservation expires. */
+    parkExpiryDate?: string;
+    /** Park stock-reduction policy (host-defined string flag). */
+    parkReduceStock?: string;
 }
 
 export interface CFActiveUserRole {
@@ -507,6 +578,12 @@ export interface CFActiveStation {
     createdAt?: string;
     updatedAt?: string;
     stripeTerminalId?: string;
+    /** Stripe serial-reader identifier when paired. */
+    serialReaderId?: string;
+    /** User id of whoever enrolled the station. */
+    enrolledBy?: string;
+    /** Whether the station is virtual (no physical terminal). */
+    isVirtual?: boolean;
 }
 
 /** Cash register session (station session), aligned with Render `Session`. */
@@ -579,6 +656,8 @@ export interface CFNonRevenueItem {
 
 export interface CFActiveCart extends CFActiveEntity {
     tax?: number;
+    /** Per-rate tax breakdown for the cart. Same shape as line item taxes. */
+    taxes?: CFTax[];
     total: number;
     subtotal: number;
     discount?: CFDiscount;
@@ -594,6 +673,19 @@ export interface CFActiveCart extends CFActiveEntity {
     cartTotal?: number;
     orderTotal?: number;
     orderId?: string;
+    /** Currency code for amounts on this cart. */
+    currency?: CurrencyCode;
+    /** Number of minor units (decimal places) for the cart's currency. */
+    minorUnits?: number;
+}
+
+/** A parked order. Extends `CFActiveCart` with parking-specific fields. */
+export interface CFActivePark extends CFActiveCart {
+    /** Required on parked orders (overrides the optional `orderId` on the parent). */
+    orderId: string;
+    receiptId: string;
+    servedBy: string | { _id?: string; firstName: string; lastName: string } | undefined;
+    createdAt: string | number;
 }
 
 export interface CFActiveCompany extends CFActiveEntity {
@@ -622,6 +714,12 @@ export interface CFContextRender {
     buildSourceId: string | null;
     buildIsPremium: boolean;
     isOffline: boolean;
+    currency: string | null;
+    currencySymbol: string | null;
+    currencyPrefix: string | null;
+    currencySuffix: string | null;
+    thousandSeparator: string | null;
+    decimalSeparator: string | null;
     user: Record<string, unknown> | null;
     company: Omit<Record<string, unknown>, "settings"> | null;
     station: Record<string, unknown> | null;

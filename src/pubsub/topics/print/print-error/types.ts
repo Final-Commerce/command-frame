@@ -4,7 +4,7 @@ import type { TopicEvent } from "../../../types";
  * Payload for print-error event
  */
 export interface PrintErrorPayload {
-    type: "image" | "html" | "selector" | "receipt";
+    type: "image" | "html" | "receipt";
     error: string;
     orderId?: string; // For receipt type
     globalBlockId?: string; // For receipt type

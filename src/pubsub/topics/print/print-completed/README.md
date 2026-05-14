@@ -13,7 +13,7 @@ Published when a print action completes successfully.
 
 ```typescript
 interface PrintCompletedPayload {
-    type: "image" | "html" | "selector" | "receipt";
+    type: "image" | "html" | "receipt";
     orderId?: string; // For receipt type
     globalBlockId?: string; // For receipt type
 }
@@ -21,11 +21,11 @@ interface PrintCompletedPayload {
 
 ### Payload Fields
 
-| Field           | Type                                           | Description                              |
-| --------------- | ---------------------------------------------- | ---------------------------------------- |
-| `type`          | `"image" \| "html" \| "selector" \| "receipt"` | The type of print action that completed  |
-| `orderId`       | `string?`                                      | The order ID when printing a receipt     |
-| `globalBlockId` | `string?`                                      | The global block ID for receipt printing |
+| Field           | Type                             | Description                              |
+| --------------- | -------------------------------- | ---------------------------------------- |
+| `type`          | `"image" \| "html" \| "receipt"` | The type of print action that completed  |
+| `orderId`       | `string?`                        | The order ID when printing a receipt     |
+| `globalBlockId` | `string?`                        | The global block ID for receipt printing |
 
 ## Example Usage
 
