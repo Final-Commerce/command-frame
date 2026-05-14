@@ -446,6 +446,10 @@ export { outletTopic } from "./pubsub/topics/outlet";
 export { stationTopic } from "./pubsub/topics/station";
 export { sessionTopic } from "./pubsub/topics/session";
 export { usersTopic } from "./pubsub/topics/users";
+export { variantsTopic } from "./pubsub/topics/variants";
+export { transactionsTopic } from "./pubsub/topics/transactions";
+export { categoriesTopic } from "./pubsub/topics/categories";
+export { attributesTopic } from "./pubsub/topics/attributes";
 // Export Pub/Sub Event Types
 export type {
     // Customer event payloads
@@ -547,9 +551,45 @@ export type {
     UserActiveGetPayload,
     UserActiveSetEvent,
     UserActiveGetEvent,
+    UserCreatedPayload,
+    UserCreatedEvent,
+    UserUpdatedPayload,
+    UserUpdatedEvent,
     UsersEventType,
     UsersEventPayload
 } from "./pubsub/topics/users/types";
+export type {
+    VariantCreatedPayload,
+    VariantCreatedEvent,
+    VariantUpdatedPayload,
+    VariantUpdatedEvent,
+    VariantsEventType,
+    VariantsEventPayload
+} from "./pubsub/topics/variants/types";
+export type {
+    TransactionCreatedPayload,
+    TransactionCreatedEvent,
+    TransactionUpdatedPayload,
+    TransactionUpdatedEvent,
+    TransactionsEventType,
+    TransactionsEventPayload
+} from "./pubsub/topics/transactions/types";
+export type {
+    CategoryCreatedPayload,
+    CategoryCreatedEvent,
+    CategoryUpdatedPayload,
+    CategoryUpdatedEvent,
+    CategoriesEventType,
+    CategoriesEventPayload
+} from "./pubsub/topics/categories/types";
+export type {
+    AttributeCreatedPayload,
+    AttributeCreatedEvent,
+    AttributeUpdatedPayload,
+    AttributeUpdatedEvent,
+    AttributesEventType,
+    AttributesEventPayload
+} from "./pubsub/topics/attributes/types";
 
 // Export Cart Event Types
 export type {

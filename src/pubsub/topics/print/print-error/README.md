@@ -13,7 +13,7 @@ Published when a print action encounters an error.
 
 ```typescript
 interface PrintErrorPayload {
-    type: "image" | "html" | "selector" | "receipt";
+    type: "image" | "html" | "receipt";
     error: string;
     orderId?: string; // For receipt type
     globalBlockId?: string; // For receipt type
@@ -22,12 +22,12 @@ interface PrintErrorPayload {
 
 ### Payload Fields
 
-| Field           | Type                                           | Description                                  |
-| --------------- | ---------------------------------------------- | -------------------------------------------- |
-| `type`          | `"image" \| "html" \| "selector" \| "receipt"` | The type of print action that failed         |
-| `error`         | `string`                                       | The error message describing what went wrong |
-| `orderId`       | `string?`                                      | The order ID when printing a receipt         |
-| `globalBlockId` | `string?`                                      | The global block ID for receipt printing     |
+| Field           | Type                             | Description                                  |
+| --------------- | -------------------------------- | -------------------------------------------- |
+| `type`          | `"image" \| "html" \| "receipt"` | The type of print action that failed         |
+| `error`         | `string`                         | The error message describing what went wrong |
+| `orderId`       | `string?`                        | The order ID when printing a receipt         |
+| `globalBlockId` | `string?`                        | The global block ID for receipt printing     |
 
 ## Example Usage
 

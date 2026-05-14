@@ -13,7 +13,7 @@ Published when a print action is initiated.
 
 ```typescript
 interface PrintStartedPayload {
-    type: "image" | "html" | "selector" | "receipt";
+    type: "image" | "html" | "receipt";
     options?: {
         margins?: {
             top?: number;
@@ -31,12 +31,12 @@ interface PrintStartedPayload {
 
 ### Payload Fields
 
-| Field           | Type                                           | Description                                                      |
-| --------------- | ---------------------------------------------- | ---------------------------------------------------------------- |
-| `type`          | `"image" \| "html" \| "selector" \| "receipt"` | The type of print action being performed                         |
-| `options`       | `PrintOptions?`                                | Optional print settings including margins, paper size, and width |
-| `orderId`       | `string?`                                      | The order ID when printing a receipt                             |
-| `globalBlockId` | `string?`                                      | The global block ID for receipt printing                         |
+| Field           | Type                             | Description                                                      |
+| --------------- | -------------------------------- | ---------------------------------------------------------------- |
+| `type`          | `"image" \| "html" \| "receipt"` | The type of print action being performed                         |
+| `options`       | `PrintOptions?`                  | Optional print settings including margins, paper size, and width |
+| `orderId`       | `string?`                        | The order ID when printing a receipt                             |
+| `globalBlockId` | `string?`                        | The global block ID for receipt printing                         |
 
 ## Example Usage
 

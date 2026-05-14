@@ -1,6 +1,6 @@
 import { Print, PrintParams, PrintResponse } from "./types";
 
-export const mockPrint: Print = async (params?: PrintParams): Promise<PrintResponse> => {
+export const mockPrint: Print = (params?: PrintParams): Promise<PrintResponse> => {
     console.log("[Mock] print called", params);
 
     if (!params) {
@@ -15,17 +15,14 @@ export const mockPrint: Print = async (params?: PrintParams): Promise<PrintRespo
         case "html":
             console.log("[Mock] Would print HTML:", params.data.html?.substring(0, 100) + "...");
             break;
-        case "selector":
-            console.log("[Mock] Would print element with selector:", params.data.selector);
-            break;
         case "receipt":
             console.log("[Mock] Would print receipt for order:", params.data.order);
             break;
     }
 
-    return {
+    return Promise.resolve({
         success: true,
         timestamp: new Date().toISOString(),
         type: params.type
-    };
+    });
 };

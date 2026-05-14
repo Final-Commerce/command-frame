@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { renderClient as command } from "@final-commerce/command-frame";
-import type { CFCustomer, CFAddress } from "@final-commerce/command-frame";
+import type { AddCustomerParams } from "@final-commerce/command-frame";
 import { CommandSection } from "../CommandSection";
 import { JsonViewer } from "../JsonViewer";
 import "./Sections.css";
@@ -9,8 +9,17 @@ interface CustomersSectionProps {
     isInIframe: boolean;
 }
 
+interface CustomerListItem {
+    _id?: string;
+    id?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+}
+
 export function CustomersSection({ isInIframe }: CustomersSectionProps) {
-    const [customers, setCustomers] = useState<CFCustomer[]>([]);
+    const [customers, setCustomers] = useState<CustomerListItem[]>([]);
     const [customersLoading, setCustomersLoading] = useState(false);
     const [customersError, setCustomersError] = useState<string>("");
     const [offset, setOffset] = useState<number>(0);
@@ -21,14 +30,14 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
     const [assignCustomerLoading, setAssignCustomerLoading] = useState(false);
     const [assignCustomerResponse, setAssignCustomerResponse] = useState<string>("");
 
-    const [newCustomer, setNewCustomer] = useState({
+    const [newCustomer, setNewCustomer] = useState<AddCustomerParams["customer"]>({
         firstName: "John",
         lastName: "Doe",
         email: "john.doe@example.com",
         phone: "1234567890",
         companyId: "", // Will be set from context if available
-        billing: null as CFAddress | null,
-        shipping: null as CFAddress | null
+        billing: null,
+        shipping: null
     });
     const [addCustomerLoading, setAddCustomerLoading] = useState(false);
     const [addCustomerResponse, setAddCustomerResponse] = useState<string>("");
@@ -130,7 +139,12 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
                 try {
                     const context = await command.getContext();
                     if (context?.company) {
-                        customerData.companyId = (context.company as { _id?: string })._id ?? "";
+                        const company = context.company as Record<string, unknown>;
+                        if (typeof company._id === "string") {
+                            customerData.companyId = company._id;
+                        } else {
+                            throw new Error("Company ID is not a string");
+                        }
                     }
                 } catch (error) {
                     // If context fetch fails, continue without companyId
@@ -203,7 +217,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
                             </thead>
                             <tbody>
                                 {customers.map((customer, index) => (
-                                    <tr key={customer._id || index}>
+                                    <tr key={customer._id || customer.id || index}>
                                         <td>
                                             {customer.firstName} {customer.lastName}
                                         </td>
@@ -212,7 +226,7 @@ export function CustomersSection({ isInIframe }: CustomersSectionProps) {
                                         <td className="text-right">
                                             <button
                                                 onClick={() => {
-                                                    const id = customer._id;
+                                                    const id = customer._id || customer.id || "";
                                                     setAssignCustomerId(id);
                                                     setActiveCustomerId(id);
                                                 }}
