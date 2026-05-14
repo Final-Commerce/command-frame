@@ -185,6 +185,8 @@ jobs:
 
       - name: Publish to npm
         run: npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Commit version bump
         run: |
