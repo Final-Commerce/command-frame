@@ -589,6 +589,11 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
     - `payment-done` - Published when a payment is successfully completed
     - `payment-err` - Published when a payment fails
 
+#### Split Payment Events
+
+- **[split-payments](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/split-payments/README.md)** - In-progress split-payment session updates (mirror of the host's `splitPayment` slice)
+    - `split-payment-updated` - Published whenever the host's split-payment slice mutates (partial added, reset, etc.) and once on handshake; payload carries the full current slice or `null`
+
 #### Print Events
 
 - **[print](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/print/README.md)** - Print action events

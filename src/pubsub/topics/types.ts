@@ -4,6 +4,7 @@ import { RefundsEventType, RefundsEventPayload } from "./refunds/types";
 import { ProductsEventType, ProductsEventPayload } from "./products/types";
 import { CartEventType, CartEventPayload } from "./cart/types";
 import { PaymentsEventType, PaymentsEventPayload } from "./payments/types";
+import { SplitPaymentsEventType, SplitPaymentsEventPayload } from "./split-payments/types";
 import { CustomTablesEventPayload, CustomTablesEventType } from "./custom-tables/types";
 import { PrintEventType, PrintEventPayload } from "./print/types";
 import { OutletEventType, OutletEventPayload } from "./outlet/types";
@@ -22,6 +23,7 @@ export interface TopicEventPayloadMap {
     products: Record<ProductsEventType, ProductsEventPayload>;
     cart: Record<CartEventType, CartEventPayload>;
     payments: Record<PaymentsEventType, PaymentsEventPayload>;
+    "split-payments": Record<SplitPaymentsEventType, SplitPaymentsEventPayload>;
     customTables: Record<CustomTablesEventType, CustomTablesEventPayload>;
     print: Record<PrintEventType, PrintEventPayload>;
     outlet: Record<OutletEventType, OutletEventPayload>;
