@@ -1,29 +1,36 @@
 name: Publish Package
 
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types: [created]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      packages: write
-      id-token: write
+      contents: write   # version-bump commit push
+      id-token: write   # Workload Identity Federation
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.PACKAGE_TOKEN }}
+
+      - name: Authenticate to Google Cloud
+        id: gcp-auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+          token_format: access_token
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          registry-url: 'https://npm.pkg.github.com'
+          registry-url: ${{ secrets.NPM_REGISTRY_URL }}
           scope: '@final-commerce'
           cache: 'npm'
 
@@ -64,8 +71,8 @@ jobs:
             }
 
             function cmpId(a, b) {
-              const aNum = /^\d+\$/.test(a);
-              const bNum = /^\d+\$/.test(b);
+              const aNum = /^\d+$/.test(a);
+              const bNum = /^\d+$/.test(b);
               if (aNum && bNum) return parseInt(a, 10) - parseInt(b, 10);
               if (aNum) return -1;
               if (bNum) return 1;
@@ -158,7 +165,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ steps.gcp-auth.outputs.access_token }}
 
       - name: Inject version into package.json
         run: |
@@ -171,27 +178,29 @@ jobs:
           "
           echo "✅ package.json version: $(node -p "require('./package.json').version")"
 
-      - name: Publish to GitHub Packages
+      - name: Publish to Artifact Registry
         run: npm publish ${{ steps.dist_tag.outputs.flag }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node.js for npm
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@final-commerce'
+          NODE_AUTH_TOKEN: ${{ steps.gcp-auth.outputs.access_token }}
 
       - name: Publish to npm
-        run: npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
+        run: npm publish ${{ steps.dist_tag.outputs.flag }} --provenance --registry=https://registry.npmjs.org
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Resolve target branch
+        id: target_branch
+        run: |
+          RELEASE_BRANCH="${{ github.event.release.target_commitish }}"
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          BRANCH="${RELEASE_BRANCH:-$DEFAULT_BRANCH}"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "Target branch: $BRANCH"
 
       - name: Commit version bump
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          BRANCH="${{ github.event.repository.default_branch }}"
+          BRANCH="${{ steps.target_branch.outputs.branch }}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
