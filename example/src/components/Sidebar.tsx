@@ -14,6 +14,7 @@ export type SectionId =
     | "session"
     | "refunds"
     | "payments"
+    | "split-payments"
     | "system"
     | "integration"
     | "events"
@@ -52,6 +53,7 @@ const sections: Section[] = [
     { id: "session", label: "Session" },
     { id: "refunds", label: "Refunds" },
     { id: "payments", label: "Payments" },
+    { id: "split-payments", label: "Split Payments" },
     { id: "system", label: "System" },
     { id: "integration", label: "Integration" },
     { id: "events", label: "Events" },

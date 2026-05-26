@@ -369,6 +369,30 @@ export interface CFPaymentMethod {
     processorFee?: number | null;
 }
 
+/**
+ * Status of an in-progress payment / split-payment session. Mirrors render's
+ * `PaymentStatus` enum (`failed | success | canceled | inProgress`).
+ */
+export type CFPaymentStatus = "failed" | "success" | "canceled" | "inProgress";
+
+/**
+ * In-progress split-payment session state. Mirrors render's `ActiveSplitPayment`.
+ * Published over the `split-payments` topic whenever the slice mutates so that
+ * builder consumers can render partial-payment progress (e.g. a cart-payments
+ * repeater) without owning the underlying Redux state.
+ */
+export interface CFSplitPayment {
+    amountRemaining?: number | null;
+    amountToBeCharged?: number | null;
+    splitNumber?: null | number;
+    currentSplit?: number;
+    status?: CFPaymentStatus;
+    isFixed?: boolean;
+    payments?: null | CFPaymentMethod[];
+    paidAmount?: number;
+    tip?: number | null;
+}
+
 export interface CFPosDataItem {
     outlet: string;
     station: string;

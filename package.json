@@ -1,6 +1,6 @@
 {
     "name": "@final-commerce/command-frame",
-    "version": "0.2.0-beta.1",
+    "version": "0.2.0-beta.6",
     "description": "Commands Frame library",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -22,8 +22,8 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "publish:npm": "npm publish --registry=https://registry.npmjs.org",
-        "publish:github": "npm publish --registry=https://npm.pkg.github.com",
-        "publish:all": "npm run publish:npm && npm run publish:github"
+        "publish:ar": "npm publish --registry=https://us-npm.pkg.dev/final-preproduction/npm/",
+        "publish:all": "npm run publish:npm && npm run publish:ar"
     },
     "keywords": [
         "final commerce",
@@ -36,7 +36,7 @@
     "license": "MIT",
     "publishConfig": {
         "access": "public",
-        "registry": "https://registry.npmjs.org/"
+        "registry": "https://us-npm.pkg.dev/final-preproduction/npm/"
     },
     "repository": {
         "type": "git",

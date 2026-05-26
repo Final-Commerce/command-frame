@@ -12,6 +12,7 @@ import { StationSection } from "./components/sections/StationSection";
 import { SessionSection } from "./components/sections/SessionSection";
 import { RefundsSection } from "./components/sections/RefundsSection";
 import { PaymentsSection } from "./components/sections/PaymentsSection";
+import { SplitPaymentsSection } from "./components/sections/SplitPaymentsSection";
 import { SystemSection } from "./components/sections/SystemSection";
 import { IntegrationSection } from "./components/sections/IntegrationSection";
 import { EventsSection } from "./components/sections/EventsSection";
@@ -57,6 +58,8 @@ function App() {
                 return <RefundsSection isInIframe={isInIframe} />;
             case "payments":
                 return <PaymentsSection isInIframe={isInIframe} />;
+            case "split-payments":
+                return <SplitPaymentsSection isInIframe={isInIframe} />;
             case "system":
                 return <SystemSection isInIframe={isInIframe} />;
             case "integration":

@@ -440,6 +440,7 @@ export { refundsTopic } from "./pubsub/topics/refunds";
 export { productsTopic } from "./pubsub/topics/products";
 export { cartTopic } from "./pubsub/topics/cart";
 export { paymentsTopic } from "./pubsub/topics/payments";
+export { splitPaymentsTopic } from "./pubsub/topics/split-payments";
 export { customTablesTopic } from "./pubsub/topics/custom-tables";
 export { printTopic } from "./pubsub/topics/print";
 export { outletTopic } from "./pubsub/topics/outlet";
@@ -634,6 +635,14 @@ export type {
     PaymentsEventType,
     PaymentsEventPayload
 } from "./pubsub/topics/payments/types";
+
+// Export Split Payments Event Types
+export type {
+    SplitPaymentUpdatedPayload,
+    SplitPaymentUpdatedEvent,
+    SplitPaymentsEventType,
+    SplitPaymentsEventPayload
+} from "./pubsub/topics/split-payments/types";
 
 // Export Custom Tables Event Types
 export type {
