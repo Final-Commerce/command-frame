@@ -104,6 +104,9 @@ import { getSecretVal } from "./actions/get-secret-val/action";
 import { setSecretVal } from "./actions/set-secret-val/action";
 
 import { generateAPIKey } from "./actions/generate-api-key/action";
+// State Machine Query Actions
+import { canTransition } from "./actions/can-transition/action";
+import { getAvailableTransitions } from "./actions/get-available-transitions/action";
 
 // Product CRUD Actions
 import { addProduct } from "./actions/add-product/action";
@@ -241,7 +244,10 @@ export const command = {
     getMedia,
     uploadMedia,
     getTaxTables,
-    getBranding
+    getBranding,
+    // State Machine Queries
+    canTransition,
+    getAvailableTransitions
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -480,6 +486,10 @@ export type {
     OrderUpdatedEvent,
     OrderActiveSetEvent,
     OrderActiveGetEvent,
+    OrderStateTransitionCompletedPayload,
+    OrderStateTransitionBlockedPayload,
+    OrderStateTransitionCompletedEvent,
+    OrderStateTransitionBlockedEvent,
     OrdersEventType,
     OrdersEventPayload
 } from "./pubsub/topics/orders/types";
@@ -690,3 +700,36 @@ export type { GetSecretVal, GetSecretValParams, GetSecretValResponse } from "./a
 export type { SetSecretVal, SetSecretValParams, SetSecretValResponse } from "./actions/set-secret-val/types";
 export type { GetUsers, GetUsersParams, GetUsersResponse } from "./actions/get-users/types";
 export type { GetRoles, GetRolesParams, GetRolesResponse } from "./actions/get-roles/types";
+
+// State Machine Types
+export type {
+    CFBlockedBy,
+    CFStatePair,
+    CFTransitionResult,
+    CFFailedCondition,
+    CFConditionStatus,
+    CFAvailableTransition
+} from "./common-types/order-state";
+
+export type {
+    CFConditionOperator,
+    CFCondition,
+    CFConditionGroup,
+    CFTransitionConditionSet,
+    CFPaymentTransitionPath,
+    CFFulfillmentTransitionPath,
+    CFCrossAxisRule,
+    CFDisplayStateRule,
+    CFStateConfigFragment
+} from "./common-types/state-fragment";
+
+export type { CanTransition, CanTransitionParams, CanTransitionResponse } from "./actions/can-transition/types";
+
+export type {
+    GetAvailableTransitions,
+    GetAvailableTransitionsParams,
+    GetAvailableTransitionsResponse
+} from "./actions/get-available-transitions/types";
+
+// State Machine Fragments
+export { preorderNoDepositFragment } from "./fragments";

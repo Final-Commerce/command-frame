@@ -514,6 +514,9 @@ export const MOCK_ORDER_1: CFActiveOrder = {
     companyId: MOCK_COMPANY.id!,
     externalId: null,
     status: "completed",
+    paymentState: "paid",
+    fulfillmentState: "fulfilled",
+    displayState: "Completed",
     customer: MOCK_CUSTOMER_1,
     summary: {
         total: 2100,
@@ -562,6 +565,9 @@ export const MOCK_ORDER_2: CFActiveOrder = {
     companyId: MOCK_COMPANY.id!,
     externalId: null,
     status: "completed",
+    paymentState: "paid",
+    fulfillmentState: "fulfilled",
+    displayState: "Completed",
     customer: MOCK_CUSTOMER_2,
     summary: {
         total: 3000,
@@ -805,6 +811,9 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
         companyId: MOCK_COMPANY.id!,
         externalId: null,
         status: "completed",
+        paymentState: "paid",
+        fulfillmentState: "fulfilled",
+        displayState: "Completed",
         customer: MOCK_CART.customer ? (MOCK_CART.customer as CFCustomer) : null,
         summary: {
             total: totalNum,

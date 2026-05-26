@@ -85,6 +85,8 @@ import { mockSetActiveSession } from "../../actions/set-active-session/mock";
 import { mockGetActiveUser } from "../../actions/get-active-user/mock";
 import { mockSetActiveUser } from "../../actions/set-active-user/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
+import { canTransitionMock } from "../../actions/can-transition/mock";
+import { getAvailableTransitionsMock } from "../../actions/get-available-transitions/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -180,5 +182,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     removeCartFee: mockRemoveCartFee,
     removeOrderNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
     removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
-    removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() })
+    removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
+    canTransition: canTransitionMock,
+    getAvailableTransitions: getAvailableTransitionsMock
 };
