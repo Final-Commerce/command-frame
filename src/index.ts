@@ -107,6 +107,7 @@ import { generateAPIKey } from "./actions/generate-api-key/action";
 // State Machine Query Actions
 import { canTransition } from "./actions/can-transition/action";
 import { getAvailableTransitions } from "./actions/get-available-transitions/action";
+import { applyTransition } from "./actions/apply-transition/action";
 
 // Product CRUD Actions
 import { addProduct } from "./actions/add-product/action";
@@ -247,7 +248,8 @@ export const command = {
     getBranding,
     // State Machine Queries
     canTransition,
-    getAvailableTransitions
+    getAvailableTransitions,
+    applyTransition
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -730,6 +732,8 @@ export type {
     GetAvailableTransitionsParams,
     GetAvailableTransitionsResponse
 } from "./actions/get-available-transitions/types";
+
+export type { ApplyTransition, ApplyTransitionParams, ApplyTransitionResponse } from "./actions/apply-transition/types";
 
 // State Machine Fragments
 export { preorderNoDepositFragment } from "./fragments";

@@ -14,13 +14,21 @@ module.exports = {
     parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
-        project: ["./tsconfig.json"],
+        project: ["./tsconfig.json", "./tsconfig.test.json"],
         tsconfigRootDir: __dirname
     },
     rules: {
         "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
         "@typescript-eslint/no-unsafe-assignment": "off"
     },
+    overrides: [
+        {
+            files: ["**/*.test.ts", "**/*.test.tsx"],
+            rules: {
+                "@typescript-eslint/unbound-method": "off"
+            }
+        }
+    ],
     settings: {
         react: {
             version: "detect"

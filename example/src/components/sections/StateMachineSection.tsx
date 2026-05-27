@@ -4,6 +4,8 @@ import { canTransition } from "../../../../src/actions/can-transition/action";
 import { canTransitionMock } from "../../../../src/actions/can-transition/mock";
 import { getAvailableTransitions } from "../../../../src/actions/get-available-transitions/action";
 import { getAvailableTransitionsMock } from "../../../../src/actions/get-available-transitions/mock";
+import { applyTransition } from "../../../../src/actions/apply-transition/action";
+import { applyTransitionMock } from "../../../../src/actions/apply-transition/mock";
 import { cashPayment } from "../../../../src/actions/cash-payment/action";
 import { CommandSection } from "../CommandSection";
 import { JsonViewer } from "../JsonViewer";
@@ -45,6 +47,13 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
     const [atOrderId, setAtOrderId] = useState("order_1001");
     const [atLoading, setAtLoading] = useState(false);
     const [atResponse, setAtResponse] = useState("");
+
+    // applyTransition
+    const [apOrderId, setApOrderId] = useState("order_1001");
+    const [apPayment, setApPayment] = useState("paid");
+    const [apFulfillment, setApFulfillment] = useState("fulfilled");
+    const [apLoading, setApLoading] = useState(false);
+    const [apResponse, setApResponse] = useState("");
 
     // Cash payment with checkoutFulfillmentTarget
     const [cftTarget, setCftTarget] = useState("fulfilled");
@@ -206,6 +215,100 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
                     {atLoading ? "Loading..." : "Get Available Transitions"}
                 </button>
                 {atResponse && <JsonViewer data={atResponse} title={atResponse.startsWith("Error") ? "Error" : "Transitions"} />}
+            </CommandSection>
+
+            <CommandSection title="Apply Transition">
+                <p className="section-description">
+                    Apply a state transition to an order. The host validates the transition before applying it — a blocked result returns the guard
+                    name and reason without changing the order.
+                </p>
+                <div className="form-group">
+                    <div className="form-field">
+                        <label>Order ID:</label>
+                        <input type="text" value={apOrderId} onChange={e => setApOrderId(e.target.value)} placeholder="order_1001" />
+                    </div>
+                    <div className="form-field">
+                        <label>Target Payment State:</label>
+                        <select value={apPayment} onChange={e => setApPayment(e.target.value)}>
+                            {PAYMENT_STATES.map(s => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-field">
+                        <label>Target Fulfillment State:</label>
+                        <select value={apFulfillment} onChange={e => setApFulfillment(e.target.value)}>
+                            {FULFILLMENT_STATES.map(s => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+                <button
+                    onClick={async () => {
+                        if (!apOrderId) {
+                            setApResponse("Error: Order ID is required");
+                            return;
+                        }
+                        setApLoading(true);
+                        setApResponse("");
+                        try {
+                            const params = { orderId: apOrderId, to: { payment: apPayment, fulfillment: apFulfillment } };
+                            const { result, source } = await callWithFallback(applyTransition, applyTransitionMock, params);
+                            const output = { ...result, _source: source };
+                            setApResponse(JSON.stringify(output, null, 2));
+                        } catch (error) {
+                            setApResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+                        } finally {
+                            setApLoading(false);
+                        }
+                    }}
+                    disabled={apLoading}
+                    className="btn btn--primary"
+                >
+                    {apLoading ? "Applying..." : "Apply Transition"}
+                </button>
+
+                <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
+                    <button
+                        className="btn btn--secondary"
+                        onClick={() => {
+                            setApPayment("paid");
+                            setApFulfillment("fulfilled");
+                        }}
+                    >
+                        Try: paid + fulfilled
+                    </button>
+                    <button
+                        className="btn btn--secondary"
+                        onClick={() => {
+                            setApPayment("refunded");
+                            setApFulfillment("draft");
+                        }}
+                    >
+                        Try: refunded + draft (blocked)
+                    </button>
+                    <button
+                        className="btn btn--secondary"
+                        onClick={() => {
+                            setApPayment("paid");
+                            setApFulfillment("cancelled");
+                        }}
+                    >
+                        Try: paid + cancelled (blocked)
+                    </button>
+                </div>
+
+                {apResponse && (
+                    <JsonViewer
+                        data={apResponse}
+                        title={apResponse.includes('"allowed": true') ? "Transition Applied" : apResponse.startsWith("Error") ? "Error" : "Blocked"}
+                    />
+                )}
             </CommandSection>
 
             <CommandSection title="Payment with Checkout Fulfillment Target">
