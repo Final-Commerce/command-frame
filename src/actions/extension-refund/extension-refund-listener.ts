@@ -15,9 +15,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * @param handler - Perform the extension-side refund (API call, etc.)
  * @returns Unsubscribe function
  */
-export function installExtensionRefundListener(
-    handler: (params: ExtensionRefundParams) => Promise<ExtensionRefundResponse>
-): () => void {
+export function installExtensionRefundListener(handler: (params: ExtensionRefundParams) => Promise<ExtensionRefundResponse>): () => void {
     const onMessage = async (event: MessageEvent): Promise<void> => {
         const raw = event.data;
         if (!isRecord(raw) || raw.action !== EXTENSION_REFUND_REQUEST_ACTION) {
@@ -31,7 +29,7 @@ export function installExtensionRefundListener(
             return;
         }
 
-        const source = event.source as Window;
+        const source = event.source;
         const replyOrigin = typeof event.origin === "string" ? event.origin : "*";
         const params = raw.params as ExtensionRefundParams | undefined;
 
@@ -64,6 +62,9 @@ export function installExtensionRefundListener(
         }
     };
 
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
+    const messageHandler = (event: MessageEvent): void => {
+        void onMessage(event);
+    };
+    window.addEventListener("message", messageHandler);
+    return () => window.removeEventListener("message", messageHandler);
 }
