@@ -785,3 +785,21 @@ export interface CFContextManage {
 
 // Legacy alias for backward compatibility
 export type CFContext = CFContextRender;
+
+// =============================================================================
+// SmartGrid Layout (operator tile assignment for the new Puck SmartGrid)
+// =============================================================================
+
+export type CFTileType = "empty" | "product" | "action" | "category" | "folder" | "back";
+
+export interface CFTileCell {
+    index: number;
+    type: CFTileType;
+    entityId?: string;
+    entityData?: Record<string, unknown>;
+}
+
+export interface CFSmartGridLayout {
+    gridId: string;
+    cells: CFTileCell[];
+}

@@ -113,6 +113,9 @@ import { deleteProduct } from "./actions/delete-product/action";
 // Entity Actions
 import { getOutlets } from "./actions/get-outlets/action";
 import { getStations } from "./actions/get-stations/action";
+// SmartGrid Actions
+import { getSmartGridLayout } from "./actions/get-smart-grid-layout/action";
+import { saveSmartGridLayout } from "./actions/save-smart-grid-layout/action";
 // Manage extension actions (optional hosts: Deerlake, etc.)
 import { navigateTo } from "./actions/navigate-to/action";
 import { refreshResource } from "./actions/refresh-resource/action";
@@ -218,6 +221,9 @@ export const command = {
     // Entity Actions
     getOutlets,
     getStations,
+    // SmartGrid Actions
+    getSmartGridLayout,
+    saveSmartGridLayout,
     // Custom Tables Actions
     getCustomTables,
     getCustomTableFields,
@@ -276,6 +282,10 @@ export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from "
 export type { GetOutlets, GetOutletsResponse } from "./actions/get-outlets/types";
 
 export type { GetStations, GetStationsParams, GetStationsResponse } from "./actions/get-stations/types";
+
+// SmartGrid Actions
+export type { GetSmartGridLayout, GetSmartGridLayoutParams, GetSmartGridLayoutResponse } from "./actions/get-smart-grid-layout/types";
+export type { SaveSmartGridLayout, SaveSmartGridLayoutParams, SaveSmartGridLayoutResponse } from "./actions/save-smart-grid-layout/types";
 
 export type { GetOrders, GetOrdersParams, GetOrdersResponse } from "./actions/get-orders/types";
 
