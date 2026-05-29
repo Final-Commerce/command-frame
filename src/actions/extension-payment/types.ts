@@ -9,6 +9,10 @@ export interface ExtensionPaymentParams {
     referenceId?: string;
     extensionId?: string;
     metadata?: Record<string, unknown>;
+    /** EMV string when the underlying payment carries one (e.g. integrationPayment). */
+    emvData?: string;
+    /** Processor fee in minor units; recorded on the order's paymentMethod.processorFee. */
+    processorFee?: number;
 }
 
 export interface ExtensionPaymentResponse {
