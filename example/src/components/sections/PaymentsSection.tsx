@@ -3,7 +3,8 @@ import {
   renderClient as command,
   type ExtensionPaymentParams,
   type RedeemPaymentParams,
-  type IntegrationPaymentParams
+  type IntegrationPaymentParams,
+  type IntegrationEmvData
 } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
@@ -46,7 +47,13 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
 
   // Integration payment (Stripe-like) — calls `integrationPayment` → host routes with paymentType "integration"
   const [integrationAmount, setIntegrationAmount] = useState<string>('');
-  const [integrationEmvData, setIntegrationEmvData] = useState<string>('');
+  // emvData is a typed object; fields are camelCase, host maps to canonical EMV keys.
+  const [integrationEmvBrand, setIntegrationEmvBrand] = useState<string>('Visa');
+  const [integrationEmvLast4, setIntegrationEmvLast4] = useState<string>('');
+  const [integrationEmvCardholder, setIntegrationEmvCardholder] = useState<string>('');
+  const [integrationEmvExpiry, setIntegrationEmvExpiry] = useState<string>('');
+  const [integrationEmvCountry, setIntegrationEmvCountry] = useState<string>('');
+  const [integrationEmvIssuer, setIntegrationEmvIssuer] = useState<string>('');
   const [integrationProcessor, setIntegrationProcessor] = useState<string>('Stripe');
   const [integrationLabel, setIntegrationLabel] = useState<string>('');
   const [integrationExtensionId, setIntegrationExtensionId] = useState<string>('');
@@ -367,8 +374,9 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
           Calls <code>integrationPayment</code> — for Stripe-style integrations. The extension processes the payment
           with its own provider, then reports back so Render records the transaction + order. Wire{' '}
           <code>paymentType: &quot;integration&quot;</code>. Required: <code>amount</code> (minor units) and{' '}
-          <code>emvData</code> (EMV tag string from the provider). If the amount is less than the cart balance, the
-          host requires split-payment mode to be active.
+          <code>emvData</code> (typed object — host maps camelCase keys to canonical EMV keys and JSON-serializes onto
+          the order&apos;s <code>paymentMethod.emv</code>). If the amount is less than the cart balance, the host requires
+          split-payment mode to be active.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -382,12 +390,58 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
             />
           </div>
           <div className="form-field">
-            <label>EMV Data (required):</label>
+            <label>EMV — Brand:</label>
             <input
               type="text"
-              value={integrationEmvData}
-              onChange={(e) => setIntegrationEmvData(e.target.value)}
-              placeholder="EMV tag string from the provider"
+              value={integrationEmvBrand}
+              onChange={(e) => setIntegrationEmvBrand(e.target.value)}
+              placeholder="Visa"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Card last 4 (required for display):</label>
+            <input
+              type="text"
+              maxLength={4}
+              value={integrationEmvLast4}
+              onChange={(e) => setIntegrationEmvLast4(e.target.value)}
+              placeholder="4242"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Cardholder name (optional):</label>
+            <input
+              type="text"
+              value={integrationEmvCardholder}
+              onChange={(e) => setIntegrationEmvCardholder(e.target.value)}
+              placeholder="Jane Doe"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Expiry (optional):</label>
+            <input
+              type="text"
+              value={integrationEmvExpiry}
+              onChange={(e) => setIntegrationEmvExpiry(e.target.value)}
+              placeholder="12/26"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Country (optional):</label>
+            <input
+              type="text"
+              value={integrationEmvCountry}
+              onChange={(e) => setIntegrationEmvCountry(e.target.value)}
+              placeholder="US"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Issuer (optional):</label>
+            <input
+              type="text"
+              value={integrationEmvIssuer}
+              onChange={(e) => setIntegrationEmvIssuer(e.target.value)}
+              placeholder="Chase"
             />
           </div>
           <div className="form-field">
@@ -443,16 +497,20 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
               setIntegrationResponse('Error: amount is required');
               return;
             }
-            if (!integrationEmvData.trim()) {
-              setIntegrationResponse('Error: emvData is required');
-              return;
-            }
             setIntegrationLoading(true);
             setIntegrationResponse('');
             try {
+              const emvData: IntegrationEmvData = {};
+              if (integrationEmvBrand.trim()) emvData.brand = integrationEmvBrand.trim();
+              if (integrationEmvLast4.trim()) emvData.cardNumberLast4 = integrationEmvLast4.trim();
+              if (integrationEmvCardholder.trim()) emvData.cardholderName = integrationEmvCardholder.trim();
+              if (integrationEmvExpiry.trim()) emvData.expiryDate = integrationEmvExpiry.trim();
+              if (integrationEmvCountry.trim()) emvData.country = integrationEmvCountry.trim();
+              if (integrationEmvIssuer.trim()) emvData.issuer = integrationEmvIssuer.trim();
+
               const params: IntegrationPaymentParams = {
                 amount: parseFloat(integrationAmount),
-                emvData: integrationEmvData.trim()
+                emvData
               };
               if (integrationProcessor.trim()) params.processor = integrationProcessor.trim();
               if (integrationLabel.trim()) params.label = integrationLabel.trim();

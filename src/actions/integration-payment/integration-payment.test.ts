@@ -24,9 +24,10 @@ describe("integrationPayment", () => {
     });
 
     it("delegates to extensionPayment with paymentType integration and forwards every param including emvData and processorFee", async () => {
+        const emvData = { brand: "Visa", cardholderName: "Jane Doe", cardNumberLast4: "4242", expiryDate: "12/26", issuer: "Chase", country: "US" };
         await integrationPayment({
             amount: 4250,
-            emvData: "EMV_TAG_DATA",
+            emvData,
             label: "Visa ****4242",
             extensionId: "stripe-ext",
             processor: "Stripe",
@@ -39,7 +40,7 @@ describe("integrationPayment", () => {
         expect(mockCall).toHaveBeenCalledWith("extensionPayment", {
             paymentType: "integration",
             amount: 4250,
-            emvData: "EMV_TAG_DATA",
+            emvData,
             label: "Visa ****4242",
             extensionId: "stripe-ext",
             processor: "Stripe",
@@ -49,14 +50,14 @@ describe("integrationPayment", () => {
         });
     });
 
-    it("accepts the minimal required set (amount + emvData)", async () => {
-        await integrationPayment({ amount: 100, emvData: "EMV" });
+    it("accepts the minimal required set (amount + empty emvData)", async () => {
+        await integrationPayment({ amount: 100, emvData: {} });
 
         expect(mockCall).toHaveBeenCalledTimes(1);
         expect(mockCall).toHaveBeenCalledWith("extensionPayment", {
             paymentType: "integration",
             amount: 100,
-            emvData: "EMV"
+            emvData: {}
         });
     });
 
@@ -66,7 +67,11 @@ describe("integrationPayment", () => {
         // @ts-expect-error — emvData missing
         const _bad2: ReturnType<typeof integrationPayment> = integrationPayment({ amount: 1 });
         // @ts-expect-error — amount missing
-        const _bad3: ReturnType<typeof integrationPayment> = integrationPayment({ emvData: "e" });
-        void _bad1; void _bad2; void _bad3;
+        const _bad3: ReturnType<typeof integrationPayment> = integrationPayment({ emvData: {} });
+        // @ts-expect-error — emvData must be an object, not a string
+        const _bad4: ReturnType<typeof integrationPayment> = integrationPayment({ amount: 1, emvData: "EMV" });
+        // @ts-expect-error — unknown emvData field
+        const _bad5: ReturnType<typeof integrationPayment> = integrationPayment({ amount: 1, emvData: { madeUpField: "x" } });
+        void _bad1; void _bad2; void _bad3; void _bad4; void _bad5;
     });
 });

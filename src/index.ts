@@ -342,7 +342,7 @@ export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } 
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
 export type { ExtensionPayment, ExtensionPaymentParams, ExtensionPaymentResponse } from "./actions/extension-payment/types";
 export type { RedeemPayment, RedeemPaymentParams, RedeemPaymentResponse } from "./actions/redeem-payment/types";
-export type { IntegrationPayment, IntegrationPaymentParams, IntegrationPaymentResponse } from "./actions/integration-payment/types";
+export type { IntegrationPayment, IntegrationPaymentParams, IntegrationPaymentResponse, IntegrationEmvData } from "./actions/integration-payment/types";
 export { EXTENSION_REFUND_REQUEST_ACTION } from "./actions/extension-refund/constants";
 export { installExtensionRefundListener } from "./actions/extension-refund/extension-refund-listener";
 export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/extension-refund/types";

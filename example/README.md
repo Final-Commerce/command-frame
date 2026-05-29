@@ -140,9 +140,12 @@ await command.vendaraPayment();
 await command.partialPayment({ amount: 25.0, isPercent: false });
 
 // Extension / redeem / integration payments (Render host implements these; mocks when not in iframe)
-await command.redeemPayment({ amount: 500, processor: "giftCard", label: "Gift card" });            // amount required (minor units)
-await command.integrationPayment({ amount: 4250, emvData: "EMV", processor: "Stripe" });            // amount + emvData required
-await command.extensionPayment({ paymentType: "integration", amount: 4250, emvData: "EMV" });        // or paymentType "redeem"
+await command.redeemPayment({ amount: 500, processor: "giftCard", label: "Gift card" });   // amount required (minor units)
+await command.integrationPayment({                                                          // amount + emvData required
+  amount: 4250,
+  emvData: { brand: "Visa", cardNumberLast4: "4242" },                                      // typed object; host maps to canonical EMV keys
+  processor: "Stripe"
+});
 
 // Refund Actions
 await command.initiateRefund({ orderId: "order-123" });
