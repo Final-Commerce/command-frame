@@ -184,6 +184,7 @@ jobs:
           trap 'cp .npmrc.bak .npmrc && rm .npmrc.bak' EXIT
           cp .npmrc .npmrc.bak
           echo "@final-commerce:registry=https://registry.npmjs.org/" > .npmrc
+          echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
           npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
