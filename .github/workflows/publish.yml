@@ -179,17 +179,10 @@ jobs:
           "
           echo "✅ package.json version: $(node -p "require('./package.json').version")"
 
-      - name: Setup Node.js for npm
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@final-commerce'
-
       - name: Publish to npm
-        run: npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm config set @final-commerce:registry https://registry.npmjs.org/
+          npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
 
       - name: Setup Node.js for Artifact Registry
         uses: actions/setup-node@v4
