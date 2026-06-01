@@ -91,7 +91,8 @@ import type {
     RemoveCartFee,
     RemoveOrderNote,
     RemoveCustomSale,
-    RemoveNonRevenueItem
+    RemoveNonRevenueItem,
+    IntegrationPayment
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -133,6 +134,7 @@ export interface RenderProviderActions {
     vendaraPayment: VendaraPayment;
     extensionPayment: ExtensionPayment;
     redeemPayment: RedeemPayment;
+    integrationPayment: IntegrationPayment;
     addNonRevenueItem: AddNonRevenueItem;
     addCustomerNote: AddCustomerNote;
     removeCustomerNote: RemoveCustomerNote;

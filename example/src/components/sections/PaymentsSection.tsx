@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { renderClient as command, type ExtensionPaymentParams } from '@final-commerce/command-frame';
+import {
+  renderClient as command,
+  type ExtensionPaymentParams,
+  type RedeemPaymentParams,
+  type IntegrationPaymentParams,
+  type IntegrationEmvData
+} from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -34,11 +40,29 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
   const [redeemAmount, setRedeemAmount] = useState<string>('');
   const [redeemProcessor, setRedeemProcessor] = useState<string>('giftCard');
   const [redeemLabel, setRedeemLabel] = useState<string>('');
+  const [redeemExtensionId, setRedeemExtensionId] = useState<string>('');
   const [redeemReferenceId, setRedeemReferenceId] = useState<string>('');
   const [redeemLoading, setRedeemLoading] = useState(false);
   const [redeemResponse, setRedeemResponse] = useState<string>('');
 
-  // Generic extension payment — calls `extensionPayment` with a paymentType (e.g. redeem, or future wallet/points)
+  // Integration payment (Stripe-like) — calls `integrationPayment` → host routes with paymentType "integration"
+  const [integrationAmount, setIntegrationAmount] = useState<string>('');
+  // emvData is a typed object; fields are camelCase, host maps to canonical EMV keys.
+  const [integrationEmvBrand, setIntegrationEmvBrand] = useState<string>('Visa');
+  const [integrationEmvLast4, setIntegrationEmvLast4] = useState<string>('');
+  const [integrationEmvCardholder, setIntegrationEmvCardholder] = useState<string>('');
+  const [integrationEmvExpiry, setIntegrationEmvExpiry] = useState<string>('');
+  const [integrationEmvCountry, setIntegrationEmvCountry] = useState<string>('');
+  const [integrationEmvIssuer, setIntegrationEmvIssuer] = useState<string>('');
+  const [integrationProcessor, setIntegrationProcessor] = useState<string>('Stripe');
+  const [integrationLabel, setIntegrationLabel] = useState<string>('');
+  const [integrationExtensionId, setIntegrationExtensionId] = useState<string>('');
+  const [integrationReferenceId, setIntegrationReferenceId] = useState<string>('');
+  const [integrationProcessorFee, setIntegrationProcessorFee] = useState<string>('');
+  const [integrationLoading, setIntegrationLoading] = useState(false);
+  const [integrationResponse, setIntegrationResponse] = useState<string>('');
+
+  // Generic extension payment — calls `extensionPayment` with a paymentType (e.g. redeem, integration, or future wallet/points)
   const [extPaymentType, setExtPaymentType] = useState<string>('redeem');
   const [extAmount, setExtAmount] = useState<string>('');
   const [extProcessor, setExtProcessor] = useState<string>('giftCard');
@@ -261,22 +285,23 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
       <CommandSection title="Redeem payment">
         <p className="section-description">
           Calls <code>redeemPayment</code> — same as extension SDK; Render host completes checkout with{' '}
-          <code>paymentType: &quot;redeem&quot;</code>. Requires cart with items when embedded in Render. Uses mocks when
-          not in iframe (if mock mode).
+          <code>paymentType: &quot;redeem&quot;</code>. Requires cart with items when embedded in Render.{' '}
+          <code>amount</code> is required (in minor units; e.g. <code>500</code> = $5.00). If the amount is less than
+          the cart balance, the host requires the cart to be in split-payment mode already.
         </p>
         <div className="form-group">
           <div className="form-field">
-            <label>Amount (optional):</label>
+            <label>Amount (required, minor units):</label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               value={redeemAmount}
               onChange={(e) => setRedeemAmount(e.target.value)}
-              placeholder="Leave empty for cart total"
+              placeholder="e.g. 500 for $5.00"
             />
           </div>
           <div className="form-field">
-            <label>Processor:</label>
+            <label>Processor (optional):</label>
             <input
               type="text"
               value={redeemProcessor}
@@ -286,7 +311,16 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
           </div>
           <div className="form-field">
             <label>Label (optional):</label>
-            <input type="text" value={redeemLabel} onChange={(e) => setRedeemLabel(e.target.value)} placeholder="Gift Card" />
+            <input type="text" value={redeemLabel} onChange={(e) => setRedeemLabel(e.target.value)} placeholder="Gift Card ****" />
+          </div>
+          <div className="form-field">
+            <label>Extension ID (optional):</label>
+            <input
+              type="text"
+              value={redeemExtensionId}
+              onChange={(e) => setRedeemExtensionId(e.target.value)}
+              placeholder="giftcard-ext"
+            />
           </div>
           <div className="form-field">
             <label>Reference ID (optional):</label>
@@ -300,16 +334,20 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
         </div>
         <button
           onClick={async () => {
+            if (!redeemAmount) {
+              setRedeemResponse('Error: amount is required');
+              return;
+            }
             setRedeemLoading(true);
             setRedeemResponse('');
             try {
-              const params: Record<string, unknown> = {};
-              if (redeemAmount) params.amount = parseFloat(redeemAmount);
+              const params: RedeemPaymentParams = { amount: parseFloat(redeemAmount) };
               if (redeemProcessor.trim()) params.processor = redeemProcessor.trim();
               if (redeemLabel.trim()) params.label = redeemLabel.trim();
+              if (redeemExtensionId.trim()) params.extensionId = redeemExtensionId.trim();
               if (redeemReferenceId.trim()) params.referenceId = redeemReferenceId.trim();
 
-              const result = await command.redeemPayment(Object.keys(params).length > 0 ? params : undefined);
+              const result = await command.redeemPayment(params);
               setRedeemResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setRedeemResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -326,6 +364,177 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
           <JsonViewer
             data={redeemResponse}
             title={redeemResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Integration payment (Stripe-like) */}
+      <CommandSection title="Integration payment">
+        <p className="section-description">
+          Calls <code>integrationPayment</code> — for Stripe-style integrations. The extension processes the payment
+          with its own provider, then reports back so Render records the transaction + order. Wire{' '}
+          <code>paymentType: &quot;integration&quot;</code>. Required: <code>amount</code> (minor units) and{' '}
+          <code>emvData</code> (typed object — host maps camelCase keys to canonical EMV keys and JSON-serializes onto
+          the order&apos;s <code>paymentMethod.emv</code>). If the amount is less than the cart balance, the host requires
+          split-payment mode to be active.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Amount (required, minor units):</label>
+            <input
+              type="number"
+              step="1"
+              value={integrationAmount}
+              onChange={(e) => setIntegrationAmount(e.target.value)}
+              placeholder="e.g. 4250 for $42.50"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Brand:</label>
+            <input
+              type="text"
+              value={integrationEmvBrand}
+              onChange={(e) => setIntegrationEmvBrand(e.target.value)}
+              placeholder="Visa"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Card last 4 (required for display):</label>
+            <input
+              type="text"
+              maxLength={4}
+              value={integrationEmvLast4}
+              onChange={(e) => setIntegrationEmvLast4(e.target.value)}
+              placeholder="4242"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Cardholder name (optional):</label>
+            <input
+              type="text"
+              value={integrationEmvCardholder}
+              onChange={(e) => setIntegrationEmvCardholder(e.target.value)}
+              placeholder="Jane Doe"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Expiry (optional):</label>
+            <input
+              type="text"
+              value={integrationEmvExpiry}
+              onChange={(e) => setIntegrationEmvExpiry(e.target.value)}
+              placeholder="12/26"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Country (optional):</label>
+            <input
+              type="text"
+              value={integrationEmvCountry}
+              onChange={(e) => setIntegrationEmvCountry(e.target.value)}
+              placeholder="US"
+            />
+          </div>
+          <div className="form-field">
+            <label>EMV — Issuer (optional):</label>
+            <input
+              type="text"
+              value={integrationEmvIssuer}
+              onChange={(e) => setIntegrationEmvIssuer(e.target.value)}
+              placeholder="Chase"
+            />
+          </div>
+          <div className="form-field">
+            <label>Processor (optional):</label>
+            <input
+              type="text"
+              value={integrationProcessor}
+              onChange={(e) => setIntegrationProcessor(e.target.value)}
+              placeholder="Stripe"
+            />
+          </div>
+          <div className="form-field">
+            <label>Label (optional):</label>
+            <input
+              type="text"
+              value={integrationLabel}
+              onChange={(e) => setIntegrationLabel(e.target.value)}
+              placeholder="Visa ****4242"
+            />
+          </div>
+          <div className="form-field">
+            <label>Extension ID (optional):</label>
+            <input
+              type="text"
+              value={integrationExtensionId}
+              onChange={(e) => setIntegrationExtensionId(e.target.value)}
+              placeholder="stripe-ext"
+            />
+          </div>
+          <div className="form-field">
+            <label>Reference ID (optional):</label>
+            <input
+              type="text"
+              value={integrationReferenceId}
+              onChange={(e) => setIntegrationReferenceId(e.target.value)}
+              placeholder="provider payment intent / charge id"
+            />
+          </div>
+          <div className="form-field">
+            <label>Processor Fee (optional, minor units):</label>
+            <input
+              type="number"
+              step="1"
+              value={integrationProcessorFee}
+              onChange={(e) => setIntegrationProcessorFee(e.target.value)}
+              placeholder="e.g. 125 for $1.25"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!integrationAmount) {
+              setIntegrationResponse('Error: amount is required');
+              return;
+            }
+            setIntegrationLoading(true);
+            setIntegrationResponse('');
+            try {
+              const emvData: IntegrationEmvData = {};
+              if (integrationEmvBrand.trim()) emvData.brand = integrationEmvBrand.trim();
+              if (integrationEmvLast4.trim()) emvData.cardNumberLast4 = integrationEmvLast4.trim();
+              if (integrationEmvCardholder.trim()) emvData.cardholderName = integrationEmvCardholder.trim();
+              if (integrationEmvExpiry.trim()) emvData.expiryDate = integrationEmvExpiry.trim();
+              if (integrationEmvCountry.trim()) emvData.country = integrationEmvCountry.trim();
+              if (integrationEmvIssuer.trim()) emvData.issuer = integrationEmvIssuer.trim();
+
+              const params: IntegrationPaymentParams = {
+                amount: parseFloat(integrationAmount),
+                emvData
+              };
+              if (integrationProcessor.trim()) params.processor = integrationProcessor.trim();
+              if (integrationLabel.trim()) params.label = integrationLabel.trim();
+              if (integrationExtensionId.trim()) params.extensionId = integrationExtensionId.trim();
+              if (integrationReferenceId.trim()) params.referenceId = integrationReferenceId.trim();
+              if (integrationProcessorFee) params.processorFee = parseFloat(integrationProcessorFee);
+
+              const result = await command.integrationPayment(params);
+              setIntegrationResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setIntegrationResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setIntegrationLoading(false);
+            }
+          }}
+          disabled={integrationLoading}
+          className="btn btn--success"
+        >
+          {integrationLoading ? 'Processing...' : 'Integration payment'}
+        </button>
+        {integrationResponse && (
+          <JsonViewer
+            data={integrationResponse}
+            title={integrationResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>
