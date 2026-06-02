@@ -140,19 +140,20 @@ await command.vendaraPayment();
 await command.partialPayment({ amount: 25.0, isPercent: false });
 
 // Extension / redeem / integration payments (Render host implements these; mocks when not in iframe)
-await command.redeemPayment({ amount: 500, processor: "giftCard", label: "Gift card" });   // amount required (minor units)
-await command.integrationPayment({                                                          // amount + emvData required
-  amount: 4250,
-  emvData: { brand: "Visa", cardNumberLast4: "4242" },                                      // typed object; host maps to canonical EMV keys
-  processor: "Stripe"
+await command.redeemPayment({ amount: 500, processor: "giftCard", label: "Gift card" }); // amount required (minor units)
+await command.integrationPayment({
+    // amount + emvData required
+    amount: 4250,
+    emvData: { brand: "Visa", cardNumberLast4: "4242" }, // typed object; host maps to canonical EMV keys
+    processor: "Stripe"
 });
 
 // Refund Actions
 await command.initiateRefund({ orderId: "order-123" });
 
 // Customer Actions
-await command.addCustomerNote({ customerId: 'customer-123', note: 'VIP customer' });
-await command.removeCustomerNote({ noteId: 'note-id-from-customer-notes-array' });
+await command.addCustomerNote({ customerId: "customer-123", note: "VIP customer" });
+await command.removeCustomerNote({ noteId: "note-id-from-customer-notes-array" });
 await command.removeCustomerFromCart();
 
 // System Actions

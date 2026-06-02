@@ -92,7 +92,9 @@ import type {
     RemoveOrderNote,
     RemoveCustomSale,
     RemoveNonRevenueItem,
-    IntegrationPayment
+    IntegrationPayment,
+    GetSmartGridLayout,
+    SaveSmartGridLayout
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -190,4 +192,6 @@ export interface RenderProviderActions {
     removeOrderNote: RemoveOrderNote;
     removeCustomSale: RemoveCustomSale;
     removeNonRevenueItem: RemoveNonRevenueItem;
+    getSmartGridLayout: GetSmartGridLayout;
+    saveSmartGridLayout: SaveSmartGridLayout;
 }

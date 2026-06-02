@@ -72,6 +72,10 @@ describe("integrationPayment", () => {
         const _bad4: ReturnType<typeof integrationPayment> = integrationPayment({ amount: 1, emvData: "EMV" });
         // @ts-expect-error — unknown emvData field
         const _bad5: ReturnType<typeof integrationPayment> = integrationPayment({ amount: 1, emvData: { madeUpField: "x" } });
-        void _bad1; void _bad2; void _bad3; void _bad4; void _bad5;
+        void _bad1;
+        void _bad2;
+        void _bad3;
+        void _bad4;
+        void _bad5;
     });
 });
