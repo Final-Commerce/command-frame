@@ -8,7 +8,10 @@ module.exports = {
         "plugin:react/recommended",
         "plugin:react/jsx-runtime"
     ],
-    ignorePatterns: ["dist", ".eslintrc.cjs"],
+    // Test files are excluded from tsconfig (see `exclude` in tsconfig.json),
+    // so the typed-linting parser can't pick them up. Skip them in ESLint
+    // too — they're covered by Vitest's own typecheck.
+    ignorePatterns: ["dist", ".eslintrc.cjs", "**/*.test.ts", "**/*.test.tsx"],
     parser: "@typescript-eslint/parser",
     plugins: ["react-refresh"],
     parserOptions: {

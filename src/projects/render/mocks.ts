@@ -56,6 +56,7 @@ import { mockTriggerZapierWebhook } from "../../actions/trigger-zapier-webhook/m
 import { mockVendaraPayment } from "../../actions/vendara-payment/mock";
 import { mockExtensionPayment } from "../../actions/extension-payment/mock";
 import { mockRedeemPayment } from "../../actions/redeem-payment/mock";
+import { mockIntegrationPayment } from "../../actions/integration-payment/mock";
 import { mockAddNonRevenueItem } from "../../actions/add-non-revenue-item/mock";
 import { mockGetFinalContext } from "../../actions/get-final-context/mock";
 import { mockPrint } from "../../actions/print/mock";
@@ -147,6 +148,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     vendaraPayment: mockVendaraPayment,
     extensionPayment: mockExtensionPayment,
     redeemPayment: mockRedeemPayment,
+    integrationPayment: mockIntegrationPayment,
     addNonRevenueItem: mockAddNonRevenueItem,
     getFinalContext: mockGetFinalContext,
     print: mockPrint,

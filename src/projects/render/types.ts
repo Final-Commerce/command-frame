@@ -92,6 +92,7 @@ import type {
     RemoveOrderNote,
     RemoveCustomSale,
     RemoveNonRevenueItem,
+    IntegrationPayment,
     GetSmartGridLayout,
     SaveSmartGridLayout
 } from "../../index";
@@ -135,6 +136,7 @@ export interface RenderProviderActions {
     vendaraPayment: VendaraPayment;
     extensionPayment: ExtensionPayment;
     redeemPayment: RedeemPayment;
+    integrationPayment: IntegrationPayment;
     addNonRevenueItem: AddNonRevenueItem;
     addCustomerNote: AddCustomerNote;
     removeCustomerNote: RemoveCustomerNote;
