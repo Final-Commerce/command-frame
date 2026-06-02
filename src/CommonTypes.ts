@@ -802,4 +802,12 @@ export interface CFTileCell {
 export interface CFSmartGridLayout {
     gridId: string;
     cells: CFTileCell[];
+    /** Operator-editable display name for this grid. When absent, consumers
+     *  should fall back to a placeholder (e.g. "Smart Grid"). */
+    name?: string;
+    /** Cells inside operator-created folders, keyed by the folder tile's
+     *  entityId. Each folder owns its own dense cell array (indices 0..N-1)
+     *  and may contain further folder tiles for arbitrary nesting. Absent or
+     *  empty when no folders exist. */
+    folders?: Record<string, CFTileCell[]>;
 }
