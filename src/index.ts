@@ -426,6 +426,13 @@ export type { TopicEventPayloadMap } from "./pubsub/topics/types";
 export { hooks } from "./hooks";
 export type { HookFunction, HookRegisterOptions } from "./hooks";
 
+// Export Interceptors (extension iframe API for gating host flows)
+export { interceptors } from "./interceptors";
+export type {
+    InterceptorFunction, InterceptorPoint, InterceptorRegisterOptions,
+    InterceptorReturn, InterceptorOverlayContext, InterceptorHostCommands
+} from "./interceptors";
+
 // Export Pub/Sub Topics
 export { customersTopic } from "./pubsub/topics/customers";
 export { ordersTopic } from "./pubsub/topics/orders";
