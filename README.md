@@ -15,6 +15,7 @@ The library provides three main capabilities:
 | **Commands** | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call |
 | **Pub/Sub** | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted) |
 | **Hooks** | Register business-logic callbacks that persist across all pages | Session-scoped (survives page navigation) |
+| **Interceptors** | Gate POS flows (approve / modify / block) at named points | Blocking; host waits for your response |
 | **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
@@ -112,6 +113,29 @@ hooks.register('cart', async (event, hostCommands) => {
 
 // Unregister when no longer needed
 hooks.unregister('my-extension:cart-log');
+```
+
+## Interceptors
+
+Interceptors let an extension **gate a POS flow** (approve / modify / block) at a named point — the host waits for your interceptor and acts on what it returns. Unlike hooks, interceptors are **blocking**.
+
+- **[Interceptors Documentation](./src/interceptors/README.md)**
+- The callback is serialized and reconstructed on the host; it must be **self-contained** (no closures, no imports).
+- A stable `interceptorId` is required for deduplication (safe on iframe reload).
+
+```typescript
+import { interceptors } from '@final-commerce/command-frame';
+
+interceptors.register(
+    'refund_start',
+    async (payload, cmds) => {
+        if (payload.paymentTypes.includes('redeem')) {
+            return cmds.openExtensionOverlay({ point: 'refund_start', payload });
+        }
+        return true; // nothing for us to do
+    },
+    { interceptorId: 'my-extension:refund-guard' }
+);
 ```
 
 ## Host-initiated extension refunds (redeem / gift card)
