@@ -396,8 +396,7 @@ export interface CFActiveProduct extends CFActiveEntity {
 // Customer Interfaces
 export interface CFCustomer {
     _id: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    companyId: any;
+    companyId: string;
     externalId?: string;
     email: string;
     firstName: string;
@@ -598,10 +597,7 @@ export interface CFRefundedLineItem {
     fee: CFFeeLineItem;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CFRefundedCustomSale extends CFCustomSale {
-    // action: string;
-}
+export type CFRefundedCustomSale = CFCustomSale;
 
 export interface CFRefundItem {
     lineItems: CFRefundedLineItem[];
@@ -626,6 +622,12 @@ export interface CFOrder {
     companyId: string;
     externalId: string | null;
     status: string;
+    /** Financial state (state machine). Undefined on legacy orders pre-backfill. */
+    paymentState?: string;
+    /** Operational state (state machine). Undefined on legacy orders pre-backfill. */
+    fulfillmentState?: string;
+    /** Computed display label from paymentState + fulfillmentState matrix. */
+    displayState?: string;
     customer: Partial<CFActiveCustomer | null>;
     customerNote?: string;
     summary: CFSummary;
@@ -680,8 +682,7 @@ export interface CFActiveUser extends CFActiveEntity {
     _id?: string;
     outlets?: string[] | { _id: string }[];
     type?: CFUserTypes;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    companies?: any;
+    companies?: unknown;
 }
 
 export interface CFActiveOutlet extends CFActiveEntity {
@@ -774,10 +775,8 @@ export interface CFActiveCustomSales {
     taxTableId?: string;
     quantity: number;
     price: number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    discount?: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fee?: any;
+    discount?: Record<string, unknown>;
+    fee?: Record<string, unknown>;
 }
 
 /** Non-revenue cart line (e.g. gift card load) — aligned with Render `NonRevenueItem.externalId` (order line id). */
@@ -829,8 +828,7 @@ export interface CFActiveCompany extends CFActiveEntity {
     id?: string;
     name?: string;
     logo?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    settings?: any;
+    settings?: Record<string, unknown>;
 }
 
 // Project name type for identifying which provider environment is active

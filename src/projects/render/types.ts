@@ -91,7 +91,9 @@ import type {
     RemoveCartFee,
     RemoveOrderNote,
     RemoveCustomSale,
-    RemoveNonRevenueItem
+    RemoveNonRevenueItem,
+    CanTransition,
+    GetAvailableTransitions
 } from "../../index";
 import type { OpenExtensionOverlay } from "../../actions/open-extension-overlay/types";
 import type { ResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/types";
@@ -192,4 +194,6 @@ export interface RenderProviderActions {
     removeOrderNote: RemoveOrderNote;
     removeCustomSale: RemoveCustomSale;
     removeNonRevenueItem: RemoveNonRevenueItem;
+    canTransition: CanTransition;
+    getAvailableTransitions: GetAvailableTransitions;
 }
