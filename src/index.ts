@@ -298,6 +298,8 @@ export type {
 export type { ProcessPartialRefund, ProcessPartialRefundParams, ProcessPartialRefundResponse } from "./actions/process-partial-refund/types";
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from "./actions/initiate-refund/types";
+export type { OpenExtensionOverlay, OpenExtensionOverlayParams, OpenExtensionOverlayResponse } from "./actions/open-extension-overlay/types";
+export type { ResolveExtensionOverlay, ResolveExtensionOverlayParams, ResolveExtensionOverlayResponse } from "./actions/resolve-extension-overlay/types";
 
 export type { GetCurrentCart, GetCurrentCartResponse } from "./actions/get-current-cart/types";
 

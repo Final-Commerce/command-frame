@@ -93,6 +93,8 @@ import type {
     RemoveCustomSale,
     RemoveNonRevenueItem
 } from "../../index";
+import type { OpenExtensionOverlay } from "../../actions/open-extension-overlay/types";
+import type { ResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/types";
 
 export interface RenderProviderActions {
     exampleFunction: ExampleFunction;
@@ -127,6 +129,8 @@ export interface RenderProviderActions {
     resumeParkedOrder: ResumeParkedOrder;
     deleteParkedOrder: DeleteParkedOrder;
     initiateRefund: InitiateRefund;
+    openExtensionOverlay: OpenExtensionOverlay;
+    resolveExtensionOverlay: ResolveExtensionOverlay;
     cashPayment: CashPayment;
     tapToPayPayment: TapToPayPayment;
     terminalPayment: TerminalPayment;
