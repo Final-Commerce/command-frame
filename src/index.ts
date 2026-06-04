@@ -306,6 +306,8 @@ export type {
 export type { ProcessPartialRefund, ProcessPartialRefundParams, ProcessPartialRefundResponse } from "./actions/process-partial-refund/types";
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from "./actions/initiate-refund/types";
+export type { OpenExtensionOverlay, OpenExtensionOverlayParams, OpenExtensionOverlayResponse } from "./actions/open-extension-overlay/types";
+export type { ResolveExtensionOverlay, ResolveExtensionOverlayParams, ResolveExtensionOverlayResponse } from "./actions/resolve-extension-overlay/types";
 
 export type { GetCurrentCart, GetCurrentCartResponse } from "./actions/get-current-cart/types";
 
@@ -348,9 +350,6 @@ export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } 
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
 export type { ExtensionPayment, ExtensionPaymentParams, ExtensionPaymentResponse } from "./actions/extension-payment/types";
 export type { RedeemPayment, RedeemPaymentParams, RedeemPaymentResponse } from "./actions/redeem-payment/types";
-export { EXTENSION_REFUND_REQUEST_ACTION } from "./actions/extension-refund/constants";
-export { installExtensionRefundListener } from "./actions/extension-refund/extension-refund-listener";
-export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/extension-refund/types";
 // Customer Actions
 export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
 export type { RemoveCustomerNote, RemoveCustomerNoteParams, RemoveCustomerNoteResponse } from "./actions/remove-customer-note/types";
@@ -434,6 +433,13 @@ export type { TopicEventPayloadMap } from "./pubsub/topics/types";
 // Export Hooks (extension iframe API for session-scoped event callbacks)
 export { hooks } from "./hooks";
 export type { HookFunction, HookRegisterOptions } from "./hooks";
+
+// Export Interceptors (extension iframe API for gating host flows)
+export { interceptors } from "./interceptors";
+export type {
+    InterceptorFunction, InterceptorPoint, InterceptorRegisterOptions,
+    InterceptorReturn, InterceptorOverlayContext, InterceptorHostCommands
+} from "./interceptors";
 
 // Export Pub/Sub Topics
 export { customersTopic } from "./pubsub/topics/customers";

@@ -50,4 +50,4 @@ console.log(result.success, result.paymentType, result.order?._id);
 
 - `extensionPayment` is the generic primitive; `redeemPayment` is a convenience wrapper that forces `paymentType: "redeem"`.
 - The host must implement an `extensionPayment` action handler for your payment type.
-- If your payment type behaves like redeem/gift-card tender in POS refunds, also implement the host-initiated refund listener documented in [`../extension-refund/README.md`](../extension-refund/README.md).
+- Refunds of extension/redeem tenders are not currently supported: the host-initiated extension-refund listener was retired (FI-6491/FI-6492).
