@@ -18,7 +18,8 @@ import {
     CurrencyCode,
     CFActiveProduct,
     CFSession,
-    CFActiveRefundDetails
+    CFActiveRefundDetails,
+    CFSmartGridLayout
 } from "../CommonTypes";
 
 export * from "./mocks";
@@ -655,6 +656,11 @@ export let MOCK_ACTIVE_PRODUCT: CFActiveProduct;
 export const setMockActiveProduct = (activeProduct: CFActiveProduct) => {
     MOCK_ACTIVE_PRODUCT = activeProduct;
 };
+
+// In-memory smart-grid layouts keyed by gridId. Used by mockGetSmartGridLayout /
+// mockSaveSmartGridLayout so the standalone builder (no command-frame host) can
+// round-trip layouts within a session.
+export const MOCK_SMART_GRID_LAYOUTS: Record<string, CFSmartGridLayout> = {};
 
 // Helper to reset cart
 export const resetMockCart = () => {

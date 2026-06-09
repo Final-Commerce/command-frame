@@ -38,6 +38,7 @@ import { terminalPayment } from "./actions/terminal-payment/action";
 import { vendaraPayment } from "./actions/vendara-payment/action";
 import { extensionPayment } from "./actions/extension-payment/action";
 import { redeemPayment } from "./actions/redeem-payment/action";
+import { integrationPayment } from "./actions/integration-payment/action";
 // Customer Actions
 import { addCustomerNote } from "./actions/add-customer-note/action";
 import { removeCustomerNote } from "./actions/remove-customer-note/action";
@@ -117,6 +118,9 @@ import { deleteProduct } from "./actions/delete-product/action";
 // Entity Actions
 import { getOutlets } from "./actions/get-outlets/action";
 import { getStations } from "./actions/get-stations/action";
+// SmartGrid Actions
+import { getSmartGridLayout } from "./actions/get-smart-grid-layout/action";
+import { saveSmartGridLayout } from "./actions/save-smart-grid-layout/action";
 // Manage extension actions (optional hosts: Deerlake, etc.)
 import { navigateTo } from "./actions/navigate-to/action";
 import { refreshResource } from "./actions/refresh-resource/action";
@@ -168,6 +172,7 @@ export const command = {
     vendaraPayment,
     extensionPayment,
     redeemPayment,
+    integrationPayment,
     // Customer Actions
     addCustomerNote,
     removeCustomerNote,
@@ -222,6 +227,9 @@ export const command = {
     // Entity Actions
     getOutlets,
     getStations,
+    // SmartGrid Actions
+    getSmartGridLayout,
+    saveSmartGridLayout,
     // Custom Tables Actions
     getCustomTables,
     getCustomTableFields,
@@ -285,6 +293,10 @@ export type { GetOutlets, GetOutletsResponse } from "./actions/get-outlets/types
 
 export type { GetStations, GetStationsParams, GetStationsResponse } from "./actions/get-stations/types";
 
+// SmartGrid Actions
+export type { GetSmartGridLayout, GetSmartGridLayoutParams, GetSmartGridLayoutResponse } from "./actions/get-smart-grid-layout/types";
+export type { SaveSmartGridLayout, SaveSmartGridLayoutParams, SaveSmartGridLayoutResponse } from "./actions/save-smart-grid-layout/types";
+
 export type { GetOrders, GetOrdersParams, GetOrdersResponse } from "./actions/get-orders/types";
 
 export type { GetRefunds, GetRefundsParams, GetRefundsResponse } from "./actions/get-refunds/types";
@@ -307,7 +319,11 @@ export type { ProcessPartialRefund, ProcessPartialRefundParams, ProcessPartialRe
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from "./actions/initiate-refund/types";
 export type { OpenExtensionOverlay, OpenExtensionOverlayParams, OpenExtensionOverlayResponse } from "./actions/open-extension-overlay/types";
-export type { ResolveExtensionOverlay, ResolveExtensionOverlayParams, ResolveExtensionOverlayResponse } from "./actions/resolve-extension-overlay/types";
+export type {
+    ResolveExtensionOverlay,
+    ResolveExtensionOverlayParams,
+    ResolveExtensionOverlayResponse
+} from "./actions/resolve-extension-overlay/types";
 
 export type { GetCurrentCart, GetCurrentCartResponse } from "./actions/get-current-cart/types";
 
@@ -350,6 +366,12 @@ export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } 
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
 export type { ExtensionPayment, ExtensionPaymentParams, ExtensionPaymentResponse } from "./actions/extension-payment/types";
 export type { RedeemPayment, RedeemPaymentParams, RedeemPaymentResponse } from "./actions/redeem-payment/types";
+export type {
+    IntegrationPayment,
+    IntegrationPaymentParams,
+    IntegrationPaymentResponse,
+    IntegrationEmvData
+} from "./actions/integration-payment/types";
 // Customer Actions
 export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
 export type { RemoveCustomerNote, RemoveCustomerNoteParams, RemoveCustomerNoteResponse } from "./actions/remove-customer-note/types";
@@ -437,8 +459,12 @@ export type { HookFunction, HookRegisterOptions } from "./hooks";
 // Export Interceptors (extension iframe API for gating host flows)
 export { interceptors } from "./interceptors";
 export type {
-    InterceptorFunction, InterceptorPoint, InterceptorRegisterOptions,
-    InterceptorReturn, InterceptorOverlayContext, InterceptorHostCommands
+    InterceptorFunction,
+    InterceptorPoint,
+    InterceptorRegisterOptions,
+    InterceptorReturn,
+    InterceptorOverlayContext,
+    InterceptorHostCommands
 } from "./interceptors";
 
 // Export Pub/Sub Topics

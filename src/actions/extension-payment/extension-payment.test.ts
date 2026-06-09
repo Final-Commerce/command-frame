@@ -59,4 +59,13 @@ describe("redeemPayment", () => {
             label: "Card ****"
         });
     });
+
+    it("typechecks reject calls missing required fields", () => {
+        // @ts-expect-error — amount is required
+        const _bad1: ReturnType<typeof redeemPayment> = redeemPayment({});
+        // @ts-expect-error — params is required
+        const _bad2: ReturnType<typeof redeemPayment> = redeemPayment();
+        void _bad1;
+        void _bad2;
+    });
 });

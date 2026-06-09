@@ -93,7 +93,10 @@ import type {
     RemoveCustomSale,
     RemoveNonRevenueItem,
     CanTransition,
-    GetAvailableTransitions
+    GetAvailableTransitions,
+    IntegrationPayment,
+    GetSmartGridLayout,
+    SaveSmartGridLayout
 } from "../../index";
 import type { OpenExtensionOverlay } from "../../actions/open-extension-overlay/types";
 import type { ResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/types";
@@ -139,6 +142,7 @@ export interface RenderProviderActions {
     vendaraPayment: VendaraPayment;
     extensionPayment: ExtensionPayment;
     redeemPayment: RedeemPayment;
+    integrationPayment: IntegrationPayment;
     addNonRevenueItem: AddNonRevenueItem;
     addCustomerNote: AddCustomerNote;
     removeCustomerNote: RemoveCustomerNote;
@@ -196,4 +200,6 @@ export interface RenderProviderActions {
     removeNonRevenueItem: RemoveNonRevenueItem;
     canTransition: CanTransition;
     getAvailableTransitions: GetAvailableTransitions;
+    getSmartGridLayout: GetSmartGridLayout;
+    saveSmartGridLayout: SaveSmartGridLayout;
 }

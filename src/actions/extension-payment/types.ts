@@ -12,6 +12,10 @@ export interface ExtensionPaymentParams {
     metadata?: Record<string, unknown>;
     /** Override the fulfillment state after full payment. Render resolves the cascade. */
     checkoutFulfillmentTarget?: string;
+    /** EMV data when the underlying payment carries one (typed as `IntegrationEmvData` by the integration wrapper). */
+    emvData?: unknown;
+    /** Processor fee in minor units; recorded on the order's paymentMethod.processorFee. */
+    processorFee?: number;
 }
 
 export interface ExtensionPaymentResponse {
