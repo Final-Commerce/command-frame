@@ -37,6 +37,8 @@ import { mockGetTaxTables } from "../../actions/get-tax-tables/mock";
 import { mockGetRemainingRefundableQuantities } from "../../actions/get-remaining-refundable-quantities/mock";
 import { mockGoToStationHome } from "../../actions/go-to-station-home/mock";
 import { mockInitiateRefund } from "../../actions/initiate-refund/mock";
+import { mockOpenExtensionOverlay } from "../../actions/open-extension-overlay/mock";
+import { mockResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/mock";
 import { mockOpenCashDrawer } from "../../actions/open-cash-drawer/mock";
 import { mockParkOrder } from "../../actions/park-order/mock";
 import { mockPartialPayment } from "../../actions/partial-payment/mock";
@@ -86,6 +88,8 @@ import { mockSetActiveSession } from "../../actions/set-active-session/mock";
 import { mockGetActiveUser } from "../../actions/get-active-user/mock";
 import { mockSetActiveUser } from "../../actions/set-active-user/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
+import { canTransitionMock } from "../../actions/can-transition/mock";
+import { getAvailableTransitionsMock } from "../../actions/get-available-transitions/mock";
 import { mockGetSmartGridLayout } from "../../actions/get-smart-grid-layout/mock";
 import { mockSaveSmartGridLayout } from "../../actions/save-smart-grid-layout/mock";
 import { RenderProviderActions } from "./types";
@@ -128,6 +132,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getRemainingRefundableQuantities: mockGetRemainingRefundableQuantities,
     goToStationHome: mockGoToStationHome,
     initiateRefund: mockInitiateRefund,
+    openExtensionOverlay: mockOpenExtensionOverlay,
+    resolveExtensionOverlay: mockResolveExtensionOverlay,
     openCashDrawer: mockOpenCashDrawer,
     parkOrder: mockParkOrder,
     partialPayment: mockPartialPayment,
@@ -185,6 +191,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
     removeOrderNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
     removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
     removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
+    canTransition: canTransitionMock,
+    getAvailableTransitions: getAvailableTransitionsMock,
     getSmartGridLayout: mockGetSmartGridLayout,
     saveSmartGridLayout: mockSaveSmartGridLayout
 };

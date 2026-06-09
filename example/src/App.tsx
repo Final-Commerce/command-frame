@@ -23,6 +23,7 @@ import { SecretsSection } from "./components/sections/SecretsSection";
 import { PrintSection } from "./components/sections/PrintSection";
 import { UsersSection } from "./components/sections/UsersSection";
 import { RolesSection } from "./components/sections/RolesSection";
+import { StateMachineSection } from "./components/sections/StateMachineSection";
 import { VariantsSection } from "./components/sections/VariantsSection";
 import { TransactionsSection } from "./components/sections/TransactionsSection";
 import { AttributesSection } from "./components/sections/AttributesSection";
@@ -45,6 +46,8 @@ function App() {
                 return <CartSection isInIframe={isInIframe} />;
             case "orders":
                 return <OrdersSection isInIframe={isInIframe} />;
+            case "state-machine":
+                return <StateMachineSection isInIframe={isInIframe} />;
             case "outlet":
                 return <OutletSection isInIframe={isInIframe} />;
             case "station":

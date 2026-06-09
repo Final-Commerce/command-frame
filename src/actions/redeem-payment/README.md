@@ -51,5 +51,4 @@ console.log(result.paymentType); // "redeem"
 
 - This command is a wrapper over `extensionPayment`; you cannot override `paymentType`.
 - Host support for redeem/extension tenders must exist in the provider implementation.
-- For refunds of redeem tenders, implement the host-initiated listener:
-  - [extension-refund](../extension-refund/README.md)
+- Refunds of redeem tenders are not currently supported: the host→iframe extension-refund channel was retired (FI-6491/FI-6492).

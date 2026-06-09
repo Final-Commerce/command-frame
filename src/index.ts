@@ -105,6 +105,10 @@ import { getSecretVal } from "./actions/get-secret-val/action";
 import { setSecretVal } from "./actions/set-secret-val/action";
 
 import { generateAPIKey } from "./actions/generate-api-key/action";
+// State Machine Query Actions
+import { canTransition } from "./actions/can-transition/action";
+import { getAvailableTransitions } from "./actions/get-available-transitions/action";
+import { applyTransition } from "./actions/apply-transition/action";
 
 // Product CRUD Actions
 import { addProduct } from "./actions/add-product/action";
@@ -249,7 +253,11 @@ export const command = {
     getMedia,
     uploadMedia,
     getTaxTables,
-    getBranding
+    getBranding,
+    // State Machine Queries
+    canTransition,
+    getAvailableTransitions,
+    applyTransition
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -310,6 +318,12 @@ export type {
 export type { ProcessPartialRefund, ProcessPartialRefundParams, ProcessPartialRefundResponse } from "./actions/process-partial-refund/types";
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from "./actions/initiate-refund/types";
+export type { OpenExtensionOverlay, OpenExtensionOverlayParams, OpenExtensionOverlayResponse } from "./actions/open-extension-overlay/types";
+export type {
+    ResolveExtensionOverlay,
+    ResolveExtensionOverlayParams,
+    ResolveExtensionOverlayResponse
+} from "./actions/resolve-extension-overlay/types";
 
 export type { GetCurrentCart, GetCurrentCartResponse } from "./actions/get-current-cart/types";
 
@@ -358,9 +372,6 @@ export type {
     IntegrationPaymentResponse,
     IntegrationEmvData
 } from "./actions/integration-payment/types";
-export { EXTENSION_REFUND_REQUEST_ACTION } from "./actions/extension-refund/constants";
-export { installExtensionRefundListener } from "./actions/extension-refund/extension-refund-listener";
-export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/extension-refund/types";
 // Customer Actions
 export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
 export type { RemoveCustomerNote, RemoveCustomerNoteParams, RemoveCustomerNoteResponse } from "./actions/remove-customer-note/types";
@@ -445,6 +456,17 @@ export type { TopicEventPayloadMap } from "./pubsub/topics/types";
 export { hooks } from "./hooks";
 export type { HookFunction, HookRegisterOptions } from "./hooks";
 
+// Export Interceptors (extension iframe API for gating host flows)
+export { interceptors } from "./interceptors";
+export type {
+    InterceptorFunction,
+    InterceptorPoint,
+    InterceptorRegisterOptions,
+    InterceptorReturn,
+    InterceptorOverlayContext,
+    InterceptorHostCommands
+} from "./interceptors";
+
 // Export Pub/Sub Topics
 export { customersTopic } from "./pubsub/topics/customers";
 export { ordersTopic } from "./pubsub/topics/orders";
@@ -498,6 +520,10 @@ export type {
     OrderUpdatedEvent,
     OrderActiveSetEvent,
     OrderActiveGetEvent,
+    OrderStateTransitionCompletedPayload,
+    OrderStateTransitionBlockedPayload,
+    OrderStateTransitionCompletedEvent,
+    OrderStateTransitionBlockedEvent,
     OrdersEventType,
     OrdersEventPayload
 } from "./pubsub/topics/orders/types";
@@ -708,3 +734,38 @@ export type { GetSecretVal, GetSecretValParams, GetSecretValResponse } from "./a
 export type { SetSecretVal, SetSecretValParams, SetSecretValResponse } from "./actions/set-secret-val/types";
 export type { GetUsers, GetUsersParams, GetUsersResponse } from "./actions/get-users/types";
 export type { GetRoles, GetRolesParams, GetRolesResponse } from "./actions/get-roles/types";
+
+// State Machine Types
+export type {
+    CFBlockedBy,
+    CFStatePair,
+    CFTransitionResult,
+    CFFailedCondition,
+    CFConditionStatus,
+    CFAvailableTransition
+} from "./common-types/order-state";
+
+export type {
+    CFConditionOperator,
+    CFCondition,
+    CFConditionGroup,
+    CFTransitionConditionSet,
+    CFPaymentTransitionPath,
+    CFFulfillmentTransitionPath,
+    CFCrossAxisRule,
+    CFDisplayStateRule,
+    CFStateConfigFragment
+} from "./common-types/state-fragment";
+
+export type { CanTransition, CanTransitionParams, CanTransitionResponse } from "./actions/can-transition/types";
+
+export type {
+    GetAvailableTransitions,
+    GetAvailableTransitionsParams,
+    GetAvailableTransitionsResponse
+} from "./actions/get-available-transitions/types";
+
+export type { ApplyTransition, ApplyTransitionParams, ApplyTransitionResponse } from "./actions/apply-transition/types";
+
+// State Machine Fragments
+export { preorderNoDepositFragment } from "./fragments";

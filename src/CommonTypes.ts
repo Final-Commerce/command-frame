@@ -28,6 +28,107 @@ export enum CurrencyCode {
     ILS = "ILS",
     TRY = "TRY",
     RUB = "RUB",
+    HTG = "HTG",
+    BND = "BND",
+    CRC = "CRC",
+    BDT = "BDT",
+    UAH = "UAH",
+    NGN = "NGN",
+    AFN = "AFN",
+    ALL = "ALL",
+    AMD = "AMD",
+    ANG = "ANG",
+    AOA = "AOA",
+    ARS = "ARS",
+    AWG = "AWG",
+    AZN = "AZN",
+    BAM = "BAM",
+    BBD = "BBD",
+    BGN = "BGN",
+    BMD = "BMD",
+    BOB = "BOB",
+    BSD = "BSD",
+    BTN = "BTN",
+    BWP = "BWP",
+    BYN = "BYN",
+    BZD = "BZD",
+    COP = "COP",
+    CZK = "CZK",
+    DOP = "DOP",
+    DZD = "DZD",
+    EGP = "EGP",
+    ETB = "ETB",
+    FJD = "FJD",
+    GEL = "GEL",
+    GHS = "GHS",
+    GTQ = "GTQ",
+    GYD = "GYD",
+    HNL = "HNL",
+    IRR = "IRR",
+    JMD = "JMD",
+    KES = "KES",
+    KGS = "KGS",
+    KHR = "KHR",
+    KYD = "KYD",
+    KZT = "KZT",
+    LAK = "LAK",
+    LBP = "LBP",
+    LKR = "LKR",
+    MAD = "MAD",
+    MDL = "MDL",
+    MKD = "MKD",
+    MMK = "MMK",
+    MNT = "MNT",
+    MOP = "MOP",
+    MUR = "MUR",
+    MVR = "MVR",
+    MZN = "MZN",
+    NAD = "NAD",
+    NIO = "NIO",
+    NPR = "NPR",
+    PAB = "PAB",
+    PEN = "PEN",
+    PGK = "PGK",
+    PKR = "PKR",
+    QAR = "QAR",
+    RON = "RON",
+    RSD = "RSD",
+    SBD = "SBD",
+    SRD = "SRD",
+    SYP = "SYP",
+    TJS = "TJS",
+    TMT = "TMT",
+    TOP = "TOP",
+    TTD = "TTD",
+    TZS = "TZS",
+    UYU = "UYU",
+    UZS = "UZS",
+    VES = "VES",
+    WST = "WST",
+    XCD = "XCD",
+    YER = "YER",
+    ZMW = "ZMW",
+    CDF = "CDF",
+    CUP = "CUP",
+    ERN = "ERN",
+    FKP = "FKP",
+    GIP = "GIP",
+    GMD = "GMD",
+    KPW = "KPW",
+    LRD = "LRD",
+    LSL = "LSL",
+    MGA = "MGA",
+    MWK = "MWK",
+    SCR = "SCR",
+    SDG = "SDG",
+    SHP = "SHP",
+    SLE = "SLE",
+    SOS = "SOS",
+    SSP = "SSP",
+    STN = "STN",
+    SZL = "SZL",
+    VED = "VED",
+    XCG = "XCG",
     JPY = "JPY",
     KRW = "KRW",
     VND = "VND",
@@ -35,6 +136,17 @@ export enum CurrencyCode {
     ISK = "ISK",
     HUF = "HUF",
     TWD = "TWD",
+    GNF = "GNF",
+    BIF = "BIF",
+    DJF = "DJF",
+    KMF = "KMF",
+    PYG = "PYG",
+    RWF = "RWF",
+    UGX = "UGX",
+    VUV = "VUV",
+    XAF = "XAF",
+    XOF = "XOF",
+    XPF = "XPF",
     KWD = "KWD",
     BHD = "BHD",
     OMR = "OMR",
@@ -284,8 +396,7 @@ export interface CFActiveProduct extends CFActiveEntity {
 // Customer Interfaces
 export interface CFCustomer {
     _id: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    companyId: any;
+    companyId: string;
     externalId?: string;
     email: string;
     firstName: string;
@@ -486,10 +597,7 @@ export interface CFRefundedLineItem {
     fee: CFFeeLineItem;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CFRefundedCustomSale extends CFCustomSale {
-    // action: string;
-}
+export type CFRefundedCustomSale = CFCustomSale;
 
 export interface CFRefundItem {
     lineItems: CFRefundedLineItem[];
@@ -514,6 +622,12 @@ export interface CFOrder {
     companyId: string;
     externalId: string | null;
     status: string;
+    /** Financial state (state machine). Undefined on legacy orders pre-backfill. */
+    paymentState?: string;
+    /** Operational state (state machine). Undefined on legacy orders pre-backfill. */
+    fulfillmentState?: string;
+    /** Computed display label from paymentState + fulfillmentState matrix. */
+    displayState?: string;
     customer: Partial<CFActiveCustomer | null>;
     customerNote?: string;
     summary: CFSummary;
@@ -568,8 +682,7 @@ export interface CFActiveUser extends CFActiveEntity {
     _id?: string;
     outlets?: string[] | { _id: string }[];
     type?: CFUserTypes;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    companies?: any;
+    companies?: unknown;
 }
 
 export interface CFActiveOutlet extends CFActiveEntity {
@@ -662,10 +775,8 @@ export interface CFActiveCustomSales {
     taxTableId?: string;
     quantity: number;
     price: number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    discount?: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fee?: any;
+    discount?: Record<string, unknown>;
+    fee?: Record<string, unknown>;
 }
 
 /** Non-revenue cart line (e.g. gift card load) — aligned with Render `NonRevenueItem.externalId` (order line id). */
@@ -717,8 +828,7 @@ export interface CFActiveCompany extends CFActiveEntity {
     id?: string;
     name?: string;
     logo?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    settings?: any;
+    settings?: Record<string, unknown>;
 }
 
 // Project name type for identifying which provider environment is active
