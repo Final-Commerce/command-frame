@@ -80,12 +80,12 @@ Registers a session-scoped hook for a topic. The callback is serialized and sent
 ```typescript
 hooks.register('payments', async (event, hostCommands) => {
     if (event.type === 'payment-done') {
-        await hostCommands.triggerWebhook({
-            webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
+        await hostCommands.upsertCustomTableData({
+            tableName: 'payments-log',
+            data: event.data,
         });
     }
-}, { hookId: 'my-extension:payment-webhook' });
+}, { hookId: 'my-extension:payment-log' });
 ```
 
 ### `hooks.unregister(hookId)`
@@ -97,7 +97,7 @@ Removes a hook by its ID.
 
 **Example:**
 ```typescript
-hooks.unregister('my-extension:payment-webhook');
+hooks.unregister('my-extension:payment-log');
 ```
 
 ## Callback Signature
@@ -111,7 +111,7 @@ type HookFunction = (
 ```
 
 - **`event`** - The topic event (`topic`, `type`, `data`, `timestamp`). Same shape as pub/sub events.
-- **`hostCommands`** - Object of host command functions (e.g. `upsertCustomTableData`, `triggerWebhook`).
+- **`hostCommands`** - Object of host command functions (e.g. `upsertCustomTableData`, `addProductToCart`).
 - **`callCommand`** - `(action, params?) => Promise<any>`. Use when the action name is dynamic.
 
 ## Self-Contained Constraint
@@ -170,19 +170,6 @@ hooks.register('cart', async (event, hostCommands) => {
         },
     });
 }, { hookId: 'my-extension:cart-events-log' });
-```
-
-### Webhook on payment completion
-
-```typescript
-hooks.register('payments', async (event, hostCommands) => {
-    if (event.type === 'payment-done') {
-        await hostCommands.triggerWebhook({
-            webhookUrl: 'https://my-api.com/payment-done',
-            payload: event.data,
-        });
-    }
-}, { hookId: 'my-extension:payment-webhook' });
 ```
 
 ### Filtered hook (only specific event types)

@@ -130,11 +130,6 @@ The library provides a `command` namespace object containing all available comma
 - **[getSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secret-val/README.md)** - Retrieve the value of a specific secret by key
 - **[setSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-secret-val/README.md)** - Create or update a secret key-value pair
 
-#### Integration Actions
-
-- **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
-- **[triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)** - Trigger a Zapier webhook with the current context data
-
 #### Additional Commands on `command`
 
 The `command` object also exports several actions that are documented in their own pages and are typically host-specific (Render-only, Manage-only, or optional host extensions):
@@ -512,16 +507,6 @@ Retrieves the value of a specific secret by its key. Supports both company-level
 
 Creates or updates a secret key-value pair. Supports both company-level and extension-scoped secrets. Automatically handles create vs update (upsert behavior).
 
-### Integration Actions
-
-### [triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)
-
-Triggers a webhook with the specified configuration. Supports custom data, authentication, and various payload types.
-
-### [triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)
-
-Triggers a Zapier webhook with the current context data (cart, customer, order, etc.).
-
 ### Reference
 
 ### [exampleFunction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/example-function/README.md)
@@ -819,13 +804,6 @@ import type {
     SetSecretValParams,
     SetSecretValResponse,
     SetSecretVal,
-    // Integration Actions
-    TriggerWebhookParams,
-    TriggerWebhookResponse,
-    TriggerWebhook,
-    TriggerZapierWebhookParams,
-    TriggerZapierWebhookResponse,
-    TriggerZapierWebhook,
     // Reference
     ExampleFunctionParams,
     ExampleFunctionResponse,

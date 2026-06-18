@@ -73,9 +73,6 @@ import { removeCartFee } from "./actions/remove-cart-fee/action";
 import { removeOrderNote } from "./actions/remove-order-note/action";
 import { removeCustomSale } from "./actions/remove-custom-sale/action";
 import { removeNonRevenueItem } from "./actions/remove-non-revenue-item/action";
-// Integration Actions
-import { triggerWebhook } from "./actions/trigger-webhook/action";
-import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
 
 // Refund Actions
 import { getRefunds } from "./actions/get-refunds/action";
@@ -199,9 +196,6 @@ export const command = {
     removeOrderNote,
     removeCustomSale,
     removeNonRevenueItem,
-    // Integration Actions
-    triggerWebhook,
-    triggerZapierWebhook,
     // Refund Actions
     initiateRefund,
     setRefundStockAction,
@@ -384,9 +378,6 @@ export type { RemoveCartFee, RemoveCartFeeParams, RemoveCartFeeResponse } from "
 export type { RemoveOrderNote, RemoveOrderNoteResponse } from "./actions/remove-order-note/types";
 export type { RemoveCustomSale, RemoveCustomSaleParams, RemoveCustomSaleResponse } from "./actions/remove-custom-sale/types";
 export type { RemoveNonRevenueItem, RemoveNonRevenueItemParams, RemoveNonRevenueItemResponse } from "./actions/remove-non-revenue-item/types";
-// Integration Actions
-export type { TriggerWebhook, TriggerWebhookPresetType, TriggerWebhookParams, TriggerWebhookResponse } from "./actions/trigger-webhook/types";
-export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWebhookResponse } from "./actions/trigger-zapier-webhook/types";
 
 // Export Common Types
 export * from "./CommonTypes";

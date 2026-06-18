@@ -51,8 +51,6 @@ import { mockShowNotification } from "../../actions/show-notification/mock";
 import { mockSwitchUser } from "../../actions/switch-user/mock";
 import { mockTapToPayPayment } from "../../actions/tap-to-pay-payment/mock";
 import { mockTerminalPayment } from "../../actions/terminal-payment/mock";
-import { mockTriggerWebhook } from "../../actions/trigger-webhook/mock";
-import { mockTriggerZapierWebhook } from "../../actions/trigger-zapier-webhook/mock";
 import { mockVendaraPayment } from "../../actions/vendara-payment/mock";
 import { mockExtensionPayment } from "../../actions/extension-payment/mock";
 import { mockRedeemPayment } from "../../actions/redeem-payment/mock";
@@ -140,8 +138,6 @@ export const RENDER_MOCKS: RenderProviderActions = {
     switchUser: mockSwitchUser,
     tapToPayPayment: mockTapToPayPayment,
     terminalPayment: mockTerminalPayment,
-    triggerWebhook: mockTriggerWebhook,
-    triggerZapierWebhook: mockTriggerZapierWebhook,
     vendaraPayment: mockVendaraPayment,
     extensionPayment: mockExtensionPayment,
     redeemPayment: mockRedeemPayment,

@@ -48,8 +48,6 @@ import type {
     AuthenticateUser,
     PartialPayment,
     SwitchUser,
-    TriggerWebhook,
-    TriggerZapierWebhook,
     SetRefundStockAction,
     SelectAllRefundItems,
     ResetRefundDetails,
@@ -145,8 +143,6 @@ export interface RenderProviderActions {
     authenticateUser: AuthenticateUser;
     partialPayment: PartialPayment;
     switchUser: SwitchUser;
-    triggerWebhook: TriggerWebhook;
-    triggerZapierWebhook: TriggerZapierWebhook;
     setRefundStockAction: SetRefundStockAction;
     selectAllRefundItems: SelectAllRefundItems;
     resetRefundDetails: ResetRefundDetails;
