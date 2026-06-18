@@ -31,6 +31,11 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
     const [terminalLoading, setTerminalLoading] = useState(false);
     const [terminalResponse, setTerminalResponse] = useState<string>("");
 
+    // Cloud Payment — terminalPayment with paymentType: "Cloud"
+    const [cloudAmount, setCloudAmount] = useState<string>("");
+    const [cloudLoading, setCloudLoading] = useState(false);
+    const [cloudResponse, setCloudResponse] = useState<string>("");
+
     // Vendara Payment
     const [vendaraAmount, setVendaraAmount] = useState<string>("");
     const [vendaraLoading, setVendaraLoading] = useState(false);
@@ -209,6 +214,52 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                     {terminalLoading ? "Processing..." : "Terminal Payment"}
                 </button>
                 {terminalResponse && <JsonViewer data={terminalResponse} title={terminalResponse.startsWith("Error") ? "Error" : "Success"} />}
+            </CommandSection>
+
+            {/* Cloud Payment */}
+            <CommandSection title="Cloud Payment">
+                <p className="section-description">
+                    Initiates a cloud (HTTP) terminal payment via <code>paymentType: "Cloud"</code>. Works on web. Leave amount empty to use cart
+                    total.
+                </p>
+                <div className="form-group">
+                    <div className="form-field">
+                        <label>Amount (optional):</label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            value={cloudAmount}
+                            onChange={e => setCloudAmount(e.target.value)}
+                            placeholder="Leave empty for cart total"
+                        />
+                    </div>
+                </div>
+                <button
+                    onClick={async () => {
+                        if (!isInIframe) {
+                            setCloudResponse("Error: Not running in iframe");
+                            return;
+                        }
+                        setCloudLoading(true);
+                        setCloudResponse("");
+                        try {
+                            const result = await command.terminalPayment({
+                                paymentType: "Cloud",
+                                ...(cloudAmount ? { amount: parseFloat(cloudAmount) } : {})
+                            });
+                            setCloudResponse(JSON.stringify(result, null, 2));
+                        } catch (error) {
+                            setCloudResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+                        } finally {
+                            setCloudLoading(false);
+                        }
+                    }}
+                    disabled={cloudLoading}
+                    className="btn btn--primary"
+                >
+                    {cloudLoading ? "Processing..." : "Cloud Payment"}
+                </button>
+                {cloudResponse && <JsonViewer data={cloudResponse} title={cloudResponse.startsWith("Error") ? "Error" : "Success"} />}
             </CommandSection>
 
             {/* Vendara Payment */}
