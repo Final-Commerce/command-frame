@@ -1,0 +1,53 @@
+name: Build Example App Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - release-staging
+    paths:
+      - "example/**"
+      - "src/**"
+      - "package.json"
+      - "tsconfig.json"
+  workflow_dispatch:
+
+jobs:
+  build-example:
+    name: Build example app
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install library dependencies
+        run: npm ci
+        env:
+          HUSKY: "0"
+
+      - name: Build library
+        run: npm run build
+
+      - name: Point example to local library build
+        working-directory: example
+        run: |
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.dependencies['@final-commerce/command-frame'] = 'file:..';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+      - name: Install example dependencies
+        working-directory: example
+        run: npm install
+
+      - name: Build example app
+        working-directory: example
+        run: npm run build
