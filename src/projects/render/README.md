@@ -40,7 +40,6 @@ The library provides a `command` namespace object containing all available comma
 - **[getActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-station/README.md)** - Retrieve the active station
 - **[getActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-session/README.md)** - Retrieve the active register session (cash session)
 - **[getActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-user/README.md)** - Retrieve the active POS user (employee)
-- **[getActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-refund/README.md)** - Retrieve current refund selection state
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
 - **[getFinalContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-final-context/README.md)** - Get final context information (project name)
 - **[getActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-product/README.md)** - Retrieve the currently active/selected product in the POS interface
@@ -282,9 +281,9 @@ Read or set the active register (cash) session by id.
 
 Read or set the active POS employee user; `setActiveUser` resolves role permissions when applicable.
 
-### [getActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-refund/README.md) / [setActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-refund/README.md)
+### [setActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-refund/README.md)
 
-Read refund UI state or start a refund flow for a given `orderId` (sets active order, opens refund UI, seeds selection).
+Loads refund state for an `orderId` and returns [`CFActiveRefundDetails`](https://github.com/Final-Commerce/command-frame/blob/main/src/types/README.md#cfactiverefunddetails). There is no typed `getActiveRefund` action in this library (`RenderProviderActions` / `command`); subscribe to the [`refunds`](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/refunds/README.md) topic for `get-active-refund` / `set-active-refund` events when you need live snapshots.
 
 ### [addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)
 
