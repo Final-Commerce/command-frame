@@ -2,13 +2,17 @@ import { mockAddCartDiscount } from "../../actions/add-cart-discount/mock";
 import { mockAddCartFee } from "../../actions/add-cart-fee/mock";
 import { mockRemoveCartFee } from "../../actions/remove-cart-fee/mock";
 import { mockAddCustomSale } from "../../actions/add-custom-sale/mock";
+import { mockRemoveCustomSale } from "../../actions/remove-custom-sale/mock";
 import { mockAddCustomer } from "../../actions/add-customer/mock";
 import { mockAddCustomerNote } from "../../actions/add-customer-note/mock";
 import { mockRemoveCustomerNote } from "../../actions/remove-customer-note/mock";
 import { mockEditCustomer } from "../../actions/edit-customer/mock";
 import { mockAddOrderNote } from "../../actions/add-order-note/mock";
+import { mockRemoveOrderNote } from "../../actions/remove-order-note/mock";
 import { mockAddProductDiscount } from "../../actions/add-product-discount/mock";
 import { mockAddProductFee } from "../../actions/add-product-fee/mock";
+import { mockRemoveProductDiscount } from "../../actions/remove-product-discount/mock";
+import { mockRemoveProductFee } from "../../actions/remove-product-fee/mock";
 import { mockSetActiveProductFee } from "../../actions/set-active-product-fee/mock";
 import { mockSetActiveProductDiscount } from "../../actions/set-active-product-discount/mock";
 import { mockGetActiveProduct } from "../../actions/get-active-product/mock";
@@ -184,12 +188,12 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getActiveUser: mockGetActiveUser,
     setActiveUser: mockSetActiveUser,
     setActiveRefund: mockSetActiveRefund,
-    removeProductDiscount: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
-    removeProductFee: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
+    removeProductDiscount: mockRemoveProductDiscount,
+    removeProductFee: mockRemoveProductFee,
     removeProductNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
     removeCartFee: mockRemoveCartFee,
-    removeOrderNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
-    removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
+    removeOrderNote: mockRemoveOrderNote,
+    removeCustomSale: mockRemoveCustomSale,
     removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
     canTransition: canTransitionMock,
     getAvailableTransitions: getAvailableTransitionsMock,

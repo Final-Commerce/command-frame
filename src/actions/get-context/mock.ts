@@ -27,7 +27,7 @@ export const mockGetContext: GetContext = (): Promise<GetContextResponse> => {
         thousandSeparator: ",",
         decimalSeparator: ".",
         user: null,
-        company: null,
+        company: { _id: MOCK_COMPANY.id, name: MOCK_COMPANY.name, logo: MOCK_COMPANY.logo },
         station: null,
         outlet: null,
         timestamp: new Date().toISOString()

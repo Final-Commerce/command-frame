@@ -1,5 +1,5 @@
 import { AddProductDiscount, AddProductDiscountParams, AddProductDiscountResponse } from "./types";
-import { MOCK_CART } from "../../demo/database";
+import { MOCK_CART, mockPublishEvent } from "../../demo/database";
 
 export const mockAddProductDiscount: AddProductDiscount = async (params?: AddProductDiscountParams): Promise<AddProductDiscountResponse> => {
     console.log("[Mock] addProductDiscount called", params);
@@ -13,14 +13,22 @@ export const mockAddProductDiscount: AddProductDiscount = async (params?: AddPro
         }
 
         if (item) {
+            // Mirror render's product handler: it stores `amount` AS-IS — the flow
+            // already sends a fraction (0.5 = 50%) for percent and minor units (500 = $5)
+            // for fixed. tax.ts then uses value as the fraction / minor amount directly.
             item.discount = {
                 value: params.amount,
                 isPercent: params.isPercent || false,
                 label: params.label
             };
-            
-            // Recalculate cart totals (simplified)
-            // Ideally, this should trigger a full recalculation function
+
+            const linePrice = (item.price || 0) * (item.quantity || 1);
+            const discountMinor = params.isPercent ? Math.round(linePrice * params.amount) : params.amount;
+            MOCK_CART.total = Math.max(0, MOCK_CART.total - discountMinor);
+            MOCK_CART.amountToBeCharged = MOCK_CART.total;
+            MOCK_CART.remainingBalance = MOCK_CART.total;
+
+            mockPublishEvent("cart", "product-discount-added", { internalId: params.internalId });
         }
     }
 

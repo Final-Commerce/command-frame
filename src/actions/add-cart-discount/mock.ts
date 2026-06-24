@@ -5,16 +5,19 @@ export const mockAddCartDiscount: AddCartDiscount = async (params?: AddCartDisco
     console.log("[Mock] addCartDiscount called", params);
     
     if (params) {
+        // Mirror render: input is raw (50 = 50%, 5 = $5). Store percent as a
+        // fraction (0.5) and fixed as minor units (500), like the real handler.
+        const minorFactor = 10 ** (MOCK_CART.minorUnits ?? 2);
+        const value = params.isPercent ? params.amount / 100 : Math.round(params.amount * minorFactor);
         MOCK_CART.discount = {
-            value: params.amount,
+            value,
             isPercent: params.isPercent,
             label: params.label
         };
-        // Simple mock calc (not real logic)
         if (params.isPercent) {
             MOCK_CART.total = MOCK_CART.subtotal * (1 - params.amount / 100);
         } else {
-            MOCK_CART.total = MOCK_CART.subtotal - params.amount;
+            MOCK_CART.total = MOCK_CART.subtotal - value;
         }
         MOCK_CART.amountToBeCharged = MOCK_CART.total;
         MOCK_CART.remainingBalance = MOCK_CART.total;
