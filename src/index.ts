@@ -38,6 +38,7 @@ import { terminalPayment } from "./actions/terminal-payment/action";
 import { vendaraPayment } from "./actions/vendara-payment/action";
 import { extensionPayment } from "./actions/extension-payment/action";
 import { redeemPayment } from "./actions/redeem-payment/action";
+import { integrationPayment } from "./actions/integration-payment/action";
 // Customer Actions
 import { addCustomerNote } from "./actions/add-customer-note/action";
 import { removeCustomerNote } from "./actions/remove-customer-note/action";
@@ -73,6 +74,9 @@ import { removeCartFee } from "./actions/remove-cart-fee/action";
 import { removeOrderNote } from "./actions/remove-order-note/action";
 import { removeCustomSale } from "./actions/remove-custom-sale/action";
 import { removeNonRevenueItem } from "./actions/remove-non-revenue-item/action";
+// SmartGrid Actions
+import { getSmartGridLayout } from "./actions/get-smart-grid-layout/action";
+import { saveSmartGridLayout } from "./actions/save-smart-grid-layout/action";
 
 // Refund Actions
 import { getRefunds } from "./actions/get-refunds/action";
@@ -161,6 +165,7 @@ export const command = {
     vendaraPayment,
     extensionPayment,
     redeemPayment,
+    integrationPayment,
     // Customer Actions
     addCustomerNote,
     removeCustomerNote,
@@ -196,6 +201,9 @@ export const command = {
     removeOrderNote,
     removeCustomSale,
     removeNonRevenueItem,
+    // SmartGrid Actions
+    getSmartGridLayout,
+    saveSmartGridLayout,
     // Refund Actions
     initiateRefund,
     setRefundStockAction,
@@ -334,6 +342,7 @@ export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } 
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
 export type { ExtensionPayment, ExtensionPaymentParams, ExtensionPaymentResponse } from "./actions/extension-payment/types";
 export type { RedeemPayment, RedeemPaymentParams, RedeemPaymentResponse } from "./actions/redeem-payment/types";
+export type { IntegrationPayment, IntegrationPaymentParams, IntegrationPaymentResponse } from "./actions/integration-payment/types";
 export { EXTENSION_REFUND_REQUEST_ACTION } from "./actions/extension-refund/constants";
 export { installExtensionRefundListener } from "./actions/extension-refund/extension-refund-listener";
 export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/extension-refund/types";
@@ -378,6 +387,9 @@ export type { RemoveCartFee, RemoveCartFeeParams, RemoveCartFeeResponse } from "
 export type { RemoveOrderNote, RemoveOrderNoteResponse } from "./actions/remove-order-note/types";
 export type { RemoveCustomSale, RemoveCustomSaleParams, RemoveCustomSaleResponse } from "./actions/remove-custom-sale/types";
 export type { RemoveNonRevenueItem, RemoveNonRevenueItemParams, RemoveNonRevenueItemResponse } from "./actions/remove-non-revenue-item/types";
+// SmartGrid Actions
+export type { GetSmartGridLayout, GetSmartGridLayoutParams, GetSmartGridLayoutResponse } from "./actions/get-smart-grid-layout/types";
+export type { SaveSmartGridLayout, SaveSmartGridLayoutParams, SaveSmartGridLayoutResponse } from "./actions/save-smart-grid-layout/types";
 
 // Export Common Types
 export * from "./CommonTypes";

@@ -54,6 +54,9 @@ import { mockTerminalPayment } from "../../actions/terminal-payment/mock";
 import { mockVendaraPayment } from "../../actions/vendara-payment/mock";
 import { mockExtensionPayment } from "../../actions/extension-payment/mock";
 import { mockRedeemPayment } from "../../actions/redeem-payment/mock";
+import { mockIntegrationPayment } from "../../actions/integration-payment/mock";
+import { mockGetSmartGridLayout } from "../../actions/get-smart-grid-layout/mock";
+import { mockSaveSmartGridLayout } from "../../actions/save-smart-grid-layout/mock";
 import { mockAddNonRevenueItem } from "../../actions/add-non-revenue-item/mock";
 import { mockGetFinalContext } from "../../actions/get-final-context/mock";
 import { mockPrint } from "../../actions/print/mock";
@@ -141,6 +144,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     vendaraPayment: mockVendaraPayment,
     extensionPayment: mockExtensionPayment,
     redeemPayment: mockRedeemPayment,
+    integrationPayment: mockIntegrationPayment,
     addNonRevenueItem: mockAddNonRevenueItem,
     getFinalContext: mockGetFinalContext,
     print: mockPrint,
@@ -176,5 +180,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     removeCartFee: mockRemoveCartFee,
     removeOrderNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
     removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
-    removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() })
+    removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
+    getSmartGridLayout: mockGetSmartGridLayout,
+    saveSmartGridLayout: mockSaveSmartGridLayout
 };

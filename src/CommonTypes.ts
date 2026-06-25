@@ -51,7 +51,7 @@ import type {
     Attribute,
     AttributeOption,
     Category,
-    Transaction,
+    Transaction
 } from "@final-commerce/common/pos-types";
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
@@ -118,6 +118,33 @@ export type CFActiveCompany = ActiveCompany;
 // ---------------------------------------------------------------------------
 // command-frame integration-specific types (no common counterpart).
 // ---------------------------------------------------------------------------
+
+/** Tile kinds a SmartGrid cell can represent. Mirrors common's `BaseTile['type']`. */
+export type CFTileType = "empty" | "product" | "action" | "category" | "folder" | "back";
+
+/**
+ * A single positioned cell in a SmartGrid layout. The wire/extension-facing shape
+ * (Render's adapter maps this to/from common's `BaseTile`).
+ */
+export interface CFTileCell {
+    /** Position of the cell within its grid (or folder). */
+    index: number;
+    type: CFTileType;
+    /** Entity id the cell points at (product/category/folder id, action key, …). */
+    entityId?: string;
+    /** Opaque entity payload round-tripped with the cell. */
+    entityData?: Record<string, unknown>;
+}
+
+/** A builder SmartGrid layout addressed by `gridId`, with optional folder sub-grids. */
+export interface CFSmartGridLayout {
+    gridId: string;
+    cells: CFTileCell[];
+    /** Operator-editable display name for the grid. */
+    name?: string;
+    /** Folder id → its cells. */
+    folders?: Record<string, CFTileCell[]>;
+}
 
 /** Refund UI / selection state in POS, aligned with Render `ActiveRefundOrder`. */
 export interface CFRefundProcessingStatus {
