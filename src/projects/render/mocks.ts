@@ -57,6 +57,8 @@ import { mockRedeemPayment } from "../../actions/redeem-payment/mock";
 import { mockIntegrationPayment } from "../../actions/integration-payment/mock";
 import { mockGetSmartGridLayout } from "../../actions/get-smart-grid-layout/mock";
 import { mockSaveSmartGridLayout } from "../../actions/save-smart-grid-layout/mock";
+import { mockOpenExtensionOverlay } from "../../actions/open-extension-overlay/mock";
+import { mockResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/mock";
 import { mockAddNonRevenueItem } from "../../actions/add-non-revenue-item/mock";
 import { mockGetFinalContext } from "../../actions/get-final-context/mock";
 import { mockPrint } from "../../actions/print/mock";
@@ -182,5 +184,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
     removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
     getSmartGridLayout: mockGetSmartGridLayout,
-    saveSmartGridLayout: mockSaveSmartGridLayout
+    saveSmartGridLayout: mockSaveSmartGridLayout,
+    openExtensionOverlay: mockOpenExtensionOverlay,
+    resolveExtensionOverlay: mockResolveExtensionOverlay
 };

@@ -92,7 +92,9 @@ import type {
     RemoveNonRevenueItem,
     IntegrationPayment,
     GetSmartGridLayout,
-    SaveSmartGridLayout
+    SaveSmartGridLayout,
+    OpenExtensionOverlay,
+    ResolveExtensionOverlay
 } from "../../index";
 
 export interface RenderProviderActions {
@@ -190,4 +192,6 @@ export interface RenderProviderActions {
     removeNonRevenueItem: RemoveNonRevenueItem;
     getSmartGridLayout: GetSmartGridLayout;
     saveSmartGridLayout: SaveSmartGridLayout;
+    openExtensionOverlay: OpenExtensionOverlay;
+    resolveExtensionOverlay: ResolveExtensionOverlay;
 }

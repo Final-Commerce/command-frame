@@ -77,6 +77,9 @@ import { removeNonRevenueItem } from "./actions/remove-non-revenue-item/action";
 // SmartGrid Actions
 import { getSmartGridLayout } from "./actions/get-smart-grid-layout/action";
 import { saveSmartGridLayout } from "./actions/save-smart-grid-layout/action";
+// Extension Overlay / Interceptor Actions
+import { openExtensionOverlay } from "./actions/open-extension-overlay/action";
+import { resolveExtensionOverlay } from "./actions/resolve-extension-overlay/action";
 
 // Refund Actions
 import { getRefunds } from "./actions/get-refunds/action";
@@ -204,6 +207,9 @@ export const command = {
     // SmartGrid Actions
     getSmartGridLayout,
     saveSmartGridLayout,
+    // Extension Overlay / Interceptor Actions
+    openExtensionOverlay,
+    resolveExtensionOverlay,
     // Refund Actions
     initiateRefund,
     setRefundStockAction,
@@ -390,6 +396,22 @@ export type { RemoveNonRevenueItem, RemoveNonRevenueItemParams, RemoveNonRevenue
 // SmartGrid Actions
 export type { GetSmartGridLayout, GetSmartGridLayoutParams, GetSmartGridLayoutResponse } from "./actions/get-smart-grid-layout/types";
 export type { SaveSmartGridLayout, SaveSmartGridLayoutParams, SaveSmartGridLayoutResponse } from "./actions/save-smart-grid-layout/types";
+// Extension Overlay / Interceptor Actions
+export type { OpenExtensionOverlay, OpenExtensionOverlayParams, OpenExtensionOverlayResponse } from "./actions/open-extension-overlay/types";
+export type {
+    ResolveExtensionOverlay,
+    ResolveExtensionOverlayParams,
+    ResolveExtensionOverlayResponse
+} from "./actions/resolve-extension-overlay/types";
+// Interceptor contract types
+export type {
+    InterceptorPoint,
+    InterceptorReturn,
+    InterceptorFunction,
+    InterceptorHostCommands,
+    InterceptorRegisterOptions,
+    InterceptorOverlayContext
+} from "./interceptors/types";
 
 // Export Common Types
 export * from "./CommonTypes";
