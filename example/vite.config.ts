@@ -28,6 +28,19 @@ export default defineConfig({
   // both on Vite's plugin pipeline, where the worker transform runs.
   optimizeDeps: {
     exclude: ['@final-commerce/pos-brain', '@final-commerce/port-louis'],
+    // Excluding pos-brain/port-louis means Vite's startup scan never crawls into
+    // them, so their leaf deps (only reached at Boot) would be discovered at
+    // runtime — triggering a full "new dependencies optimized" page reload that
+    // wipes the harness state. Pre-bundle them up front so the first Boot doesn't
+    // reload.
+    include: [
+      'lokijs',
+      'lokijs/src/incremental-indexeddb-adapter.js',
+      'socket.io-client',
+      'engine.io-client',
+      'jwt-decode',
+      'uuid',
+    ],
   },
   resolve: {
     // Dedupe singletons across the example + the linked pos-brain/port-louis source

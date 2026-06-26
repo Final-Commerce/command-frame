@@ -31,10 +31,22 @@ function readTokenFromUrl(): string {
     return token;
 }
 
-// Read (+ strip) the URL token ONCE at module load — before React mounts — so
-// StrictMode's double-invoked effects can't re-read the now-stripped URL and wipe
-// it. Pre-fills the token field; you can also paste a token in directly.
-const INITIAL_TOKEN = readTokenFromUrl();
+const TOKEN_KEY = "harness.token";
+
+// Resolve the initial token ONCE at module load (before React mounts). Priority:
+// `?token=` URL (captured + stripped) > sessionStorage. Persisting to
+// sessionStorage means the token survives a page reload — incl. Vite's one-off
+// "new dependencies optimized" reload on first Boot — so the field never empties.
+function readInitialToken(): string {
+    const fromUrl = readTokenFromUrl();
+    if (fromUrl) {
+        sessionStorage.setItem(TOKEN_KEY, fromUrl);
+        return fromUrl;
+    }
+    return sessionStorage.getItem(TOKEN_KEY) ?? "";
+}
+
+const INITIAL_TOKEN = readInitialToken();
 
 const box: React.CSSProperties = {
     border: "1px solid #2a2a3a",
@@ -168,7 +180,7 @@ export function BootstrapPanel() {
             ) : null}
 
             <div style={{ margin: "8px 0" }}>
-                <input style={{ ...input, width: 520 }} placeholder="company token (JWT) *" value={token} onChange={(e) => setToken(e.target.value)} />
+                <input style={{ ...input, width: 520 }} placeholder="company token (JWT) *" value={token} onChange={(e) => { setToken(e.target.value); sessionStorage.setItem(TOKEN_KEY, e.target.value); }} />
             </div>
             <div style={{ margin: "8px 0" }}>
                 <input style={input} placeholder="companyId *" value={companyId} onChange={(e) => setCompanyId(e.target.value)} />
@@ -182,8 +194,8 @@ export function BootstrapPanel() {
             </div>
 
             <div style={{ margin: "8px 0" }}>
-                <button style={btn} onClick={onBoot} disabled={booted}>Boot</button>
-                <button style={btn} onClick={onOpenSession} disabled={!booted}>Open session</button>
+                <button type="button" style={btn} onClick={onBoot} disabled={booted}>Boot</button>
+                <button type="button" style={btn} onClick={onOpenSession} disabled={!booted}>Open session</button>
             </div>
 
             {error ? (
