@@ -39,10 +39,11 @@ import type {
 } from "@final-commerce/common/pos-types";
 import { RenderClient } from "@final-commerce/command-frame-real";
 
-/** WS endpoint for station-sync. Override at runtime via `?ws=` or the panel. */
+/** WS endpoint for station-sync. Priority: `?ws=` runtime override > VITE_WS_URL env > localhost default. */
 const DEFAULT_WS_URL =
     (typeof window !== "undefined" &&
         new URLSearchParams(window.location.search).get("ws")) ||
+    import.meta.env.VITE_WS_URL ||
     "wss://localhost:8080";
 
 let wsUrl = DEFAULT_WS_URL;
