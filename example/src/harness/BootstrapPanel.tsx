@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { ActiveEntityType } from "@final-commerce/common/pos-types";
 import {
     bootBrain,
@@ -31,6 +31,11 @@ function readTokenFromUrl(): string {
     return token;
 }
 
+// Read (+ strip) the URL token ONCE at module load — before React mounts — so
+// StrictMode's double-invoked effects can't re-read the now-stripped URL and wipe
+// it. Pre-fills the token field; you can also paste a token in directly.
+const INITIAL_TOKEN = readTokenFromUrl();
+
 const box: React.CSSProperties = {
     border: "1px solid #2a2a3a",
     borderRadius: 8,
@@ -61,8 +66,7 @@ const btn: React.CSSProperties = {
 };
 
 export function BootstrapPanel() {
-    const tokenRef = useRef<string>("");
-    const [hasToken, setHasToken] = useState(false);
+    const [token, setToken] = useState(INITIAL_TOKEN);
     const [companyId, setCompanyId] = useState("");
     const [outletId, setOutletId] = useState("");
     const [stationId, setStationId] = useState("");
@@ -78,18 +82,13 @@ export function BootstrapPanel() {
 
     const mountRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        tokenRef.current = readTokenFromUrl();
-        setHasToken(Boolean(tokenRef.current));
-    }, []);
-
     // Live pos-brain store snapshot (cart / order / session / shell).
     const snapshot = useSyncExternalStore(subscribeStore, getStoreState, getStoreState);
 
     const onBoot = async () => {
         setError("");
-        if (!tokenRef.current) {
-            setError("No token. Open the app with ?token=<jwt>.");
+        if (!token) {
+            setError("No token. Paste a company JWT in the token field (or open with ?token=<jwt>).");
             return;
         }
         if (!companyId || !outletId || !stationId) {
@@ -104,7 +103,7 @@ export function BootstrapPanel() {
         setStatus("booting…");
         try {
             const inputs: BootInputs = {
-                token: tokenRef.current,
+                token,
                 companyId,
                 outletId,
                 stationId,
@@ -142,7 +141,7 @@ export function BootstrapPanel() {
         <div style={box}>
             <strong>pos-brain standalone harness (Topology B)</strong>
             <div style={{ margin: "8px 0" }}>
-                token: <b style={{ color: hasToken ? "#5bff8a" : "#ff6b6b" }}>{hasToken ? "set" : "missing"}</b>
+                token: <b style={{ color: token ? "#5bff8a" : "#ff6b6b" }}>{token ? "set" : "missing"}</b>
                 {"  |  "}brain: <b style={{ color: booted ? "#5bff8a" : "#ffd166" }}>{booted ? "booted" : "not booted"}</b>
                 {"  |  "}status: <b>{status}</b>
                 {sessionId ? <> {"  |  "}session: <b>{sessionId}</b></> : null}
@@ -168,6 +167,9 @@ export function BootstrapPanel() {
                 </div>
             ) : null}
 
+            <div style={{ margin: "8px 0" }}>
+                <input style={{ ...input, width: 520 }} placeholder="company token (JWT) *" value={token} onChange={(e) => setToken(e.target.value)} />
+            </div>
             <div style={{ margin: "8px 0" }}>
                 <input style={input} placeholder="companyId *" value={companyId} onChange={(e) => setCompanyId(e.target.value)} />
                 <input style={input} placeholder="outletId *" value={outletId} onChange={(e) => setOutletId(e.target.value)} />
