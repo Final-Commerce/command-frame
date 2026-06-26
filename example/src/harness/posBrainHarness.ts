@@ -22,12 +22,8 @@ import {
     setSession,
     setCompany,
     ShellActions,
-    getCompanySettings,
-    getCompanySettingsEAVValues,
     getOutletById,
     getStationById,
-    convertEAVValue,
-    type EAVType,
     type Station,
     type PosSelection,
     type PosState,
@@ -85,6 +81,12 @@ export interface BootInputs {
     stationId: string;
     userId?: string;
     flowId?: string;
+    /**
+     * The company object (with `settings.currency`). NOT synced to the client —
+     * station-home fetches it over HTTP at selection time. The harness stands in
+     * for station-home: the tester pastes Render's company JSON into the panel.
+     */
+    company?: ActiveCompany;
 }
 
 /**
@@ -192,64 +194,11 @@ async function pollUntil<T>(
     return undefined;
 }
 
-interface EavAttribute {
-    _id: string;
-    name: string;
-    type?: EAVType;
-}
-interface EavValueRow {
-    attributeId: string;
-    value: string;
-}
-
 /**
- * Reconstruct the company `settings` object from synced EAV (no `companies`
- * collection is synced to the client; the company's `settings.*` fields — incl.
- * `currency` — are flattened into `company-settings-eav` keys + per-company
- * `company-settings-eav-values`). This mirrors what Render's `selectCompany`
- * receives pre-built from the hub HTTP endpoint, but sourced from the synced DB.
- *
- * Returns `undefined` until BOTH the attribute keys and this company's values
- * have synced AND a `currency` attribute is present (the field the session path
- * needs) — so the caller can keep waiting rather than seeding an empty company.
- */
-async function readCompanySettingsFromEav(
-    companyId: string,
-): Promise<Record<string, unknown> | undefined> {
-    const result = await pollUntil(
-        async () => {
-            const attributes = (await getCompanySettings({})) as EavAttribute[];
-            const values = (await getCompanySettingsEAVValues({
-                entityId: companyId,
-            })) as EavValueRow[];
-            const byId = new Map((attributes ?? []).map((a) => [a._id, a]));
-            const settings: Record<string, unknown> = {};
-            for (const row of values ?? []) {
-                const attr = byId.get(row.attributeId);
-                if (attr?.name) {
-                    settings[attr.name] = convertEAVValue(row.value, attr.type);
-                }
-            }
-            console.log("[harness] EAV company-settings poll:", {
-                attributes: attributes?.length ?? 0,
-                values: values?.length ?? 0,
-                settingKeys: Object.keys(settings),
-                currency: settings.currency ?? null,
-            });
-            // Only resolve once currency (the critical field) has actually synced.
-            return typeof settings.currency === "string" && settings.currency
-                ? settings
-                : undefined;
-        },
-        (settings): settings is Record<string, unknown> => settings !== undefined,
-    );
-    return result;
-}
-
-/**
- * Seed the shell-context slices from the synced DB by the provided IDs. Updates
- * `hydration` as each piece lands; surfaces a clear "waiting for sync / not
- * found" detail rather than throwing when a collection hasn't synced yet.
+ * Seed the shell-context slices. The company comes from the pasted JSON (it isn't
+ * synced — station-home fetches it over HTTP); outlet/station ARE synced, so they
+ * are read from the local DB by id. Updates `hydration` as each piece lands and
+ * surfaces a clear "waiting / not found" detail rather than throwing.
  */
 async function hydrateShellContext(inputs: BootInputs): Promise<void> {
     const waiting: string[] = [];
@@ -261,18 +210,18 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
         detail: "hydrating…",
     };
 
-    // company (with currency — the critical one for Open-session).
-    const settings = await readCompanySettingsFromEav(inputs.companyId);
-    if (settings) {
-        const company: ActiveCompany = {
-            id: inputs.companyId,
-            settings,
-        };
+    // company (with currency — the critical one for Open-session). Seeded directly
+    // from the pasted company object, mirroring Render's `selectCompany` →
+    // `setCompany(normalizedCompany)`.
+    const company = inputs.company;
+    const currency = (company?.settings as { currency?: string } | undefined)?.currency;
+    console.log("[harness] company hydrate:", { id: company?.id ?? null, currency: currency ?? null });
+    if (company && currency) {
         posStore.dispatch(setCompany(company));
         posStore.dispatch(ShellActions.updateActiveCompany(company));
         hydration = { ...hydration, company: true, currency: true };
     } else {
-        waiting.push("company-settings(+currency)");
+        waiting.push("company JSON with settings.currency (paste it in the panel)");
     }
 
     // outlet.

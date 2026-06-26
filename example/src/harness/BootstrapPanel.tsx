@@ -1,5 +1,5 @@
 import { useRef, useState, useSyncExternalStore } from "react";
-import { ActiveEntityType } from "@final-commerce/common/pos-types";
+import { ActiveEntityType, type ActiveCompany } from "@final-commerce/common/pos-types";
 import {
     bootBrain,
     openSession,
@@ -92,6 +92,7 @@ const btn: React.CSSProperties = {
 
 export function BootstrapPanel() {
     const [token, setToken] = useState(INITIAL_TOKEN);
+    const [companyJson, setCompanyJson] = useState(() => restore("companyJson"));
     const [companyId, setCompanyId] = useState(() => restore("companyId"));
     const [outletId, setOutletId] = useState(() => restore("outletId"));
     const [stationId, setStationId] = useState(() => restore("stationId"));
@@ -124,6 +125,16 @@ export function BootstrapPanel() {
             setError("Mount node not ready.");
             return;
         }
+        let company: ActiveCompany | undefined;
+        if (companyJson.trim()) {
+            try {
+                company = JSON.parse(companyJson) as ActiveCompany;
+            } catch {
+                setStatus("boot failed");
+                setError("Company JSON is not valid JSON — paste Render's company object.");
+                return;
+            }
+        }
         setWsUrl(ws);
         setStatus("booting…");
         try {
@@ -134,6 +145,7 @@ export function BootstrapPanel() {
                 stationId,
                 userId: userId || undefined,
                 flowId: flowId || undefined,
+                company,
             };
             setStatus("booting — waiting for sync to hydrate context…");
             await bootBrain(inputs, mountRef.current);
@@ -194,6 +206,14 @@ export function BootstrapPanel() {
 
             <div style={{ margin: "8px 0" }}>
                 <input style={{ ...input, width: 520 }} placeholder="company token (JWT) *" value={token} onChange={(e) => { setToken(e.target.value); persist("token", e.target.value); }} />
+            </div>
+            <div style={{ margin: "8px 0" }}>
+                <textarea
+                    style={{ ...input, width: 520, height: 96, fontFamily: "monospace", verticalAlign: "top" }}
+                    placeholder="company JSON — paste Render's company object (must include settings.currency) *"
+                    value={companyJson}
+                    onChange={(e) => { setCompanyJson(e.target.value); persist("companyJson", e.target.value); }}
+                />
             </div>
             <div style={{ margin: "8px 0" }}>
                 <input style={input} placeholder="companyId *" value={companyId} onChange={(e) => { setCompanyId(e.target.value); persist("companyId", e.target.value); }} />
