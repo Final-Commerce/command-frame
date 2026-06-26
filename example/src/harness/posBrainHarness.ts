@@ -222,21 +222,20 @@ async function readCompanySettingsFromEav(
             const values = (await getCompanySettingsEAVValues({
                 entityId: companyId,
             })) as EavValueRow[];
-            console.log("[harness] EAV company-settings poll:", {
-                attributes: attributes?.length ?? 0,
-                values: values?.length ?? 0,
-            });
-            if (!attributes?.length || !values?.length) {
-                return undefined;
-            }
-            const byId = new Map(attributes.map((a) => [a._id, a]));
+            const byId = new Map((attributes ?? []).map((a) => [a._id, a]));
             const settings: Record<string, unknown> = {};
-            for (const row of values) {
+            for (const row of values ?? []) {
                 const attr = byId.get(row.attributeId);
                 if (attr?.name) {
                     settings[attr.name] = convertEAVValue(row.value, attr.type);
                 }
             }
+            console.log("[harness] EAV company-settings poll:", {
+                attributes: attributes?.length ?? 0,
+                values: values?.length ?? 0,
+                settingKeys: Object.keys(settings),
+                currency: settings.currency ?? null,
+            });
             // Only resolve once currency (the critical field) has actually synced.
             return typeof settings.currency === "string" && settings.currency
                 ? settings
