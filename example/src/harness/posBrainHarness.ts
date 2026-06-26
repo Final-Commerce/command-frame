@@ -20,9 +20,23 @@ import {
     addSessionToLocalDb,
     createSessionFromDb,
     setSession,
+    setCompany,
+    ShellActions,
+    getCompanySettings,
+    getCompanySettingsEAVValues,
+    getOutletById,
+    getStationById,
+    convertEAVValue,
+    type EAVType,
+    type Station,
     type PosSelection,
     type PosState,
 } from "@final-commerce/pos-brain";
+import type {
+    ActiveCompany,
+    ActiveOutlet,
+    ActiveStation,
+} from "@final-commerce/common/pos-types";
 import { RenderClient } from "@final-commerce/command-frame-real";
 
 /** WS endpoint for station-sync. Override at runtime via `?ws=` or the panel. */
@@ -73,6 +87,35 @@ export interface BootInputs {
 }
 
 /**
+ * Post-boot shell-context hydration status. In the hosted flow station-home does
+ * the company/outlet/station SELECTION and hands pos-brain a hydrated
+ * `SelectionContext`; standalone has no station-home, so the harness stands in
+ * for it by reading the synced DB by the provided IDs (see `hydrateShellContext`).
+ * The panel polls this so the tester knows when Open-session + commands are safe.
+ */
+export interface HydrationStatus {
+    company: boolean;
+    /** company hydration is only meaningful with the currency the session path needs. */
+    currency: boolean;
+    outlet: boolean;
+    station: boolean;
+    /** Human-readable state, e.g. "waiting for sync: company-settings, outlet". */
+    detail: string;
+}
+
+let hydration: HydrationStatus = {
+    company: false,
+    currency: false,
+    outlet: false,
+    station: false,
+    detail: "not booted",
+};
+
+export function getHydrationStatus(): HydrationStatus {
+    return hydration;
+}
+
+/**
  * Boot pos-brain in-process:
  *   new POSBrain(bindings) → injectToken(token) (decodes companyId, opens DB,
  *   starts sync) → setSelection(IDs-only) → mount(rootEl).
@@ -81,8 +124,16 @@ export interface BootInputs {
  * hydrated `SelectionContext` would require fabricating ActiveUser/ActiveCompany/
  * ActiveOutlet/ActiveStation/Flow entities, which we can't get honestly before
  * sync. The IDs-only path is pos-brain's real DB/sync-control entry point and
- * keeps types honest (no `any` stubs). The hydrated shell-context slices are then
- * seeded by sync + by Open Session below.
+ * keeps types honest (no `any` stubs).
+ *
+ * The IDs-only path drives the DB/sync but does NOT populate pos-brain's
+ * shell-context redux slices (company/outlet/station). In the hosted flow that's
+ * station-home's job (hydrated `SelectionContext` → `setSelectionContext` →
+ * populateShellContext). Standalone has no station-home, so after sync settles we
+ * stand in for it: `hydrateShellContext` reads the REAL synced entities from
+ * pos-brain's DB by the provided IDs and seeds the slices. Without this,
+ * `company.activeCompany` stays null and Open-session throws "Missing company
+ * currency".
  */
 export async function bootBrain(
     inputs: BootInputs,
@@ -111,6 +162,147 @@ export async function bootBrain(
 
     b.mount(rootEl);
     brain = b;
+
+    // Stand in for station-home: hydrate the shell-context slices from the synced
+    // DB so the lifted handlers (and Open-session's currency dependency) see real
+    // company/outlet/station context. Awaits sync of the needed collections.
+    await hydrateShellContext(inputs);
+}
+
+// --- Shell-context hydration (the station-home stand-in) ---------------------
+
+/** Poll an async read until it returns a present value or the budget runs out. */
+async function pollUntil<T>(
+    read: () => Promise<T>,
+    isPresent: (value: T) => boolean,
+    { tries = 60, intervalMs = 500 }: { tries?: number; intervalMs?: number } = {},
+): Promise<T | undefined> {
+    for (let i = 0; i < tries; i++) {
+        const value = await read();
+        if (isPresent(value)) {
+            return value;
+        }
+        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    return undefined;
+}
+
+interface EavAttribute {
+    _id: string;
+    name: string;
+    type?: EAVType;
+}
+interface EavValueRow {
+    attributeId: string;
+    value: string;
+}
+
+/**
+ * Reconstruct the company `settings` object from synced EAV (no `companies`
+ * collection is synced to the client; the company's `settings.*` fields — incl.
+ * `currency` — are flattened into `company-settings-eav` keys + per-company
+ * `company-settings-eav-values`). This mirrors what Render's `selectCompany`
+ * receives pre-built from the hub HTTP endpoint, but sourced from the synced DB.
+ *
+ * Returns `undefined` until BOTH the attribute keys and this company's values
+ * have synced AND a `currency` attribute is present (the field the session path
+ * needs) — so the caller can keep waiting rather than seeding an empty company.
+ */
+async function readCompanySettingsFromEav(
+    companyId: string,
+): Promise<Record<string, unknown> | undefined> {
+    const result = await pollUntil(
+        async () => {
+            const attributes = (await getCompanySettings({})) as EavAttribute[];
+            const values = (await getCompanySettingsEAVValues({
+                entityId: companyId,
+            })) as EavValueRow[];
+            if (!attributes?.length || !values?.length) {
+                return undefined;
+            }
+            const byId = new Map(attributes.map((a) => [a._id, a]));
+            const settings: Record<string, unknown> = {};
+            for (const row of values) {
+                const attr = byId.get(row.attributeId);
+                if (attr?.name) {
+                    settings[attr.name] = convertEAVValue(row.value, attr.type);
+                }
+            }
+            // Only resolve once currency (the critical field) has actually synced.
+            return typeof settings.currency === "string" && settings.currency
+                ? settings
+                : undefined;
+        },
+        (settings): settings is Record<string, unknown> => settings !== undefined,
+    );
+    return result;
+}
+
+/**
+ * Seed the shell-context slices from the synced DB by the provided IDs. Updates
+ * `hydration` as each piece lands; surfaces a clear "waiting for sync / not
+ * found" detail rather than throwing when a collection hasn't synced yet.
+ */
+async function hydrateShellContext(inputs: BootInputs): Promise<void> {
+    const waiting: string[] = [];
+    hydration = {
+        company: false,
+        currency: false,
+        outlet: false,
+        station: false,
+        detail: "hydrating…",
+    };
+
+    // company (with currency — the critical one for Open-session).
+    const settings = await readCompanySettingsFromEav(inputs.companyId);
+    if (settings) {
+        const company: ActiveCompany = {
+            id: inputs.companyId,
+            settings,
+        };
+        posStore.dispatch(setCompany(company));
+        posStore.dispatch(ShellActions.updateActiveCompany(company));
+        hydration = { ...hydration, company: true, currency: true };
+    } else {
+        waiting.push("company-settings(+currency)");
+    }
+
+    // outlet.
+    const outletRow = await pollUntil(
+        () => getOutletById(inputs.outletId),
+        (o): o is Record<string, unknown> => o != null,
+    );
+    if (outletRow) {
+        const outlet = { ...outletRow, id: outletRow._id } as ActiveOutlet;
+        posStore.dispatch(ShellActions.updateActiveOutlet(outlet));
+        hydration = { ...hydration, outlet: true };
+    } else {
+        waiting.push("outlet");
+    }
+
+    // station.
+    const stationRow = await pollUntil<Station | null>(
+        () => getStationById(inputs.stationId),
+        (s): s is Station => s != null,
+    );
+    if (stationRow) {
+        // pos-brain's Station row is structurally the ActiveStation shape.
+        const station: ActiveStation = { ...stationRow };
+        posStore.dispatch(ShellActions.setStation(station));
+        hydration = { ...hydration, station: true };
+    } else {
+        waiting.push("station");
+    }
+
+    // user / flow are intentionally skipped for the smoke: the cart/order/session
+    // path needs company/outlet/station, not user/flow.
+
+    hydration = {
+        ...hydration,
+        detail: waiting.length
+            ? `waiting for sync / not found: ${waiting.join(", ")}`
+            : "context ready",
+    };
 }
 
 export function isBooted(): boolean {

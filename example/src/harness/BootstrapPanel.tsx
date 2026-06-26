@@ -6,9 +6,11 @@ import {
     isBooted,
     subscribeStore,
     getStoreState,
+    getHydrationStatus,
     getWsUrl,
     setWsUrl,
     type BootInputs,
+    type HydrationStatus,
 } from "./posBrainHarness";
 
 /**
@@ -72,6 +74,7 @@ export function BootstrapPanel() {
     const [status, setStatus] = useState<string>("idle");
     const [sessionId, setSessionId] = useState<string>("");
     const [error, setError] = useState<string>("");
+    const [hydration, setHydration] = useState<HydrationStatus | null>(null);
 
     const mountRef = useRef<HTMLDivElement>(null);
 
@@ -108,9 +111,11 @@ export function BootstrapPanel() {
                 userId: userId || undefined,
                 flowId: flowId || undefined,
             };
+            setStatus("booting — waiting for sync to hydrate context…");
             await bootBrain(inputs, mountRef.current);
             setBooted(true);
-            setStatus("booted — sync started");
+            setHydration(getHydrationStatus());
+            setStatus("booted — context hydrated");
         } catch (e) {
             setStatus("boot failed");
             setError(e instanceof Error ? e.message : String(e));
@@ -142,6 +147,26 @@ export function BootstrapPanel() {
                 {"  |  "}status: <b>{status}</b>
                 {sessionId ? <> {"  |  "}session: <b>{sessionId}</b></> : null}
             </div>
+
+            {hydration ? (
+                <div style={{ margin: "8px 0" }}>
+                    context:{" "}
+                    <b style={{ color: hydration.currency ? "#5bff8a" : "#ff6b6b" }}>
+                        company(+currency) {hydration.currency ? "✓" : "✗"}
+                    </b>
+                    {" / "}
+                    <b style={{ color: hydration.outlet ? "#5bff8a" : "#ff6b6b" }}>
+                        outlet {hydration.outlet ? "✓" : "✗"}
+                    </b>
+                    {" / "}
+                    <b style={{ color: hydration.station ? "#5bff8a" : "#ff6b6b" }}>
+                        station {hydration.station ? "✓" : "✗"}
+                    </b>
+                    {hydration.detail ? (
+                        <span style={{ color: "#9999b3" }}> — {hydration.detail}</span>
+                    ) : null}
+                </div>
+            ) : null}
 
             <div style={{ margin: "8px 0" }}>
                 <input style={input} placeholder="companyId *" value={companyId} onChange={(e) => setCompanyId(e.target.value)} />
