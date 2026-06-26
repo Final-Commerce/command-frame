@@ -31,19 +31,32 @@ function readTokenFromUrl(): string {
     return token;
 }
 
-const TOKEN_KEY = "harness.token";
+// Persist every field to sessionStorage so the whole form survives a page reload
+// (incl. Vite's one-off "new dependencies optimized" reload on first Boot).
+const persist = (key: string, value: string): void => {
+    try {
+        sessionStorage.setItem(`harness.${key}`, value);
+    } catch {
+        /* sessionStorage unavailable — non-fatal */
+    }
+};
+const restore = (key: string, fallback = ""): string => {
+    try {
+        return sessionStorage.getItem(`harness.${key}`) ?? fallback;
+    } catch {
+        return fallback;
+    }
+};
 
 // Resolve the initial token ONCE at module load (before React mounts). Priority:
-// `?token=` URL (captured + stripped) > sessionStorage. Persisting to
-// sessionStorage means the token survives a page reload — incl. Vite's one-off
-// "new dependencies optimized" reload on first Boot — so the field never empties.
+// `?token=` URL (captured + stripped) > sessionStorage.
 function readInitialToken(): string {
     const fromUrl = readTokenFromUrl();
     if (fromUrl) {
-        sessionStorage.setItem(TOKEN_KEY, fromUrl);
+        persist("token", fromUrl);
         return fromUrl;
     }
-    return sessionStorage.getItem(TOKEN_KEY) ?? "";
+    return restore("token");
 }
 
 const INITIAL_TOKEN = readInitialToken();
@@ -79,12 +92,12 @@ const btn: React.CSSProperties = {
 
 export function BootstrapPanel() {
     const [token, setToken] = useState(INITIAL_TOKEN);
-    const [companyId, setCompanyId] = useState("");
-    const [outletId, setOutletId] = useState("");
-    const [stationId, setStationId] = useState("");
-    const [userId, setUserId] = useState("");
-    const [flowId, setFlowId] = useState("");
-    const [ws, setWs] = useState(getWsUrl());
+    const [companyId, setCompanyId] = useState(() => restore("companyId"));
+    const [outletId, setOutletId] = useState(() => restore("outletId"));
+    const [stationId, setStationId] = useState(() => restore("stationId"));
+    const [userId, setUserId] = useState(() => restore("userId"));
+    const [flowId, setFlowId] = useState(() => restore("flowId"));
+    const [ws, setWs] = useState(() => restore("ws", getWsUrl()));
 
     const [booted, setBooted] = useState(isBooted());
     const [status, setStatus] = useState<string>("idle");
@@ -180,17 +193,17 @@ export function BootstrapPanel() {
             ) : null}
 
             <div style={{ margin: "8px 0" }}>
-                <input style={{ ...input, width: 520 }} placeholder="company token (JWT) *" value={token} onChange={(e) => { setToken(e.target.value); sessionStorage.setItem(TOKEN_KEY, e.target.value); }} />
+                <input style={{ ...input, width: 520 }} placeholder="company token (JWT) *" value={token} onChange={(e) => { setToken(e.target.value); persist("token", e.target.value); }} />
             </div>
             <div style={{ margin: "8px 0" }}>
-                <input style={input} placeholder="companyId *" value={companyId} onChange={(e) => setCompanyId(e.target.value)} />
-                <input style={input} placeholder="outletId *" value={outletId} onChange={(e) => setOutletId(e.target.value)} />
-                <input style={input} placeholder="stationId *" value={stationId} onChange={(e) => setStationId(e.target.value)} />
+                <input style={input} placeholder="companyId *" value={companyId} onChange={(e) => { setCompanyId(e.target.value); persist("companyId", e.target.value); }} />
+                <input style={input} placeholder="outletId *" value={outletId} onChange={(e) => { setOutletId(e.target.value); persist("outletId", e.target.value); }} />
+                <input style={input} placeholder="stationId *" value={stationId} onChange={(e) => { setStationId(e.target.value); persist("stationId", e.target.value); }} />
             </div>
             <div style={{ margin: "8px 0" }}>
-                <input style={input} placeholder="userId (optional)" value={userId} onChange={(e) => setUserId(e.target.value)} />
-                <input style={input} placeholder="flowId (optional)" value={flowId} onChange={(e) => setFlowId(e.target.value)} />
-                <input style={{ ...input, width: 280 }} placeholder="ws url" value={ws} onChange={(e) => setWs(e.target.value)} />
+                <input style={input} placeholder="userId (optional)" value={userId} onChange={(e) => { setUserId(e.target.value); persist("userId", e.target.value); }} />
+                <input style={input} placeholder="flowId (optional)" value={flowId} onChange={(e) => { setFlowId(e.target.value); persist("flowId", e.target.value); }} />
+                <input style={{ ...input, width: 280 }} placeholder="ws url" value={ws} onChange={(e) => { setWs(e.target.value); persist("ws", e.target.value); }} />
             </div>
 
             <div style={{ margin: "8px 0" }}>

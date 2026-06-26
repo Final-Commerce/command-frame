@@ -33,13 +33,20 @@ export default defineConfig({
     // runtime — triggering a full "new dependencies optimized" page reload that
     // wipes the harness state. Pre-bundle them up front so the first Boot doesn't
     // reload.
+    // The COMPLETE set of runtime deps both excluded packages import — pos-brain
+    // pulls the redux/react-redux stack, port-louis pulls lokijs/socket.io. Missing
+    // even one makes Vite discover it on first Boot and force-reload.
     include: [
+      '@reduxjs/toolkit',
+      'react-redux',
+      'redux',
       'lokijs',
       'lokijs/src/incremental-indexeddb-adapter.js',
       'socket.io-client',
       'engine.io-client',
       'jwt-decode',
       'uuid',
+      '@sentry/react',
     ],
   },
   resolve: {

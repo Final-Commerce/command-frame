@@ -150,7 +150,9 @@ export async function bootBrain(
             console.warn("[harness] pos-brain auth required:", reason),
     });
 
+    console.log("[harness] boot: injecting token; ws =", getWsUrl());
     await b.injectToken(inputs.token);
+    console.log("[harness] boot: token injected → company DB opened");
 
     const selection: PosSelection = {
         companyId: inputs.companyId,
@@ -160,9 +162,11 @@ export async function bootBrain(
         flowId: inputs.flowId,
     };
     await b.setSelection(selection);
+    console.log("[harness] boot: setSelection done (DB open + sync starting)", selection);
 
     b.mount(rootEl);
     brain = b;
+    console.log("[harness] boot: runtime mounted → hydrating shell context from synced DB…");
 
     // Stand in for station-home: hydrate the shell-context slices from the synced
     // DB so the lifted handlers (and Open-session's currency dependency) see real
@@ -218,6 +222,10 @@ async function readCompanySettingsFromEav(
             const values = (await getCompanySettingsEAVValues({
                 entityId: companyId,
             })) as EavValueRow[];
+            console.log("[harness] EAV company-settings poll:", {
+                attributes: attributes?.length ?? 0,
+                values: values?.length ?? 0,
+            });
             if (!attributes?.length || !values?.length) {
                 return undefined;
             }
