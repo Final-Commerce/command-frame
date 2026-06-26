@@ -7,12 +7,40 @@ export default defineConfig({
   server: {
     port: 5179,
     host: true,
+    fs: {
+      // port-louis source + the pos-brain symlink live above the example root
+      // (`../../port-louis/src`, `../../pos-brain`). Allow the dev server to serve
+      // the workspace root so those files (incl. the DB/sync workers) load.
+      allow: ['../..'],
+    },
   },
   plugins: [react()],
+  // The DB/sync workers are spawned as `{ type: 'module' }` — match render: emit ES
+  // workers so `new Worker(new URL('./worker.ts', import.meta.url))` resolves.
+  worker: {
+    format: 'es',
+  },
+  // pos-brain (built dist, symlinked) and port-louis (source) both reach the
+  // `new Worker(new URL('./worker.ts', import.meta.url))` pattern in
+  // port-louis/src/db/index.ts. esbuild's dep pre-bundling does NOT apply Vite's
+  // worker-URL transform, so the literal URL would leak to the browser and 404 to
+  // the SPA fallback ("non-JavaScript MIME type text/html"). Excluding them keeps
+  // both on Vite's plugin pipeline, where the worker transform runs.
+  optimizeDeps: {
+    exclude: ['@final-commerce/pos-brain', '@final-commerce/port-louis'],
+  },
   resolve: {
-    // Dedupe React across the example + the linked pos-brain/command-frame builds
-    // (file: deps bring their own node_modules; a second React copy breaks hooks).
-    dedupe: ['react', 'react-dom', 'react-redux'],
+    // Dedupe singletons across the example + the linked pos-brain/port-louis source
+    // (each brings its own node_modules; a second React copy breaks hooks, a second
+    // lokijs/socket.io copy breaks the DB worker + sync). Mirrors render.
+    dedupe: [
+      'react',
+      'react-dom',
+      'react-redux',
+      'socket.io-client',
+      'engine.io-client',
+      'lokijs',
+    ],
     alias: [
       { find: '@', replacement: path.resolve(__dirname, './src') },
       // In-process harness (Topology B): route the example's command-frame CLIENT
@@ -26,29 +54,17 @@ export default defineConfig({
         find: '@final-commerce/command-frame',
         replacement: path.resolve(__dirname, './src/harness/commandFrameShim.ts'),
       },
-      // pos-brain's built `dist` imports port-louis via subpaths
-      // (`@final-commerce/port-louis/sync`, `/db`, …). port-louis ships no
-      // `exports` map and exposes those only under `dist/`, so map the subpaths
-      // (and the bare specifier) to its built output.
+      // Consume port-louis from SOURCE (like render), not its built `dist`. Source
+      // ships the real `db/worker.ts` + `sync/syncWorker.ts`, so Vite's worker-URL
+      // transform resolves them directly — no `.ts`→`.js` redirect needed, and no
+      // MIME 404 from a worker file that only exists as `.js` in `dist`.
       {
         find: /^@final-commerce\/port-louis\/(.*)$/,
-        replacement: path.resolve(__dirname, '../../port-louis/dist/$1'),
+        replacement: path.resolve(__dirname, '../../port-louis/src/$1'),
       },
       {
         find: /^@final-commerce\/port-louis$/,
-        replacement: path.resolve(__dirname, '../../port-louis/dist/index.js'),
-      },
-      // port-louis' built DB manager spawns its worker via
-      // `new Worker(new URL('./worker.ts', import.meta.url))`, but its `dist` only
-      // ships the compiled `worker.js`. Redirect the stale `.ts` worker URL to the
-      // built worker so the bundler (and the dev server) can resolve it.
-      {
-        find: path.resolve(__dirname, '../../port-louis/dist/db/worker.ts'),
-        replacement: path.resolve(__dirname, '../../port-louis/dist/db/worker.js'),
-      },
-      {
-        find: path.resolve(__dirname, '../../port-louis/dist/sync/syncWorker.ts'),
-        replacement: path.resolve(__dirname, '../../port-louis/dist/sync/syncWorker.js'),
+        replacement: path.resolve(__dirname, '../../port-louis/src'),
       },
     ],
   },
@@ -57,4 +73,3 @@ export default defineConfig({
     target: 'esnext',
   },
 });
-
