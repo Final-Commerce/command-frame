@@ -195,10 +195,43 @@ async function pollUntil<T>(
 }
 
 /**
- * Seed the shell-context slices. The company comes from the pasted JSON (it isn't
- * synced — station-home fetches it over HTTP); outlet/station ARE synced, so they
- * are read from the local DB by id. Updates `hydration` as each piece lands and
- * surfaces a clear "waiting / not found" detail rather than throwing.
+ * Fetch the company over HTTP exactly as Render's `selectCompany` does
+ * (`organization/render/get-companies-by-token`, then find by id). The company
+ * object — including `settings.currency` — is NOT synced to the client, so this
+ * is how station-home obtains it; the harness stands in. Uses the injected
+ * company token as Bearer (it carries org context, see auth/token.ts).
+ */
+async function fetchCompany(
+    token: string,
+    companyId: string,
+): Promise<ActiveCompany | undefined> {
+    const base = import.meta.env.VITE_API_BASE_URL;
+    if (!base) {
+        throw new Error("VITE_API_BASE_URL is not set — cannot fetch the company.");
+    }
+    const res = await fetch(`${base}/organization/render/get-companies-by-token`, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    });
+    if (!res.ok) {
+        throw new Error(`get-companies-by-token → HTTP ${res.status}`);
+    }
+    const companies = (await res.json()) as Array<Record<string, unknown>>;
+    const match = (companies ?? []).find(
+        (c) => c._id === companyId || c.id === companyId,
+    );
+    if (!match) {
+        return undefined;
+    }
+    // Mirror Render's `normalizedCompany = { ...company, id: company._id }`.
+    return { ...match, id: match._id ?? match.id } as ActiveCompany;
+}
+
+/**
+ * Seed the shell-context slices. The company is fetched over HTTP (it isn't synced
+ * — see `fetchCompany`); a pasted company JSON, if provided, overrides the fetch.
+ * Outlet/station ARE synced, so they're read from the local DB by id. Updates
+ * `hydration` as each piece lands and surfaces a clear "waiting / not found"
+ * detail rather than throwing.
  */
 async function hydrateShellContext(inputs: BootInputs): Promise<void> {
     const waiting: string[] = [];
@@ -210,10 +243,17 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
         detail: "hydrating…",
     };
 
-    // company (with currency — the critical one for Open-session). Seeded directly
-    // from the pasted company object, mirroring Render's `selectCompany` →
-    // `setCompany(normalizedCompany)`.
-    const company = inputs.company;
+    // company (with currency — the critical one for Open-session). Pasted JSON
+    // overrides; otherwise fetch over HTTP exactly as station-home does.
+    let company = inputs.company;
+    if (!company) {
+        try {
+            console.log("[harness] fetching company via get-companies-by-token…");
+            company = await fetchCompany(inputs.token, inputs.companyId);
+        } catch (e) {
+            console.warn("[harness] company fetch failed:", e);
+        }
+    }
     const currency = (company?.settings as { currency?: string } | undefined)?.currency;
     console.log("[harness] company hydrate:", { id: company?.id ?? null, currency: currency ?? null });
     if (company && currency) {
@@ -221,7 +261,7 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
         posStore.dispatch(ShellActions.updateActiveCompany(company));
         hydration = { ...hydration, company: true, currency: true };
     } else {
-        waiting.push("company JSON with settings.currency (paste it in the panel)");
+        waiting.push("company (HTTP fetch failed — paste company JSON as a fallback)");
     }
 
     // outlet.
