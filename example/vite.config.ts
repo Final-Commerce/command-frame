@@ -47,6 +47,9 @@ export default defineConfig({
       'jwt-decode',
       'uuid',
       '@sentry/react',
+      'styled-components',
+      'react-i18next',
+      'i18next',
     ],
   },
   resolve: {
@@ -60,6 +63,11 @@ export default defineConfig({
       'socket.io-client',
       'engine.io-client',
       'lokijs',
+      // styled-components + react-i18next use React context, i18next is a singleton —
+      // pos-brain's modals and the example must share ONE copy of each or context breaks.
+      'styled-components',
+      'react-i18next',
+      'i18next',
     ],
     alias: [
       { find: '@', replacement: path.resolve(__dirname, './src') },
