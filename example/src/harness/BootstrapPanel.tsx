@@ -210,7 +210,7 @@ export function BootstrapPanel() {
             <div style={{ margin: "8px 0" }}>
                 <textarea
                     style={{ ...input, width: 520, height: 96, fontFamily: "monospace", verticalAlign: "top" }}
-                    placeholder="company JSON (optional fallback — auto-fetched from get-companies-by-token; paste only if the fetch fails)"
+                    placeholder="company JSON (optional fallback — company now syncs from station-sync; paste only if sync hasn't delivered it)"
                     value={companyJson}
                     onChange={(e) => { setCompanyJson(e.target.value); persist("companyJson", e.target.value); }}
                 />
