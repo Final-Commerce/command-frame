@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import "./App.css";
 import { Sidebar, SectionId } from "./components/Sidebar";
 import { EnvironmentSection } from "./components/sections/EnvironmentSection";
@@ -26,10 +26,16 @@ import { VariantsSection } from "./components/sections/VariantsSection";
 import { TransactionsSection } from "./components/sections/TransactionsSection";
 import { AttributesSection } from "./components/sections/AttributesSection";
 import { BootstrapPanel } from "./harness/BootstrapPanel";
+import { subscribeBootStatus, isBooted } from "./harness/posBrainHarness";
 
 function App() {
     const [activeSection, setActiveSection] = useState<SectionId>("environment");
-    const isInIframe = window.self !== window.top;
+    // Commands run either over postMessage to a real host (genuine iframe) OR
+    // in-process when pos-brain is booted here (Topology B). Treat a booted
+    // pos-brain as equivalent to "in iframe" so the sections enable their commands.
+    const realIframe = window.self !== window.top;
+    const posBrainBooted = useSyncExternalStore(subscribeBootStatus, isBooted, isBooted);
+    const isInIframe = realIframe || posBrainBooted;
 
     const renderSection = () => {
         switch (activeSection) {
@@ -94,7 +100,7 @@ function App() {
                     <h1 className="app__title">Commands Frame Example</h1>
                     <div className="app__status">
                         <span className={`app__status-indicator ${isInIframe ? "app__status-indicator--active" : ""}`}></span>
-                        <span className="app__status-text">{isInIframe ? "Running in iframe" : "Not in iframe"}</span>
+                        <span className="app__status-text">{realIframe ? "Running in iframe" : posBrainBooted ? "pos-brain (in-process)" : "Not in iframe"}</span>
                     </div>
                 </div>
                 <div className="app__content">

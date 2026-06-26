@@ -34,6 +34,8 @@ import type {
     ActiveOutlet,
     ActiveStation,
 } from "@final-commerce/common/pos-types";
+import { syncManager } from "@final-commerce/port-louis/sync";
+import { SYNC_CLIENT_CHANGES_STREAMS } from "@final-commerce/port-louis/sync/constants";
 import { RenderClient } from "@final-commerce/command-frame-real";
 
 /** WS endpoint for station-sync. Priority: `?ws=` runtime override > VITE_WS_URL env > localhost default. */
@@ -169,6 +171,7 @@ export async function bootBrain(
 
     b.mount(rootEl);
     brain = b;
+    notifyBootStatus();
     console.log("[harness] boot: runtime mounted → hydrating shell context from synced DB…");
 
     // Stand in for station-home: hydrate the shell-context slices from the synced
@@ -275,6 +278,60 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
 
 export function isBooted(): boolean {
     return brain !== null;
+}
+
+// --- Boot-status subscription -------------------------------------------------
+// The example treats "pos-brain booted in-process" as equivalent to "in iframe"
+// (commands can run), so App subscribes to this to override its `isInIframe` gate.
+const bootListeners = new Set<() => void>();
+function notifyBootStatus(): void {
+    bootListeners.forEach((l) => l());
+}
+export function subscribeBootStatus(listener: () => void): () => void {
+    bootListeners.add(listener);
+    return () => {
+        bootListeners.delete(listener);
+    };
+}
+
+// --- Sync progress ------------------------------------------------------------
+// Surfaces port-louis' per-stream FINISHED status so the tester knows when the
+// initial sync of the subscribed collections is done (safe to open a session and
+// drive cart/order commands). Backed by syncManager's status-change listeners.
+export interface SyncProgress {
+    finished: number;
+    total: number;
+    done: boolean;
+}
+let syncSnapshot: SyncProgress = {
+    finished: 0,
+    total: SYNC_CLIENT_CHANGES_STREAMS.length,
+    done: false,
+};
+function recomputeSync(): void {
+    const finished = SYNC_CLIENT_CHANGES_STREAMS.filter((s) =>
+        syncManager.checkSyncFinishedByStreamKey(s),
+    ).length;
+    const total = SYNC_CLIENT_CHANGES_STREAMS.length;
+    syncSnapshot = { finished, total, done: total > 0 && finished === total };
+}
+export function getSyncProgress(): SyncProgress {
+    return syncSnapshot;
+}
+export function subscribeSyncStatus(listener: () => void): () => void {
+    const cb = () => {
+        recomputeSync();
+        listener();
+    };
+    SYNC_CLIENT_CHANGES_STREAMS.forEach((s) =>
+        syncManager.addSyncStatusChangeListener(s, cb),
+    );
+    recomputeSync();
+    return () => {
+        SYNC_CLIENT_CHANGES_STREAMS.forEach((s) =>
+            syncManager.removeSyncStatusChangeListener(s, cb),
+        );
+    };
 }
 
 /**

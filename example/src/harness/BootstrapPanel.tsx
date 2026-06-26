@@ -7,6 +7,8 @@ import {
     subscribeStore,
     getStoreState,
     getHydrationStatus,
+    subscribeSyncStatus,
+    getSyncProgress,
     getWsUrl,
     setWsUrl,
     type BootInputs,
@@ -110,6 +112,12 @@ export function BootstrapPanel() {
 
     // Live pos-brain store snapshot (cart / order / session / shell).
     const snapshot = useSyncExternalStore(subscribeStore, getStoreState, getStoreState);
+    // Live port-louis sync progress (initial-sync completion of subscribed streams).
+    const sync = useSyncExternalStore(subscribeSyncStatus, getSyncProgress, getSyncProgress);
+
+    // Open-session needs the company currency hydrated; cart/order commands also
+    // want the data streams synced. Surface both so the tester knows when it's safe.
+    const contextReady = Boolean(hydration?.currency && hydration?.outlet && hydration?.station);
 
     const onBoot = async () => {
         setError("");
@@ -181,8 +189,18 @@ export function BootstrapPanel() {
                 token: <b style={{ color: token ? "#5bff8a" : "#ff6b6b" }}>{token ? "set" : "missing"}</b>
                 {"  |  "}brain: <b style={{ color: booted ? "#5bff8a" : "#ffd166" }}>{booted ? "booted" : "not booted"}</b>
                 {"  |  "}status: <b>{status}</b>
+                {"  |  "}sync: <b style={{ color: sync.done ? "#5bff8a" : "#ffd166" }}>{sync.finished}/{sync.total}{sync.done ? " ✓ done" : " …"}</b>
                 {sessionId ? <> {"  |  "}session: <b>{sessionId}</b></> : null}
             </div>
+            {booted ? (
+                <div style={{ margin: "8px 0" }}>
+                    {contextReady ? (
+                        <b style={{ color: "#5bff8a" }}>✅ context ready — you can Open session{sync.done ? " and drive commands" : " (data still syncing)"}</b>
+                    ) : (
+                        <b style={{ color: "#ffd166" }}>⏳ hydrating context — Open session disabled until company currency + outlet + station are ready</b>
+                    )}
+                </div>
+            ) : null}
 
             {hydration ? (
                 <div style={{ margin: "8px 0" }}>
@@ -228,7 +246,7 @@ export function BootstrapPanel() {
 
             <div style={{ margin: "8px 0" }}>
                 <button type="button" style={btn} onClick={onBoot} disabled={booted}>Boot</button>
-                <button type="button" style={btn} onClick={onOpenSession} disabled={!booted}>Open session</button>
+                <button type="button" style={btn} onClick={onOpenSession} disabled={!booted || !contextReady}>Open session</button>
             </div>
 
             {error ? (
