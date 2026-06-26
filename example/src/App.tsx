@@ -25,6 +25,7 @@ import { RolesSection } from "./components/sections/RolesSection";
 import { VariantsSection } from "./components/sections/VariantsSection";
 import { TransactionsSection } from "./components/sections/TransactionsSection";
 import { AttributesSection } from "./components/sections/AttributesSection";
+import { BootstrapPanel } from "./harness/BootstrapPanel";
 
 function App() {
     const [activeSection, setActiveSection] = useState<SectionId>("environment");
@@ -96,7 +97,10 @@ function App() {
                         <span className="app__status-text">{isInIframe ? "Running in iframe" : "Not in iframe"}</span>
                     </div>
                 </div>
-                <div className="app__content">{renderSection()}</div>
+                <div className="app__content">
+                    <BootstrapPanel />
+                    {renderSection()}
+                </div>
             </div>
         </div>
     );

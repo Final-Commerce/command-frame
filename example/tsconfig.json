@@ -21,7 +21,9 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@final-commerce/command-frame-real": ["../dist/index.d.ts"],
+      "@final-commerce/command-frame": ["./src/harness/commandFrameShim.ts"]
     }
   },
   "include": ["src"],

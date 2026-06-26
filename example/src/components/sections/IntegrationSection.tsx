@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { renderClient as command, TriggerWebhookPresetType } from '@final-commerce/command-frame';
+import { renderClient as command } from '@final-commerce/command-frame';
+// NOTE (harness): `triggerWebhook` / `triggerZapierWebhook` / `TriggerWebhookPresetType`
+// were dropped from the epic command-frame contract pos-brain builds against, so
+// these calls route through the dynamic `command.call(...)` string-keyed path. At
+// runtime the in-process adapter has no handler and surfaces a clear
+// "not implemented" error — the rest of this section still compiles + runs.
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -38,11 +43,11 @@ export function IntegrationSection({ isInIframe }: IntegrationSectionProps) {
     setTriggerWebhookResponse('');
 
     try {
-      const result = await command.triggerWebhook({
+      const result = await command.call('triggerWebhook', {
         webhookUrl,
         publicKey: webhookPublicKey || undefined,
         presetData: webhookPresetData,
-        presetType: (webhookPresetType as TriggerWebhookPresetType) || undefined,
+        presetType: webhookPresetType || undefined,
         isCustomHook: webhookIsCustomHook,
         customHookData: webhookCustomHookData || undefined,
         payloadType: webhookPayloadType,
@@ -70,7 +75,7 @@ export function IntegrationSection({ isInIframe }: IntegrationSectionProps) {
     setTriggerZapierResponse('');
 
     try {
-      const result = await command.triggerZapierWebhook({
+      const result = await command.call('triggerZapierWebhook', {
         triggerUrl: zapierTriggerUrl
       });
       setTriggerZapierResponse(JSON.stringify(result, null, 2));
