@@ -13,8 +13,8 @@
   "dependencies": {
     "@final-commerce/command-frame": "file:..",
     "@final-commerce/common": "file:../../common",
-    "@final-commerce/pos-brain": "file:../../pos-brain",
     "@final-commerce/port-louis": "file:../../port-louis",
+    "@final-commerce/pos-brain": "file:../../pos-brain",
     "@reduxjs/toolkit": "2.0.1",
     "@sentry/react": "^10.22.0",
     "jwt-decode": "^4.0.0",
@@ -27,6 +27,8 @@
     "uuid": "9.0.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
@@ -35,12 +37,13 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "typescript": "^5.2.2",
-    "vite": "^7.0.6",
     "husky": "^9.0.0",
+    "i18next": "23.7.16",
     "lint-staged": "^15.0.0",
-    "@commitlint/cli": "^19.0.0",
-    "@commitlint/config-conventional": "^19.0.0"
+    "react-i18next": "14.0.0",
+    "styled-components": "6.1.2",
+    "typescript": "^5.2.2",
+    "vite": "^7.0.6"
   },
   "prettier": "@final-commerce/common/prettier",
   "lint-staged": {
@@ -51,5 +54,8 @@
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "fc-i18n": {
+    "slug": "command-frame-example-web-app"
   }
 }
