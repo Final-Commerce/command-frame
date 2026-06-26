@@ -3,6 +3,7 @@ import { ActiveEntityType, type ActiveCompany } from "@final-commerce/common/pos
 import {
     bootBrain,
     openSession,
+    closeSession,
     isBooted,
     subscribeStore,
     getStoreState,
@@ -179,6 +180,19 @@ export function BootstrapPanel() {
         }
     };
 
+    const onCloseSession = async () => {
+        setError("");
+        setStatus("closing session…");
+        try {
+            await closeSession();
+            setSessionId("");
+            setStatus("session closed");
+        } catch (e) {
+            setStatus("close-session failed");
+            setError(e instanceof Error ? e.message : String(e));
+        }
+    };
+
     const session = snapshot.session.activeSession;
     const activeEntities = snapshot.activeEntities;
 
@@ -246,7 +260,8 @@ export function BootstrapPanel() {
 
             <div style={{ margin: "8px 0" }}>
                 <button type="button" style={btn} onClick={onBoot} disabled={booted}>Boot</button>
-                <button type="button" style={btn} onClick={onOpenSession} disabled={!booted || !contextReady}>Open session</button>
+                <button type="button" style={btn} onClick={onOpenSession} disabled={!booted || !contextReady || Boolean(session)}>Open session</button>
+                <button type="button" style={btn} onClick={onCloseSession} disabled={!booted || !session}>Close session</button>
             </div>
 
             {error ? (

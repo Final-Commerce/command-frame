@@ -18,6 +18,8 @@ import {
     PosBrainCommandFrameHost,
     posStore,
     addSessionToLocalDb,
+    closeSessionInLocalDb,
+    getCurrentSession,
     createSessionFromDb,
     setSession,
     setCompany,
@@ -206,7 +208,6 @@ async function pollUntil<T>(
  * lands and surfaces a clear "waiting / not found" detail rather than throwing.
  */
 async function hydrateShellContext(inputs: BootInputs): Promise<void> {
-    const waiting: string[] = [];
     hydration = {
         company: false,
         currency: false,
@@ -215,8 +216,35 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
         detail: "hydrating…",
     };
 
-    // company (with currency — the critical one for Open-session). Pasted JSON
-    // overrides; otherwise read the synced company from the local DB by id.
+    // Hydrate company / outlet / station CONCURRENTLY. Each poll waits up to its
+    // budget for sync to deliver; running them in parallel means a missing one
+    // doesn't serialize behind the others (a sequential miss stacked ~30s each).
+    const [company, outlet, station] = await Promise.all([
+        hydrateCompany(inputs),
+        hydrateOutlet(inputs),
+        hydrateStation(inputs),
+    ]);
+
+    // user / flow are intentionally skipped for the smoke: the cart/order/session
+    // path needs company/outlet/station, not user/flow.
+    const waiting: string[] = [];
+    if (!company) waiting.push("company(+currency)");
+    if (!outlet) waiting.push("outlet");
+    if (!station) waiting.push("station");
+
+    hydration = {
+        company,
+        currency: company,
+        outlet,
+        station,
+        detail: waiting.length
+            ? `waiting for sync / not found: ${waiting.join(", ")}`
+            : "context ready",
+    };
+}
+
+/** Company (+currency). Pasted JSON overrides; else read the synced company by id. */
+async function hydrateCompany(inputs: BootInputs): Promise<boolean> {
     let company = inputs.company;
     if (!company) {
         const row = await pollUntil(
@@ -233,12 +261,13 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
     if (company && currency) {
         posStore.dispatch(setCompany(company));
         posStore.dispatch(ShellActions.updateActiveCompany(company));
-        hydration = { ...hydration, company: true, currency: true };
-    } else {
-        waiting.push("company (sync not delivered — paste company JSON as a fallback)");
+        return true;
     }
+    return false;
+}
 
-    // outlet.
+/** Outlet — read the synced outlet by id. */
+async function hydrateOutlet(inputs: BootInputs): Promise<boolean> {
     const outletRow = await pollUntil(
         () => getOutletById(inputs.outletId),
         (o): o is Record<string, unknown> => o != null,
@@ -246,12 +275,13 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
     if (outletRow) {
         const outlet = { ...outletRow, id: outletRow._id } as ActiveOutlet;
         posStore.dispatch(ShellActions.updateActiveOutlet(outlet));
-        hydration = { ...hydration, outlet: true };
-    } else {
-        waiting.push("outlet");
+        return true;
     }
+    return false;
+}
 
-    // station.
+/** Station — read the synced station by id. */
+async function hydrateStation(inputs: BootInputs): Promise<boolean> {
     const stationRow = await pollUntil<Station | null>(
         () => getStationById(inputs.stationId),
         (s): s is Station => s != null,
@@ -260,20 +290,9 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
         // pos-brain's Station row is structurally the ActiveStation shape.
         const station: ActiveStation = { ...stationRow };
         posStore.dispatch(ShellActions.setStation(station));
-        hydration = { ...hydration, station: true };
-    } else {
-        waiting.push("station");
+        return true;
     }
-
-    // user / flow are intentionally skipped for the smoke: the cart/order/session
-    // path needs company/outlet/station, not user/flow.
-
-    hydration = {
-        ...hydration,
-        detail: waiting.length
-            ? `waiting for sync / not found: ${waiting.join(", ")}`
-            : "context ready",
-    };
+    return false;
 }
 
 export function isBooted(): boolean {
@@ -355,6 +374,28 @@ export async function openSession(
     });
     posStore.dispatch(setSession(createSessionFromDb(row)));
     return row._id;
+}
+
+/**
+ * Close the current open session (mirrors Render's close-session): find the open
+ * session for the active station → closeSessionInLocalDb → clear the runtime slice.
+ */
+export async function closeSession(): Promise<void> {
+    if (!brain) {
+        throw new Error("[harness] boot pos-brain before closing a session");
+    }
+    const current = await getCurrentSession();
+    if (!current?._id) {
+        throw new Error("[harness] no open session to close");
+    }
+    await closeSessionInLocalDb({
+        sessionId: current._id,
+        stationId: current.stationId,
+        closingAmounts: { cash: "0" },
+        closedBy: "Test",
+        closingNote: "",
+    });
+    posStore.dispatch(setSession(null));
 }
 
 /** Subscribe to the live pos-brain runtime store (cart/order view). */
