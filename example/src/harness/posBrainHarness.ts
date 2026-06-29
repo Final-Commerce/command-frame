@@ -17,25 +17,12 @@ import {
     POSBrain,
     PosBrainCommandFrameHost,
     posStore,
-    addSessionToLocalDb,
-    closeSessionInLocalDb,
-    getCurrentSession,
-    createSessionFromDb,
-    setSession,
     setCompany,
     ShellActions,
-    getCompanyById,
-    getOutletById,
-    getStationById,
-    type Station,
-    type PosSelection,
+    type HydrationStatus,
     type PosState,
 } from "@final-commerce/pos-brain";
-import type {
-    ActiveCompany,
-    ActiveOutlet,
-    ActiveStation,
-} from "@final-commerce/common/pos-types";
+import type { ActiveCompany } from "@final-commerce/common/pos-types";
 import { syncManager } from "@final-commerce/port-louis/sync";
 import { SYNC_CLIENT_CHANGES_STREAMS } from "@final-commerce/port-louis/sync/constants";
 import { RenderClient } from "@final-commerce/command-frame-real";
@@ -95,21 +82,11 @@ export interface BootInputs {
 }
 
 /**
- * Post-boot shell-context hydration status. In the hosted flow station-home does
- * the company/outlet/station SELECTION and hands pos-brain a hydrated
- * `SelectionContext`; standalone has no station-home, so the harness stands in
- * for it by reading the synced DB by the provided IDs (see `hydrateShellContext`).
- * The panel polls this so the tester knows when Open-session + commands are safe.
+ * Post-boot shell-context hydration status. Re-exported from pos-brain (the
+ * hydration logic now lives in `POSBrain.hydrateContext`); the panel polls this
+ * so the tester knows when Open-session + commands are safe.
  */
-export interface HydrationStatus {
-    company: boolean;
-    /** company hydration is only meaningful with the currency the session path needs. */
-    currency: boolean;
-    outlet: boolean;
-    station: boolean;
-    /** Human-readable state, e.g. "waiting for sync: company-settings, outlet". */
-    detail: string;
-}
+export type { HydrationStatus };
 
 let hydration: HydrationStatus = {
     company: false,
@@ -124,24 +101,14 @@ export function getHydrationStatus(): HydrationStatus {
 }
 
 /**
- * Boot pos-brain in-process:
- *   new POSBrain(bindings) → injectToken(token) (decodes companyId, opens DB,
- *   starts sync) → setSelection(IDs-only) → mount(rootEl).
+ * Boot pos-brain in-process — now a THIN caller over the POSBrain facade:
+ *   new POSBrain({ wsUrl, apiUrl }) → injectToken(token) → start(selection, rootEl).
  *
- * We use the IDs-only `setSelection` rather than `setSelectionContext`: a fully
- * hydrated `SelectionContext` would require fabricating ActiveUser/ActiveCompany/
- * ActiveOutlet/ActiveStation/Flow entities, which we can't get honestly before
- * sync. The IDs-only path is pos-brain's real DB/sync-control entry point and
- * keeps types honest (no `any` stubs).
- *
- * The IDs-only path drives the DB/sync but does NOT populate pos-brain's
- * shell-context redux slices (company/outlet/station). In the hosted flow that's
- * station-home's job (hydrated `SelectionContext` → `setSelectionContext` →
- * populateShellContext). Standalone has no station-home, so after sync settles we
- * stand in for it: `hydrateShellContext` reads the REAL synced entities from
- * pos-brain's DB by the provided IDs and seeds the slices. Without this,
- * `company.activeCompany` stays null and Open-session throws "Missing company
- * currency".
+ * `start` records the IDs-only selection, mounts the runtime, and hydrates the
+ * shell-context slices from the synced DB (the station-home stand-in logic now
+ * lives in `POSBrain.hydrateContext`). The pasted-company-JSON override, if
+ * supplied, is dispatched into the company slices BEFORE `start`; the synced
+ * company then takes precedence once it lands.
  */
 export async function bootBrain(
     inputs: BootInputs,
@@ -151,8 +118,10 @@ export async function bootBrain(
         throw new Error("[harness] pos-brain already booted");
     }
 
+    const apiUrl = import.meta.env.VITE_API_BASE_URL || undefined;
     const b = new POSBrain({
-        getWsUrl,
+        wsUrl: getWsUrl(),
+        apiUrl,
         onAuthRequired: (reason) =>
             console.warn("[harness] pos-brain auth required:", reason),
     });
@@ -161,53 +130,18 @@ export async function bootBrain(
     await b.injectToken(inputs.token);
     console.log("[harness] boot: token injected → company DB opened");
 
-    const selection: PosSelection = {
-        companyId: inputs.companyId,
-        outletId: inputs.outletId,
-        stationId: inputs.stationId,
-        userId: inputs.userId,
-        flowId: inputs.flowId,
-    };
-    await b.setSelection(selection);
-    console.log("[harness] boot: setSelection done (DB open + sync starting)", selection);
+    // Optional pasted-company-JSON fallback: seed the company slices up front so a
+    // tester can run before sync delivers the company. The synced company (read in
+    // hydrateContext) overrides this once available.
+    if (inputs.company) {
+        posStore.dispatch(setCompany(inputs.company));
+        posStore.dispatch(ShellActions.updateActiveCompany(inputs.company));
+    }
 
-    b.mount(rootEl);
     brain = b;
     notifyBootStatus();
-    console.log("[harness] boot: runtime mounted → hydrating shell context from synced DB…");
+    console.log("[harness] boot: starting (selection + mount + hydrate)…");
 
-    // Stand in for station-home: hydrate the shell-context slices from the synced
-    // DB so the lifted handlers (and Open-session's currency dependency) see real
-    // company/outlet/station context. Awaits sync of the needed collections.
-    await hydrateShellContext(inputs);
-}
-
-// --- Shell-context hydration (the station-home stand-in) ---------------------
-
-/** Poll an async read until it returns a present value or the budget runs out. */
-async function pollUntil<T>(
-    read: () => Promise<T>,
-    isPresent: (value: T) => boolean,
-    { tries = 60, intervalMs = 500 }: { tries?: number; intervalMs?: number } = {},
-): Promise<T | undefined> {
-    for (let i = 0; i < tries; i++) {
-        const value = await read();
-        if (isPresent(value)) {
-            return value;
-        }
-        await new Promise((resolve) => setTimeout(resolve, intervalMs));
-    }
-    return undefined;
-}
-
-/**
- * Seed the shell-context slices from the synced local DB by id — company, outlet
- * and station are all streamed by station-sync now (the company on the `companies`
- * stream → port-louis `companies` collection). A pasted company JSON, if provided,
- * overrides the synced company as a fallback. Updates `hydration` as each piece
- * lands and surfaces a clear "waiting / not found" detail rather than throwing.
- */
-async function hydrateShellContext(inputs: BootInputs): Promise<void> {
     hydration = {
         company: false,
         currency: false,
@@ -215,84 +149,17 @@ async function hydrateShellContext(inputs: BootInputs): Promise<void> {
         station: false,
         detail: "hydrating…",
     };
-
-    // Hydrate company / outlet / station CONCURRENTLY. Each poll waits up to its
-    // budget for sync to deliver; running them in parallel means a missing one
-    // doesn't serialize behind the others (a sequential miss stacked ~30s each).
-    const [company, outlet, station] = await Promise.all([
-        hydrateCompany(inputs),
-        hydrateOutlet(inputs),
-        hydrateStation(inputs),
-    ]);
-
-    // user / flow are intentionally skipped for the smoke: the cart/order/session
-    // path needs company/outlet/station, not user/flow.
-    const waiting: string[] = [];
-    if (!company) waiting.push("company(+currency)");
-    if (!outlet) waiting.push("outlet");
-    if (!station) waiting.push("station");
-
-    hydration = {
-        company,
-        currency: company,
-        outlet,
-        station,
-        detail: waiting.length
-            ? `waiting for sync / not found: ${waiting.join(", ")}`
-            : "context ready",
-    };
-}
-
-/** Company (+currency). Pasted JSON overrides; else read the synced company by id. */
-async function hydrateCompany(inputs: BootInputs): Promise<boolean> {
-    let company = inputs.company;
-    if (!company) {
-        const row = await pollUntil(
-            () => getCompanyById(inputs.companyId),
-            (c): c is Record<string, unknown> => c != null,
-        );
-        if (row) {
-            // Mirror Render's `normalizedCompany = { ...company, id: company._id }`.
-            company = { ...row, id: row._id ?? row.id } as ActiveCompany;
-        }
-    }
-    const currency = (company?.settings as { currency?: string } | undefined)?.currency;
-    console.log("[harness] company hydrate:", { id: company?.id ?? null, currency: currency ?? null });
-    if (company && currency) {
-        posStore.dispatch(setCompany(company));
-        posStore.dispatch(ShellActions.updateActiveCompany(company));
-        return true;
-    }
-    return false;
-}
-
-/** Outlet — read the synced outlet by id. */
-async function hydrateOutlet(inputs: BootInputs): Promise<boolean> {
-    const outletRow = await pollUntil(
-        () => getOutletById(inputs.outletId),
-        (o): o is Record<string, unknown> => o != null,
+    hydration = await b.start(
+        {
+            companyId: inputs.companyId,
+            outletId: inputs.outletId,
+            stationId: inputs.stationId,
+            userId: inputs.userId,
+            flowId: inputs.flowId,
+        },
+        rootEl,
     );
-    if (outletRow) {
-        const outlet = { ...outletRow, id: outletRow._id } as ActiveOutlet;
-        posStore.dispatch(ShellActions.updateActiveOutlet(outlet));
-        return true;
-    }
-    return false;
-}
-
-/** Station — read the synced station by id. */
-async function hydrateStation(inputs: BootInputs): Promise<boolean> {
-    const stationRow = await pollUntil<Station | null>(
-        () => getStationById(inputs.stationId),
-        (s): s is Station => s != null,
-    );
-    if (stationRow) {
-        // pos-brain's Station row is structurally the ActiveStation shape.
-        const station: ActiveStation = { ...stationRow };
-        posStore.dispatch(ShellActions.setStation(station));
-        return true;
-    }
-    return false;
+    console.log("[harness] boot: started →", hydration.detail);
 }
 
 export function isBooted(): boolean {
@@ -354,48 +221,27 @@ export function subscribeSyncStatus(listener: () => void): () => void {
 }
 
 /**
- * Open a session directly in the local DB and push it into the runtime
- * shell-context slice (mirrors Render's open-session flow): addSessionToLocalDb →
- * setSession(createSessionFromDb(row)). Requires a booted brain (company currency
- * is read from the synced company settings).
+ * Open a session — delegates to `POSBrain.openSession`. companyId/stationId come
+ * from the brain's current selection now, so the args are kept only for the
+ * stable BootstrapPanel signature (and ignored).
  */
 export async function openSession(
-    companyId: string,
-    stationId: string,
+    _companyId: string,
+    _stationId: string,
 ): Promise<string> {
     if (!brain) {
         throw new Error("[harness] boot pos-brain before opening a session");
     }
-    const row = await addSessionToLocalDb({
-        companyId,
-        stationId,
-        openingAmount: "0",
-        openedBy: "Test",
-    });
-    posStore.dispatch(setSession(createSessionFromDb(row)));
-    return row._id;
+    const session = await brain.openSession({ openedBy: "Test" });
+    return session._id;
 }
 
-/**
- * Close the current open session (mirrors Render's close-session): find the open
- * session for the active station → closeSessionInLocalDb → clear the runtime slice.
- */
+/** Close the current open session — delegates to `POSBrain.closeSession`. */
 export async function closeSession(): Promise<void> {
     if (!brain) {
         throw new Error("[harness] boot pos-brain before closing a session");
     }
-    const current = await getCurrentSession();
-    if (!current?._id) {
-        throw new Error("[harness] no open session to close");
-    }
-    await closeSessionInLocalDb({
-        sessionId: current._id,
-        stationId: current.stationId,
-        closingAmounts: { cash: "0" },
-        closedBy: "Test",
-        closingNote: "",
-    });
-    posStore.dispatch(setSession(null));
+    await brain.closeSession({ closedBy: "Test", closingNote: "" });
 }
 
 /** Subscribe to the live pos-brain runtime store (cart/order view). */
