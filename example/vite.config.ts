@@ -50,6 +50,7 @@ export default defineConfig({
       'styled-components',
       'react-i18next',
       'i18next',
+      'react-toastify',
     ],
   },
   resolve: {
@@ -68,6 +69,9 @@ export default defineConfig({
       'styled-components',
       'react-i18next',
       'i18next',
+      // react-toastify uses React context (the toast registry); pos-brain's
+      // <ToastNotificationContainer> and the toasts it renders must share ONE copy.
+      'react-toastify',
     ],
     alias: [
       { find: '@', replacement: path.resolve(__dirname, './src') },
