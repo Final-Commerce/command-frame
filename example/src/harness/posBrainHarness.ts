@@ -93,6 +93,7 @@ let hydration: HydrationStatus = {
     currency: false,
     outlet: false,
     station: false,
+    user: false,
     detail: "not booted",
 };
 
@@ -147,6 +148,7 @@ export async function bootBrain(
         currency: false,
         outlet: false,
         station: false,
+        user: false,
         detail: "hydrating…",
     };
     hydration = await b.start(
