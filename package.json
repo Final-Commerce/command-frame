@@ -1,5 +1,5 @@
 {
-    "name": "@final-commerce/command-frame",
+    "name": "@final-commerce-public/command-frame",
     "version": "0.1.75",
     "description": "Commands Frame library",
     "main": "dist/index.js",
@@ -35,8 +35,7 @@
     "author": "Final Commerce",
     "license": "MIT",
     "publishConfig": {
-        "access": "public",
-        "registry": "https://us-npm.pkg.dev/final-preproduction/npm/"
+        "access": "public"
     },
     "repository": {
         "type": "git",
