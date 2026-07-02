@@ -58,7 +58,7 @@
     "ignoreBranchesMissingTickets": true
   },
   "dependencies": {
-    "@final-commerce/common": "^2.0.0"
+    "@final-commerce-public/common": "^2.0.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.48.0",
@@ -76,5 +76,5 @@
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0"
   },
-  "prettier": "@final-commerce/common/prettier"
+  "prettier": "@final-commerce-public/common/prettier"
 }

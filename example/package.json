@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@final-commerce/command-frame": "file:..",
-    "@final-commerce/common": "file:../../common",
+    "@final-commerce-public/common": "file:../../common",
     "@final-commerce/port-louis": "file:../../port-louis",
     "@final-commerce/pos-brain": "file:../../pos-brain",
     "@reduxjs/toolkit": "2.0.1",
@@ -46,7 +46,7 @@
     "typescript": "^5.2.2",
     "vite": "^7.0.6"
   },
-  "prettier": "@final-commerce/common/prettier",
+  "prettier": "@final-commerce-public/common/prettier",
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",

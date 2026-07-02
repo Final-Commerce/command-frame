@@ -1,5 +1,5 @@
 import { useRef, useState, useSyncExternalStore } from "react";
-import { ActiveEntityType, type ActiveCompany } from "@final-commerce/common/pos-types";
+import { ActiveEntityType, type ActiveCompany } from "@final-commerce-public/common/pos-types";
 import {
     bootBrain,
     openSession,
