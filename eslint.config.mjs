@@ -1,2 +1,2 @@
-import config from '@final-commerce-public/common/eslint/library';
+import config from '@final-commerce/common/eslint/library';
 export default config;

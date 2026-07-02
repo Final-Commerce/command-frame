@@ -1,2 +1,2 @@
-import config from '@final-commerce-public/common/eslint/frontend-react';
+import config from '@final-commerce/common/eslint/frontend-react';
 export default config;

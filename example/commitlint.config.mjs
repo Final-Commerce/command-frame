@@ -1,2 +1,2 @@
-import config from '@final-commerce-public/common/commitlint';
+import config from '@final-commerce/common/commitlint';
 export default config;

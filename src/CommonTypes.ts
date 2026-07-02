@@ -1,7 +1,7 @@
 export * from "./common-types";
 
 // command-frame defines NO domain types of its own: every CF* data type is an
-// alias of the canonical shape in @final-commerce-public/common/pos-types (single
+// alias of the canonical shape in @final-commerce/common/pos-types (single
 // source of truth). Where command-frame's own code used an older/diverged shape,
 // it has been updated to the canonical one. Only command-frame's integration-
 // specific types (CFContext*, CFOutletInfo, CFProjectName, refund-UI state) and
@@ -52,16 +52,16 @@ import type {
     AttributeOption,
     Category,
     Transaction
-} from "@final-commerce-public/common/pos-types";
+} from "@final-commerce/common/pos-types";
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
 // CFProductType/CFUserTypes alias common's ProductType/UserTypes. Note: common's
 // UserTypes uses `COMPANY_OWNER` where command-frame's enum previously had `OWNER`
 // (same value `'owner'`).
-export { CurrencyCode, ProductType as CFProductType, UserTypes as CFUserTypes } from "@final-commerce-public/common";
+export { CurrencyCode, ProductType as CFProductType, UserTypes as CFUserTypes } from "@final-commerce/common";
 
 // ---------------------------------------------------------------------------
-// Domain types — all aliases of @final-commerce-public/common/pos-types.
+// Domain types — all aliases of @final-commerce/common/pos-types.
 // ---------------------------------------------------------------------------
 
 /** Open record used as a base for active entities. */

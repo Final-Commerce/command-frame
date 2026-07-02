@@ -22,7 +22,7 @@ import {
     type HydrationStatus,
     type PosState,
 } from "@final-commerce/pos-brain";
-import type { ActiveCompany } from "@final-commerce-public/common/pos-types";
+import type { ActiveCompany } from "@final-commerce/common/pos-types";
 import { syncManager } from "@final-commerce/port-louis/sync";
 import { SYNC_CLIENT_CHANGES_STREAMS } from "@final-commerce/port-louis/sync/constants";
 import { RenderClient } from "@final-commerce/command-frame-real";
