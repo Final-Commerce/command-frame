@@ -75,11 +75,8 @@ import type {
     GetActiveCustomer,
     SetActiveCustomer,
     GetActiveOutlet,
-    SetActiveOutlet,
     GetActiveStation,
-    SetActiveStation,
     GetActiveSession,
-    SetActiveSession,
     GetActiveUser,
     SetActiveUser,
     SetActiveRefund,
@@ -179,11 +176,8 @@ export interface RenderProviderActions {
     getActiveCustomer: GetActiveCustomer;
     setActiveCustomer: SetActiveCustomer;
     getActiveOutlet: GetActiveOutlet;
-    setActiveOutlet: SetActiveOutlet;
     getActiveStation: GetActiveStation;
-    setActiveStation: SetActiveStation;
     getActiveSession: GetActiveSession;
-    setActiveSession: SetActiveSession;
     getActiveUser: GetActiveUser;
     setActiveUser: SetActiveUser;
     setActiveRefund: SetActiveRefund;

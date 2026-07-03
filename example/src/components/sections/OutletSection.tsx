@@ -9,9 +9,6 @@ interface OutletSectionProps {
 }
 
 export function OutletSection({ isInIframe }: OutletSectionProps) {
-    const [outletId, setOutletId] = useState("");
-    const [setLoading, setSetLoading] = useState(false);
-    const [setResponse, setSetResponse] = useState("");
     const [getLoading, setGetLoading] = useState(false);
     const [getResponse, setGetResponse] = useState("");
 
@@ -45,53 +42,6 @@ export function OutletSection({ isInIframe }: OutletSectionProps) {
                     <JsonViewer
                         data={getResponse}
                         title={getResponse.startsWith("Error") ? "Error" : "Success"}
-                    />
-                ) : null}
-            </CommandSection>
-
-            <CommandSection title="Set Active Outlet">
-                <p className="section-description">Loads an outlet by id and sets it as active.</p>
-                <div className="form-group">
-                    <div className="form-field">
-                        <label>Outlet ID:</label>
-                        <input
-                            type="text"
-                            value={outletId}
-                            onChange={e => setOutletId(e.target.value)}
-                            placeholder="outlet-id"
-                        />
-                    </div>
-                </div>
-                <button
-                    onClick={async () => {
-                        if (!isInIframe) {
-                            setSetResponse("Error: Not running in iframe");
-                            return;
-                        }
-                        if (!outletId) {
-                            setSetResponse("Error: Please enter an outlet ID");
-                            return;
-                        }
-                        setSetLoading(true);
-                        setSetResponse("");
-                        try {
-                            const result = await command.setActiveOutlet({ outletId });
-                            setSetResponse(JSON.stringify(result, null, 2));
-                        } catch (error) {
-                            setSetResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
-                        } finally {
-                            setSetLoading(false);
-                        }
-                    }}
-                    disabled={setLoading}
-                    className="btn btn--primary"
-                >
-                    {setLoading ? "Setting..." : "Set Active Outlet"}
-                </button>
-                {setResponse ? (
-                    <JsonViewer
-                        data={setResponse}
-                        title={setResponse.startsWith("Error") ? "Error" : "Success"}
                     />
                 ) : null}
             </CommandSection>

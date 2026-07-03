@@ -98,9 +98,7 @@ The library provides a `command` namespace object containing all available comma
 
 #### Active outlet, station, and session
 
-- **[setActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-outlet/README.md)** - Set the active outlet by id
-- **[setActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-station/README.md)** - Set the active station by id
-- **[setActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-session/README.md)** - Set the active register session by id
+> **Removed:** `setActiveOutlet`, `setActiveStation`, and `setActiveSession` are no longer commands. The active outlet, station, and session are host-owned selection context (set by the host/shell during selection), not settable from the runtime. Use `getActiveOutlet` / `getActiveStation` / `getActiveSession` to read them.
 
 #### Refund Actions
 
@@ -660,19 +658,10 @@ import type {
     SetActiveCustomerResponse,
     GetActiveOutlet,
     GetActiveOutletResponse,
-    SetActiveOutlet,
-    SetActiveOutletParams,
-    SetActiveOutletResponse,
     GetActiveStation,
     GetActiveStationResponse,
-    SetActiveStation,
-    SetActiveStationParams,
-    SetActiveStationResponse,
     GetActiveSession,
     GetActiveSessionResponse,
-    SetActiveSession,
-    SetActiveSessionParams,
-    SetActiveSessionResponse,
     GetActiveUser,
     GetActiveUserResponse,
     SetActiveUser,

@@ -9,9 +9,6 @@ interface StationSectionProps {
 }
 
 export function StationSection({ isInIframe }: StationSectionProps) {
-    const [stationId, setStationId] = useState("");
-    const [setLoading, setSetLoading] = useState(false);
-    const [setResponse, setSetResponse] = useState("");
     const [getLoading, setGetLoading] = useState(false);
     const [getResponse, setGetResponse] = useState("");
 
@@ -45,53 +42,6 @@ export function StationSection({ isInIframe }: StationSectionProps) {
                     <JsonViewer
                         data={getResponse}
                         title={getResponse.startsWith("Error") ? "Error" : "Success"}
-                    />
-                ) : null}
-            </CommandSection>
-
-            <CommandSection title="Set Active Station">
-                <p className="section-description">Loads a station by id and sets it as active.</p>
-                <div className="form-group">
-                    <div className="form-field">
-                        <label>Station ID:</label>
-                        <input
-                            type="text"
-                            value={stationId}
-                            onChange={e => setStationId(e.target.value)}
-                            placeholder="station-id"
-                        />
-                    </div>
-                </div>
-                <button
-                    onClick={async () => {
-                        if (!isInIframe) {
-                            setSetResponse("Error: Not running in iframe");
-                            return;
-                        }
-                        if (!stationId) {
-                            setSetResponse("Error: Please enter a station ID");
-                            return;
-                        }
-                        setSetLoading(true);
-                        setSetResponse("");
-                        try {
-                            const result = await command.setActiveStation({ stationId });
-                            setSetResponse(JSON.stringify(result, null, 2));
-                        } catch (error) {
-                            setSetResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
-                        } finally {
-                            setSetLoading(false);
-                        }
-                    }}
-                    disabled={setLoading}
-                    className="btn btn--primary"
-                >
-                    {setLoading ? "Setting..." : "Set Active Station"}
-                </button>
-                {setResponse ? (
-                    <JsonViewer
-                        data={setResponse}
-                        title={setResponse.startsWith("Error") ? "Error" : "Success"}
                     />
                 ) : null}
             </CommandSection>

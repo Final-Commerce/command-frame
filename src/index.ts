@@ -58,11 +58,8 @@ import { getActiveOrder } from "./actions/get-active-order/action";
 import { getActiveCustomer } from "./actions/get-active-customer/action";
 import { setActiveCustomer } from "./actions/set-active-customer/action";
 import { getActiveOutlet } from "./actions/get-active-outlet/action";
-import { setActiveOutlet } from "./actions/set-active-outlet/action";
 import { getActiveStation } from "./actions/get-active-station/action";
-import { setActiveStation } from "./actions/set-active-station/action";
 import { getActiveSession } from "./actions/get-active-session/action";
-import { setActiveSession } from "./actions/set-active-session/action";
 import { getActiveUser } from "./actions/get-active-user/action";
 import { setActiveUser } from "./actions/set-active-user/action";
 import { setActiveRefund } from "./actions/set-active-refund/action";
@@ -190,11 +187,8 @@ export const command = {
     getActiveCustomer,
     setActiveCustomer,
     getActiveOutlet,
-    setActiveOutlet,
     getActiveStation,
-    setActiveStation,
     getActiveSession,
-    setActiveSession,
     getActiveUser,
     setActiveUser,
     setActiveRefund,
@@ -393,11 +387,8 @@ export type { GetActiveOrder, GetActiveOrderResponse } from "./actions/get-activ
 export type { GetActiveCustomer, GetActiveCustomerResponse } from "./actions/get-active-customer/types";
 export type { SetActiveCustomer, SetActiveCustomerParams, SetActiveCustomerResponse } from "./actions/set-active-customer/types";
 export type { GetActiveOutlet, GetActiveOutletResponse } from "./actions/get-active-outlet/types";
-export type { SetActiveOutlet, SetActiveOutletParams, SetActiveOutletResponse } from "./actions/set-active-outlet/types";
 export type { GetActiveStation, GetActiveStationResponse } from "./actions/get-active-station/types";
-export type { SetActiveStation, SetActiveStationParams, SetActiveStationResponse } from "./actions/set-active-station/types";
 export type { GetActiveSession, GetActiveSessionResponse } from "./actions/get-active-session/types";
-export type { SetActiveSession, SetActiveSessionParams, SetActiveSessionResponse } from "./actions/set-active-session/types";
 export type { GetActiveUser, GetActiveUserResponse } from "./actions/get-active-user/types";
 export type { SetActiveUser, SetActiveUserParams, SetActiveUserResponse } from "./actions/set-active-user/types";
 export type { SetActiveRefund, SetActiveRefundParams, SetActiveRefundResponse } from "./actions/set-active-refund/types";
