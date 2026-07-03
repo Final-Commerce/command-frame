@@ -1,6 +1,7 @@
 import { GetOrders, GetOrdersParams, GetOrdersResponse } from "./types";
 import {
     MOCK_ORDERS,
+    MOCK_PARKED_ORDERS,
     MOCK_USERS,
     MOCK_STATIONS,
     MOCK_OUTLETS,
@@ -10,8 +11,8 @@ import {
 export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promise<GetOrdersResponse> => {
     console.log("[Mock] getOrders called", params);
     
-    // Start with a safe copy of mock orders
-    let orders = safeSerialize(MOCK_ORDERS);
+    // Start with a safe copy of mock orders, including parked (status: "parked").
+    let orders = safeSerialize([...MOCK_ORDERS, ...MOCK_PARKED_ORDERS]);
 
     // Filter simulation
     if (params) {

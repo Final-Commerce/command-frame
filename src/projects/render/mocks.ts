@@ -2,13 +2,17 @@ import { mockAddCartDiscount } from "../../actions/add-cart-discount/mock";
 import { mockAddCartFee } from "../../actions/add-cart-fee/mock";
 import { mockRemoveCartFee } from "../../actions/remove-cart-fee/mock";
 import { mockAddCustomSale } from "../../actions/add-custom-sale/mock";
+import { mockRemoveCustomSale } from "../../actions/remove-custom-sale/mock";
 import { mockAddCustomer } from "../../actions/add-customer/mock";
 import { mockAddCustomerNote } from "../../actions/add-customer-note/mock";
 import { mockRemoveCustomerNote } from "../../actions/remove-customer-note/mock";
 import { mockEditCustomer } from "../../actions/edit-customer/mock";
 import { mockAddOrderNote } from "../../actions/add-order-note/mock";
+import { mockRemoveOrderNote } from "../../actions/remove-order-note/mock";
 import { mockAddProductDiscount } from "../../actions/add-product-discount/mock";
 import { mockAddProductFee } from "../../actions/add-product-fee/mock";
+import { mockRemoveProductDiscount } from "../../actions/remove-product-discount/mock";
+import { mockRemoveProductFee } from "../../actions/remove-product-fee/mock";
 import { mockSetActiveProductFee } from "../../actions/set-active-product-fee/mock";
 import { mockSetActiveProductDiscount } from "../../actions/set-active-product-discount/mock";
 import { mockGetActiveProduct } from "../../actions/get-active-product/mock";
@@ -37,6 +41,8 @@ import { mockGetTaxTables } from "../../actions/get-tax-tables/mock";
 import { mockGetRemainingRefundableQuantities } from "../../actions/get-remaining-refundable-quantities/mock";
 import { mockGoToStationHome } from "../../actions/go-to-station-home/mock";
 import { mockInitiateRefund } from "../../actions/initiate-refund/mock";
+import { mockOpenExtensionOverlay } from "../../actions/open-extension-overlay/mock";
+import { mockResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/mock";
 import { mockOpenCashDrawer } from "../../actions/open-cash-drawer/mock";
 import { mockParkOrder } from "../../actions/park-order/mock";
 import { mockPartialPayment } from "../../actions/partial-payment/mock";
@@ -55,10 +61,6 @@ import { mockVendaraPayment } from "../../actions/vendara-payment/mock";
 import { mockExtensionPayment } from "../../actions/extension-payment/mock";
 import { mockRedeemPayment } from "../../actions/redeem-payment/mock";
 import { mockIntegrationPayment } from "../../actions/integration-payment/mock";
-import { mockGetSmartGridLayout } from "../../actions/get-smart-grid-layout/mock";
-import { mockSaveSmartGridLayout } from "../../actions/save-smart-grid-layout/mock";
-import { mockOpenExtensionOverlay } from "../../actions/open-extension-overlay/mock";
-import { mockResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/mock";
 import { mockAddNonRevenueItem } from "../../actions/add-non-revenue-item/mock";
 import { mockGetFinalContext } from "../../actions/get-final-context/mock";
 import { mockPrint } from "../../actions/print/mock";
@@ -88,6 +90,10 @@ import { mockSetActiveSession } from "../../actions/set-active-session/mock";
 import { mockGetActiveUser } from "../../actions/get-active-user/mock";
 import { mockSetActiveUser } from "../../actions/set-active-user/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
+import { canTransitionMock } from "../../actions/can-transition/mock";
+import { getAvailableTransitionsMock } from "../../actions/get-available-transitions/mock";
+import { mockGetSmartGridLayout } from "../../actions/get-smart-grid-layout/mock";
+import { mockSaveSmartGridLayout } from "../../actions/save-smart-grid-layout/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -128,6 +134,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getRemainingRefundableQuantities: mockGetRemainingRefundableQuantities,
     goToStationHome: mockGoToStationHome,
     initiateRefund: mockInitiateRefund,
+    openExtensionOverlay: mockOpenExtensionOverlay,
+    resolveExtensionOverlay: mockResolveExtensionOverlay,
     openCashDrawer: mockOpenCashDrawer,
     parkOrder: mockParkOrder,
     partialPayment: mockPartialPayment,
@@ -176,15 +184,15 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getActiveUser: mockGetActiveUser,
     setActiveUser: mockSetActiveUser,
     setActiveRefund: mockSetActiveRefund,
-    removeProductDiscount: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
-    removeProductFee: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
+    removeProductDiscount: mockRemoveProductDiscount,
+    removeProductFee: mockRemoveProductFee,
     removeProductNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
     removeCartFee: mockRemoveCartFee,
-    removeOrderNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
-    removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
+    removeOrderNote: mockRemoveOrderNote,
+    removeCustomSale: mockRemoveCustomSale,
     removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
+    canTransition: canTransitionMock,
+    getAvailableTransitions: getAvailableTransitionsMock,
     getSmartGridLayout: mockGetSmartGridLayout,
-    saveSmartGridLayout: mockSaveSmartGridLayout,
-    openExtensionOverlay: mockOpenExtensionOverlay,
-    resolveExtensionOverlay: mockResolveExtensionOverlay
+    saveSmartGridLayout: mockSaveSmartGridLayout
 };

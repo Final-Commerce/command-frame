@@ -1,5 +1,5 @@
 import { CFActiveCustomSales } from "../../CommonTypes";
-import { MOCK_CART } from "../../demo/database";
+import { MOCK_CART, mockPublishEvent } from "../../demo/database";
 import { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from "./types";
 
 export const mockAddCustomSale: AddCustomSale = async (params?: AddCustomSaleParams): Promise<AddCustomSaleResponse> => {
@@ -9,7 +9,10 @@ export const mockAddCustomSale: AddCustomSale = async (params?: AddCustomSalePar
 
     // Simple mock ID generation
     const mockId = 'sale_' + Math.random().toString(36).substr(2, 9);
-    const price = Number(params.price);
+    // Mirror render: the flow sends raw dollars ($4); render does toMinorUnits.
+    // MOCK_CART tracks minor units, so convert here too.
+    const minorFactor = 10 ** (MOCK_CART.minorUnits ?? 2);
+    const price = Math.round(Number(params.price) * minorFactor);
     const quantity = 1; // Default to 1 for custom sale usually
 
     const customSale: CFActiveCustomSales = {
@@ -32,6 +35,9 @@ export const mockAddCustomSale: AddCustomSale = async (params?: AddCustomSalePar
     MOCK_CART.total += price * quantity;
     MOCK_CART.amountToBeCharged = MOCK_CART.total;
     MOCK_CART.remainingBalance = MOCK_CART.total;
+
+    // Publish custom-sale-added event so cart subscribers refresh
+    mockPublishEvent('cart', 'custom-sale-added', { customSale });
 
     return {
         success: true,

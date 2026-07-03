@@ -30,8 +30,14 @@ export const mockGetProducts: GetProducts = async (params?: GetProductsParams): 
         }
     }
 
+    const total = products.length;
+    const offset = params?.offset ?? 0;
+    const limit = params?.limit ?? 100;
+    const paged = products.slice(offset, offset + limit);
+
     return {
-        products: safeSerialize(products),
+        products: safeSerialize(paged),
+        total,
         timestamp: new Date().toISOString()
     };
 };

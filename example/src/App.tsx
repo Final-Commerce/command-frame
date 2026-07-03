@@ -12,6 +12,7 @@ import { StationSection } from "./components/sections/StationSection";
 import { SessionSection } from "./components/sections/SessionSection";
 import { RefundsSection } from "./components/sections/RefundsSection";
 import { PaymentsSection } from "./components/sections/PaymentsSection";
+import { SplitPaymentsSection } from "./components/sections/SplitPaymentsSection";
 import { SystemSection } from "./components/sections/SystemSection";
 import { IntegrationSection } from "./components/sections/IntegrationSection";
 import { EventsSection } from "./components/sections/EventsSection";
@@ -22,6 +23,7 @@ import { SecretsSection } from "./components/sections/SecretsSection";
 import { PrintSection } from "./components/sections/PrintSection";
 import { UsersSection } from "./components/sections/UsersSection";
 import { RolesSection } from "./components/sections/RolesSection";
+import { StateMachineSection } from "./components/sections/StateMachineSection";
 import { VariantsSection } from "./components/sections/VariantsSection";
 import { TransactionsSection } from "./components/sections/TransactionsSection";
 import { AttributesSection } from "./components/sections/AttributesSection";
@@ -51,6 +53,8 @@ function App() {
                 return <CartSection isInIframe={isInIframe} />;
             case "orders":
                 return <OrdersSection isInIframe={isInIframe} />;
+            case "state-machine":
+                return <StateMachineSection isInIframe={isInIframe} />;
             case "outlet":
                 return <OutletSection isInIframe={isInIframe} />;
             case "station":
@@ -61,6 +65,8 @@ function App() {
                 return <RefundsSection isInIframe={isInIframe} />;
             case "payments":
                 return <PaymentsSection isInIframe={isInIframe} />;
+            case "split-payments":
+                return <SplitPaymentsSection isInIframe={isInIframe} />;
             case "system":
                 return <SystemSection isInIframe={isInIframe} />;
             case "integration":

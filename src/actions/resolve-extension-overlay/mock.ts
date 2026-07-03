@@ -1,3 +1,2 @@
-import type { ResolveExtensionOverlay } from "./types";
-
-export const mockResolveExtensionOverlay: ResolveExtensionOverlay = (): Promise<{ success: boolean }> => Promise.resolve({ success: true });
+import type { ResolveExtensionOverlay, ResolveExtensionOverlayParams, ResolveExtensionOverlayResponse } from "./types";
+export const mockResolveExtensionOverlay: ResolveExtensionOverlay = async (_params: ResolveExtensionOverlayParams): Promise<ResolveExtensionOverlayResponse> => ({ success: true });

@@ -29,6 +29,16 @@ export const ordersTopic: TopicDefinition = {
             id: "get-active-order",
             name: "Get Active Order",
             description: "Published when the active order is retrieved for listeners"
+        },
+        {
+            id: "state-transition-completed",
+            name: "State Transition Completed",
+            description: "Published when an order state transition completes successfully"
+        },
+        {
+            id: "state-transition-blocked",
+            name: "State Transition Blocked",
+            description: "Published when an order state transition is blocked by the state machine"
         }
     ]
 };

@@ -51,7 +51,8 @@ import type {
     Attribute,
     AttributeOption,
     Category,
-    Transaction
+    Transaction,
+    ActiveSplitPayment
 } from "@final-commerce/common/pos-types";
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
@@ -92,6 +93,7 @@ export type CFCartFeeItem = CartFeeItem;
 export type CFTipPayment = TipPayment;
 export type CFRefundedTipPayment = RefundedTipPayment;
 export type CFPaymentMethod = PaymentMethod;
+export type CFSplitPayment = ActiveSplitPayment;
 export type CFPosDataItem = PosDataItem;
 export type CFDiscountDetail = DiscountDetail;
 export type CFFeeDetail = FeeDetail;

@@ -19,7 +19,7 @@ import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from "@final-com
 - [Line Item Types](#line-item-types) -- CFLineItem, CFCustomSale, CFRefundedLineItem, CFRefundedCustomSale
 - [Discount Types](#discount-types) -- CFDiscount, CFDiscountDetail, CFDiscountLineItem
 - [Fee Types](#fee-types) -- CFCustomFee, CFFeeDetail, CFFeeLineItem
-- [Summary & Payment Types](#summary--payment-types) -- CFSummary, CFTip, CFPaymentMethod, CFTipPayment, CFCartDiscountItem, CFCartFeeItem, CFCartFeeTaxEntry
+- [Summary & Payment Types](#summary--payment-types) -- CFSummary, CFTip, CFPaymentMethod, CFTipPayment, CFPaymentStatus, CFSplitPayment, CFCartDiscountItem, CFCartFeeItem, CFCartFeeTaxEntry
 - [Customer Types](#customer-types) -- CFCustomer, CFActiveCustomer, CFCustomerNote
 - [Cart Types](#cart-types) -- CFActiveCart, CFActivePark, CFNonRevenueItem, CFActiveProduct, CFActiveCustomSales
 - [Product Types](#product-types) -- CFProduct, CFProductVariant, CFCategory, CFInventory
@@ -440,6 +440,30 @@ Tip details within a payment transaction.
 | `amount`     | `number` | Yes      | Tip amount           |
 | `tipTo`      | `string` | Yes      | Recipient of the tip |
 | `percentage` | `number` | Yes      | Tip percentage       |
+
+### CFPaymentStatus
+
+Lifecycle status of an in-progress payment / split-payment session. Mirrors render's `PaymentStatus` enum.
+
+```typescript
+type CFPaymentStatus = "failed" | "success" | "canceled" | "inProgress";
+```
+
+### CFSplitPayment
+
+In-progress split-payment session. Published over the [`split-payments`](../pubsub/topics/split-payments/README.md) topic whenever the host's slice mutates so consumers can mirror partial-tender progress without owning the underlying state.
+
+| Field               | Type                                              | Required | Description                                                                         |
+| ------------------- | ------------------------------------------------- | -------- | ----------------------------------------------------------------------------------- |
+| `amountRemaining`   | `number \| null`                                  | No       | Amount left to charge on the active split session                                   |
+| `amountToBeCharged` | `number \| null`                                  | No       | Amount queued for the next tender (may be zero between tenders)                     |
+| `splitNumber`       | `number \| null`                                  | No       | Total number of tenders the split is planned across (when fixed-split mode)         |
+| `currentSplit`      | `number`                                          | No       | Index of the current tender within the planned split                                |
+| `status`            | [`CFPaymentStatus`](#cfpaymentstatus)             | No       | Lifecycle status of the most recent tender                                          |
+| `isFixed`           | `boolean`                                         | No       | Whether the split was set up with a fixed tender count                              |
+| `payments`          | [`CFPaymentMethod`](#cfpaymentmethod)`[] \| null` | No       | The partial tenders captured so far in the active session (append-only per session) |
+| `paidAmount`        | `number`                                          | No       | Sum of amounts captured across all `payments`                                       |
+| `tip`               | `number \| null`                                  | No       | Tip accumulated across the split session                                            |
 
 ### CFCartDiscountItem
 
