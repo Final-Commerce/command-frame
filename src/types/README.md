@@ -821,7 +821,7 @@ A POS station (register/terminal).
 
 ### CFSession
 
-Active register session (cash session), used by `getActiveSession` / `setActiveSession`.
+Active register session (cash session), used by `getActiveSession`.
 
 | Field           | Type                            | Required | Description                                |
 | --------------- | ------------------------------- | -------- | ------------------------------------------ |
