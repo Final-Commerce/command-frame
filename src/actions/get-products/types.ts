@@ -25,6 +25,8 @@ export interface GetProductsParams {
 
 export interface GetProductsResponse {
     products: CFProduct[];
+    /** Total number of products matching the query, ignoring offset/limit. Optional — hosts that cannot cheaply compute the total may omit it. */
+    total?: number;
     timestamp: string;
 }
 

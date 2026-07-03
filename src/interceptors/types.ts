@@ -6,29 +6,17 @@
 export type InterceptorPoint = "refund_start";
 
 /** false = stop the flow; true = continue, no data; object = continue and merge into the flow payload. */
-export type InterceptorReturn<T extends Record<string, unknown> = Record<string, unknown>> = boolean | T;
+export type InterceptorReturn<T extends Record<string, any> = Record<string, any>> = boolean | T;
 
-/** Params accepted by the host-injected `openExtensionOverlay` command. */
-export interface OpenExtensionOverlayCommandParams {
-    point: InterceptorPoint;
-    payload?: unknown;
-}
-
-/**
- * Host commands injected into an interceptor callback. `openExtensionOverlay` is the one
- * always-present command; additional host commands are dispatched through the same shape.
- * Heterogeneous command payloads are sent via the separate `callCommand` arg of
- * `InterceptorFunction`, so the indexed entries here share the overlay command's param type.
- */
 export interface InterceptorHostCommands {
-    openExtensionOverlay: (params: OpenExtensionOverlayCommandParams) => Promise<InterceptorReturn>;
-    [command: string]: (params: OpenExtensionOverlayCommandParams) => Promise<InterceptorReturn>;
+    openExtensionOverlay: (params: { point: InterceptorPoint; payload?: any }) => Promise<InterceptorReturn>;
+    [command: string]: (params?: any) => Promise<any>;
 }
 
 export type InterceptorFunction = (
-    payload: unknown,
+    payload: any,
     cmds: InterceptorHostCommands,
-    callCommand: (action: string, params?: unknown) => Promise<unknown>
+    callCommand: (action: string, params?: any) => Promise<any>
 ) => InterceptorReturn | Promise<InterceptorReturn>;
 
 export interface InterceptorRegisterOptions {
@@ -40,5 +28,5 @@ export interface InterceptorRegisterOptions {
 
 export interface InterceptorOverlayContext {
     point: InterceptorPoint;
-    payload: unknown;
+    payload: any;
 }

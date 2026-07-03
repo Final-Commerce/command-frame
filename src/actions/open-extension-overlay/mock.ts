@@ -1,3 +1,2 @@
-import type { OpenExtensionOverlay } from "./types";
-
-export const mockOpenExtensionOverlay: OpenExtensionOverlay = (): Promise<boolean> => Promise.resolve(true);
+import type { OpenExtensionOverlay, OpenExtensionOverlayParams, OpenExtensionOverlayResponse } from "./types";
+export const mockOpenExtensionOverlay: OpenExtensionOverlay = async (_params: OpenExtensionOverlayParams): Promise<OpenExtensionOverlayResponse> => true;

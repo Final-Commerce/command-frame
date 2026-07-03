@@ -74,12 +74,7 @@ import { removeCartFee } from "./actions/remove-cart-fee/action";
 import { removeOrderNote } from "./actions/remove-order-note/action";
 import { removeCustomSale } from "./actions/remove-custom-sale/action";
 import { removeNonRevenueItem } from "./actions/remove-non-revenue-item/action";
-// SmartGrid Actions
-import { getSmartGridLayout } from "./actions/get-smart-grid-layout/action";
-import { saveSmartGridLayout } from "./actions/save-smart-grid-layout/action";
-// Extension Overlay / Interceptor Actions
-import { openExtensionOverlay } from "./actions/open-extension-overlay/action";
-import { resolveExtensionOverlay } from "./actions/resolve-extension-overlay/action";
+// Integration Actions
 
 // Refund Actions
 import { getRefunds } from "./actions/get-refunds/action";
@@ -108,6 +103,10 @@ import { getSecretVal } from "./actions/get-secret-val/action";
 import { setSecretVal } from "./actions/set-secret-val/action";
 
 import { generateAPIKey } from "./actions/generate-api-key/action";
+// State Machine Query Actions
+import { canTransition } from "./actions/can-transition/action";
+import { getAvailableTransitions } from "./actions/get-available-transitions/action";
+import { applyTransition } from "./actions/apply-transition/action";
 
 // Product CRUD Actions
 import { addProduct } from "./actions/add-product/action";
@@ -117,6 +116,9 @@ import { deleteProduct } from "./actions/delete-product/action";
 // Entity Actions
 import { getOutlets } from "./actions/get-outlets/action";
 import { getStations } from "./actions/get-stations/action";
+// SmartGrid Actions
+import { getSmartGridLayout } from "./actions/get-smart-grid-layout/action";
+import { saveSmartGridLayout } from "./actions/save-smart-grid-layout/action";
 // Manage extension actions (optional hosts: Deerlake, etc.)
 import { navigateTo } from "./actions/navigate-to/action";
 import { refreshResource } from "./actions/refresh-resource/action";
@@ -204,12 +206,7 @@ export const command = {
     removeOrderNote,
     removeCustomSale,
     removeNonRevenueItem,
-    // SmartGrid Actions
-    getSmartGridLayout,
-    saveSmartGridLayout,
-    // Extension Overlay / Interceptor Actions
-    openExtensionOverlay,
-    resolveExtensionOverlay,
+    // Integration Actions
     // Refund Actions
     initiateRefund,
     setRefundStockAction,
@@ -226,6 +223,9 @@ export const command = {
     // Entity Actions
     getOutlets,
     getStations,
+    // SmartGrid Actions
+    getSmartGridLayout,
+    saveSmartGridLayout,
     // Custom Tables Actions
     getCustomTables,
     getCustomTableFields,
@@ -249,7 +249,11 @@ export const command = {
     getMedia,
     uploadMedia,
     getTaxTables,
-    getBranding
+    getBranding,
+    // State Machine Queries
+    canTransition,
+    getAvailableTransitions,
+    applyTransition
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -285,6 +289,10 @@ export type { GetOutlets, GetOutletsResponse } from "./actions/get-outlets/types
 
 export type { GetStations, GetStationsParams, GetStationsResponse } from "./actions/get-stations/types";
 
+// SmartGrid Actions
+export type { GetSmartGridLayout, GetSmartGridLayoutParams, GetSmartGridLayoutResponse } from "./actions/get-smart-grid-layout/types";
+export type { SaveSmartGridLayout, SaveSmartGridLayoutParams, SaveSmartGridLayoutResponse } from "./actions/save-smart-grid-layout/types";
+
 export type { GetOrders, GetOrdersParams, GetOrdersResponse } from "./actions/get-orders/types";
 
 export type { GetRefunds, GetRefundsParams, GetRefundsResponse } from "./actions/get-refunds/types";
@@ -306,6 +314,12 @@ export type {
 export type { ProcessPartialRefund, ProcessPartialRefundParams, ProcessPartialRefundResponse } from "./actions/process-partial-refund/types";
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from "./actions/initiate-refund/types";
+export type { OpenExtensionOverlay, OpenExtensionOverlayParams, OpenExtensionOverlayResponse } from "./actions/open-extension-overlay/types";
+export type {
+    ResolveExtensionOverlay,
+    ResolveExtensionOverlayParams,
+    ResolveExtensionOverlayResponse
+} from "./actions/resolve-extension-overlay/types";
 
 export type { GetCurrentCart, GetCurrentCartResponse } from "./actions/get-current-cart/types";
 
@@ -348,10 +362,12 @@ export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } 
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
 export type { ExtensionPayment, ExtensionPaymentParams, ExtensionPaymentResponse } from "./actions/extension-payment/types";
 export type { RedeemPayment, RedeemPaymentParams, RedeemPaymentResponse } from "./actions/redeem-payment/types";
-export type { IntegrationPayment, IntegrationPaymentParams, IntegrationPaymentResponse } from "./actions/integration-payment/types";
-export { EXTENSION_REFUND_REQUEST_ACTION } from "./actions/extension-refund/constants";
-export { installExtensionRefundListener } from "./actions/extension-refund/extension-refund-listener";
-export type { ExtensionRefundParams, ExtensionRefundResponse } from "./actions/extension-refund/types";
+export type {
+    IntegrationPayment,
+    IntegrationPaymentParams,
+    IntegrationPaymentResponse,
+    IntegrationEmvData
+} from "./actions/integration-payment/types";
 // Customer Actions
 export type { AddCustomerNote, AddCustomerNoteParams, AddCustomerNoteResponse } from "./actions/add-customer-note/types";
 export type { RemoveCustomerNote, RemoveCustomerNoteParams, RemoveCustomerNoteResponse } from "./actions/remove-customer-note/types";
@@ -393,25 +409,7 @@ export type { RemoveCartFee, RemoveCartFeeParams, RemoveCartFeeResponse } from "
 export type { RemoveOrderNote, RemoveOrderNoteResponse } from "./actions/remove-order-note/types";
 export type { RemoveCustomSale, RemoveCustomSaleParams, RemoveCustomSaleResponse } from "./actions/remove-custom-sale/types";
 export type { RemoveNonRevenueItem, RemoveNonRevenueItemParams, RemoveNonRevenueItemResponse } from "./actions/remove-non-revenue-item/types";
-// SmartGrid Actions
-export type { GetSmartGridLayout, GetSmartGridLayoutParams, GetSmartGridLayoutResponse } from "./actions/get-smart-grid-layout/types";
-export type { SaveSmartGridLayout, SaveSmartGridLayoutParams, SaveSmartGridLayoutResponse } from "./actions/save-smart-grid-layout/types";
-// Extension Overlay / Interceptor Actions
-export type { OpenExtensionOverlay, OpenExtensionOverlayParams, OpenExtensionOverlayResponse } from "./actions/open-extension-overlay/types";
-export type {
-    ResolveExtensionOverlay,
-    ResolveExtensionOverlayParams,
-    ResolveExtensionOverlayResponse
-} from "./actions/resolve-extension-overlay/types";
-// Interceptor contract types
-export type {
-    InterceptorPoint,
-    InterceptorReturn,
-    InterceptorFunction,
-    InterceptorHostCommands,
-    InterceptorRegisterOptions,
-    InterceptorOverlayContext
-} from "./interceptors/types";
+// Integration Actions
 
 // Export Common Types
 export * from "./CommonTypes";
@@ -452,6 +450,17 @@ export type { TopicEventPayloadMap } from "./pubsub/topics/types";
 export { hooks } from "./hooks";
 export type { HookFunction, HookRegisterOptions } from "./hooks";
 
+// Export Interceptors (extension iframe API for gating host flows)
+export { interceptors } from "./interceptors";
+export type {
+    InterceptorFunction,
+    InterceptorPoint,
+    InterceptorRegisterOptions,
+    InterceptorReturn,
+    InterceptorOverlayContext,
+    InterceptorHostCommands
+} from "./interceptors";
+
 // Export Pub/Sub Topics
 export { customersTopic } from "./pubsub/topics/customers";
 export { ordersTopic } from "./pubsub/topics/orders";
@@ -459,6 +468,7 @@ export { refundsTopic } from "./pubsub/topics/refunds";
 export { productsTopic } from "./pubsub/topics/products";
 export { cartTopic } from "./pubsub/topics/cart";
 export { paymentsTopic } from "./pubsub/topics/payments";
+export { splitPaymentsTopic } from "./pubsub/topics/split-payments";
 export { customTablesTopic } from "./pubsub/topics/custom-tables";
 export { printTopic } from "./pubsub/topics/print";
 export { outletTopic } from "./pubsub/topics/outlet";
@@ -504,6 +514,10 @@ export type {
     OrderUpdatedEvent,
     OrderActiveSetEvent,
     OrderActiveGetEvent,
+    OrderStateTransitionCompletedPayload,
+    OrderStateTransitionBlockedPayload,
+    OrderStateTransitionCompletedEvent,
+    OrderStateTransitionBlockedEvent,
     OrdersEventType,
     OrdersEventPayload
 } from "./pubsub/topics/orders/types";
@@ -650,6 +664,14 @@ export type {
     PaymentsEventPayload
 } from "./pubsub/topics/payments/types";
 
+// Export Split Payments Event Types
+export type {
+    SplitPaymentUpdatedPayload,
+    SplitPaymentUpdatedEvent,
+    SplitPaymentsEventType,
+    SplitPaymentsEventPayload
+} from "./pubsub/topics/split-payments/types";
+
 // Export Custom Tables Event Types
 export type {
     RowCreatedPayload,
@@ -706,3 +728,38 @@ export type { GetSecretVal, GetSecretValParams, GetSecretValResponse } from "./a
 export type { SetSecretVal, SetSecretValParams, SetSecretValResponse } from "./actions/set-secret-val/types";
 export type { GetUsers, GetUsersParams, GetUsersResponse } from "./actions/get-users/types";
 export type { GetRoles, GetRolesParams, GetRolesResponse } from "./actions/get-roles/types";
+
+// State Machine Types
+export type {
+    CFBlockedBy,
+    CFStatePair,
+    CFTransitionResult,
+    CFFailedCondition,
+    CFConditionStatus,
+    CFAvailableTransition
+} from "./common-types/order-state";
+
+export type {
+    CFConditionOperator,
+    CFCondition,
+    CFConditionGroup,
+    CFTransitionConditionSet,
+    CFPaymentTransitionPath,
+    CFFulfillmentTransitionPath,
+    CFCrossAxisRule,
+    CFDisplayStateRule,
+    CFStateConfigFragment
+} from "./common-types/state-fragment";
+
+export type { CanTransition, CanTransitionParams, CanTransitionResponse } from "./actions/can-transition/types";
+
+export type {
+    GetAvailableTransitions,
+    GetAvailableTransitionsParams,
+    GetAvailableTransitionsResponse
+} from "./actions/get-available-transitions/types";
+
+export type { ApplyTransition, ApplyTransitionParams, ApplyTransitionResponse } from "./actions/apply-transition/types";
+
+// State Machine Fragments
+export { preorderNoDepositFragment } from "./fragments";

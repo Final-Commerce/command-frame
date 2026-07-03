@@ -1,18 +1,20 @@
 import { TapToPayPayment, TapToPayPaymentParams, TapToPayPaymentResponse } from "./types";
-import { MOCK_ORDERS } from "../../demo/database";
+import { applyMockPayment, MOCK_CART } from "../../demo/database";
 
 export const mockTapToPayPayment: TapToPayPayment = async (params?: TapToPayPaymentParams): Promise<TapToPayPaymentResponse> => {
     console.log("[Mock] tapToPayPayment called", params);
-    
+
     // Simulate Tap to Pay interaction
     window.alert("Demo: Processing Tap to Pay...\n(Please tap card or device on screen)");
 
+    const due = params?.amount ?? MOCK_CART.amountToBeCharged ?? MOCK_CART.total;
+    const order = applyMockPayment(due, "card", "tapToPay");
+
     return {
         success: true,
-        amount: params?.amount || null,
+        amount: due,
         paymentType: "tapToPay",
-        order: MOCK_ORDERS[0],
+        order,
         timestamp: new Date().toISOString()
     };
 };
-

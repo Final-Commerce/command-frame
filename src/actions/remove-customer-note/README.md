@@ -12,19 +12,19 @@ You do **not** pass `customerId`; use the note id returned when the note was cre
 
 ```typescript
 {
-  success: boolean;
-  noteId: string;
-  timestamp: string;
+    success: boolean;
+    noteId: string;
+    timestamp: string;
 }
 ```
 
 ## Usage
 
 ```typescript
-import { command } from '@final-commerce/command-frame';
+import { command } from "@final-commerce/command-frame";
 
 await command.removeCustomerNote({
-  noteId: '691df9c6c478bada1fb23d32'
+    noteId: "691df9c6c478bada1fb23d32"
 });
 ```
 
