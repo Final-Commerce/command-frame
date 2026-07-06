@@ -77,6 +77,9 @@ import { removeNonRevenueItem } from "./actions/remove-non-revenue-item/action";
 // Integration Actions
 import { triggerWebhook } from "./actions/trigger-webhook/action";
 import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
+// Receipt send Actions
+import { sendEmail } from "./actions/send-email/action";
+import { sendSms } from "./actions/send-sms/action";
 
 // Refund Actions
 import { getRefunds } from "./actions/get-refunds/action";
@@ -211,6 +214,9 @@ export const command = {
     // Integration Actions
     triggerWebhook,
     triggerZapierWebhook,
+    // Receipt send Actions
+    sendEmail,
+    sendSms,
     // Refund Actions
     initiateRefund,
     setRefundStockAction,
@@ -416,6 +422,9 @@ export type { RemoveNonRevenueItem, RemoveNonRevenueItemParams, RemoveNonRevenue
 // Integration Actions
 export type { TriggerWebhook, TriggerWebhookPresetType, TriggerWebhookParams, TriggerWebhookResponse } from "./actions/trigger-webhook/types";
 export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWebhookResponse } from "./actions/trigger-zapier-webhook/types";
+// Receipt send Actions
+export type { SendEmail, SendEmailParams, SendEmailResponse, SendReceiptType } from "./actions/send-email/types";
+export type { SendSms, SendSmsParams, SendSmsResponse } from "./actions/send-sms/types";
 
 // Export Common Types
 export * from "./CommonTypes";

@@ -96,6 +96,8 @@ import { canTransitionMock } from "../../actions/can-transition/mock";
 import { getAvailableTransitionsMock } from "../../actions/get-available-transitions/mock";
 import { mockGetSmartGridLayout } from "../../actions/get-smart-grid-layout/mock";
 import { mockSaveSmartGridLayout } from "../../actions/save-smart-grid-layout/mock";
+import { mockSendEmail } from "../../actions/send-email/mock";
+import { mockSendSms } from "../../actions/send-sms/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -198,5 +200,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     canTransition: canTransitionMock,
     getAvailableTransitions: getAvailableTransitionsMock,
     getSmartGridLayout: mockGetSmartGridLayout,
-    saveSmartGridLayout: mockSaveSmartGridLayout
+    saveSmartGridLayout: mockSaveSmartGridLayout,
+    sendEmail: mockSendEmail,
+    sendSms: mockSendSms
 };

@@ -21,6 +21,7 @@ import { CustomExtensions } from "./components/sections/CustomExtensions";
 import { CustomTables } from "./components/sections/CustomTables";
 import { SecretsSection } from "./components/sections/SecretsSection";
 import { PrintSection } from "./components/sections/PrintSection";
+import { ReceiptsSection } from "./components/sections/ReceiptsSection";
 import { UsersSection } from "./components/sections/UsersSection";
 import { RolesSection } from "./components/sections/RolesSection";
 import { StateMachineSection } from "./components/sections/StateMachineSection";
@@ -76,6 +77,8 @@ function App() {
                 return <SecretsSection isInIframe={isInIframe} />;
             case "print":
                 return <PrintSection isInIframe={isInIframe} />;
+            case "receipts":
+                return <ReceiptsSection isInIframe={isInIframe} />;
             case "users":
                 return <UsersSection isInIframe={isInIframe} />;
             case "roles":

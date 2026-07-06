@@ -96,7 +96,9 @@ import type {
     GetAvailableTransitions,
     IntegrationPayment,
     GetSmartGridLayout,
-    SaveSmartGridLayout
+    SaveSmartGridLayout,
+    SendEmail,
+    SendSms
 } from "../../index";
 import type { OpenExtensionOverlay } from "../../actions/open-extension-overlay/types";
 import type { ResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/types";
@@ -202,4 +204,6 @@ export interface RenderProviderActions {
     getAvailableTransitions: GetAvailableTransitions;
     getSmartGridLayout: GetSmartGridLayout;
     saveSmartGridLayout: SaveSmartGridLayout;
+    sendEmail: SendEmail;
+    sendSms: SendSms;
 }
