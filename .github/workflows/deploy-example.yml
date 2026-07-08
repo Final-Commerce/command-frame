@@ -64,6 +64,13 @@ jobs:
             pkg.name = 'command-frame-example-web-app';
             pkg.version = '${APP_VERSION}';
             pkg.dependencies['@final-commerce/command-frame'] = '^${LIB_VERSION}';
+            // ONE command-frame copy: kaching pins an exact command-frame version,
+            // and a caret rewrite that outruns that pin makes npm nest a second
+            // copy under kaching — splitting renderClient from kaching's
+            // in-window host. Override the whole tree to the lib version.
+            pkg.overrides = Object.assign({}, pkg.overrides, {
+              '@final-commerce/command-frame': '^${LIB_VERSION}',
+            });
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
