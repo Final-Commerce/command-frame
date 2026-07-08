@@ -67,6 +67,18 @@ jobs:
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
+      - name: Authenticate to Google Artifact Registry
+        id: gcp-auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_ARTIFACT_REGISTRY_READER_KEY }}
+          token_format: access_token
+
+      # The repo .npmrc maps @final-commerce-internal to Artifact Registry via
+      # ${NPM_REGISTRY_TOKEN} — the example depends on @final-commerce-internal/kaching.
+      - name: Expose registry token to npm
+        run: echo "NPM_REGISTRY_TOKEN=${{ steps.gcp-auth.outputs.access_token }}" >> $GITHUB_ENV
+
       - name: Install dependencies
         working-directory: example
         run: npm install
