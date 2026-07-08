@@ -14,7 +14,6 @@ import { RefundsSection } from "./components/sections/RefundsSection";
 import { PaymentsSection } from "./components/sections/PaymentsSection";
 import { SplitPaymentsSection } from "./components/sections/SplitPaymentsSection";
 import { SystemSection } from "./components/sections/SystemSection";
-import { IntegrationSection } from "./components/sections/IntegrationSection";
 import { EventsSection } from "./components/sections/EventsSection";
 import { ExamplesSection } from "./components/sections/ExamplesSection";
 import { CustomExtensions } from "./components/sections/CustomExtensions";
@@ -30,6 +29,9 @@ import { AttributesSection } from "./components/sections/AttributesSection";
 
 function App() {
     const [activeSection, setActiveSection] = useState<SectionId>("environment");
+    // The example is hosted inside station-home's flow iframe; the baked-in kaching
+    // runtime (see main.tsx → kaching-boot) wires the flow's `renderClient` to the
+    // real in-process handlers over the ServiceChannel. So "in iframe" == commands live.
     const isInIframe = window.self !== window.top;
 
     const renderSection = () => {
@@ -62,8 +64,6 @@ function App() {
                 return <SplitPaymentsSection isInIframe={isInIframe} />;
             case "system":
                 return <SystemSection isInIframe={isInIframe} />;
-            case "integration":
-                return <IntegrationSection isInIframe={isInIframe} />;
             case "events":
                 return <EventsSection isInIframe={isInIframe} />;
             case "examples":
@@ -102,7 +102,9 @@ function App() {
                         <span className="app__status-text">{isInIframe ? "Running in iframe" : "Not in iframe"}</span>
                     </div>
                 </div>
-                <div className="app__content">{renderSection()}</div>
+                <div className="app__content">
+                    {renderSection()}
+                </div>
             </div>
         </div>
     );

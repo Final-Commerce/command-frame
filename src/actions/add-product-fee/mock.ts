@@ -13,12 +13,12 @@ export const mockAddProductFee: AddProductFee = async (params?: AddProductFeePar
         }
 
         if (item) {
-            item.fee = {
+            item.fees = [{
                 label: params.label || "Fee",
                 amount: params.amount,
                 isPercent: params.isPercent || false,
                 applyTaxes: params.applyTaxes || false
-            };
+            }];
         }
     }
 

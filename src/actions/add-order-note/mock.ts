@@ -1,5 +1,5 @@
 import { AddOrderNote, AddOrderNoteParams, AddOrderNoteResponse } from "./types";
-import { MOCK_CART } from "../../demo/database";
+import { MOCK_CART, mockPublishEvent } from "../../demo/database";
 
 export const mockAddOrderNote: AddOrderNote = async (params?: AddOrderNoteParams): Promise<AddOrderNoteResponse> => {
     console.log("[Mock] addOrderNote called", params);
@@ -11,6 +11,8 @@ export const mockAddOrderNote: AddOrderNote = async (params?: AddOrderNoteParams
         } else {
             MOCK_CART.orderNotes = params.note;
         }
+        // Publish order-note-added event so cart subscribers refresh.
+        mockPublishEvent("cart", "order-note-added", { note: params.note });
     }
 
     return {

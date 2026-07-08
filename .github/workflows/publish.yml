@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
-      id-token: write
+      id-token: write # npm provenance
 
     steps:
       - name: Checkout code
@@ -19,19 +18,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Authenticate to Google Cloud
-        id: gcp-auth
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
-          token_format: access_token
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          registry-url: ${{ secrets.NPM_REGISTRY_URL }}
+          registry-url: 'https://registry.npmjs.org'
           scope: '@final-commerce'
           cache: 'npm'
 
@@ -166,7 +157,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{ steps.gcp-auth.outputs.access_token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Inject version into package.json
         run: |
@@ -180,26 +171,9 @@ jobs:
           echo "✅ package.json version: $(node -p "require('./package.json').version")"
 
       - name: Publish to npm
-        run: |
-          trap 'cp .npmrc.bak .npmrc && rm .npmrc.bak' EXIT
-          cp .npmrc .npmrc.bak
-          echo "@final-commerce:registry=https://registry.npmjs.org/" > .npmrc
-          echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
-          npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
+        run: npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Setup Node.js for Artifact Registry
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: ${{ secrets.NPM_REGISTRY_URL }}
-          scope: '@final-commerce'
-
-      - name: Publish to Artifact Registry
-        run: npm publish ${{ steps.dist_tag.outputs.flag }}
-        env:
-          NODE_AUTH_TOKEN: ${{ steps.gcp-auth.outputs.access_token }}
 
       - name: Commit version bump
         run: |

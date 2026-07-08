@@ -98,9 +98,7 @@ The library provides a `command` namespace object containing all available comma
 
 #### Active outlet, station, and session
 
-- **[setActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-outlet/README.md)** - Set the active outlet by id
-- **[setActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-station/README.md)** - Set the active station by id
-- **[setActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-session/README.md)** - Set the active register session by id
+> **Removed:** `setActiveOutlet`, `setActiveStation`, and `setActiveSession` are no longer commands. The active outlet, station, and session are host-owned selection context (set by the host/shell during selection), not settable from the runtime. Use `getActiveOutlet` / `getActiveStation` / `getActiveSession` to read them.
 
 #### Refund Actions
 
@@ -129,11 +127,6 @@ The library provides a `command` namespace object containing all available comma
 - **[getSecretsKeys](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secrets-keys/README.md)** - Retrieve all secret keys for the current company or a specific extension
 - **[getSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secret-val/README.md)** - Retrieve the value of a specific secret by key
 - **[setSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-secret-val/README.md)** - Create or update a secret key-value pair
-
-#### Integration Actions
-
-- **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
-- **[triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)** - Trigger a Zapier webhook with the current context data
 
 #### Additional Commands on `command`
 
@@ -512,16 +505,6 @@ Retrieves the value of a specific secret by its key. Supports both company-level
 
 Creates or updates a secret key-value pair. Supports both company-level and extension-scoped secrets. Automatically handles create vs update (upsert behavior).
 
-### Integration Actions
-
-### [triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)
-
-Triggers a webhook with the specified configuration. Supports custom data, authentication, and various payload types.
-
-### [triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)
-
-Triggers a Zapier webhook with the current context data (cart, customer, order, etc.).
-
 ### Reference
 
 ### [exampleFunction](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/example-function/README.md)
@@ -675,19 +658,10 @@ import type {
     SetActiveCustomerResponse,
     GetActiveOutlet,
     GetActiveOutletResponse,
-    SetActiveOutlet,
-    SetActiveOutletParams,
-    SetActiveOutletResponse,
     GetActiveStation,
     GetActiveStationResponse,
-    SetActiveStation,
-    SetActiveStationParams,
-    SetActiveStationResponse,
     GetActiveSession,
     GetActiveSessionResponse,
-    SetActiveSession,
-    SetActiveSessionParams,
-    SetActiveSessionResponse,
     GetActiveUser,
     GetActiveUserResponse,
     SetActiveUser,
@@ -824,13 +798,6 @@ import type {
     SetSecretValParams,
     SetSecretValResponse,
     SetSecretVal,
-    // Integration Actions
-    TriggerWebhookParams,
-    TriggerWebhookResponse,
-    TriggerWebhook,
-    TriggerZapierWebhookParams,
-    TriggerZapierWebhookResponse,
-    TriggerZapierWebhook,
     // Reference
     ExampleFunctionParams,
     ExampleFunctionResponse,

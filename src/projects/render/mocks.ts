@@ -2,13 +2,17 @@ import { mockAddCartDiscount } from "../../actions/add-cart-discount/mock";
 import { mockAddCartFee } from "../../actions/add-cart-fee/mock";
 import { mockRemoveCartFee } from "../../actions/remove-cart-fee/mock";
 import { mockAddCustomSale } from "../../actions/add-custom-sale/mock";
+import { mockRemoveCustomSale } from "../../actions/remove-custom-sale/mock";
 import { mockAddCustomer } from "../../actions/add-customer/mock";
 import { mockAddCustomerNote } from "../../actions/add-customer-note/mock";
 import { mockRemoveCustomerNote } from "../../actions/remove-customer-note/mock";
 import { mockEditCustomer } from "../../actions/edit-customer/mock";
 import { mockAddOrderNote } from "../../actions/add-order-note/mock";
+import { mockRemoveOrderNote } from "../../actions/remove-order-note/mock";
 import { mockAddProductDiscount } from "../../actions/add-product-discount/mock";
 import { mockAddProductFee } from "../../actions/add-product-fee/mock";
+import { mockRemoveProductDiscount } from "../../actions/remove-product-discount/mock";
+import { mockRemoveProductFee } from "../../actions/remove-product-fee/mock";
 import { mockSetActiveProductFee } from "../../actions/set-active-product-fee/mock";
 import { mockSetActiveProductDiscount } from "../../actions/set-active-product-discount/mock";
 import { mockGetActiveProduct } from "../../actions/get-active-product/mock";
@@ -53,8 +57,6 @@ import { mockShowNotification } from "../../actions/show-notification/mock";
 import { mockSwitchUser } from "../../actions/switch-user/mock";
 import { mockTapToPayPayment } from "../../actions/tap-to-pay-payment/mock";
 import { mockTerminalPayment } from "../../actions/terminal-payment/mock";
-import { mockTriggerWebhook } from "../../actions/trigger-webhook/mock";
-import { mockTriggerZapierWebhook } from "../../actions/trigger-zapier-webhook/mock";
 import { mockVendaraPayment } from "../../actions/vendara-payment/mock";
 import { mockExtensionPayment } from "../../actions/extension-payment/mock";
 import { mockRedeemPayment } from "../../actions/redeem-payment/mock";
@@ -80,11 +82,8 @@ import { mockGetActiveOrder } from "../../actions/get-active-order/mock";
 import { mockGetActiveCustomer } from "../../actions/get-active-customer/mock";
 import { mockSetActiveCustomer } from "../../actions/set-active-customer/mock";
 import { mockGetActiveOutlet } from "../../actions/get-active-outlet/mock";
-import { mockSetActiveOutlet } from "../../actions/set-active-outlet/mock";
 import { mockGetActiveStation } from "../../actions/get-active-station/mock";
-import { mockSetActiveStation } from "../../actions/set-active-station/mock";
 import { mockGetActiveSession } from "../../actions/get-active-session/mock";
-import { mockSetActiveSession } from "../../actions/set-active-session/mock";
 import { mockGetActiveUser } from "../../actions/get-active-user/mock";
 import { mockSetActiveUser } from "../../actions/set-active-user/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
@@ -149,8 +148,6 @@ export const RENDER_MOCKS: RenderProviderActions = {
     switchUser: mockSwitchUser,
     tapToPayPayment: mockTapToPayPayment,
     terminalPayment: mockTerminalPayment,
-    triggerWebhook: mockTriggerWebhook,
-    triggerZapierWebhook: mockTriggerZapierWebhook,
     vendaraPayment: mockVendaraPayment,
     extensionPayment: mockExtensionPayment,
     redeemPayment: mockRedeemPayment,
@@ -176,20 +173,17 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getActiveCustomer: mockGetActiveCustomer,
     setActiveCustomer: mockSetActiveCustomer,
     getActiveOutlet: mockGetActiveOutlet,
-    setActiveOutlet: mockSetActiveOutlet,
     getActiveStation: mockGetActiveStation,
-    setActiveStation: mockSetActiveStation,
     getActiveSession: mockGetActiveSession,
-    setActiveSession: mockSetActiveSession,
     getActiveUser: mockGetActiveUser,
     setActiveUser: mockSetActiveUser,
     setActiveRefund: mockSetActiveRefund,
-    removeProductDiscount: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
-    removeProductFee: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
+    removeProductDiscount: mockRemoveProductDiscount,
+    removeProductFee: mockRemoveProductFee,
     removeProductNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
     removeCartFee: mockRemoveCartFee,
-    removeOrderNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
-    removeCustomSale: params => Promise.resolve({ success: true, id: params.id, timestamp: new Date().toISOString() }),
+    removeOrderNote: mockRemoveOrderNote,
+    removeCustomSale: mockRemoveCustomSale,
     removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
     canTransition: canTransitionMock,
     getAvailableTransitions: getAvailableTransitionsMock,

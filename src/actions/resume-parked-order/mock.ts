@@ -1,5 +1,5 @@
 import { ResumeParkedOrder, ResumeParkedOrderParams, ResumeParkedOrderResponse } from "./types";
-import { MOCK_PARKED_ORDERS, MOCK_CART, resetMockCart } from "../../demo/database";
+import { MOCK_PARKED_ORDERS, MOCK_CART, resetMockCart, mockPublishEvent } from "../../demo/database";
 
 export const mockResumeParkedOrder: ResumeParkedOrder = async (params?: ResumeParkedOrderParams): Promise<ResumeParkedOrderResponse> => {
     console.log("[Mock] resumeParkedOrder called", params);
@@ -46,13 +46,17 @@ export const mockResumeParkedOrder: ResumeParkedOrder = async (params?: ResumePa
         attributes: li.attributes
     } as any));
 
-    MOCK_CART.subtotal = orderToResume.summary.subTotal;
+    MOCK_CART.subtotal = orderToResume.summary.subtotalAfterFees;
     MOCK_CART.total = orderToResume.summary.total;
     MOCK_CART.amountToBeCharged = MOCK_CART.total;
     MOCK_CART.remainingBalance = MOCK_CART.total;
     
     // Remove from parked
     MOCK_PARKED_ORDERS.splice(index, 1);
+
+    // Refresh the restored cart and the order lists.
+    mockPublishEvent("cart", "parked-order-resumed", { orderId });
+    mockPublishEvent("orders", "parked-order-resumed", { orderId });
 
     return {
         success: true,

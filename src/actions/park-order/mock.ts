@@ -1,5 +1,5 @@
 import { ParkOrder, ParkOrderResponse } from "./types";
-import { MOCK_PARKED_ORDERS, createOrderFromCart, MOCK_ORDERS } from "../../demo/database";
+import { MOCK_PARKED_ORDERS, createOrderFromCart, MOCK_ORDERS, mockPublishEvent } from "../../demo/database";
 
 export const mockParkOrder: ParkOrder = async (): Promise<ParkOrderResponse> => {
     console.log("[Mock] parkOrder called");
@@ -19,6 +19,10 @@ export const mockParkOrder: ParkOrder = async (): Promise<ParkOrderResponse> => 
     }
     
     MOCK_PARKED_ORDERS.push(tempOrder);
+
+    // Refresh order lists so the new parked order appears (createOrderFromCart
+    // already published the cart-created event that clears the cart).
+    mockPublishEvent("orders", "order-parked", { order: tempOrder });
 
     return {
         success: true,

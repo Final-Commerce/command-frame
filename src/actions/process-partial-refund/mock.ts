@@ -2,7 +2,7 @@ import { ProcessPartialRefund, ProcessPartialRefundParams, ProcessPartialRefundR
 
 export const mockProcessPartialRefund: ProcessPartialRefund = async (params?: ProcessPartialRefundParams): Promise<ProcessPartialRefundResponse> => {
     console.log("[Mock] processPartialRefund called", params);
-    
+
     return {
         success: true,
         refundId: 'mock_refund_' + Date.now(),

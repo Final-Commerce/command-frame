@@ -40,7 +40,7 @@ export interface MockDatabaseConfig {
 // Asset Imports - Using Remote URLs to avoid build complexity with asset copying
 const ASSETS_BASE_URL = "https://raw.githubusercontent.com/Final-Commerce/command-frame/refs/heads/main/src/demo/assets";
 
-const logo = `${ASSETS_BASE_URL}/logo.png`;
+const logo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5OCAxMDQiIGZpbGw9Im5vbmUiPjxwYXRoIGQ9Ik01NS4yOTk4IDUwLjE2NjJMMzcuNzQyMiA0MC4wMjkzTDMxLjcyNzQgNTAuNDQ3MkwzOC45MjQyIDU0LjYwMjJMNTUuMjk5OCA1MC4xNjYyWiIgZmlsbD0iI0E1NjhCQyIvPjxwYXRoIGQ9Ik0zMS45OTYzIDcwLjQ1MDZMNDkuNTU2OCA4MC41ODkxTDU1LjU3MTUgNzAuMTcxM0w0OC4zNzE4IDY2LjAxNDVMMzEuOTk2MyA3MC40NTA2WiIgZmlsbD0iI0E1NjhCQyIvPjxwYXRoIGQ9Ik0zNi4zNTQyIDM0LjI1NzJDMzYuMzU0MiAzNC4yNTcyIDM2LjM1ODMgMzQuMjYzNSAzNi4zNTY3IDM0LjI2NjRDMzcuMTg2OSAzNC4wNjk3IDM4LjA5MTkgMzQuMTU5NiAzOC44ODUxIDM0LjYxNzVMNjIuNjQ4NiA0OC4zMzc0TDU0LjE3MjkgMjkuOTA0OUwzNi4zNDk2IDM0LjI1ODRMMzYuMzU0MiAzNC4yNTcyWiIgZmlsbD0iI0ZDODc1MyIvPjxwYXRoIGQ9Ik0zMy4wOTg4IDE4Ljk1MDdMMzYuMzc3MiAzNC4yNDczTDE4Ljc1MjUgMzkuMzM3M0wyOC45MzcxIDIxLjY5N0MyOS44NDUzIDIwLjEyMzkgMzEuNDE1MiAxOS4xNzYxIDMzLjA5ODggMTguOTUwN1oiIGZpbGw9IiM0MkQzQTkiLz48cGF0aCBkPSJNMTguNzUzMiAzOS4zNDA2TDIwLjY4MjQgNTkuNTE3MUw0LjU3NjA3IDYzLjg5NjJMMTguNzUzMiAzOS4zNDA2WiIgZmlsbD0iIzI3OTdFOCIvPjxwYXRoIGQ9Ik0zNi4zNzc5IDM0LjI0MDNDMzYuMzc3OSAzNC4yNDAzIDM2LjM3NzQgMzQuMjQ3OCAzNi4zODAzIDM0LjI0OTVDMzUuNTYyNCAzNC40OTE5IDM0LjgyMzkgMzUuMDE5NiAzNC4zNjczIDM1LjgxMDVMMjAuNjg2OSA1OS41MDU2TDE4Ljc1NzcgMzkuMzI5MUwzNi4zODI0IDM0LjIzOTFMMzYuMzc3OSAzNC4yNDAzWiIgZmlsbD0iIzFEQkFDQiIvPjxwYXRoIGQ9Ik01NS45MzUyIDEwMS41NDNMNTEuMDgxOSA4Ni42NjU5TDMzLjI1ODcgOTEuMDE5NEw1MC45NDk5IDEwMS4yMzNDNTIuNTI3NiAxMDIuMTQ0IDU0LjM2MzggMTAyLjE4NSA1NS45MzUyIDEwMS41NDNaIiBmaWxsPSIjRkQ1MjYzIi8+PHBhdGggZD0iTTMzLjI1NDkgOTEuMDE0TDI0Ljc4MjEgNzIuNTgzMkw4LjYzMTM1IDc2Ljc5NzVMMzMuMjU0OSA5MS4wMTRaIiBmaWxsPSIjRkZDRjIzIi8+PHBhdGggZD0iTTUxLjA3OSA4Ni42NjM5QzUxLjA3OSA4Ni42NjM5IDUxLjA3NDkgODYuNjU3NiA1MS4wNzY2IDg2LjY1NDdDNTAuMjQ2NCA4Ni44NTE0IDQ5LjM0MTQgODYuNzYxNSA0OC41NDgyIDg2LjMwMzZMMjQuNzg0NiA3Mi41ODM3TDMzLjI2MDQgOTEuMDE2MUw1MS4wODM2IDg2LjY2MjdMNTEuMDc5IDg2LjY2MzlaIiBmaWxsPSIjRkM4NzUzIi8+PHBhdGggZD0iTTU0LjMzNDIgMTAxLjk2OUw1MS4wNTU4IDg2LjY3MjRMNjguNjgwNSA4MS41ODI0TDU4LjQ5NTkgOTkuMjIyN0M1Ny41ODc3IDEwMC43OTYgNTYuMDE3OCAxMDEuNzQ0IDU0LjMzNDIgMTAxLjk2OVoiIGZpbGw9IiM0MkQzQTkiLz48cGF0aCBkPSJNNjguNjgwMSA4MS41ODk5TDY2Ljc0OTMgNjEuNDE2Mkw4Mi44NTU2IDU3LjAzNzJMNjguNjgwMSA4MS41ODk5WiIgZmlsbD0iIzI3OTdFOCIvPjxwYXRoIGQ9Ik01MS4wNTU3IDg2LjY3ODZDNTEuMDU1NyA4Ni42Nzg2IDUxLjA1NjIgODYuNjcxMSA1MS4wNTMyIDg2LjY2OTVDNTEuODcxMSA4Ni40MjcxIDUyLjYwOTcgODUuODk5NCA1My4wNjYzIDg1LjEwODVMNjYuNzQ2NyA2MS40MTMzTDY4LjY3NTkgODEuNTg5OEw1MS4wNTExIDg2LjY3OThMNTEuMDU1NyA4Ni42Nzg2WiIgZmlsbD0iIzFEQkFDQiIvPjxwYXRoIGQ9Ik00Ny44OTQ5IDI2LjI3NjhDNDcuODc4IDI2LjM1OTcgNDcuODUyIDI2LjQ0NTEgNDcuODA2OCAyNi41MjM0TDQ3LjYyNzggMjYuODMzM0M0Ni43ODY1IDI4LjI5MDYgNDQuOTIzMiAyOC43ODY5IDQzLjQ2MTggMjcuOTQzMkM0Mi4wMDA0IDI3LjA5OTQgNDEuNDk4NiAyNS4yMzc2IDQyLjMzOTkgMjMuNzgwNEw0Mi41MTg5IDIzLjQ3MDRDNDIuNTY0MSAyMy4zOTIyIDQyLjYyNSAyMy4zMjY5IDQyLjY4ODQgMjMuMjcwOEwzNi40ODUzIDE5LjY4OTRDMzQuOTA3NiAxOC43Nzg2IDMzLjA3MTQgMTguNzM4MiAzMS41IDE5LjM3OTlMMzYuMzUzMyAzNC4yNTY5TDU0LjE3NjUgMjkuOTAzNUw0Ny44OTQ5IDI2LjI3NjhaIiBmaWxsPSIjRkQ1MjYzIi8+PHBhdGggZD0iTTc1LjYzODYgNDIuMzAyN0M3NS42MjE3IDQyLjM4NTcgNzUuNTk1NiA0Mi40NzExIDc1LjU1MDUgNDIuNTQ5M0w3NS4zNzE1IDQyLjg1OTNDNzQuNTMwMiA0NC4zMTY1IDcyLjY2NjkgNDQuODEyOSA3MS4yMDU0IDQzLjk2OTFDNjkuNzQ0IDQzLjEyNTQgNjkuMjQyMyA0MS4yNjM2IDcwLjA4MzYgMzkuODA2M0w3MC4yNjI2IDM5LjQ5NjNDNzAuMzA3NyAzOS40MTgxIDcwLjM2ODYgMzkuMzUyOSA3MC40MzIgMzkuMjk2N0w1NC4xNzYxIDI5LjkxMTRMNjIuNjUxOSA0OC4zNDM5TDc4LjgwMjYgNDQuMTI5NUw3NS42NDE1IDQyLjMwNDRMNzUuNjM4NiA0Mi4zMDI3WiIgZmlsbD0iI0ZGQ0YyMyIvPjxwYXRoIGQ9Ik03NS42MDU4IDQwLjgyMTlMNzUuNjQ0MiA0MC43NTUyQzc4LjE0ODEgMzYuNDE4MyA3OC42NDY1IDMxLjQ0ODggNzcuNDMwOSAyNi45MzgzQzc2LjIxNTMgMjIuNDI3OCA3My4yODQ3IDE4LjM3MTggNjguOTM1MiAxNS44NjA3QzY0LjU4NTggMTMuMzQ5NSA1OS42MDc5IDEyLjgzOTUgNTUuMDkzOSAxNC4wNDJDNTAuNTc5OSAxNS4yNDQ2IDQ2LjUyNTMgMTguMTYwOSA0NC4wMjE0IDIyLjQ5NzhMNDIuOTkxMSAyNC4yODI0QzQyLjM3MzkgMjUuMzUxNCA0Mi43NDQyIDI2LjcxNjMgNDMuODEzNCAyNy4zMzM2QzQ0Ljg4MjYgMjcuOTUwOSA0Ni4yNTE0IDI3LjU4NjIgNDYuODY2OSAyNi41MjAxTDQ3Ljg5NzMgMjQuNzM1NUM0OS43ODU3IDIxLjQ2NDcgNTIuODQ0MSAxOS4yNjczIDU2LjI1NDggMTguMzU4N0M1OS42NjU0IDE3LjQ1MDEgNjMuNDE5MSAxNy44MzI3IDY2LjY5OTQgMTkuNzI2NkM2OS45Nzk2IDIxLjYyMDQgNzIuMTg3OSAyNC42Nzk5IDczLjEwNjMgMjguMDg3OUM3NC4wMjQ4IDMxLjQ5NiA3My42NTEgMzUuMjQzNCA3MS43NjI2IDM4LjUxNDFMNzEuNzI0MSAzOC41ODA4TDcwLjczMzkgNDAuMjk1OEM3MC4xMTY3IDQxLjM2NDkgNzAuNDg3IDQyLjcyOTcgNzEuNTU2MiA0My4zNDdDNzIuNjI1NCA0My45NjQ0IDczLjk5NDIgNDMuNTk5NyA3NC42MDk4IDQyLjUzMzZMNzUuNTk5OSA0MC44MTg1TDc1LjYwNTggNDAuODIxOVoiIGZpbGw9IiMzRDRDNjYiLz48L3N2Zz4="; // crisp vector mark (was logo.png — pixelated when scaled)
 const basilAlmondImg = `${ASSETS_BASE_URL}/basil-almond-paste.png`;
 const beerImg = `${ASSETS_BASE_URL}/beer-paste.png`;
 const beetImg = `${ASSETS_BASE_URL}/beet-paste.png`;
@@ -215,15 +215,18 @@ export const MOCK_CUSTOMER_5: CFCustomer = {
 
 // --- CATEGORIES ---
 export const MOCK_CATEGORY_PASTES: CFCategory = {
-    _id: "cat_pastes",
+    id: "cat_pastes",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Pastes",
     externalId: "ext_cat_pastes",
     companyId: MOCK_COMPANY.id!,
-    parentId: null
 };
 
 export const MOCK_CATEGORY_SPECIALTY: CFCategory = {
-    _id: "cat_specialty",
+    id: "cat_specialty",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Specialty",
     externalId: "ext_cat_specialty",
     companyId: MOCK_COMPANY.id!,
@@ -231,7 +234,9 @@ export const MOCK_CATEGORY_SPECIALTY: CFCategory = {
 };
 
 export const MOCK_CATEGORY_BASIC: CFCategory = {
-    _id: "cat_basic",
+    id: "cat_basic",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Basic",
     externalId: "ext_cat_basic",
     companyId: MOCK_COMPANY.id!,
@@ -239,19 +244,21 @@ export const MOCK_CATEGORY_BASIC: CFCategory = {
 };
 
 export const MOCK_CATEGORY_VEGAN: CFCategory = {
-    _id: "cat_vegan",
+    id: "cat_vegan",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Vegan",
     externalId: "ext_cat_vegan",
     companyId: MOCK_COMPANY.id!,
-    parentId: null
 };
 
 export const MOCK_CATEGORY_SPICY: CFCategory = {
-    _id: "cat_spicy",
+    id: "cat_spicy",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Spicy",
     externalId: "ext_cat_spicy",
     companyId: MOCK_COMPANY.id!,
-    parentId: null
 };
 
 // --- PRODUCTS ---
@@ -275,7 +282,7 @@ const createSimpleProduct = (id: string, name: string, price: number, image: str
         taxTable: "tax_standard",
         description,
         images: [image],
-        categories: categories.map(c => c._id),
+        categories: categories.map(c => ({ name: c.name, externalId: c.externalId ?? c.id })),
         attributes: [],
         variants: [
             {
@@ -319,7 +326,7 @@ const createVariableProduct = (
         taxTable: "tax_standard",
         description,
         images: [image],
-        categories: categories.map(c => c._id),
+        categories: categories.map(c => ({ name: c.name, externalId: c.externalId ?? c.id })),
         attributes: [{ name: "Size", values: ["Small", "Large"] }],
         variants: [
             {
@@ -493,12 +500,13 @@ const createLineItem = (product: CFProduct, variantIndex: number = 0, quantity: 
         price: variant.price,
         taxes: [],
         discount: {
-            itemDiscount: { percentage: 0, amount: 0 },
+            itemDiscounts: [],
             cartDiscount: { percentage: 0, amount: 0 }
         },
-        fee: { itemFee: { percentage: 0, amount: 0, tax: 0, taxTableId: "" } },
+        fee: { itemFees: [] },
         totalTax: 0,
         total: variant.price * quantity,
+        lineNetWithFees: variant.price * quantity,
         metadata: [],
         image: product.images?.[0] || "",
         sku: variant.sku,
@@ -521,7 +529,7 @@ export const MOCK_ORDER_1: CFActiveOrder = {
     customer: MOCK_CUSTOMER_1,
     summary: {
         total: 2100,
-        subTotal: 2100,
+        subtotalAfterFees: 2100,
         discountTotal: 0,
         shippingTotal: 0,
         totalTaxes: 0,
@@ -572,7 +580,7 @@ export const MOCK_ORDER_2: CFActiveOrder = {
     customer: MOCK_CUSTOMER_2,
     summary: {
         total: 3000,
-        subTotal: 3000,
+        subtotalAfterFees: 3000,
         discountTotal: 0,
         shippingTotal: 0,
         totalTaxes: 0,
@@ -609,6 +617,143 @@ export const MOCK_ORDER_2: CFActiveOrder = {
     createdAt: new Date(Date.now() - 3600000).toISOString()
 };
 
+export const MOCK_ORDER_3: CFActiveOrder = {
+    _id: "order_1003",
+    currency: CurrencyCode.USD,
+    minorUnits: 2,
+    receiptId: "1001-0003",
+    companyId: MOCK_COMPANY.id!,
+    externalId: null,
+    status: "refunded",
+    paymentState: "refunded",
+    fulfillmentState: "fulfilled",
+    displayState: "Refunded",
+    customer: MOCK_CUSTOMER_3,
+    summary: {
+        total: 1500,
+        subtotalAfterFees: 1500,
+        discountTotal: 0,
+        shippingTotal: 0,
+        totalTaxes: 0,
+        taxes: [],
+        isTaxInclusive: false
+    },
+    cartDiscount: null,
+    cartFees: [],
+    paymentMethods: [
+        {
+            transactionId: "trans_card_2",
+            paymentType: "credit_card",
+            amount: 1500,
+            timestamp: new Date(Date.now() - 7200000).toISOString(),
+            processor: "stripe"
+        }
+    ],
+    source: "pos",
+    posData: {
+        outlet: MOCK_OUTLET_MAIN.id,
+        station: MOCK_STATION_1._id,
+        employee: MOCK_USER_MARIO.id
+    },
+    sessionId: "sess_3",
+    metadata: [],
+    billing: null,
+    shipping: null,
+    lineItems: [createLineItem(MOCK_PRODUCT_BEET, 0, 1)],
+    customSales: [],
+    balance: 0,
+    user: MOCK_USER_MARIO,
+    outlet: MOCK_OUTLET_MAIN,
+    station: MOCK_STATION_1,
+    createdAt: new Date(Date.now() - 7200000).toISOString()
+};
+
+export const MOCK_PARKED_ORDER_1: CFActiveOrder = {
+    _id: "parked_2001",
+    currency: CurrencyCode.USD,
+    minorUnits: 2,
+    receiptId: "PARK-0001",
+    companyId: MOCK_COMPANY.id!,
+    externalId: null,
+    status: "parked",
+    paymentState: "unpaid",
+    fulfillmentState: "pending",
+    displayState: "Parked",
+    customer: MOCK_CUSTOMER_4,
+    summary: {
+        total: 2100,
+        subtotalAfterFees: 2100,
+        discountTotal: 0,
+        shippingTotal: 0,
+        totalTaxes: 0,
+        taxes: [],
+        isTaxInclusive: false
+    },
+    cartDiscount: null,
+    cartFees: [],
+    paymentMethods: [],
+    source: "pos",
+    posData: {
+        outlet: MOCK_OUTLET_MAIN.id,
+        station: MOCK_STATION_1._id,
+        employee: MOCK_USER_LUIGI.id
+    },
+    sessionId: "sess_park_1",
+    metadata: [],
+    billing: null,
+    shipping: null,
+    lineItems: [createLineItem(MOCK_PRODUCT_LEMON, 0, 2)],
+    customSales: [],
+    balance: 2100,
+    user: MOCK_USER_LUIGI,
+    outlet: MOCK_OUTLET_MAIN,
+    station: MOCK_STATION_1,
+    createdAt: new Date(Date.now() - 1800000).toISOString()
+};
+
+export const MOCK_PARKED_ORDER_2: CFActiveOrder = {
+    _id: "parked_2002",
+    currency: CurrencyCode.USD,
+    minorUnits: 2,
+    receiptId: "PARK-0002",
+    companyId: MOCK_COMPANY.id!,
+    externalId: null,
+    status: "parked",
+    paymentState: "unpaid",
+    fulfillmentState: "pending",
+    displayState: "Parked",
+    customer: null,
+    summary: {
+        total: 2500,
+        subtotalAfterFees: 2500,
+        discountTotal: 0,
+        shippingTotal: 0,
+        totalTaxes: 0,
+        taxes: [],
+        isTaxInclusive: false
+    },
+    cartDiscount: null,
+    cartFees: [],
+    paymentMethods: [],
+    source: "pos",
+    posData: {
+        outlet: MOCK_OUTLET_MAIN.id,
+        station: MOCK_STATION_2._id,
+        employee: MOCK_USER_MARIO.id
+    },
+    sessionId: "sess_park_2",
+    metadata: [],
+    billing: null,
+    shipping: null,
+    lineItems: [createLineItem(MOCK_PRODUCT_CARAMELIZED, 0, 1), createLineItem(MOCK_PRODUCT_GINGER_LIME, 0, 1)],
+    customSales: [],
+    balance: 2500,
+    user: MOCK_USER_MARIO,
+    outlet: MOCK_OUTLET_MAIN,
+    station: MOCK_STATION_2,
+    createdAt: new Date(Date.now() - 900000).toISOString()
+};
+
 // --- EXPORT COLLECTIONS ---
 
 export const MOCK_USERS = [MOCK_USER_MARIO, MOCK_USER_LUIGI];
@@ -632,8 +777,8 @@ export const MOCK_PRODUCTS = [
     MOCK_PRODUCT_HABANERO,
     MOCK_PRODUCT_BLACK_GARLIC
 ];
-export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2];
-export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [];
+export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2, MOCK_ORDER_3];
+export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [MOCK_PARKED_ORDER_1, MOCK_PARKED_ORDER_2];
 
 // Compatibility Exports (reassigned by setMockDatabase)
 export let MOCK_USER: CFActiveUser = MOCK_USERS[0];
@@ -793,12 +938,13 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
             price: p.price,
             taxes: [],
             discount: {
-                itemDiscount: { percentage: 0, amount: 0, const: "0" },
-                cartDiscount: { percentage: 0, amount: 0, const: "0" }
+                itemDiscounts: [],
+                cartDiscount: { percentage: 0, amount: 0 }
             },
-            fee: { itemFee: { percentage: 0, amount: 0, tax: 0, taxTableId: "" } },
+            fee: { itemFees: [] },
             totalTax: 0,
             total: p.price * p.quantity,
+            lineNetWithFees: p.price * p.quantity,
             metadata: [],
             image: p.images?.[0] || "",
             sku: p.sku || "",
@@ -823,7 +969,7 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
         customer: MOCK_CART.customer ? (MOCK_CART.customer as CFCustomer) : null,
         summary: {
             total: totalNum,
-            subTotal: totalNum,
+            subtotalAfterFees: totalNum,
             discountTotal: 0,
             shippingTotal: 0,
             totalTaxes: 0,
@@ -867,4 +1013,34 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
     mockPublishEvent("cart", "cart-created", {});
 
     return newOrder;
+};
+
+/**
+ * Apply a (possibly partial) payment of `amount` minor units to the active cart.
+ * Decrements the remaining balance; when it reaches zero the sale completes
+ * (creates the order, resets the cart, returns it). Otherwise the cart stays
+ * open with `amountToBeCharged` reset to what's left, and returns null.
+ */
+export const applyMockPayment = (
+    amount: number,
+    paymentType: string,
+    processor: string = "cash"
+): CFActiveOrder | null => {
+    const remainingBefore = MOCK_CART.remainingBalance ?? MOCK_CART.total;
+    const charge = Math.min(Math.max(0, amount || remainingBefore), remainingBefore);
+    const remainingAfter = Math.max(0, remainingBefore - charge);
+
+    if (remainingAfter > 0) {
+        // Partial payment — keep the cart open, queue the rest for the next tender.
+        MOCK_CART.remainingBalance = remainingAfter;
+        MOCK_CART.amountToBeCharged = remainingAfter;
+        mockPublishEvent("cart", "partial-payment-applied", { charged: charge, remaining: remainingAfter });
+        return null;
+    }
+
+    // Fully paid — create the completed order (this also resets the cart).
+    const orderTotal = MOCK_CART.total;
+    const order = createOrderFromCart(paymentType, orderTotal, processor);
+    mockPublishEvent("payments", "payment-done", { order });
+    return order;
 };

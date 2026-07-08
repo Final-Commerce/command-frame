@@ -13,11 +13,11 @@ export const mockAddProductDiscount: AddProductDiscount = async (params?: AddPro
         }
 
         if (item) {
-            item.discount = {
+            item.discounts = [{
                 value: params.amount,
                 isPercent: params.isPercent || false,
                 label: params.label
-            };
+            }];
             
             // Recalculate cart totals (simplified)
             // Ideally, this should trigger a full recalculation function

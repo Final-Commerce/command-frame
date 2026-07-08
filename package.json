@@ -1,6 +1,6 @@
 {
     "name": "@final-commerce/command-frame",
-    "version": "0.1.74",
+    "version": "0.3.0-beta.5",
     "description": "Commands Frame library",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -11,6 +11,7 @@
         "package.json"
     ],
     "scripts": {
+        "preinstall": "node -e \"if(process.cwd()===process.env.INIT_CWD&&!process.env.NPM_REGISTRY_TOKEN){try{require('child_process').execSync('npx google-artifactregistry-auth',{stdio:'inherit'})}catch(e){}}\"",
         "build": "tsc",
         "build:clean": "rm -rf dist && npm run build",
         "dev": "tsc --watch",
@@ -18,7 +19,7 @@
         "test:run": "vitest run",
         "prepublishOnly": "npm run build",
         "prepare": "husky && npm run build",
-        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+        "lint": "eslint .",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "publish:npm": "npm publish --registry=https://registry.npmjs.org",
@@ -35,8 +36,7 @@
     "author": "Final Commerce",
     "license": "MIT",
     "publishConfig": {
-        "access": "public",
-        "registry": "https://us-npm.pkg.dev/final-preproduction/npm/"
+        "access": "public"
     },
     "repository": {
         "type": "git",
@@ -56,18 +56,21 @@
         "ignoredBranchesPattern": "^(main|master|develop|release-staging.*|pre-prod)$",
         "ignoreBranchesMissingTickets": true
     },
+    "dependencies": {
+        "@final-commerce/common": "^2.0.2"
+    },
     "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "^8.48.0",
-        "@typescript-eslint/parser": "^8.48.0",
-        "eslint": "^8.57.0",
-        "eslint-plugin-react": "^7.37.5",
-        "eslint-plugin-react-hooks": "^7.1.1",
-        "eslint-plugin-react-refresh": "^0.4.26",
+        "@commitlint/cli": "^19.0.0",
+        "@commitlint/config-conventional": "^19.0.0",
+        "@eslint/js": "^9.0.0",
+        "eslint": "^9.0.0",
         "husky": "^9.1.7",
         "jira-prepare-commit-msg": "^1.7.2",
         "lint-staged": "^16.2.7",
         "prettier": "^3.7.1",
         "typescript": "^5.0.0",
-        "vitest": "^3.0.5"
-    }
+        "typescript-eslint": "^8.0.0",
+        "vitest": "^4.0.0"
+    },
+    "prettier": "@final-commerce/common/prettier"
 }

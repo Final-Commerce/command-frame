@@ -48,8 +48,6 @@ import type {
     AuthenticateUser,
     PartialPayment,
     SwitchUser,
-    TriggerWebhook,
-    TriggerZapierWebhook,
     SetRefundStockAction,
     SelectAllRefundItems,
     ResetRefundDetails,
@@ -77,11 +75,8 @@ import type {
     GetActiveCustomer,
     SetActiveCustomer,
     GetActiveOutlet,
-    SetActiveOutlet,
     GetActiveStation,
-    SetActiveStation,
     GetActiveSession,
-    SetActiveSession,
     GetActiveUser,
     SetActiveUser,
     SetActiveRefund,
@@ -155,8 +150,6 @@ export interface RenderProviderActions {
     authenticateUser: AuthenticateUser;
     partialPayment: PartialPayment;
     switchUser: SwitchUser;
-    triggerWebhook: TriggerWebhook;
-    triggerZapierWebhook: TriggerZapierWebhook;
     setRefundStockAction: SetRefundStockAction;
     selectAllRefundItems: SelectAllRefundItems;
     resetRefundDetails: ResetRefundDetails;
@@ -183,11 +176,8 @@ export interface RenderProviderActions {
     getActiveCustomer: GetActiveCustomer;
     setActiveCustomer: SetActiveCustomer;
     getActiveOutlet: GetActiveOutlet;
-    setActiveOutlet: SetActiveOutlet;
     getActiveStation: GetActiveStation;
-    setActiveStation: SetActiveStation;
     getActiveSession: GetActiveSession;
-    setActiveSession: SetActiveSession;
     getActiveUser: GetActiveUser;
     setActiveUser: SetActiveUser;
     setActiveRefund: SetActiveRefund;
