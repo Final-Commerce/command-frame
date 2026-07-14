@@ -147,7 +147,7 @@ For detailed documentation on each command, including parameter descriptions, re
 ## Quick Start
 
 ```typescript
-import { command } from '@final-commerce/command-frame';
+import { command } from "@final-commerce/command-frame";
 
 // Get products from parent window
 const products = await command.getProducts();
@@ -160,57 +160,57 @@ const categories = await command.getCategories();
 
 // Add product to cart with optional discounts and fees
 const addedProduct = await command.addProductToCart({
-  variantId: '691df9c6c478bada1fb23d55',
-  quantity: 1,
-  discounts: [
-    {
-      amount: 10,
-      isPercent: false,
-      label: 'Discount',
-    },
-  ],
-  notes: 'No onions',
+    variantId: "691df9c6c478bada1fb23d55",
+    quantity: 1,
+    discounts: [
+        {
+            amount: 10,
+            isPercent: false,
+            label: "Discount"
+        }
+    ],
+    notes: "No onions"
 });
 
 // Add a discount to the specific item just added (if you didn't add it during creation)
 await command.addProductDiscount({
-  internalId: addedProduct.internalId,
-  amount: 5,
-  isPercent: true,
-  label: 'Extra 5% Off',
+    internalId: addedProduct.internalId,
+    amount: 5,
+    isPercent: true,
+    label: "Extra 5% Off"
 });
 
 // Add cart discount
 await command.addCartDiscount({
-  amount: 10,
-  isPercent: false,
-  label: 'Cart Discount',
+    amount: 10,
+    isPercent: false,
+    label: "Cart Discount"
 });
 
 // Get current context/environment
 const context = await command.getContext();
-console.log('Current user:', context.userId);
-console.log('Current company:', context.companyName);
-console.log('Current build:', context.buildName);
+console.log("Current user:", context.userId);
+console.log("Current company:", context.companyName);
+console.log("Current build:", context.buildName);
 
 // Work with custom tables
 const customTables = await command.getCustomTables();
-console.log('Available custom tables:', customTables.customTables);
+console.log("Available custom tables:", customTables.customTables);
 
 // Insert data into a custom table
 await command.upsertCustomTableData({
-  tableName: 'customer_preferences',
-  data: {
-    customerId: context.userId,
-    theme: 'dark',
-    notifications: true,
-  },
+    tableName: "customer_preferences",
+    data: {
+        customerId: context.userId,
+        theme: "dark",
+        notifications: true
+    }
 });
 
 // Query custom table data
 const preferences = await command.getCustomTableData({
-  tableName: 'customer_preferences',
-  query: { customerId: context.userId },
+    tableName: "customer_preferences",
+    query: { customerId: context.userId }
 });
 ```
 
@@ -525,69 +525,69 @@ The library includes a pub/sub system that allows iframe apps to subscribe to to
 #### Customer Events
 
 - **[customers](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/customers/README.md)** - Customer lifecycle events
-  - `customer-created` - Published when a new customer is created
-  - `customer-updated` - Published when a customer's information is updated
-  - `customer-note-added` - Published when a note is added to a customer
-  - `customer-note-deleted` - Published when a note is deleted from a customer
-  - `customer-assigned` - Published when a customer is assigned to the cart
-  - `customer-unassigned` - Published when a customer is unassigned from the cart
-  - `set-active-customer` - Published when the active customer is set
-  - `get-active-customer` - Reserved for host publish of active customer snapshots (see topic README)
+    - `customer-created` - Published when a new customer is created
+    - `customer-updated` - Published when a customer's information is updated
+    - `customer-note-added` - Published when a note is added to a customer
+    - `customer-note-deleted` - Published when a note is deleted from a customer
+    - `customer-assigned` - Published when a customer is assigned to the cart
+    - `customer-unassigned` - Published when a customer is unassigned from the cart
+    - `set-active-customer` - Published when the active customer is set
+    - `get-active-customer` - Reserved for host publish of active customer snapshots (see topic README)
 
 #### Order Events
 
 - **[orders](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/orders/README.md)** - Order lifecycle events
-  - `order-created` - Published when a new order is created
-  - `order-updated` - Published when an order is updated (includes merged active order after partial updates)
-  - `set-active-order` - Published when the active order is set
-  - `get-active-order` - Reserved for host publish of active order snapshots (see topic README)
+    - `order-created` - Published when a new order is created
+    - `order-updated` - Published when an order is updated (includes merged active order after partial updates)
+    - `set-active-order` - Published when the active order is set
+    - `get-active-order` - Reserved for host publish of active order snapshots (see topic README)
 
 #### Refund Events
 
 - **[refunds](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/refunds/README.md)** - Refund lifecycle events
-  - `refund-created` - Published when a refund is created
-  - `refund-updated` - Published when a refund is updated
-  - `set-active-refund` - Published when refund selection / active refund state changes
-  - `get-active-refund` - Reserved for host publish (see topic README)
+    - `refund-created` - Published when a refund is created
+    - `refund-updated` - Published when a refund is updated
+    - `set-active-refund` - Published when refund selection / active refund state changes
+    - `get-active-refund` - Reserved for host publish (see topic README)
 
 #### Product Events
 
 - **[products](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/products/README.md)** - Product sync events
-  - `product-created` - Published when a product is created
-  - `product-updated` - Published when a product is updated
-  - `set-active-product` - Published when the active product changes
-  - `get-active-product` - Reserved for host publish (see topic README)
+    - `product-created` - Published when a product is created
+    - `product-updated` - Published when a product is updated
+    - `set-active-product` - Published when the active product changes
+    - `get-active-product` - Reserved for host publish (see topic README)
 
 #### Cart Events
 
 - **[cart](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/cart/README.md)** - Cart operation events
-  - `cart-created` - Published when a cart is created
-  - `customer-assigned` - Published when a customer is assigned to the cart
-  - `product-added` - Published when a product is added to the cart
-  - `product-updated` - Published when a cart item's quantity is updated
-  - `product-deleted` - Published when a product is removed from the cart
-  - `cart-discount-added` - Published when a discount is added to the cart
-  - `cart-discount-removed` - Published when a discount is removed from the cart
-  - `cart-fee-added` - Published when a fee is added to the cart
-  - `cart-fee-removed` - Published when a fee is removed from the cart
+    - `cart-created` - Published when a cart is created
+    - `customer-assigned` - Published when a customer is assigned to the cart
+    - `product-added` - Published when a product is added to the cart
+    - `product-updated` - Published when a cart item's quantity is updated
+    - `product-deleted` - Published when a product is removed from the cart
+    - `cart-discount-added` - Published when a discount is added to the cart
+    - `cart-discount-removed` - Published when a discount is removed from the cart
+    - `cart-fee-added` - Published when a fee is added to the cart
+    - `cart-fee-removed` - Published when a fee is removed from the cart
 
 #### Payment Events
 
 - **[payments](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/payments/README.md)** - Payment processing events
-  - `payment-done` - Published when a payment is successfully completed
-  - `payment-err` - Published when a payment fails
+    - `payment-done` - Published when a payment is successfully completed
+    - `payment-err` - Published when a payment fails
 
 #### Split Payment Events
 
 - **[split-payments](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/split-payments/README.md)** - In-progress split-payment session updates (mirror of the host's `splitPayment` slice)
-  - `split-payment-updated` - Published whenever the host's split-payment slice mutates (partial added, reset, etc.) and once on handshake; payload carries the full current slice or `null`
+    - `split-payment-updated` - Published whenever the host's split-payment slice mutates (partial added, reset, etc.) and once on handshake; payload carries the full current slice or `null`
 
 #### Print Events
 
 - **[print](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/print/README.md)** - Print action events
-  - `print-started` - Published when a print action is initiated
-  - `print-completed` - Published when a print action completes successfully
-  - `print-error` - Published when a print action encounters an error
+    - `print-started` - Published when a print action is initiated
+    - `print-completed` - Published when a print action completes successfully
+    - `print-error` - Published when a print action encounters an error
 
 #### Outlet, station, session, and user context
 
@@ -616,7 +616,7 @@ Enable debug logging by setting the debug flag before importing:
 
 ```typescript
 (window as any).__POSTMESSAGE_DEBUG__ = true;
-import { command } from '@final-commerce/command-frame';
+import { command } from "@final-commerce/command-frame";
 ```
 
 This will log all postMessage communication to the console, including:
@@ -632,211 +632,211 @@ All commands are fully typed with TypeScript. Import types for use in your code:
 
 ```typescript
 import type {
-  // Data Retrieval
-  GetCustomersParams,
-  GetCustomersResponse,
-  GetCustomers,
-  GetProductsParams,
-  GetProductsResponse,
-  GetProducts,
-  GetCategoriesParams,
-  GetCategoriesResponse,
-  GetCategories,
-  GetOrdersParams,
-  GetOrdersResponse,
-  GetOrders,
-  GetContext,
-  GetContextResponse,
-  GetFinalContext,
-  GetFinalContextResponse,
-  GetCurrentCart,
-  GetCurrentCartResponse,
-  GetActiveOrder,
-  GetActiveOrderResponse,
-  SetActiveOrder,
-  SetActiveOrderParams,
-  SetActiveOrderResponse,
-  GetActiveCustomer,
-  GetActiveCustomerResponse,
-  SetActiveCustomer,
-  SetActiveCustomerParams,
-  SetActiveCustomerResponse,
-  GetActiveOutlet,
-  GetActiveOutletResponse,
-  GetActiveStation,
-  GetActiveStationResponse,
-  GetActiveSession,
-  GetActiveSessionResponse,
-  GetActiveUser,
-  GetActiveUserResponse,
-  SetActiveUser,
-  SetActiveUserParams,
-  SetActiveUserResponse,
-  GetActiveRefund,
-  GetActiveRefundResponse,
-  SetActiveRefund,
-  SetActiveRefundParams,
-  SetActiveRefundResponse,
-  GetActiveProductResponse,
-  GetActiveProduct,
-  // Product Actions
-  AddProductDiscountParams,
-  AddProductDiscountResponse,
-  AddProductDiscount,
-  AddProductToCartParams,
-  AddProductToCartResponse,
-  AddProductToCart,
-  RemoveProductFromCartParams,
-  RemoveProductFromCartResponse,
-  RemoveProductFromCart,
-  UpdateCartItemQuantityParams,
-  UpdateCartItemQuantityResponse,
-  UpdateCartItemQuantity,
-  AddProductNoteParams,
-  AddProductNoteResponse,
-  AddProductNote,
-  AddProductFeeParams,
-  AddProductFeeResponse,
-  AddProductFee,
-  AdjustInventoryParams,
-  AdjustInventoryResponse,
-  AdjustInventory,
-  SetActiveProductParams,
-  SetActiveProductResponse,
-  SetActiveProduct,
-  // Order Actions
-  AddCustomSaleParams,
-  AddCustomSaleResponse,
-  AddCustomSale,
-  AddCartDiscountParams,
-  AddCartDiscountResponse,
-  AddCartDiscount,
-  RemoveCartDiscountResponse,
-  RemoveCartDiscount,
-  AddOrderNoteParams,
-  AddOrderNoteResponse,
-  AddOrderNote,
-  AddCartFeeParams,
-  AddCartFeeResponse,
-  AddCartFee,
-  ClearCartResponse,
-  ClearCart,
-  ParkOrderResponse,
-  ParkOrder,
-  ResumeParkedOrderParams,
-  ResumeParkedOrderResponse,
-  ResumeParkedOrder,
-  DeleteParkedOrderParams,
-  DeleteParkedOrderResponse,
-  DeleteParkedOrder,
-  CashPaymentParams,
-  CashPaymentResponse,
-  CashPayment,
-  TapToPayPaymentParams,
-  TapToPayPaymentResponse,
-  TapToPayPayment,
-  TerminalPaymentParams,
-  TerminalPaymentResponse,
-  TerminalPayment,
-  VendaraPaymentParams,
-  VendaraPaymentResponse,
-  VendaraPayment,
-  PartialPaymentParams,
-  PartialPaymentResponse,
-  PartialPayment,
-  // Customer Actions
-  AddCustomerParams,
-  AddCustomerResponse,
-  AddCustomer,
-  AssignCustomerParams,
-  AssignCustomerResponse,
-  AssignCustomer,
-  AddCustomerNoteParams,
-  AddCustomerNoteResponse,
-  AddCustomerNote,
-  RemoveCustomerFromCartResponse,
-  RemoveCustomerFromCart,
-  // System Actions
-  GoToStationHomeResponse,
-  GoToStationHome,
-  OpenCashDrawerResponse,
-  OpenCashDrawer,
-  ShowNotificationParams,
-  ShowNotificationResponse,
-  ShowNotification,
-  ShowConfirmationParams,
-  ShowConfirmationResponse,
-  ShowConfirmation,
-  AuthenticateUserParams,
-  AuthenticateUserResponse,
-  AuthenticateUser,
-  SwitchUserParams,
-  SwitchUserResponse,
-  SwitchUser,
-  // Refund Actions
-  InitiateRefundParams,
-  InitiateRefundResponse,
-  InitiateRefund,
-  SelectAllRefundItemsParams,
-  SelectAllRefundItemsResponse,
-  SelectAllRefundItems,
-  ResetRefundDetailsResponse,
-  ResetRefundDetails,
-  SetRefundStockActionParams,
-  SetRefundStockActionResponse,
-  SetRefundStockAction,
-  CalculateRefundTotalResponse,
-  CalculateRefundTotal,
-  ProcessPartialRefundParams,
-  ProcessPartialRefundResponse,
-  ProcessPartialRefund,
-  GetRemainingRefundableQuantitiesParams,
-  GetRemainingRefundableQuantitiesResponse,
-  GetRemainingRefundableQuantities,
-  // Secrets Storage
-  GetSecretsKeysParams,
-  GetSecretsKeysResponse,
-  GetSecretsKeys,
-  GetSecretValParams,
-  GetSecretValResponse,
-  GetSecretVal,
-  SetSecretValParams,
-  SetSecretValResponse,
-  SetSecretVal,
-  // Reference
-  ExampleFunctionParams,
-  ExampleFunctionResponse,
-  ExampleFunction,
-  // Common Types (Directly exported)
-  CFProduct,
-  CFProductVariant,
-  CFProductType,
-  CFCustomer,
-  CFActiveCustomer,
-  CFCustomerNote,
-  CFOrder,
-  CFActiveOrder,
-  CFActiveCart,
-  CFActiveProduct,
-  CFActiveCustomSales,
-  CFLineItem,
-  CFCustomSale,
-  CFDiscount,
-  CFCustomFee,
-  CFDiscountDetail,
-  CFFeeDetail,
-  CFDiscountLineItem,
-  CFFeeLineItem,
-  CFTax,
-  CFAddress,
-  CFMetadataItem,
-  CFActiveUser,
-  CFActiveOutlet,
-  CFActiveStation,
-  CFSession,
-  CFActiveRefundDetails,
-  CFContext,
-} from '@final-commerce/command-frame';
+    // Data Retrieval
+    GetCustomersParams,
+    GetCustomersResponse,
+    GetCustomers,
+    GetProductsParams,
+    GetProductsResponse,
+    GetProducts,
+    GetCategoriesParams,
+    GetCategoriesResponse,
+    GetCategories,
+    GetOrdersParams,
+    GetOrdersResponse,
+    GetOrders,
+    GetContext,
+    GetContextResponse,
+    GetFinalContext,
+    GetFinalContextResponse,
+    GetCurrentCart,
+    GetCurrentCartResponse,
+    GetActiveOrder,
+    GetActiveOrderResponse,
+    SetActiveOrder,
+    SetActiveOrderParams,
+    SetActiveOrderResponse,
+    GetActiveCustomer,
+    GetActiveCustomerResponse,
+    SetActiveCustomer,
+    SetActiveCustomerParams,
+    SetActiveCustomerResponse,
+    GetActiveOutlet,
+    GetActiveOutletResponse,
+    GetActiveStation,
+    GetActiveStationResponse,
+    GetActiveSession,
+    GetActiveSessionResponse,
+    GetActiveUser,
+    GetActiveUserResponse,
+    SetActiveUser,
+    SetActiveUserParams,
+    SetActiveUserResponse,
+    GetActiveRefund,
+    GetActiveRefundResponse,
+    SetActiveRefund,
+    SetActiveRefundParams,
+    SetActiveRefundResponse,
+    GetActiveProductResponse,
+    GetActiveProduct,
+    // Product Actions
+    AddProductDiscountParams,
+    AddProductDiscountResponse,
+    AddProductDiscount,
+    AddProductToCartParams,
+    AddProductToCartResponse,
+    AddProductToCart,
+    RemoveProductFromCartParams,
+    RemoveProductFromCartResponse,
+    RemoveProductFromCart,
+    UpdateCartItemQuantityParams,
+    UpdateCartItemQuantityResponse,
+    UpdateCartItemQuantity,
+    AddProductNoteParams,
+    AddProductNoteResponse,
+    AddProductNote,
+    AddProductFeeParams,
+    AddProductFeeResponse,
+    AddProductFee,
+    AdjustInventoryParams,
+    AdjustInventoryResponse,
+    AdjustInventory,
+    SetActiveProductParams,
+    SetActiveProductResponse,
+    SetActiveProduct,
+    // Order Actions
+    AddCustomSaleParams,
+    AddCustomSaleResponse,
+    AddCustomSale,
+    AddCartDiscountParams,
+    AddCartDiscountResponse,
+    AddCartDiscount,
+    RemoveCartDiscountResponse,
+    RemoveCartDiscount,
+    AddOrderNoteParams,
+    AddOrderNoteResponse,
+    AddOrderNote,
+    AddCartFeeParams,
+    AddCartFeeResponse,
+    AddCartFee,
+    ClearCartResponse,
+    ClearCart,
+    ParkOrderResponse,
+    ParkOrder,
+    ResumeParkedOrderParams,
+    ResumeParkedOrderResponse,
+    ResumeParkedOrder,
+    DeleteParkedOrderParams,
+    DeleteParkedOrderResponse,
+    DeleteParkedOrder,
+    CashPaymentParams,
+    CashPaymentResponse,
+    CashPayment,
+    TapToPayPaymentParams,
+    TapToPayPaymentResponse,
+    TapToPayPayment,
+    TerminalPaymentParams,
+    TerminalPaymentResponse,
+    TerminalPayment,
+    VendaraPaymentParams,
+    VendaraPaymentResponse,
+    VendaraPayment,
+    PartialPaymentParams,
+    PartialPaymentResponse,
+    PartialPayment,
+    // Customer Actions
+    AddCustomerParams,
+    AddCustomerResponse,
+    AddCustomer,
+    AssignCustomerParams,
+    AssignCustomerResponse,
+    AssignCustomer,
+    AddCustomerNoteParams,
+    AddCustomerNoteResponse,
+    AddCustomerNote,
+    RemoveCustomerFromCartResponse,
+    RemoveCustomerFromCart,
+    // System Actions
+    GoToStationHomeResponse,
+    GoToStationHome,
+    OpenCashDrawerResponse,
+    OpenCashDrawer,
+    ShowNotificationParams,
+    ShowNotificationResponse,
+    ShowNotification,
+    ShowConfirmationParams,
+    ShowConfirmationResponse,
+    ShowConfirmation,
+    AuthenticateUserParams,
+    AuthenticateUserResponse,
+    AuthenticateUser,
+    SwitchUserParams,
+    SwitchUserResponse,
+    SwitchUser,
+    // Refund Actions
+    InitiateRefundParams,
+    InitiateRefundResponse,
+    InitiateRefund,
+    SelectAllRefundItemsParams,
+    SelectAllRefundItemsResponse,
+    SelectAllRefundItems,
+    ResetRefundDetailsResponse,
+    ResetRefundDetails,
+    SetRefundStockActionParams,
+    SetRefundStockActionResponse,
+    SetRefundStockAction,
+    CalculateRefundTotalResponse,
+    CalculateRefundTotal,
+    ProcessPartialRefundParams,
+    ProcessPartialRefundResponse,
+    ProcessPartialRefund,
+    GetRemainingRefundableQuantitiesParams,
+    GetRemainingRefundableQuantitiesResponse,
+    GetRemainingRefundableQuantities,
+    // Secrets Storage
+    GetSecretsKeysParams,
+    GetSecretsKeysResponse,
+    GetSecretsKeys,
+    GetSecretValParams,
+    GetSecretValResponse,
+    GetSecretVal,
+    SetSecretValParams,
+    SetSecretValResponse,
+    SetSecretVal,
+    // Reference
+    ExampleFunctionParams,
+    ExampleFunctionResponse,
+    ExampleFunction,
+    // Common Types (Directly exported)
+    CFProduct,
+    CFProductVariant,
+    CFProductType,
+    CFCustomer,
+    CFActiveCustomer,
+    CFCustomerNote,
+    CFOrder,
+    CFActiveOrder,
+    CFActiveCart,
+    CFActiveProduct,
+    CFActiveCustomSales,
+    CFLineItem,
+    CFCustomSale,
+    CFDiscount,
+    CFCustomFee,
+    CFDiscountDetail,
+    CFFeeDetail,
+    CFDiscountLineItem,
+    CFFeeLineItem,
+    CFTax,
+    CFAddress,
+    CFMetadataItem,
+    CFActiveUser,
+    CFActiveOutlet,
+    CFActiveStation,
+    CFSession,
+    CFActiveRefundDetails,
+    CFContext
+} from "@final-commerce/command-frame";
 ```
 
 **Note:** The library exports useful types like `CFProduct`, `CFActiveCart`, `CFCustomer`, etc., we recommend using them in your code to type args for components displaying Products/ Customers / Variations / Orders etc

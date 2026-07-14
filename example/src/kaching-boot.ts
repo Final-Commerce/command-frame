@@ -11,8 +11,8 @@
 //    would shadow the parent's host with an unhydrated runtime: its handshake
 //    announce dies in the middle frame (ServiceChannel is strictly
 //    parent<->direct-child), so commands would route into an empty POS.
-import { Kaching } from '@final-commerce-internal/kaching';
+import { Kaching } from "@final-commerce-internal/kaching";
 
-if (new URLSearchParams(window.location.search).has('kaching')) {
+if (new URLSearchParams(window.location.search).has("kaching")) {
   new Kaching().start();
 }

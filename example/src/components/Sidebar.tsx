@@ -1,115 +1,115 @@
-import { useState, useEffect } from 'react';
-import './Sidebar.css';
+import { useState, useEffect } from "react";
+import "./Sidebar.css";
 
 export type SectionId =
-  | 'environment'
-  | 'categories'
-  | 'products'
-  | 'customers'
-  | 'cart'
-  | 'orders'
-  | 'state-machine'
-  | 'outlet'
-  | 'station'
-  | 'session'
-  | 'refunds'
-  | 'payments'
-  | 'split-payments'
-  | 'system'
-  | 'events'
-  | 'examples'
-  | 'custom-extensions'
-  | 'custom-tables'
-  | 'secrets'
-  | 'print'
-  | 'receipts'
-  | 'users'
-  | 'roles'
-  | 'variants'
-  | 'transactions'
-  | 'attributes';
+    | "environment"
+    | "categories"
+    | "products"
+    | "customers"
+    | "cart"
+    | "orders"
+    | "state-machine"
+    | "outlet"
+    | "station"
+    | "session"
+    | "refunds"
+    | "payments"
+    | "split-payments"
+    | "system"
+    | "events"
+    | "examples"
+    | "custom-extensions"
+    | "custom-tables"
+    | "secrets"
+    | "print"
+    | "receipts"
+    | "users"
+    | "roles"
+    | "variants"
+    | "transactions"
+    | "attributes";
 
 interface SidebarProps {
-  activeSection: SectionId;
-  onSectionChange: (section: SectionId) => void;
+    activeSection: SectionId;
+    onSectionChange: (section: SectionId) => void;
 }
 
 interface Section {
-  id: SectionId;
-  label: string;
-  icon?: string;
+    id: SectionId;
+    label: string;
+    icon?: string;
 }
 
 const sections: Section[] = [
-  { id: 'environment', label: 'Environment' },
-  { id: 'categories', label: 'Categories' },
-  { id: 'products', label: 'Products' },
-  { id: 'customers', label: 'Customers' },
-  { id: 'cart', label: 'Cart' },
-  { id: 'orders', label: 'Orders' },
-  { id: 'state-machine', label: 'State Machine' },
-  { id: 'outlet', label: 'Outlet' },
-  { id: 'station', label: 'Station' },
-  { id: 'session', label: 'Session' },
-  { id: 'refunds', label: 'Refunds' },
-  { id: 'payments', label: 'Payments' },
-  { id: 'split-payments', label: 'Split Payments' },
-  { id: 'system', label: 'System' },
-  { id: 'events', label: 'Events' },
-  { id: 'examples', label: 'Examples' },
-  { id: 'custom-extensions', label: 'Custom Extensions' },
-  { id: 'custom-tables', label: 'Custom Tables' },
-  { id: 'secrets', label: 'Secrets' },
-  { id: 'print', label: 'Print' },
-  { id: 'receipts', label: 'Receipts' },
-  { id: 'users', label: 'Users' },
-  { id: 'roles', label: 'Roles' },
-  { id: 'variants', label: 'Variants' },
-  { id: 'transactions', label: 'Transactions' },
-  { id: 'attributes', label: 'Attributes' },
+    { id: "environment", label: "Environment" },
+    { id: "categories", label: "Categories" },
+    { id: "products", label: "Products" },
+    { id: "customers", label: "Customers" },
+    { id: "cart", label: "Cart" },
+    { id: "orders", label: "Orders" },
+    { id: "state-machine", label: "State Machine" },
+    { id: "outlet", label: "Outlet" },
+    { id: "station", label: "Station" },
+    { id: "session", label: "Session" },
+    { id: "refunds", label: "Refunds" },
+    { id: "payments", label: "Payments" },
+    { id: "split-payments", label: "Split Payments" },
+    { id: "system", label: "System" },
+    { id: "events", label: "Events" },
+    { id: "examples", label: "Examples" },
+    { id: "custom-extensions", label: "Custom Extensions" },
+    { id: "custom-tables", label: "Custom Tables" },
+    { id: "secrets", label: "Secrets" },
+    { id: "print", label: "Print" },
+    { id: "receipts", label: "Receipts" },
+    { id: "users", label: "Users" },
+    { id: "roles", label: "Roles" },
+    { id: "variants", label: "Variants" },
+    { id: "transactions", label: "Transactions" },
+    { id: "attributes", label: "Attributes" }
 ];
 
 export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
 
-  // Update document body attribute for CSS targeting
-  useEffect(() => {
-    if (collapsed) {
-      document.body.setAttribute('data-sidebar-collapsed', 'true');
-    } else {
-      document.body.removeAttribute('data-sidebar-collapsed');
-    }
-  }, [collapsed]);
+    // Update document body attribute for CSS targeting
+    useEffect(() => {
+        if (collapsed) {
+            document.body.setAttribute("data-sidebar-collapsed", "true");
+        } else {
+            document.body.removeAttribute("data-sidebar-collapsed");
+        }
+    }, [collapsed]);
 
-  return (
-    <div className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
-      <div className="sidebar__header">
-        <h2 className="sidebar__title">Commands</h2>
-        <button
-          className="sidebar__toggle"
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed ? '→' : '←'}
-        </button>
-      </div>
-      <nav className="sidebar__nav">
-        {sections.map((section) => (
-          <button
-            key={section.id}
-            className={`sidebar__item ${activeSection === section.id ? 'sidebar__item--active' : ''}`}
-            onClick={() => onSectionChange(section.id)}
-          >
-            <span className="sidebar__item-label">{section.label}</span>
-          </button>
-        ))}
-      </nav>
-      <div className="sidebar__footer">
-        <div className="sidebar__status">
-          <span className="sidebar__status-indicator"></span>
-          <span className="sidebar__status-text">Ready</span>
+    return (
+        <div className={`sidebar ${collapsed ? "sidebar--collapsed" : ""}`}>
+            <div className="sidebar__header">
+                <h2 className="sidebar__title">Commands</h2>
+                <button
+                    className="sidebar__toggle"
+                    onClick={() => setCollapsed(!collapsed)}
+                    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                >
+                    {collapsed ? "→" : "←"}
+                </button>
+            </div>
+            <nav className="sidebar__nav">
+                {sections.map(section => (
+                    <button
+                        key={section.id}
+                        className={`sidebar__item ${activeSection === section.id ? "sidebar__item--active" : ""}`}
+                        onClick={() => onSectionChange(section.id)}
+                    >
+                        <span className="sidebar__item-label">{section.label}</span>
+                    </button>
+                ))}
+            </nav>
+            <div className="sidebar__footer">
+                <div className="sidebar__status">
+                    <span className="sidebar__status-indicator"></span>
+                    <span className="sidebar__status-text">Ready</span>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

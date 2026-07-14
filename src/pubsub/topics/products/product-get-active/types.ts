@@ -1,5 +1,5 @@
-import type { CFActiveProduct } from '../../../../CommonTypes';
-import type { TopicEvent } from '../../../types';
+import type { CFActiveProduct } from "../../../../CommonTypes";
+import type { TopicEvent } from "../../../types";
 
 /**
  * Payload for product-get-active event.
@@ -9,7 +9,7 @@ import type { TopicEvent } from '../../../types';
  * cleared). Subscribers must handle the null case. [FI-6491]
  */
 export interface ProductGetActivePayload {
-  product: CFActiveProduct | null;
+    product: CFActiveProduct | null;
 }
 
 /**

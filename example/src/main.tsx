@@ -44,7 +44,7 @@ const AutoRouter = () => {
       } catch (e) {
         console.log('[Router] Auto-detection failed, staying on default route', e);
       }
-
+      
       setIsDetecting(false);
     };
 
@@ -53,15 +53,13 @@ const AutoRouter = () => {
 
   if (isDetecting) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }}>
         Detecting environment...
       </div>
     );
