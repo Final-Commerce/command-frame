@@ -60,6 +60,7 @@ export const MOCK_COMPANY: CFActiveCompany = {
     settings: {
         currencyPrefix: "$",
         currencySuffix: "",
+        minorUnits: 2,
         currencySymbol: "$",
         decimalSeparator: ".",
         thousandSeparator: ",",

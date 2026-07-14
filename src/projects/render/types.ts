@@ -32,6 +32,7 @@ import type {
     DeleteParkedOrder,
     InitiateRefund,
     CashPayment,
+    GetCashRoundingAmount,
     TapToPayPayment,
     TerminalPayment,
     VendaraPayment,
@@ -132,6 +133,7 @@ export interface RenderProviderActions {
     openExtensionOverlay: OpenExtensionOverlay;
     resolveExtensionOverlay: ResolveExtensionOverlay;
     cashPayment: CashPayment;
+    getCashRoundingAmount: GetCashRoundingAmount;
     tapToPayPayment: TapToPayPayment;
     terminalPayment: TerminalPayment;
     vendaraPayment: VendaraPayment;

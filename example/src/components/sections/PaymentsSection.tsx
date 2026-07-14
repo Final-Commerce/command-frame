@@ -14,12 +14,29 @@ interface PaymentsSectionProps {
     isInIframe: boolean;
 }
 
+/**
+ * `amount` is REQUIRED on every tender (integer minor units). The demo keeps
+ * the "leave empty = full balance" UX by resolving the cart's balance due
+ * when the field is blank — the exact pattern a flow should use.
+ */
+async function resolveTenderAmount(input: string): Promise<number> {
+    if (input) return parseInt(input, 10);
+    const { cart } = await command.getCurrentCart();
+    return cart?.amountToBeCharged ?? cart?.total ?? 0;
+}
+
 export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
-    // Cash Payment
+    // Cash Payment (v2: flow-owned tender — amounts in integer MINOR units)
     const [cashPaymentAmount, setCashPaymentAmount] = useState<string>("");
+    const [cashTenderedAmount, setCashTenderedAmount] = useState<string>("");
     const [cashPaymentLoading, setCashPaymentLoading] = useState(false);
     const [cashPaymentResponse, setCashPaymentResponse] = useState<string>("");
     const [openChangeCalculator, setOpenChangeCalculator] = useState<boolean>(false);
+
+    // Get Cash Rounding Amount
+    const [roundingAmount, setRoundingAmount] = useState<string>("");
+    const [roundingLoading, setRoundingLoading] = useState(false);
+    const [roundingResponse, setRoundingResponse] = useState<string>("");
 
     // Tap to Pay
     const [tapToPayAmount, setTapToPayAmount] = useState<string>("");
@@ -84,24 +101,88 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
 
     return (
         <div className="section-content">
-            {/* Cash Payment */}
-            <CommandSection title="Cash Payment">
-                <p className="section-description">Processes a cash payment. Leave amount empty to use cart total.</p>
+            {/* Get Cash Rounding Amount */}
+            <CommandSection title="Get Cash Rounding Amount">
+                <p className="section-description">
+                    Previews the company's cash rounding for an amount (integer minor units, e.g. 1577 = $15.77).
+                    Leave empty for the cart's balance due. No setting configured → returns the amount unchanged.
+                </p>
                 <div className="form-group">
                     <div className="form-field">
-                        <label>Amount (optional):</label>
+                        <label>Amount in minor units (optional):</label>
                         <input
                             type="number"
-                            step="0.01"
+                            step="1"
+                            value={roundingAmount}
+                            onChange={e => setRoundingAmount(e.target.value)}
+                            placeholder="Leave empty for cart balance due"
+                        />
+                    </div>
+                </div>
+                <button
+                    onClick={async () => {
+                        if (!isInIframe) {
+                            setRoundingResponse("Error: Not running in iframe");
+                            return;
+                        }
+                        setRoundingLoading(true);
+                        setRoundingResponse("");
+                        try {
+                            const result = await command.getCashRoundingAmount(
+                                roundingAmount ? { amount: parseInt(roundingAmount, 10) } : undefined
+                            );
+                            setRoundingResponse(JSON.stringify(result, null, 2));
+                            // Convenience: pre-fill the cash payment amount with the rounded charge.
+                            setCashPaymentAmount(String(result.roundedAmount));
+                        } catch (error) {
+                            setRoundingResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+                        } finally {
+                            setRoundingLoading(false);
+                        }
+                    }}
+                    disabled={roundingLoading}
+                    className="btn btn--primary"
+                >
+                    {roundingLoading ? "Loading..." : "Get Cash Rounding Amount"}
+                </button>
+                {roundingResponse && (
+                    <JsonViewer data={roundingResponse} title={roundingResponse.startsWith("Error") ? "Error" : "Success"} />
+                )}
+            </CommandSection>
+
+            {/* Cash Payment */}
+            <CommandSection title="Cash Payment">
+                <p className="section-description">
+                    Processes a cash payment. Amounts are integer MINOR units (1575 = $15.75). Amount is required —
+                    below the balance due it becomes a partial payment (split leg). Enter what the customer handed
+                    over as Tendered and the response returns the change (cash rounding included) — the flow owns
+                    the tender UI now ("Get Cash Rounding Amount" above pre-fills the rounded charge).
+                </p>
+                <div className="form-group">
+                    <div className="form-field">
+                        <label>Amount in minor units (required):</label>
+                        <input
+                            type="number"
+                            step="1"
                             value={cashPaymentAmount}
                             onChange={e => setCashPaymentAmount(e.target.value)}
-                            placeholder="Leave empty for cart total"
+                            placeholder="e.g. 1575 = $15.75"
+                        />
+                    </div>
+                    <div className="form-field">
+                        <label>Tendered in minor units (optional):</label>
+                        <input
+                            type="number"
+                            step="1"
+                            value={cashTenderedAmount}
+                            onChange={e => setCashTenderedAmount(e.target.value)}
+                            placeholder="e.g. 2000 = $20.00 handed over"
                         />
                     </div>
                     <div className="form-field">
                         <label className="checkbox-label">
                             <input type="checkbox" checked={openChangeCalculator} onChange={e => setOpenChangeCalculator(e.target.checked)} />
-                            <span>Open Change Calculator</span>
+                            <span>Open Change Calculator (deprecated — use Tendered instead)</span>
                         </label>
                     </div>
                 </div>
@@ -111,14 +192,18 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                             setCashPaymentResponse("Error: Not running in iframe");
                             return;
                         }
+                        if (!cashPaymentAmount) {
+                            setCashPaymentResponse("Error: amount is required (integer minor units)");
+                            return;
+                        }
                         setCashPaymentLoading(true);
                         setCashPaymentResponse("");
                         try {
-                            const params: { amount?: number; openChangeCalculator?: boolean } = {};
-                            if (cashPaymentAmount) params.amount = parseFloat(cashPaymentAmount);
-                            if (openChangeCalculator) params.openChangeCalculator = true;
-
-                            const result = await command.cashPayment(Object.keys(params).length > 0 ? params : undefined);
+                            const result = await command.cashPayment({
+                                amount: parseInt(cashPaymentAmount, 10),
+                                ...(cashTenderedAmount ? { tenderedAmount: parseInt(cashTenderedAmount, 10) } : {}),
+                                ...(openChangeCalculator ? { openChangeCalculator: true } : {})
+                            });
                             setCashPaymentResponse(JSON.stringify(result, null, 2));
                         } catch (error) {
                             setCashPaymentResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -144,10 +229,10 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         <label>Amount (optional):</label>
                         <input
                             type="number"
-                            step="0.01"
+                            step="1"
                             value={tapToPayAmount}
                             onChange={e => setTapToPayAmount(e.target.value)}
-                            placeholder="Leave empty for cart total"
+                            placeholder="Minor units — empty = balance due"
                         />
                     </div>
                 </div>
@@ -160,7 +245,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         setTapToPayLoading(true);
                         setTapToPayResponse("");
                         try {
-                            const result = await command.tapToPayPayment(tapToPayAmount ? { amount: parseFloat(tapToPayAmount) } : undefined);
+                            const result = await command.tapToPayPayment({ amount: await resolveTenderAmount(tapToPayAmount) });
                             setTapToPayResponse(JSON.stringify(result, null, 2));
                         } catch (error) {
                             setTapToPayResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -184,10 +269,10 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         <label>Amount (optional):</label>
                         <input
                             type="number"
-                            step="0.01"
+                            step="1"
                             value={terminalAmount}
                             onChange={e => setTerminalAmount(e.target.value)}
-                            placeholder="Leave empty for cart total"
+                            placeholder="Minor units — empty = balance due"
                         />
                     </div>
                 </div>
@@ -200,7 +285,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         setTerminalLoading(true);
                         setTerminalResponse("");
                         try {
-                            const result = await command.terminalPayment(terminalAmount ? { amount: parseFloat(terminalAmount) } : undefined);
+                            const result = await command.terminalPayment({ amount: await resolveTenderAmount(terminalAmount) });
                             setTerminalResponse(JSON.stringify(result, null, 2));
                         } catch (error) {
                             setTerminalResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -227,10 +312,10 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         <label>Amount (optional):</label>
                         <input
                             type="number"
-                            step="0.01"
+                            step="1"
                             value={cloudAmount}
                             onChange={e => setCloudAmount(e.target.value)}
-                            placeholder="Leave empty for cart total"
+                            placeholder="Minor units — empty = balance due"
                         />
                     </div>
                 </div>
@@ -245,7 +330,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         try {
                             const result = await command.terminalPayment({
                                 paymentType: "Cloud",
-                                ...(cloudAmount ? { amount: parseFloat(cloudAmount) } : {})
+                                amount: await resolveTenderAmount(cloudAmount)
                             });
                             setCloudResponse(JSON.stringify(result, null, 2));
                         } catch (error) {
@@ -270,10 +355,10 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         <label>Amount (optional):</label>
                         <input
                             type="number"
-                            step="0.01"
+                            step="1"
                             value={vendaraAmount}
                             onChange={e => setVendaraAmount(e.target.value)}
-                            placeholder="Leave empty for cart total"
+                            placeholder="Minor units — empty = balance due"
                         />
                     </div>
                 </div>
@@ -286,7 +371,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         setVendaraLoading(true);
                         setVendaraResponse("");
                         try {
-                            const result = await command.vendaraPayment(vendaraAmount ? { amount: parseFloat(vendaraAmount) } : undefined);
+                            const result = await command.vendaraPayment({ amount: await resolveTenderAmount(vendaraAmount) });
                             setVendaraResponse(JSON.stringify(result, null, 2));
                         } catch (error) {
                             setVendaraResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -357,7 +442,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         setRedeemLoading(true);
                         setRedeemResponse("");
                         try {
-                            const params: RedeemPaymentParams = { amount: parseFloat(redeemAmount) };
+                            const params: RedeemPaymentParams = { amount: parseInt(redeemAmount, 10) };
                             if (redeemProcessor.trim()) params.processor = redeemProcessor.trim();
                             if (redeemLabel.trim()) params.label = redeemLabel.trim();
                             if (redeemExtensionId.trim()) params.extensionId = redeemExtensionId.trim();
@@ -494,14 +579,14 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                             if (integrationEmvIssuer.trim()) emvData.issuer = integrationEmvIssuer.trim();
 
                             const params: IntegrationPaymentParams = {
-                                amount: parseFloat(integrationAmount),
+                                amount: parseInt(integrationAmount, 10),
                                 emvData
                             };
                             if (integrationProcessor.trim()) params.processor = integrationProcessor.trim();
                             if (integrationLabel.trim()) params.label = integrationLabel.trim();
                             if (integrationExtensionId.trim()) params.extensionId = integrationExtensionId.trim();
                             if (integrationReferenceId.trim()) params.referenceId = integrationReferenceId.trim();
-                            if (integrationProcessorFee) params.processorFee = parseFloat(integrationProcessorFee);
+                            if (integrationProcessorFee) params.processorFee = parseInt(integrationProcessorFee, 10);
 
                             const result = await command.integrationPayment(params);
                             setIntegrationResponse(JSON.stringify(result, null, 2));
@@ -536,10 +621,10 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         <label>Amount (optional):</label>
                         <input
                             type="number"
-                            step="0.01"
+                            step="1"
                             value={extAmount}
                             onChange={e => setExtAmount(e.target.value)}
-                            placeholder="Leave empty for cart total"
+                            placeholder="Minor units — empty = balance due"
                         />
                     </div>
                     <div className="form-field">
@@ -557,8 +642,10 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                         setExtResponse("");
                         try {
                             const paymentType = extPaymentType.trim() || "redeem";
-                            const params: ExtensionPaymentParams = { paymentType };
-                            if (extAmount) params.amount = parseFloat(extAmount);
+                            const params: ExtensionPaymentParams = {
+                                paymentType,
+                                amount: await resolveTenderAmount(extAmount)
+                            };
                             if (extProcessor.trim()) params.processor = extProcessor.trim();
                             if (extLabel.trim()) params.label = extLabel.trim();
 
@@ -594,7 +681,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                                 <label>Amount:</label>
                                 <input
                                     type="number"
-                                    step="0.01"
+                                    step="1"
                                     value={partialPaymentAmount}
                                     onChange={e => setPartialPaymentAmount(e.target.value)}
                                     placeholder="0.00"
@@ -630,6 +717,7 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                                 partialPaymentOpenUI
                                     ? { openUI: true }
                                     : {
+                                          // minor units unless isPercent (then 0-100)
                                           amount: parseFloat(partialPaymentAmount) || 0,
                                           isPercent: partialPaymentIsPercent
                                       }

@@ -33,6 +33,7 @@ import { parkOrder } from "./actions/park-order/action";
 import { resumeParkedOrder } from "./actions/resume-parked-order/action";
 import { deleteParkedOrder } from "./actions/delete-parked-order/action";
 import { cashPayment } from "./actions/cash-payment/action";
+import { getCashRoundingAmount } from "./actions/get-cash-rounding-amount/action";
 import { tapToPayPayment } from "./actions/tap-to-pay-payment/action";
 import { terminalPayment } from "./actions/terminal-payment/action";
 import { vendaraPayment } from "./actions/vendara-payment/action";
@@ -162,6 +163,7 @@ export const command = {
     resumeParkedOrder,
     deleteParkedOrder,
     cashPayment,
+    getCashRoundingAmount,
     tapToPayPayment,
     terminalPayment,
     vendaraPayment,
@@ -351,6 +353,8 @@ export type { ParkOrder, ParkOrderResponse } from "./actions/park-order/types";
 export type { ResumeParkedOrder, ResumeParkedOrderParams, ResumeParkedOrderResponse } from "./actions/resume-parked-order/types";
 export type { DeleteParkedOrder, DeleteParkedOrderParams, DeleteParkedOrderResponse } from "./actions/delete-parked-order/types";
 export type { CashPayment, CashPaymentParams, CashPaymentResponse } from "./actions/cash-payment/types";
+
+export type { GetCashRoundingAmount, GetCashRoundingAmountParams, GetCashRoundingAmountResponse } from "./actions/get-cash-rounding-amount/types";
 export type { TapToPayPayment, TapToPayPaymentParams, TapToPayPaymentResponse } from "./actions/tap-to-pay-payment/types";
 export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } from "./actions/terminal-payment/types";
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";

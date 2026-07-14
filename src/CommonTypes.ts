@@ -191,6 +191,13 @@ export interface CFContextRender {
     buildIsPremium: boolean;
     isOffline: boolean;
     currency: string | null;
+    /**
+     * Number of minor-unit decimals for the company currency (e.g. 2 for USD
+     * — $15.75 = 1575 minor units; 0 for JPY). Every money param/response on
+     * this API is expressed in integer minor units; use this to convert user
+     * input.
+     */
+    minorUnits: number | null;
     currencySymbol: string | null;
     currencyPrefix: string | null;
     currencySuffix: string | null;
