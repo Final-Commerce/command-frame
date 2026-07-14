@@ -35,7 +35,7 @@ export interface IntegrationEmvData {
  * Render can record the transaction + order.
  *
  * Required fields (compile-time enforced by TS, runtime-enforced by the host handler):
- *   - `amount` — minor units of the captured amount
+ *   - `amount` — integer MINOR currency units of the captured amount (e.g. 1575 = $15.75)
  *   - `emvData` — typed card display fields; the host maps + JSON-serializes to `paymentMethod.emv`
  *                 (same persisted shape as the native card flow). Required: if the integration
  *                 doesn't produce card data, use redeemPayment instead.
@@ -51,7 +51,7 @@ export interface IntegrationPaymentParams {
     processor?: string;
     referenceId?: string;
     metadata?: Record<string, unknown>;
-    /** Provider fee in minor units — stored on paymentMethod.processorFee. */
+    /** Provider fee in integer MINOR currency units — stored on paymentMethod.processorFee. */
     processorFee?: number;
 }
 

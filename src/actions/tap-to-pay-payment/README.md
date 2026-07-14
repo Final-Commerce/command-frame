@@ -8,7 +8,7 @@ Initiates a tap-to-pay payment for the current cart.
 
 | Parameter | Type     | Required | Description                                                              |
 | :-------- | :------- | :------- | :----------------------------------------------------------------------- |
-| `amount`  | `number` | `false`  | The payment amount. If not provided, uses the cart total.                |
+| `amount`  | `number` | `true`   | Required, integer minor units; below the balance due → partial payment (fixed split leg); above → error. |
 
 ## Response
 
@@ -17,7 +17,7 @@ Initiates a tap-to-pay payment for the current cart.
 | Field       | Type     | Description                               |
 | :---------- | :------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the payment was initiated successfully. |
-| `amount`    | `number \| null` | The payment amount.                       |
+| `amount`    | `number \| null` | The payment amount, in integer minor currency units. |
 | `paymentType` | `string` | The payment type ('tapToPay').            |
 | `order`     | `ActiveOrder \| null` | The created order object after payment processing. May be null if order creation is delayed. |
 | `timestamp` | `string` | ISO date string of when the action occurred. |
@@ -28,14 +28,16 @@ Initiates a tap-to-pay payment for the current cart.
 import { command } from '@final-commerce/command-frame';
 
 try {
-  // Pay with tap to pay using cart total
-  const result = await command.tapToPayPayment();
+  // Pay with tap to pay for the cart's balance due
+  const result = await command.tapToPayPayment({
+    amount: 2550 // $25.50 in minor units
+  });
   console.log('Payment processed:', result);
   console.log('Order:', result.order);
   // Expected output:
   // {
   //   success: true,
-  //   amount: 25.50,
+  //   amount: 2550,
   //   paymentType: 'tapToPay',
   //   order: {
   //     _id: 'order-id-123',
@@ -46,9 +48,9 @@ try {
   //   timestamp: '2023-10-27T10:00:00.000Z'
   // }
 
-  // Pay with tap to pay for a specific amount
+  // Pay with tap to pay for a specific amount (partial payment if below the balance due)
   await command.tapToPayPayment({
-    amount: 50.00
+    amount: 5000 // $50.00 in minor units
   });
 
 } catch (error) {

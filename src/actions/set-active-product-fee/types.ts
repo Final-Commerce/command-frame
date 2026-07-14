@@ -1,5 +1,6 @@
 // Set Active Product Fee Types
 export interface SetActiveProductFeeParams {
+    /** The fee amount in integer MINOR currency units (e.g. 500 = $5.00). If isPercent is true, this is a percentage (0-100) instead. */
     amount: number;
     /** Defaults to `false`. */
     isPercent?: boolean;

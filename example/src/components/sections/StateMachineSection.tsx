@@ -7,6 +7,7 @@ import { getAvailableTransitionsMock } from "@final-commerce/command-frame/dist/
 import { applyTransition } from "@final-commerce/command-frame/dist/actions/apply-transition/action";
 import { applyTransitionMock } from "@final-commerce/command-frame/dist/actions/apply-transition/mock";
 import { cashPayment } from "@final-commerce/command-frame/dist/actions/cash-payment/action";
+import { getCurrentCart } from "@final-commerce/command-frame/dist/actions/get-current-cart/action";
 import { CommandSection } from "../CommandSection";
 import { JsonViewer } from "../JsonViewer";
 import "./Sections.css";
@@ -335,8 +336,11 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
                         setCftLoading(true);
                         setCftResponse("");
                         try {
+                            // amount is required (integer minor units) — pay the full balance due.
+                            const cart = await getCurrentCart();
+                            const balanceDue = cart.cart?.amountToBeCharged ?? cart.cart?.total ?? 0;
                             const result = await cashPayment({
-                                openChangeCalculator: false,
+                                amount: balanceDue,
                                 checkoutFulfillmentTarget: cftTarget
                             });
                             setCftResponse(JSON.stringify(result, null, 2));

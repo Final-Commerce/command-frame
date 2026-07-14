@@ -22,7 +22,7 @@ The unique `internalId` of the line item in the cart. This ID is returned in the
 
 #### `amount` (required)
 
-The fee amount.
+The fee amount. Fixed amount in integer minor currency units (e.g., `200` = $2.00); if `isPercent` is `true`, a percentage value (0-100).
 
 #### `isPercent` (optional)
 
@@ -47,7 +47,7 @@ const { internalId } = await command.addProductToCart({ variantId: 'v123' });
 // 2. Add fee to that specific item
 await command.addProductFee({
     internalId: internalId,
-    amount: 2.00,
+    amount: 200, // $2.00 in minor units
     label: 'Recycling Fee'
 });
 ```
