@@ -74,6 +74,10 @@ import { removeCustomSale } from "./actions/remove-custom-sale/action";
 import { removeNonRevenueItem } from "./actions/remove-non-revenue-item/action";
 // Integration Actions
 
+// Receipt send Actions
+import { sendEmail } from "./actions/send-email/action";
+import { sendSms } from "./actions/send-sms/action";
+
 // Refund Actions
 import { getRefunds } from "./actions/get-refunds/action";
 import { initiateRefund } from "./actions/initiate-refund/action";
@@ -203,6 +207,9 @@ export const command = {
     removeCustomSale,
     removeNonRevenueItem,
     // Integration Actions
+    // Receipt send Actions
+    sendEmail,
+    sendSms,
     // Refund Actions
     initiateRefund,
     setRefundStockAction,
@@ -405,6 +412,9 @@ export type { RemoveOrderNote, RemoveOrderNoteResponse } from "./actions/remove-
 export type { RemoveCustomSale, RemoveCustomSaleParams, RemoveCustomSaleResponse } from "./actions/remove-custom-sale/types";
 export type { RemoveNonRevenueItem, RemoveNonRevenueItemParams, RemoveNonRevenueItemResponse } from "./actions/remove-non-revenue-item/types";
 // Integration Actions
+// Receipt send Actions
+export type { SendEmail, SendEmailParams, SendEmailResponse, SendReceiptType } from "./actions/send-email/types";
+export type { SendSms, SendSmsParams, SendSmsResponse } from "./actions/send-sms/types";
 
 // Export Common Types
 export * from "./CommonTypes";

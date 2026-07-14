@@ -22,6 +22,7 @@ export type SectionId =
     | "custom-tables"
     | "secrets"
     | "print"
+    | "receipts"
     | "users"
     | "roles"
     | "variants"
@@ -60,6 +61,7 @@ const sections: Section[] = [
     { id: "custom-tables", label: "Custom Tables" },
     { id: "secrets", label: "Secrets" },
     { id: "print", label: "Print" },
+    { id: "receipts", label: "Receipts" },
     { id: "users", label: "Users" },
     { id: "roles", label: "Roles" },
     { id: "variants", label: "Variants" },
