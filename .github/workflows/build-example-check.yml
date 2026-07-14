@@ -12,6 +12,9 @@ on:
       - "tsconfig.json"
   workflow_dispatch:
 
+permissions:
+  id-token: write # Workload Identity Federation for Artifact Registry
+
 jobs:
   build-example:
     name: Build example app
@@ -43,6 +46,21 @@ jobs:
             pkg.dependencies['@final-commerce/command-frame'] = 'file:..';
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        id: gcp-auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+          token_format: access_token
+
+      # The repo .npmrc maps @final-commerce-internal to Artifact Registry via
+      # ${NPM_REGISTRY_TOKEN} — the example depends on @final-commerce-internal/kaching.
+      # Same WIF pattern as the kaching repo's own CI (org-level secrets, no
+      # long-lived key).
+      - name: Expose registry token to npm
+        run: echo "NPM_REGISTRY_TOKEN=${{ steps.gcp-auth.outputs.access_token }}" >> $GITHUB_ENV
 
       - name: Install example dependencies
         working-directory: example

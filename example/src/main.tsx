@@ -1,5 +1,6 @@
-// Enable PostMessage debug logging - MUST be set before any imports that use commandFrameClient
-(window as any).__POSTMESSAGE_DEBUG__ = true;
+// Boot the baked-in kaching runtime FIRST — it routes the flow's `renderClient`
+// calls to the real in-process runtime (single command-frame copy). No plugin.
+import './kaching-boot';
 
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
@@ -43,7 +44,7 @@ const AutoRouter = () => {
       } catch (e) {
         console.log('[Router] Auto-detection failed, staying on default route', e);
       }
-      
+
       setIsDetecting(false);
     };
 
@@ -52,13 +53,15 @@ const AutoRouter = () => {
 
   if (isDetecting) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+        }}
+      >
         Detecting environment...
       </div>
     );

@@ -9,7 +9,7 @@ Additional package exports (command params/responses, pub/sub event payloads, an
 The shared `command` object (`import { command } from '@final-commerce/command-frame'`) exposes the same actions as the host wire protocol: each key is a camelCase action name matching `RenderClient` / `ManageClient` method names.
 
 ```typescript
-import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from "@final-commerce/command-frame";
+import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
 ```
 
 ## Table of Contents
@@ -446,7 +446,7 @@ Tip details within a payment transaction.
 Lifecycle status of an in-progress payment / split-payment session. Mirrors render's `PaymentStatus` enum.
 
 ```typescript
-type CFPaymentStatus = "failed" | "success" | "canceled" | "inProgress";
+type CFPaymentStatus = 'failed' | 'success' | 'canceled' | 'inProgress';
 ```
 
 ### CFSplitPayment
@@ -845,7 +845,7 @@ A POS station (register/terminal).
 
 ### CFSession
 
-Active register session (cash session), used by `getActiveSession` / `setActiveSession`.
+Active register session (cash session), used by `getActiveSession`.
 
 | Field           | Type                            | Required | Description                                |
 | --------------- | ------------------------------- | -------- | ------------------------------------------ |

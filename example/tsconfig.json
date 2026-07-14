@@ -21,10 +21,13 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@final-commerce/command-frame-real": ["../dist/index.d.ts"],
+      "@final-commerce/command-frame": ["./src/harness/commandFrameShim.ts"],
+      "@final-commerce/port-louis": ["../../port-louis/src"],
+      "@final-commerce/port-louis/*": ["../../port-louis/src/*"]
     }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
-

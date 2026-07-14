@@ -1,26 +1,28 @@
-import { SetActiveProductDiscount, SetActiveProductDiscountParams, SetActiveProductDiscountResponse } from "./types";
-import { MOCK_ACTIVE_PRODUCT, setMockActiveProduct } from "../../demo/database";
+import { SetActiveProductDiscount, SetActiveProductDiscountParams, SetActiveProductDiscountResponse } from './types';
+import { MOCK_ACTIVE_PRODUCT, setMockActiveProduct } from '../../demo/database';
 
-export const mockSetActiveProductDiscount: SetActiveProductDiscount = async (params: SetActiveProductDiscountParams): Promise<SetActiveProductDiscountResponse> => {
-    console.log("[Mock] setActiveProductDiscount called", params);
+export const mockSetActiveProductDiscount: SetActiveProductDiscount = async (
+  params: SetActiveProductDiscountParams,
+): Promise<SetActiveProductDiscountResponse> => {
+  console.log('[Mock] setActiveProductDiscount called', params);
 
-    if (!MOCK_ACTIVE_PRODUCT) {
-        throw new Error("No active product. Call setActiveProduct first.");
-    }
+  if (!MOCK_ACTIVE_PRODUCT) {
+    throw new Error('No active product. Call setActiveProduct first.');
+  }
 
-    const discount = {
-        value: params.amount,
-        isPercent: params.isPercent || false,
-        label: params.label || "Discount"
-    };
+  const discount = {
+    value: params.amount,
+    isPercent: params.isPercent || false,
+    label: params.label || 'Discount',
+  };
 
-    setMockActiveProduct({ ...MOCK_ACTIVE_PRODUCT, discount });
+  setMockActiveProduct({ ...MOCK_ACTIVE_PRODUCT, discounts: [discount] });
 
-    return {
-        success: true,
-        amount: params.amount,
-        isPercent: discount.isPercent,
-        label: discount.label,
-        timestamp: new Date().toISOString()
-    };
+  return {
+    success: true,
+    amount: params.amount,
+    isPercent: discount.isPercent,
+    label: discount.label,
+    timestamp: new Date().toISOString(),
+  };
 };

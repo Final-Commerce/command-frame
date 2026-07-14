@@ -42,13 +42,13 @@ npm run dev
 The example demonstrates using the `@final-commerce/command-frame` library:
 
 ```typescript
-import { command } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
 // Call an action
 const result = await command.exampleFunction({
-    param1: "value1",
-    param2: "value2",
-    param3: "value3"
+  param1: 'value1',
+  param2: 'value2',
+  param3: 'value3',
 });
 
 // Get products
@@ -56,8 +56,8 @@ const products = await command.getProducts({});
 
 // Get customers (with pagination)
 const customers = await command.getCustomers({
-    offset: 0,
-    limit: 100
+  offset: 0,
+  limit: 100,
 });
 
 // Get categories
@@ -65,74 +65,71 @@ const categories = await command.getCategories({});
 
 // Get product variants
 const variants = await command.getProductVariants({
-    productId: "product-id-123"
+  productId: 'product-id-123',
 });
 
 // Add a custom sale
 await command.addCustomSale({
-    label: "Service",
-    price: 100,
-    applyTaxes: true
+  label: 'Service',
+  price: 100,
+  applyTaxes: true,
 });
 
 // Set product active, add discount, and add to cart
 await command.setProductActive({
-    variantId: "variant-id-123"
+  variantId: 'variant-id-123',
 });
 
 await command.addProductDiscount({
-    amount: 10,
-    isPercent: false,
-    label: "Discount"
+  amount: 10,
+  isPercent: false,
+  label: 'Discount',
 });
 
 await command.addProductToCart({
-    quantity: 2
+  quantity: 2,
 });
 
 // Add cart discount
 await command.addCartDiscount({
-    amount: 10,
-    isPercent: false,
-    label: "Cart Discount"
+  amount: 10,
+  isPercent: false,
+  label: 'Cart Discount',
 });
 
 // Get current context/environment
 const context = await command.getContext();
-console.log("Current user:", context.userId);
-console.log("Current company:", context.companyName);
-console.log("Full user object:", context.user);
-console.log("Full company object (without settings):", context.company);
-console.log("Full station object:", context.station);
-console.log("Full outlet object:", context.outlet);
+console.log('Current user:', context.userId);
+console.log('Current company:', context.companyName);
+console.log('Full user object:', context.user);
+console.log('Full company object (without settings):', context.company);
+console.log('Full station object:', context.station);
+console.log('Full outlet object:', context.outlet);
 
 // Active entity getters/setters
 const activeCustomer = await command.getActiveCustomer();
-await command.setActiveCustomer({ customerId: "customer-123" });
+await command.setActiveCustomer({ customerId: 'customer-123' });
 const activeOutlet = await command.getActiveOutlet();
-await command.setActiveOutlet({ outletId: "outlet-123" });
 const activeStation = await command.getActiveStation();
-await command.setActiveStation({ stationId: "station-123" });
 const activeSession = await command.getActiveSession();
-await command.setActiveSession({ sessionId: "session-123" });
 const activeUser = await command.getActiveUser();
-await command.setActiveUser({ userId: "user-123" });
+await command.setActiveUser({ userId: 'user-123' });
 const activeRefund = await command.getActiveRefund();
-await command.setActiveRefund({ orderId: "order-123" });
+await command.setActiveRefund({ orderId: 'order-123' });
 
 // Product Actions
-await command.addProductNote({ note: "Customer requested extra packaging" });
-await command.addProductFee({ amount: 5.0, label: "Service Fee", applyTaxes: true });
-await command.adjustInventory({ amount: "10", stockType: "add" });
+await command.addProductNote({ note: 'Customer requested extra packaging' });
+await command.addProductFee({ amount: 5.0, label: 'Service Fee', applyTaxes: true });
+await command.adjustInventory({ amount: '10', stockType: 'add' });
 
 // Order Actions
-await command.addOrderNote({ note: "Delivery by 3pm" });
-await command.addCartFee({ amount: 5.0, label: "Processing Fee" });
+await command.addOrderNote({ note: 'Delivery by 3pm' });
+await command.addCartFee({ amount: 5.0, label: 'Processing Fee' });
 await command.removeCartFee({ index: 0 });
 await command.clearCart();
 await command.parkOrder();
-await command.resumeParkedOrder({ orderId: "order-123" });
-await command.deleteParkedOrder({ orderId: "order-123" });
+await command.resumeParkedOrder({ orderId: 'order-123' });
+await command.deleteParkedOrder({ orderId: 'order-123' });
 await command.cashPayment({ amount: 50.0 });
 await command.tapToPayPayment();
 await command.terminalPayment();
@@ -140,42 +137,42 @@ await command.vendaraPayment();
 await command.partialPayment({ amount: 25.0, isPercent: false });
 
 // Extension / redeem / integration payments (Render host implements these; mocks when not in iframe)
-await command.redeemPayment({ amount: 500, processor: "giftCard", label: "Gift card" }); // amount required (minor units)
+await command.redeemPayment({ amount: 500, processor: 'giftCard', label: 'Gift card' }); // amount required (minor units)
 await command.integrationPayment({
-    // amount + emvData required
-    amount: 4250,
-    emvData: { brand: "Visa", cardNumberLast4: "4242" }, // typed object; host maps to canonical EMV keys
-    processor: "Stripe"
+  // amount + emvData required
+  amount: 4250,
+  emvData: { brand: 'Visa', cardNumberLast4: '4242' }, // typed object; host maps to canonical EMV keys
+  processor: 'Stripe',
 });
 
 // Refund Actions
-await command.initiateRefund({ orderId: "order-123" });
+await command.initiateRefund({ orderId: 'order-123' });
 
 // Customer Actions
-await command.addCustomerNote({ customerId: "customer-123", note: "VIP customer" });
-await command.removeCustomerNote({ noteId: "note-id-from-customer-notes-array" });
+await command.addCustomerNote({ customerId: 'customer-123', note: 'VIP customer' });
+await command.removeCustomerNote({ noteId: 'note-id-from-customer-notes-array' });
 await command.removeCustomerFromCart();
 
 // System Actions
 await command.goToStationHome();
-await command.goToPage({ pageId: "page-123" });
+await command.goToPage({ pageId: 'page-123' });
 await command.openCashDrawer();
-await command.openPopup({ popupId: "popup-123" });
-await command.showNotification({ message: "Order completed!" });
-await command.toggleSlideOut({ slideOutId: "slideout-123" });
-await command.showConfirmation({ message: "Are you sure?" });
-await command.authenticateUser({ roleIds: ["role-123"] });
-await command.switchUser({ mode: "dialog" });
-await command.switchUser({ mode: "role", roleIds: ["role-123"] });
-await command.switchUser({ mode: "specific", userId: "user-123" });
+await command.openPopup({ popupId: 'popup-123' });
+await command.showNotification({ message: 'Order completed!' });
+await command.toggleSlideOut({ slideOutId: 'slideout-123' });
+await command.showConfirmation({ message: 'Are you sure?' });
+await command.authenticateUser({ roleIds: ['role-123'] });
+await command.switchUser({ mode: 'dialog' });
+await command.switchUser({ mode: 'role', roleIds: ['role-123'] });
+await command.switchUser({ mode: 'specific', userId: 'user-123' });
 
 // Integration Actions
 await command.triggerWebhook({
-    webhookUrl: "https://example.com/webhook",
-    payloadType: "json"
+  webhookUrl: 'https://example.com/webhook',
+  payloadType: 'json',
 });
 await command.triggerZapierWebhook({
-    triggerUrl: "https://hooks.zapier.com/hooks/catch/123456/abcdef"
+  triggerUrl: 'https://hooks.zapier.com/hooks/catch/123456/abcdef',
 });
 ```
 
@@ -202,33 +199,33 @@ ngrok provides both by creating a secure tunnel to your local server.
 
 1. **Install ngrok** (if not already installed):
 
-    Download and install ngrok from https://ngrok.com/download
+   Download and install ngrok from https://ngrok.com/download
 
 2. **Start the development server**:
 
-    ```bash
-    npm run dev
-    ```
+   ```bash
+   npm run dev
+   ```
 
-    Note the port number (usually `5179`)
+   Note the port number (usually `5179`)
 
 3. **Start ngrok** in a separate terminal:
 
-    ```bash
-    ngrok http 5179
-    ```
+   ```bash
+   ngrok http 5179
+   ```
 
-    (Replace `5179` with your actual port if different)
+   (Replace `5179` with your actual port if different)
 
 4. **Copy the HTTPS URL** from ngrok output:
 
-    ```
-    Forwarding  https://abc123.ngrok-free.app -> http://localhost:5179
-    ```
+   ```
+   Forwarding  https://abc123.ngrok-free.app -> http://localhost:5179
+   ```
 
 5. **Use the ngrok URL** in your parent page:
 
-    This example app is designed to work in an iframe element. Put the HTTPS URL from ngrok output to the iframe element settings page in your Build.
+   This example app is designed to work in an iframe element. Put the HTTPS URL from ngrok output to the iframe element settings page in your Build.
 
 **Note:** The free ngrok URL changes each time you restart ngrok. For a stable URL, consider using ngrok's paid plan or setting up a custom domain.
 
