@@ -94,35 +94,44 @@ import { mockSetActiveUser } from "../../actions/set-active-user/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
 import { canTransitionMock } from "../../actions/can-transition/mock";
 import { getAvailableTransitionsMock } from "../../actions/get-available-transitions/mock";
+import { applyTransitionMock } from "../../actions/apply-transition/mock";
 import { mockGetSmartGridLayout } from "../../actions/get-smart-grid-layout/mock";
 import { mockSaveSmartGridLayout } from "../../actions/save-smart-grid-layout/mock";
+import { mockRemoveProductNote } from "../../actions/remove-product-note/mock";
+import { withMockCartTax } from "../../demo/database";
 import { RenderProviderActions } from "./types";
 
+// Cart-mutating handlers maintain MOCK_CART.total as a PRETAX running figure;
+// withMockCartTax strips the demo tax before each runs and re-applies it after,
+// so previews show a realistic tax line without touching handler arithmetic.
+// Payment handlers are NOT wrapped — createOrderFromCart reads the applied
+// cart tax when stamping the completed order.
+
 export const RENDER_MOCKS: RenderProviderActions = {
-    addCartDiscount: mockAddCartDiscount,
-    addCartFee: mockAddCartFee,
-    addCustomSale: mockAddCustomSale,
+    addCartDiscount: withMockCartTax(mockAddCartDiscount),
+    addCartFee: withMockCartTax(mockAddCartFee),
+    addCustomSale: withMockCartTax(mockAddCustomSale),
     addCustomer: mockAddCustomer,
     editCustomer: mockEditCustomer,
     addCustomerNote: mockAddCustomerNote,
     removeCustomerNote: mockRemoveCustomerNote,
     addOrderNote: mockAddOrderNote,
-    addProductDiscount: mockAddProductDiscount,
-    addProductFee: mockAddProductFee,
+    addProductDiscount: withMockCartTax(mockAddProductDiscount),
+    addProductFee: withMockCartTax(mockAddProductFee),
     setActiveProductFee: mockSetActiveProductFee,
     setActiveProductDiscount: mockSetActiveProductDiscount,
     getActiveProduct: mockGetActiveProduct,
     setActiveProduct: mockSetActiveProduct,
     addProductNote: mockAddProductNote,
-    addProductToCart: mockAddProductToCart,
-    removeProductFromCart: mockRemoveProductFromCart,
-    updateCartItemQuantity: mockUpdateCartItemQuantity,
+    addProductToCart: withMockCartTax(mockAddProductToCart),
+    removeProductFromCart: withMockCartTax(mockRemoveProductFromCart),
+    updateCartItemQuantity: withMockCartTax(mockUpdateCartItemQuantity),
     adjustInventory: mockAdjustInventory,
     assignCustomer: mockAssignCustomer,
     authenticateUser: mockAuthenticateUser,
     calculateRefundTotal: mockCalculateRefundTotal,
     cashPayment: mockCashPayment,
-    clearCart: mockClearCart,
+    clearCart: withMockCartTax(mockClearCart),
     deleteParkedOrder: mockDeleteParkedOrder,
     exampleFunction: mockExampleFunction,
     getCategories: mockGetCategories,
@@ -139,13 +148,13 @@ export const RENDER_MOCKS: RenderProviderActions = {
     openExtensionOverlay: mockOpenExtensionOverlay,
     resolveExtensionOverlay: mockResolveExtensionOverlay,
     openCashDrawer: mockOpenCashDrawer,
-    parkOrder: mockParkOrder,
+    parkOrder: withMockCartTax(mockParkOrder),
     partialPayment: mockPartialPayment,
     processPartialRefund: mockProcessPartialRefund,
     removeCustomerFromCart: mockRemoveCustomerFromCart,
-    removeCartDiscount: mockRemoveCartDiscount,
+    removeCartDiscount: withMockCartTax(mockRemoveCartDiscount),
     resetRefundDetails: mockResetRefundDetails,
-    resumeParkedOrder: mockResumeParkedOrder,
+    resumeParkedOrder: withMockCartTax(mockResumeParkedOrder),
     selectAllRefundItems: mockSelectAllRefundItems,
     setRefundStockAction: mockSetRefundStockAction,
     showConfirmation: mockShowConfirmation,
@@ -159,7 +168,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     extensionPayment: mockExtensionPayment,
     redeemPayment: mockRedeemPayment,
     integrationPayment: mockIntegrationPayment,
-    addNonRevenueItem: mockAddNonRevenueItem,
+    addNonRevenueItem: withMockCartTax(mockAddNonRevenueItem),
     getFinalContext: mockGetFinalContext,
     print: mockPrint,
     setActiveOrder: mockSetActiveOrder,
@@ -188,15 +197,18 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getActiveUser: mockGetActiveUser,
     setActiveUser: mockSetActiveUser,
     setActiveRefund: mockSetActiveRefund,
-    removeProductDiscount: mockRemoveProductDiscount,
-    removeProductFee: mockRemoveProductFee,
-    removeProductNote: () => Promise.resolve({ success: true, timestamp: new Date().toISOString() }),
-    removeCartFee: mockRemoveCartFee,
+    removeProductDiscount: withMockCartTax(mockRemoveProductDiscount),
+    removeProductFee: withMockCartTax(mockRemoveProductFee),
+    removeProductNote: mockRemoveProductNote,
+    removeCartFee: withMockCartTax(mockRemoveCartFee),
     removeOrderNote: mockRemoveOrderNote,
-    removeCustomSale: mockRemoveCustomSale,
-    removeNonRevenueItem: params => Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
+    removeCustomSale: withMockCartTax(mockRemoveCustomSale),
+    removeNonRevenueItem: withMockCartTax(params =>
+        Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() })
+    ),
     canTransition: canTransitionMock,
     getAvailableTransitions: getAvailableTransitionsMock,
+    applyTransition: applyTransitionMock,
     getSmartGridLayout: mockGetSmartGridLayout,
     saveSmartGridLayout: mockSaveSmartGridLayout
 };

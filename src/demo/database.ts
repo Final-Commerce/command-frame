@@ -19,7 +19,11 @@ import {
     CFActiveProduct,
     CFSession,
     CFActiveRefundDetails,
-    CFSmartGridLayout
+    CFSmartGridLayout,
+    CFTax,
+    CFPaymentMethod,
+    CFCustomSale,
+    CFSplitPayment
 } from "../CommonTypes";
 
 export * from "./mocks";
@@ -40,7 +44,8 @@ export interface MockDatabaseConfig {
 // Asset Imports - Using Remote URLs to avoid build complexity with asset copying
 const ASSETS_BASE_URL = "https://raw.githubusercontent.com/Final-Commerce/command-frame/refs/heads/main/src/demo/assets";
 
-const logo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5OCAxMDQiIGZpbGw9Im5vbmUiPjxwYXRoIGQ9Ik01NS4yOTk4IDUwLjE2NjJMMzcuNzQyMiA0MC4wMjkzTDMxLjcyNzQgNTAuNDQ3MkwzOC45MjQyIDU0LjYwMjJMNTUuMjk5OCA1MC4xNjYyWiIgZmlsbD0iI0E1NjhCQyIvPjxwYXRoIGQ9Ik0zMS45OTYzIDcwLjQ1MDZMNDkuNTU2OCA4MC41ODkxTDU1LjU3MTUgNzAuMTcxM0w0OC4zNzE4IDY2LjAxNDVMMzEuOTk2MyA3MC40NTA2WiIgZmlsbD0iI0E1NjhCQyIvPjxwYXRoIGQ9Ik0zNi4zNTQyIDM0LjI1NzJDMzYuMzU0MiAzNC4yNTcyIDM2LjM1ODMgMzQuMjYzNSAzNi4zNTY3IDM0LjI2NjRDMzcuMTg2OSAzNC4wNjk3IDM4LjA5MTkgMzQuMTU5NiAzOC44ODUxIDM0LjYxNzVMNjIuNjQ4NiA0OC4zMzc0TDU0LjE3MjkgMjkuOTA0OUwzNi4zNDk2IDM0LjI1ODRMMzYuMzU0MiAzNC4yNTcyWiIgZmlsbD0iI0ZDODc1MyIvPjxwYXRoIGQ9Ik0zMy4wOTg4IDE4Ljk1MDdMMzYuMzc3MiAzNC4yNDczTDE4Ljc1MjUgMzkuMzM3M0wyOC45MzcxIDIxLjY5N0MyOS44NDUzIDIwLjEyMzkgMzEuNDE1MiAxOS4xNzYxIDMzLjA5ODggMTguOTUwN1oiIGZpbGw9IiM0MkQzQTkiLz48cGF0aCBkPSJNMTguNzUzMiAzOS4zNDA2TDIwLjY4MjQgNTkuNTE3MUw0LjU3NjA3IDYzLjg5NjJMMTguNzUzMiAzOS4zNDA2WiIgZmlsbD0iIzI3OTdFOCIvPjxwYXRoIGQ9Ik0zNi4zNzc5IDM0LjI0MDNDMzYuMzc3OSAzNC4yNDAzIDM2LjM3NzQgMzQuMjQ3OCAzNi4zODAzIDM0LjI0OTVDMzUuNTYyNCAzNC40OTE5IDM0LjgyMzkgMzUuMDE5NiAzNC4zNjczIDM1LjgxMDVMMjAuNjg2OSA1OS41MDU2TDE4Ljc1NzcgMzkuMzI5MUwzNi4zODI0IDM0LjIzOTFMMzYuMzc3OSAzNC4yNDAzWiIgZmlsbD0iIzFEQkFDQiIvPjxwYXRoIGQ9Ik01NS45MzUyIDEwMS41NDNMNTEuMDgxOSA4Ni42NjU5TDMzLjI1ODcgOTEuMDE5NEw1MC45NDk5IDEwMS4yMzNDNTIuNTI3NiAxMDIuMTQ0IDU0LjM2MzggMTAyLjE4NSA1NS45MzUyIDEwMS41NDNaIiBmaWxsPSIjRkQ1MjYzIi8+PHBhdGggZD0iTTMzLjI1NDkgOTEuMDE0TDI0Ljc4MjEgNzIuNTgzMkw4LjYzMTM1IDc2Ljc5NzVMMzMuMjU0OSA5MS4wMTRaIiBmaWxsPSIjRkZDRjIzIi8+PHBhdGggZD0iTTUxLjA3OSA4Ni42NjM5QzUxLjA3OSA4Ni42NjM5IDUxLjA3NDkgODYuNjU3NiA1MS4wNzY2IDg2LjY1NDdDNTAuMjQ2NCA4Ni44NTE0IDQ5LjM0MTQgODYuNzYxNSA0OC41NDgyIDg2LjMwMzZMMjQuNzg0NiA3Mi41ODM3TDMzLjI2MDQgOTEuMDE2MUw1MS4wODM2IDg2LjY2MjdMNTEuMDc5IDg2LjY2MzlaIiBmaWxsPSIjRkM4NzUzIi8+PHBhdGggZD0iTTU0LjMzNDIgMTAxLjk2OUw1MS4wNTU4IDg2LjY3MjRMNjguNjgwNSA4MS41ODI0TDU4LjQ5NTkgOTkuMjIyN0M1Ny41ODc3IDEwMC43OTYgNTYuMDE3OCAxMDEuNzQ0IDU0LjMzNDIgMTAxLjk2OVoiIGZpbGw9IiM0MkQzQTkiLz48cGF0aCBkPSJNNjguNjgwMSA4MS41ODk5TDY2Ljc0OTMgNjEuNDE2Mkw4Mi44NTU2IDU3LjAzNzJMNjguNjgwMSA4MS41ODk5WiIgZmlsbD0iIzI3OTdFOCIvPjxwYXRoIGQ9Ik01MS4wNTU3IDg2LjY3ODZDNTEuMDU1NyA4Ni42Nzg2IDUxLjA1NjIgODYuNjcxMSA1MS4wNTMyIDg2LjY2OTVDNTEuODcxMSA4Ni40MjcxIDUyLjYwOTcgODUuODk5NCA1My4wNjYzIDg1LjEwODVMNjYuNzQ2NyA2MS40MTMzTDY4LjY3NTkgODEuNTg5OEw1MS4wNTExIDg2LjY3OThMNTEuMDU1NyA4Ni42Nzg2WiIgZmlsbD0iIzFEQkFDQiIvPjxwYXRoIGQ9Ik00Ny44OTQ5IDI2LjI3NjhDNDcuODc4IDI2LjM1OTcgNDcuODUyIDI2LjQ0NTEgNDcuODA2OCAyNi41MjM0TDQ3LjYyNzggMjYuODMzM0M0Ni43ODY1IDI4LjI5MDYgNDQuOTIzMiAyOC43ODY5IDQzLjQ2MTggMjcuOTQzMkM0Mi4wMDA0IDI3LjA5OTQgNDEuNDk4NiAyNS4yMzc2IDQyLjMzOTkgMjMuNzgwNEw0Mi41MTg5IDIzLjQ3MDRDNDIuNTY0MSAyMy4zOTIyIDQyLjYyNSAyMy4zMjY5IDQyLjY4ODQgMjMuMjcwOEwzNi40ODUzIDE5LjY4OTRDMzQuOTA3NiAxOC43Nzg2IDMzLjA3MTQgMTguNzM4MiAzMS41IDE5LjM3OTlMMzYuMzUzMyAzNC4yNTY5TDU0LjE3NjUgMjkuOTAzNUw0Ny44OTQ5IDI2LjI3NjhaIiBmaWxsPSIjRkQ1MjYzIi8+PHBhdGggZD0iTTc1LjYzODYgNDIuMzAyN0M3NS42MjE3IDQyLjM4NTcgNzUuNTk1NiA0Mi40NzExIDc1LjU1MDUgNDIuNTQ5M0w3NS4zNzE1IDQyLjg1OTNDNzQuNTMwMiA0NC4zMTY1IDcyLjY2NjkgNDQuODEyOSA3MS4yMDU0IDQzLjk2OTFDNjkuNzQ0IDQzLjEyNTQgNjkuMjQyMyA0MS4yNjM2IDcwLjA4MzYgMzkuODA2M0w3MC4yNjI2IDM5LjQ5NjNDNzAuMzA3NyAzOS40MTgxIDcwLjM2ODYgMzkuMzUyOSA3MC40MzIgMzkuMjk2N0w1NC4xNzYxIDI5LjkxMTRMNjIuNjUxOSA0OC4zNDM5TDc4LjgwMjYgNDQuMTI5NUw3NS42NDE1IDQyLjMwNDRMNzUuNjM4NiA0Mi4zMDI3WiIgZmlsbD0iI0ZGQ0YyMyIvPjxwYXRoIGQ9Ik03NS42MDU4IDQwLjgyMTlMNzUuNjQ0MiA0MC43NTUyQzc4LjE0ODEgMzYuNDE4MyA3OC42NDY1IDMxLjQ0ODggNzcuNDMwOSAyNi45MzgzQzc2LjIxNTMgMjIuNDI3OCA3My4yODQ3IDE4LjM3MTggNjguOTM1MiAxNS44NjA3QzY0LjU4NTggMTMuMzQ5NSA1OS42MDc5IDEyLjgzOTUgNTUuMDkzOSAxNC4wNDJDNTAuNTc5OSAxNS4yNDQ2IDQ2LjUyNTMgMTguMTYwOSA0NC4wMjE0IDIyLjQ5NzhMNDIuOTkxMSAyNC4yODI0QzQyLjM3MzkgMjUuMzUxNCA0Mi43NDQyIDI2LjcxNjMgNDMuODEzNCAyNy4zMzM2QzQ0Ljg4MjYgMjcuOTUwOSA0Ni4yNTE0IDI3LjU4NjIgNDYuODY2OSAyNi41MjAxTDQ3Ljg5NzMgMjQuNzM1NUM0OS43ODU3IDIxLjQ2NDcgNTIuODQ0MSAxOS4yNjczIDU2LjI1NDggMTguMzU4N0M1OS42NjU0IDE3LjQ1MDEgNjMuNDE5MSAxNy44MzI3IDY2LjY5OTQgMTkuNzI2NkM2OS45Nzk2IDIxLjYyMDQgNzIuMTg3OSAyNC42Nzk5IDczLjEwNjMgMjguMDg3OUM3NC4wMjQ4IDMxLjQ5NiA3My42NTEgMzUuMjQzNCA3MS43NjI2IDM4LjUxNDFMNzEuNzI0MSAzOC41ODA4TDcwLjczMzkgNDAuMjk1OEM3MC4xMTY3IDQxLjM2NDkgNzAuNDg3IDQyLjcyOTcgNzEuNTU2MiA0My4zNDdDNzIuNjI1NCA0My45NjQ0IDczLjk5NDIgNDMuNTk5NyA3NC42MDk4IDQyLjUzMzZMNzUuNTk5OSA0MC44MTg1TDc1LjYwNTggNDAuODIxOVoiIGZpbGw9IiMzRDRDNjYiLz48L3N2Zz4="; // crisp vector mark (was logo.png — pixelated when scaled)
+const logo =
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5OCAxMDQiIGZpbGw9Im5vbmUiPjxwYXRoIGQ9Ik01NS4yOTk4IDUwLjE2NjJMMzcuNzQyMiA0MC4wMjkzTDMxLjcyNzQgNTAuNDQ3MkwzOC45MjQyIDU0LjYwMjJMNTUuMjk5OCA1MC4xNjYyWiIgZmlsbD0iI0E1NjhCQyIvPjxwYXRoIGQ9Ik0zMS45OTYzIDcwLjQ1MDZMNDkuNTU2OCA4MC41ODkxTDU1LjU3MTUgNzAuMTcxM0w0OC4zNzE4IDY2LjAxNDVMMzEuOTk2MyA3MC40NTA2WiIgZmlsbD0iI0E1NjhCQyIvPjxwYXRoIGQ9Ik0zNi4zNTQyIDM0LjI1NzJDMzYuMzU0MiAzNC4yNTcyIDM2LjM1ODMgMzQuMjYzNSAzNi4zNTY3IDM0LjI2NjRDMzcuMTg2OSAzNC4wNjk3IDM4LjA5MTkgMzQuMTU5NiAzOC44ODUxIDM0LjYxNzVMNjIuNjQ4NiA0OC4zMzc0TDU0LjE3MjkgMjkuOTA0OUwzNi4zNDk2IDM0LjI1ODRMMzYuMzU0MiAzNC4yNTcyWiIgZmlsbD0iI0ZDODc1MyIvPjxwYXRoIGQ9Ik0zMy4wOTg4IDE4Ljk1MDdMMzYuMzc3MiAzNC4yNDczTDE4Ljc1MjUgMzkuMzM3M0wyOC45MzcxIDIxLjY5N0MyOS44NDUzIDIwLjEyMzkgMzEuNDE1MiAxOS4xNzYxIDMzLjA5ODggMTguOTUwN1oiIGZpbGw9IiM0MkQzQTkiLz48cGF0aCBkPSJNMTguNzUzMiAzOS4zNDA2TDIwLjY4MjQgNTkuNTE3MUw0LjU3NjA3IDYzLjg5NjJMMTguNzUzMiAzOS4zNDA2WiIgZmlsbD0iIzI3OTdFOCIvPjxwYXRoIGQ9Ik0zNi4zNzc5IDM0LjI0MDNDMzYuMzc3OSAzNC4yNDAzIDM2LjM3NzQgMzQuMjQ3OCAzNi4zODAzIDM0LjI0OTVDMzUuNTYyNCAzNC40OTE5IDM0LjgyMzkgMzUuMDE5NiAzNC4zNjczIDM1LjgxMDVMMjAuNjg2OSA1OS41MDU2TDE4Ljc1NzcgMzkuMzI5MUwzNi4zODI0IDM0LjIzOTFMMzYuMzc3OSAzNC4yNDAzWiIgZmlsbD0iIzFEQkFDQiIvPjxwYXRoIGQ9Ik01NS45MzUyIDEwMS41NDNMNTEuMDgxOSA4Ni42NjU5TDMzLjI1ODcgOTEuMDE5NEw1MC45NDk5IDEwMS4yMzNDNTIuNTI3NiAxMDIuMTQ0IDU0LjM2MzggMTAyLjE4NSA1NS45MzUyIDEwMS41NDNaIiBmaWxsPSIjRkQ1MjYzIi8+PHBhdGggZD0iTTMzLjI1NDkgOTEuMDE0TDI0Ljc4MjEgNzIuNTgzMkw4LjYzMTM1IDc2Ljc5NzVMMzMuMjU0OSA5MS4wMTRaIiBmaWxsPSIjRkZDRjIzIi8+PHBhdGggZD0iTTUxLjA3OSA4Ni42NjM5QzUxLjA3OSA4Ni42NjM5IDUxLjA3NDkgODYuNjU3NiA1MS4wNzY2IDg2LjY1NDdDNTAuMjQ2NCA4Ni44NTE0IDQ5LjM0MTQgODYuNzYxNSA0OC41NDgyIDg2LjMwMzZMMjQuNzg0NiA3Mi41ODM3TDMzLjI2MDQgOTEuMDE2MUw1MS4wODM2IDg2LjY2MjdMNTEuMDc5IDg2LjY2MzlaIiBmaWxsPSIjRkM4NzUzIi8+PHBhdGggZD0iTTU0LjMzNDIgMTAxLjk2OUw1MS4wNTU4IDg2LjY3MjRMNjguNjgwNSA4MS41ODI0TDU4LjQ5NTkgOTkuMjIyN0M1Ny41ODc3IDEwMC43OTYgNTYuMDE3OCAxMDEuNzQ0IDU0LjMzNDIgMTAxLjk2OVoiIGZpbGw9IiM0MkQzQTkiLz48cGF0aCBkPSJNNjguNjgwMSA4MS41ODk5TDY2Ljc0OTMgNjEuNDE2Mkw4Mi44NTU2IDU3LjAzNzJMNjguNjgwMSA4MS41ODk5WiIgZmlsbD0iIzI3OTdFOCIvPjxwYXRoIGQ9Ik01MS4wNTU3IDg2LjY3ODZDNTEuMDU1NyA4Ni42Nzg2IDUxLjA1NjIgODYuNjcxMSA1MS4wNTMyIDg2LjY2OTVDNTEuODcxMSA4Ni40MjcxIDUyLjYwOTcgODUuODk5NCA1My4wNjYzIDg1LjEwODVMNjYuNzQ2NyA2MS40MTMzTDY4LjY3NTkgODEuNTg5OEw1MS4wNTExIDg2LjY3OThMNTEuMDU1NyA4Ni42Nzg2WiIgZmlsbD0iIzFEQkFDQiIvPjxwYXRoIGQ9Ik00Ny44OTQ5IDI2LjI3NjhDNDcuODc4IDI2LjM1OTcgNDcuODUyIDI2LjQ0NTEgNDcuODA2OCAyNi41MjM0TDQ3LjYyNzggMjYuODMzM0M0Ni43ODY1IDI4LjI5MDYgNDQuOTIzMiAyOC43ODY5IDQzLjQ2MTggMjcuOTQzMkM0Mi4wMDA0IDI3LjA5OTQgNDEuNDk4NiAyNS4yMzc2IDQyLjMzOTkgMjMuNzgwNEw0Mi41MTg5IDIzLjQ3MDRDNDIuNTY0MSAyMy4zOTIyIDQyLjYyNSAyMy4zMjY5IDQyLjY4ODQgMjMuMjcwOEwzNi40ODUzIDE5LjY4OTRDMzQuOTA3NiAxOC43Nzg2IDMzLjA3MTQgMTguNzM4MiAzMS41IDE5LjM3OTlMMzYuMzUzMyAzNC4yNTY5TDU0LjE3NjUgMjkuOTAzNUw0Ny44OTQ5IDI2LjI3NjhaIiBmaWxsPSIjRkQ1MjYzIi8+PHBhdGggZD0iTTc1LjYzODYgNDIuMzAyN0M3NS42MjE3IDQyLjM4NTcgNzUuNTk1NiA0Mi40NzExIDc1LjU1MDUgNDIuNTQ5M0w3NS4zNzE1IDQyLjg1OTNDNzQuNTMwMiA0NC4zMTY1IDcyLjY2NjkgNDQuODEyOSA3MS4yMDU0IDQzLjk2OTFDNjkuNzQ0IDQzLjEyNTQgNjkuMjQyMyA0MS4yNjM2IDcwLjA4MzYgMzkuODA2M0w3MC4yNjI2IDM5LjQ5NjNDNzAuMzA3NyAzOS40MTgxIDcwLjM2ODYgMzkuMzUyOSA3MC40MzIgMzkuMjk2N0w1NC4xNzYxIDI5LjkxMTRMNjIuNjUxOSA0OC4zNDM5TDc4LjgwMjYgNDQuMTI5NUw3NS42NDE1IDQyLjMwNDRMNzUuNjM4NiA0Mi4zMDI3WiIgZmlsbD0iI0ZGQ0YyMyIvPjxwYXRoIGQ9Ik03NS42MDU4IDQwLjgyMTlMNzUuNjQ0MiA0MC43NTUyQzc4LjE0ODEgMzYuNDE4MyA3OC42NDY1IDMxLjQ0ODggNzcuNDMwOSAyNi45MzgzQzc2LjIxNTMgMjIuNDI3OCA3My4yODQ3IDE4LjM3MTggNjguOTM1MiAxNS44NjA3QzY0LjU4NTggMTMuMzQ5NSA1OS42MDc5IDEyLjgzOTUgNTUuMDkzOSAxNC4wNDJDNTAuNTc5OSAxNS4yNDQ2IDQ2LjUyNTMgMTguMTYwOSA0NC4wMjE0IDIyLjQ5NzhMNDIuOTkxMSAyNC4yODI0QzQyLjM3MzkgMjUuMzUxNCA0Mi43NDQyIDI2LjcxNjMgNDMuODEzNCAyNy4zMzM2QzQ0Ljg4MjYgMjcuOTUwOSA0Ni4yNTE0IDI3LjU4NjIgNDYuODY2OSAyNi41MjAxTDQ3Ljg5NzMgMjQuNzM1NUM0OS43ODU3IDIxLjQ2NDcgNTIuODQ0MSAxOS4yNjczIDU2LjI1NDggMTguMzU4N0M1OS42NjU0IDE3LjQ1MDEgNjMuNDE5MSAxNy44MzI3IDY2LjY5OTQgMTkuNzI2NkM2OS45Nzk2IDIxLjYyMDQgNzIuMTg3OSAyNC42Nzk5IDczLjEwNjMgMjguMDg3OUM3NC4wMjQ4IDMxLjQ5NiA3My42NTEgMzUuMjQzNCA3MS43NjI2IDM4LjUxNDFMNzEuNzI0MSAzOC41ODA4TDcwLjczMzkgNDAuMjk1OEM3MC4xMTY3IDQxLjM2NDkgNzAuNDg3IDQyLjcyOTcgNzEuNTU2MiA0My4zNDdDNzIuNjI1NCA0My45NjQ0IDczLjk5NDIgNDMuNTk5NyA3NC42MDk4IDQyLjUzMzZMNzUuNTk5OSA0MC44MTg1TDc1LjYwNTggNDAuODIxOVoiIGZpbGw9IiMzRDRDNjYiLz48L3N2Zz4="; // crisp vector mark (was logo.png — pixelated when scaled)
 const basilAlmondImg = `${ASSETS_BASE_URL}/basil-almond-paste.png`;
 const beerImg = `${ASSETS_BASE_URL}/beer-paste.png`;
 const beetImg = `${ASSETS_BASE_URL}/beet-paste.png`;
@@ -609,6 +614,11 @@ export const MOCK_ORDER_2: CFActiveOrder = {
     createdAt: new Date(Date.now() - 3600000).toISOString()
 };
 
+// A fully-refunded sale with a coherent story: TWO units bought, then one unit
+// refunded per event (different return methods), so quantities and money
+// reconcile in order-details "Refunds" sections. Amounts here are PRETAX —
+// backfillMockOrderTaxes (bottom of this file) stamps the demo tax onto the
+// order AND its refund events uniformly.
 export const MOCK_ORDER_3: CFActiveOrder = {
     _id: "order_1003",
     currency: CurrencyCode.USD,
@@ -622,8 +632,8 @@ export const MOCK_ORDER_3: CFActiveOrder = {
     displayState: "Refunded",
     customer: MOCK_CUSTOMER_3,
     summary: {
-        total: 1500,
-        subTotal: 1500,
+        total: 2000,
+        subTotal: 2000,
         discountTotal: 0,
         shippingTotal: 0,
         totalTaxes: 0,
@@ -636,7 +646,7 @@ export const MOCK_ORDER_3: CFActiveOrder = {
         {
             transactionId: "trans_card_2",
             paymentType: "credit_card",
-            amount: 1500,
+            amount: 2000,
             timestamp: new Date(Date.now() - 7200000).toISOString(),
             processor: "stripe"
         }
@@ -651,8 +661,70 @@ export const MOCK_ORDER_3: CFActiveOrder = {
     metadata: [],
     billing: null,
     shipping: null,
-    lineItems: [createLineItem(MOCK_PRODUCT_BEET, 0, 1)],
+    lineItems: [createLineItem(MOCK_PRODUCT_BEET, 0, 2)],
     customSales: [],
+    refund: [
+        {
+            receiptId: "1001-0003-R1",
+            refundedBy: `${MOCK_USER_MARIO.firstName} ${MOCK_USER_MARIO.lastName}`,
+            timestamp: new Date(Date.now() - 5400000).toISOString(),
+            currency: CurrencyCode.USD,
+            minorUnits: 2,
+            lineItems: [createLineItem(MOCK_PRODUCT_BEET, 0, 1)],
+            customSales: [],
+            cartFees: [],
+            tips: [],
+            summary: {
+                total: 1000,
+                subTotal: 1000,
+                discountTotal: 0,
+                shippingTotal: 0,
+                totalTaxes: 0,
+                taxes: [],
+                isTaxInclusive: false
+            },
+            refundPayment: [
+                {
+                    transactionId: "rfnd_1",
+                    paymentType: "credit_card",
+                    amount: 1000,
+                    timestamp: new Date(Date.now() - 5400000).toISOString(),
+                    processor: "stripe"
+                }
+            ],
+            balance: 0
+        },
+        {
+            receiptId: "1001-0003-R2",
+            refundedBy: `${MOCK_USER_MARIO.firstName} ${MOCK_USER_MARIO.lastName}`,
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            currency: CurrencyCode.USD,
+            minorUnits: 2,
+            lineItems: [createLineItem(MOCK_PRODUCT_BEET, 0, 1)],
+            customSales: [],
+            cartFees: [],
+            tips: [],
+            summary: {
+                total: 1000,
+                subTotal: 1000,
+                discountTotal: 0,
+                shippingTotal: 0,
+                totalTaxes: 0,
+                taxes: [],
+                isTaxInclusive: false
+            },
+            refundPayment: [
+                {
+                    transactionId: "rfnd_2",
+                    paymentType: "cash",
+                    amount: 1000,
+                    timestamp: new Date(Date.now() - 3600000).toISOString(),
+                    processor: "cash"
+                }
+            ],
+            balance: 0
+        }
+    ],
     balance: 0,
     user: MOCK_USER_MARIO,
     outlet: MOCK_OUTLET_MAIN,
@@ -811,6 +883,10 @@ export const resetMockCart = () => {
         nonRevenueItems: [],
         customer: null
     };
+    // A cart reset ends any in-progress split-payment session (sale completed,
+    // cart cleared, or order parked) — mirror render publishing the cleared slice.
+    mockSplitPayments = [];
+    publishMockSplitPayments();
 };
 
 function resolveMockOrderCurrency(): CurrencyCode {
@@ -871,6 +947,7 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
         MOCK_OUTLET = MOCK_OUTLETS[0]!;
     }
     resetMockCart();
+    backfillMockOrderTaxes();
 }
 
 // Helper to simulate safe JSON serialization
@@ -909,8 +986,124 @@ export const mockSubscribeToTopic = (topic: string, callback: MockEventCallback)
     mockTopicSubscribers[topic].push(callback);
 };
 
+// --- DEMO TAX (mock mode only) ---
+// The real host computes real taxes; mock mode previously carried zero tax
+// everywhere, so every preview showed "Tax $0.00". A single flat demo rate is
+// applied on top of the cart mutators' own arithmetic: handlers maintain
+// MOCK_CART.total as a PRETAX running figure (mixed incremental and
+// from-scratch math), so the tax is stripped before a mutator runs and
+// re-applied after (see withMockCartTax). Ids align with mockGetTaxTables.
+
+export const MOCK_TAX_RATE = 0.1;
+export const MOCK_TAX_NAME = "GST (10%)";
+
+const makeMockTaxEntry = (amount: number): CFTax => ({
+    id: "mock_rate_1",
+    name: MOCK_TAX_NAME,
+    percentage: MOCK_TAX_RATE * 100,
+    amount,
+    taxTableName: "Standard",
+    taxTableId: "mock_table_1"
+});
+
+const stripMockCartTax = () => {
+    const applied = MOCK_CART.tax || 0;
+    if (!applied) return;
+    const taxed = MOCK_CART.total || 0;
+    const pretax = Math.max(0, taxed - applied);
+    // Only rebase the charge fields when they mirror the taxed total — a smaller
+    // value is an armed partial payment (taxed domain, owned by the handler).
+    if (MOCK_CART.amountToBeCharged === taxed) MOCK_CART.amountToBeCharged = pretax;
+    if (MOCK_CART.remainingBalance === taxed) MOCK_CART.remainingBalance = pretax;
+    MOCK_CART.total = pretax;
+    MOCK_CART.tax = 0;
+    MOCK_CART.taxes = [];
+};
+
+const applyMockCartTax = () => {
+    const pretax = MOCK_CART.total || 0;
+    // Lines that don't contribute to the tax base: custom sales with "apply tax"
+    // off, and non-revenue (liability) lines unless explicitly taxed.
+    const untaxedCustomSales = (MOCK_CART.customSales ?? []).reduce(
+        (sum, cs) => sum + (cs.applyTaxes === false ? (cs.price || 0) * (cs.quantity || 1) : 0),
+        0
+    );
+    const untaxedNonRevenue = (MOCK_CART.nonRevenueItems ?? []).reduce(
+        (sum, item) => sum + (item.applyTaxes === true ? 0 : Number(item.amount) || 0),
+        0
+    );
+    const tax = Math.round(Math.max(0, pretax - untaxedCustomSales - untaxedNonRevenue) * MOCK_TAX_RATE);
+    if (MOCK_CART.amountToBeCharged === pretax) MOCK_CART.amountToBeCharged = pretax + tax;
+    if (MOCK_CART.remainingBalance === pretax) MOCK_CART.remainingBalance = pretax + tax;
+    MOCK_CART.total = pretax + tax;
+    MOCK_CART.tax = tax;
+    MOCK_CART.taxes = tax > 0 ? [makeMockTaxEntry(tax)] : [];
+};
+
+/**
+ * Wrap a cart-mutating mock handler so it keeps operating on the pretax total
+ * it expects: strip the demo tax, run the handler, re-apply. Handlers that
+ * never touch totals round-trip unchanged, so membership in the wrapped set
+ * errs on the side of inclusion. Parked orders stay pretax on purpose: park
+ * runs inside the wrapper (cart stripped while the parked record is captured)
+ * and resume re-applies tax on the restored cart — taxing the stored record
+ * too would double-tax it.
+ */
+export const withMockCartTax =
+    <A extends unknown[], R>(handler: (...args: A) => Promise<R>) =>
+    async (...args: A): Promise<R> => {
+        stripMockCartTax();
+        try {
+            return await handler(...args);
+        } finally {
+            applyMockCartTax();
+        }
+    };
+
+// Per-line CFTax entries so order-details / receipts can show tax per item.
+// Line totals in the mocks are pretax. Assigns a NEW array (never mutates in
+// place) — refund seeds shallow-copy order lines, so in-place mutation would
+// leak across the copies.
+const stampMockLineTaxes = (items?: Array<{ total?: number; totalTax?: number; taxes?: CFTax[]; applyTaxes?: boolean }>) => {
+    for (const li of items ?? []) {
+        if (!li || li.taxes?.length) continue;
+        if (li.applyTaxes === false) continue; // untaxed custom sale
+        const amount = Math.round((li.total || 0) * MOCK_TAX_RATE);
+        if (amount <= 0) continue;
+        li.taxes = [makeMockTaxEntry(amount)];
+        li.totalTax = amount;
+    }
+};
+
+// --- SPLIT-PAYMENT LEDGER (mock mode only) ---
+// Render publishes its full split-payment slice over the `split-payments`
+// topic on every mutation. The mocks mirror that: each partial tender is
+// recorded here and published, and the completed order carries the real
+// ledger instead of one collapsed full-total payment row.
+
+let mockSplitPayments: CFPaymentMethod[] = [];
+let mockPaymentSeq = 0;
+
+const publishMockSplitPayments = () => {
+    const paidAmount = mockSplitPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+    const splitPayment: CFSplitPayment | null = mockSplitPayments.length
+        ? {
+              payments: [...mockSplitPayments],
+              paidAmount,
+              amountRemaining: MOCK_CART.remainingBalance ?? null,
+              status: "inProgress"
+          }
+        : null;
+    mockPublishEvent("split-payments", "split-payment-updated", { splitPayment });
+};
+
 // Helper to create order from cart
-export const createOrderFromCart = (paymentType: string, amount: number, processor: string = "cash"): CFActiveOrder => {
+export const createOrderFromCart = (
+    paymentType: string,
+    amount: number,
+    processor: string = "cash",
+    paymentMethods?: CFPaymentMethod[]
+): CFActiveOrder => {
     const primaryOutlet = MOCK_OUTLETS[0] ?? MOCK_OUTLET_MAIN;
     const primaryStation = MOCK_STATIONS[0] ?? MOCK_STATION;
     const employeeUser = MOCK_USERS.find(u => u.type === CFUserTypes.CASHIER) ?? MOCK_USERS[0] ?? MOCK_USER;
@@ -944,7 +1137,27 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
         };
     });
 
+    // Cart totals are tax-inclusive (see applyMockCartTax); split the demo tax
+    // back out so the order summary reads like a real completed sale. When the
+    // cart carries no tax (e.g. parkOrder runs inside withMockCartTax, which
+    // strips first), the order stays pretax — parked records must stay pretax.
     const totalNum = MOCK_CART.total;
+    const taxNum = MOCK_CART.tax || 0;
+
+    // Carry the cart's custom sales onto the order in CFCustomSale shape
+    // (previously hardcoded to [] — custom sales vanished from completed orders).
+    const customSales: CFCustomSale[] = (MOCK_CART.customSales ?? []).map(cs => ({
+        customSaleId: cs.id,
+        name: cs.name,
+        price: cs.price,
+        quantity: cs.quantity || 1,
+        applyTaxes: cs.applyTaxes,
+        total: (cs.price || 0) * (cs.quantity || 1),
+        totalTax: 0,
+        taxes: [],
+        discount: { cartDiscount: { percentage: 0, amount: 0 } },
+        fee: { cartFee: { percentage: 0, amount: 0, tax: 0, taxTableId: "" } }
+    }));
 
     const newOrder: CFActiveOrder = {
         _id: orderId,
@@ -960,16 +1173,18 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
         customer: MOCK_CART.customer ? (MOCK_CART.customer as CFCustomer) : null,
         summary: {
             total: totalNum,
-            subTotal: totalNum,
+            subTotal: Math.max(0, totalNum - taxNum),
             discountTotal: 0,
             shippingTotal: 0,
-            totalTaxes: 0,
-            taxes: [],
+            totalTaxes: taxNum,
+            taxes: taxNum > 0 ? [makeMockTaxEntry(taxNum)] : [],
             isTaxInclusive: false
         },
         cartDiscount: MOCK_CART.discount ? { label: MOCK_CART.discount.label || "Discount", amount: 0, percentage: MOCK_CART.discount.value } : null,
         cartFees: [],
-        paymentMethods: [
+        // A split-tender sale passes its real ledger; single tenders keep the
+        // legacy one-row shape.
+        paymentMethods: paymentMethods ?? [
             {
                 transactionId: `trans_${Date.now()}`,
                 paymentType,
@@ -989,13 +1204,18 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
         billing: MOCK_CART.customer?.billing || null,
         shipping: MOCK_CART.customer?.shipping || null,
         lineItems,
-        customSales: [],
+        customSales,
         balance: 0,
         user: employeeUser,
         outlet: primaryOutlet,
         station: primaryStation,
         createdAt: new Date().toISOString()
     };
+
+    if (taxNum > 0) {
+        stampMockLineTaxes(newOrder.lineItems);
+        stampMockLineTaxes(newOrder.customSales);
+    }
 
     MOCK_ORDERS.push(newOrder);
     resetMockCart();
@@ -1011,27 +1231,81 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
  * Decrements the remaining balance; when it reaches zero the sale completes
  * (creates the order, resets the cart, returns it). Otherwise the cart stays
  * open with `amountToBeCharged` reset to what's left, and returns null.
+ *
+ * Every tender is recorded on the split-payment ledger and published over the
+ * `split-payments` topic, like render does, so paid-tender rows are visible in
+ * mock mode. `emv` carries demo card metadata (brand / last4) for card tenders.
  */
-export const applyMockPayment = (
-    amount: number,
-    paymentType: string,
-    processor: string = "cash"
-): CFActiveOrder | null => {
+export const applyMockPayment = (amount: number, paymentType: string, processor: string = "cash", emv?: string | null): CFActiveOrder | null => {
     const remainingBefore = MOCK_CART.remainingBalance ?? MOCK_CART.total;
     const charge = Math.min(Math.max(0, amount || remainingBefore), remainingBefore);
     const remainingAfter = Math.max(0, remainingBefore - charge);
+
+    const tender: CFPaymentMethod = {
+        transactionId: `trans_${Date.now()}_${++mockPaymentSeq}`,
+        paymentType,
+        amount: charge,
+        timestamp: new Date().toISOString(),
+        processor,
+        emv: emv ?? null
+    };
 
     if (remainingAfter > 0) {
         // Partial payment — keep the cart open, queue the rest for the next tender.
         MOCK_CART.remainingBalance = remainingAfter;
         MOCK_CART.amountToBeCharged = remainingAfter;
+        mockSplitPayments.push(tender);
+        publishMockSplitPayments();
         mockPublishEvent("cart", "partial-payment-applied", { charged: charge, remaining: remainingAfter });
         return null;
     }
 
-    // Fully paid — create the completed order (this also resets the cart).
+    // Fully paid — the order carries the real tender ledger instead of one
+    // collapsed full-total row. Capture the ledger first: createOrderFromCart
+    // resets the cart, which also ends the split session and publishes null.
+    const payments = [...mockSplitPayments, tender];
+    mockSplitPayments = [];
     const orderTotal = MOCK_CART.total;
-    const order = createOrderFromCart(paymentType, orderTotal, processor);
+    const order = createOrderFromCart(paymentType, orderTotal, processor, payments);
     mockPublishEvent("payments", "payment-done", { order });
     return order;
 };
+
+/**
+ * Stamp the flat demo tax onto orders that don't carry one yet (summary,
+ * per-line entries, single-tender payment rows, and refund events — refunded
+ * money must include its tax share so it reconciles with the taxed order
+ * total). Idempotent: orders with `totalTaxes` set are left alone, so it's
+ * safe to run at module init and again after setMockDatabase replaces the
+ * dataset. Parked orders are deliberately untouched — they stay pretax (see
+ * withMockCartTax).
+ */
+export const backfillMockOrderTaxes = () => {
+    for (const order of MOCK_ORDERS) {
+        const summary = order?.summary;
+        if (!summary || summary.totalTaxes) continue;
+        const tax = Math.round((summary.subTotal || 0) * MOCK_TAX_RATE);
+        if (tax <= 0) continue;
+        summary.totalTaxes = tax;
+        summary.taxes = [makeMockTaxEntry(tax)];
+        summary.total = (summary.total || 0) + tax;
+        // Seeds are single-tender; bump the row so payments still sum to the total.
+        if (order.paymentMethods?.length === 1) order.paymentMethods[0].amount = summary.total;
+        stampMockLineTaxes(order.lineItems);
+        stampMockLineTaxes(order.customSales);
+        for (const refund of order.refund ?? []) {
+            const refundSummary = refund?.summary;
+            if (!refundSummary || refundSummary.totalTaxes) continue;
+            const refundTax = Math.round((refundSummary.subTotal || 0) * MOCK_TAX_RATE);
+            if (refundTax <= 0) continue;
+            refundSummary.totalTaxes = refundTax;
+            refundSummary.taxes = [makeMockTaxEntry(refundTax)];
+            refundSummary.total = (refundSummary.total || 0) + refundTax;
+            if (refund.refundPayment?.length === 1) refund.refundPayment[0].amount = refundSummary.total;
+            stampMockLineTaxes(refund.lineItems);
+            stampMockLineTaxes(refund.customSales);
+        }
+    }
+};
+
+backfillMockOrderTaxes();

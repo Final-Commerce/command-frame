@@ -18,27 +18,84 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
     // Find the product in the cart
     const productIndex = MOCK_CART.products.findIndex(p => p.internalId === internalId);
 
-    if (productIndex === -1) {
+    if (productIndex !== -1) {
+        const product = MOCK_CART.products[productIndex];
+        const previousQuantity = product.quantity;
+
+        // If quantity is 0, remove the item
+        if (quantity === 0) {
+            MOCK_CART.products.splice(productIndex, 1);
+
+            // Recalculate totals
+            const lineTotal = product.price * previousQuantity;
+            MOCK_CART.subtotal -= lineTotal;
+            MOCK_CART.total -= lineTotal;
+            MOCK_CART.amountToBeCharged = MOCK_CART.total;
+            MOCK_CART.remainingBalance = MOCK_CART.total;
+
+            // Publish product-deleted event
+            mockPublishEvent("cart", "product-deleted", {
+                product: product,
+                internalId: internalId
+            });
+
+            return Promise.resolve({
+                success: true,
+                internalId: internalId,
+                quantity: 0,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        // Update quantity
+        const quantityDelta = quantity - previousQuantity;
+        product.quantity = quantity;
+
+        // Recalculate totals
+        const lineTotalDelta = product.price * quantityDelta;
+        MOCK_CART.subtotal += lineTotalDelta;
+        MOCK_CART.total += lineTotalDelta;
+        MOCK_CART.amountToBeCharged = MOCK_CART.total;
+        MOCK_CART.remainingBalance = MOCK_CART.total;
+
+        // Publish product-updated event
+        mockPublishEvent("cart", "product-updated", {
+            product: product,
+            previousQuantity: previousQuantity,
+            newQuantity: quantity
+        });
+
+        return Promise.resolve({
+            success: true,
+            internalId: internalId,
+            quantity: quantity,
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    // Mirror render: custom sales share the quantity API — internalId is the
+    // customSaleId returned by addCustomSale.
+    const customSales = MOCK_CART.customSales ?? [];
+    const saleIndex = customSales.findIndex(cs => cs.id === internalId);
+
+    if (saleIndex === -1) {
         throw new Error(`Cart item with internalId ${internalId} not found`);
     }
 
-    const product = MOCK_CART.products[productIndex];
-    const previousQuantity = product.quantity;
+    const sale = customSales[saleIndex];
+    const previousSaleQuantity = sale.quantity;
 
-    // If quantity is 0, remove the item
     if (quantity === 0) {
-        MOCK_CART.products.splice(productIndex, 1);
+        customSales.splice(saleIndex, 1);
 
-        // Recalculate totals
-        const lineTotal = product.price * previousQuantity;
+        const lineTotal = sale.price * previousSaleQuantity;
         MOCK_CART.subtotal -= lineTotal;
         MOCK_CART.total -= lineTotal;
         MOCK_CART.amountToBeCharged = MOCK_CART.total;
         MOCK_CART.remainingBalance = MOCK_CART.total;
 
-        // Publish product-deleted event
         mockPublishEvent("cart", "product-deleted", {
-            product: product,
+            product: sale,
             internalId: internalId
         });
 
@@ -50,21 +107,18 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
         });
     }
 
-    // Update quantity
-    const quantityDelta = quantity - previousQuantity;
-    product.quantity = quantity;
+    const saleQuantityDelta = quantity - previousSaleQuantity;
+    sale.quantity = quantity;
 
-    // Recalculate totals
-    const lineTotalDelta = product.price * quantityDelta;
-    MOCK_CART.subtotal += lineTotalDelta;
-    MOCK_CART.total += lineTotalDelta;
+    const saleLineTotalDelta = sale.price * saleQuantityDelta;
+    MOCK_CART.subtotal += saleLineTotalDelta;
+    MOCK_CART.total += saleLineTotalDelta;
     MOCK_CART.amountToBeCharged = MOCK_CART.total;
     MOCK_CART.remainingBalance = MOCK_CART.total;
 
-    // Publish product-updated event
     mockPublishEvent("cart", "product-updated", {
-        product: product,
-        previousQuantity: previousQuantity,
+        product: sale,
+        previousQuantity: previousSaleQuantity,
         newQuantity: quantity
     });
 

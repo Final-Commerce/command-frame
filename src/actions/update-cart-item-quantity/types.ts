@@ -1,7 +1,7 @@
 // Update Cart Item Quantity Types
 
 export interface UpdateCartItemQuantityParams {
-    /** The unique identifier for the specific cart item to update. */
+    /** The cart item to update — a product line's `internalId` or a custom sale's `customSaleId`. */
     internalId: string;
     /** The new quantity. If set to 0, the item will be removed from the cart. */
     quantity: number;

@@ -8,9 +8,10 @@ Adds a custom sale item to the cart in the parent window. This is useful for add
 
 ```typescript
 interface AddCustomSaleParams {
-    label: string;           // Required
+    label: string; // Required
     price: number | string; // Required
-    applyTaxes?: boolean;   // Optional, default: false
+    quantity?: number | string; // Optional, default: 1
+    applyTaxes?: boolean; // Optional, default: false
 }
 ```
 
@@ -19,6 +20,7 @@ interface AddCustomSaleParams {
 The label or name for the custom sale item. This will be displayed in the cart.
 
 **Example:**
+
 - "Service Fee"
 - "Delivery Charge"
 - "Custom Item"
@@ -27,10 +29,17 @@ The label or name for the custom sale item. This will be displayed in the cart.
 #### `price` (required)
 
 The price of the custom sale item. Can be provided as:
+
 - A number (e.g., `10.50`)
 - A string (e.g., `"10.50"`)
 
 The price will be converted to a number internally. Negative values can be used for discounts.
+
+#### `quantity` (optional)
+
+The line quantity for the custom sale. Must be a positive integer (as a number or numeric string). Defaults to `1` if not provided. The line total is `price × quantity`.
+
+The quantity can be changed after creation with `updateCartItemQuantity`, passing the `customSaleId` as the `internalId`.
 
 #### `applyTaxes` (optional)
 
@@ -46,8 +55,10 @@ Whether to apply taxes to the custom sale item. Defaults to `false` if not provi
 ```typescript
 interface AddCustomSaleResponse {
     success: boolean;
+    customSaleId: string;
     label: string;
     price: number;
+    quantity: number;
     applyTaxes: boolean;
     timestamp: string;
 }
@@ -57,6 +68,10 @@ interface AddCustomSaleResponse {
 
 Indicates whether the custom sale was successfully added to the cart.
 
+#### `customSaleId` (string)
+
+The unique id of the created custom sale line. Use it as the `internalId` with `updateCartItemQuantity` to change the quantity, or with `removeCustomSale` to remove the line.
+
 #### `label` (string)
 
 The label that was used for the custom sale (echoed back from the request).
@@ -64,6 +79,10 @@ The label that was used for the custom sale (echoed back from the request).
 #### `price` (number)
 
 The price of the custom sale as a number (converted from string if provided).
+
+#### `quantity` (number)
+
+The line quantity that was applied (`1` when the parameter was omitted).
 
 #### `applyTaxes` (boolean)
 
@@ -76,7 +95,7 @@ ISO 8601 timestamp string (e.g., `"2024-01-01T00:00:00.000Z"`) indicating when t
 ## Usage
 
 ```typescript
-import { command } from '@final-commerce/command-frame';
+import { command } from "@final-commerce/command-frame";
 ```
 
 ## Usage Examples
@@ -86,14 +105,14 @@ import { command } from '@final-commerce/command-frame';
 Add a simple custom sale item without taxes:
 
 ```typescript
-import { command } from '@final-commerce/command-frame';
+import { command } from "@final-commerce/command-frame";
 
 const result = await command.addCustomSale({
-    label: 'Service Fee',
-    price: 5.00
+    label: "Service Fee",
+    price: 5.0
 });
 
-console.log('Added:', result.label, 'for $', result.price);
+console.log("Added:", result.label, "for $", result.price);
 ```
 
 ### Custom Sale with Taxes
@@ -102,9 +121,27 @@ Add a custom sale item with taxes applied:
 
 ```typescript
 const result = await command.addCustomSale({
-    label: 'Delivery Charge',
-    price: 10.50,
+    label: "Delivery Charge",
+    price: 10.5,
     applyTaxes: true
+});
+```
+
+### Custom Sale with a Quantity
+
+Add multiple units of the same custom sale as one line:
+
+```typescript
+const result = await command.addCustomSale({
+    label: "Raffle Ticket",
+    price: 2.0,
+    quantity: 5 // Line total: $10.00
+});
+
+// Change the quantity later using the returned customSaleId
+await command.updateCartItemQuantity({
+    internalId: result.customSaleId,
+    quantity: 3
 });
 ```
 
@@ -114,8 +151,8 @@ Add a discount as a custom sale:
 
 ```typescript
 const result = await command.addCustomSale({
-    label: 'Loyalty Discount',
-    price: -5.00,  // Negative for discount
+    label: "Loyalty Discount",
+    price: -5.0, // Negative for discount
     applyTaxes: false
 });
 ```
@@ -126,8 +163,8 @@ Provide price as a string (will be converted to number):
 
 ```typescript
 const result = await command.addCustomSale({
-    label: 'Custom Item',
-    price: '15.99',  // String format
+    label: "Custom Item",
+    price: "15.99", // String format
     applyTaxes: true
 });
 ```
@@ -139,16 +176,16 @@ Handle validation errors:
 ```typescript
 try {
     const result = await command.addCustomSale({
-        label: '',  // Empty label
+        label: "", // Empty label
         price: 10
     });
 } catch (error) {
-    if (error.message === 'Label and price are required') {
-        console.error('Please provide both label and price');
-    } else if (error.message === 'Parameters are required for addCustomSale') {
-        console.error('Please provide parameters');
+    if (error.message === "Label and price are required") {
+        console.error("Please provide both label and price");
+    } else if (error.message === "Parameters are required for addCustomSale") {
+        console.error("Please provide parameters");
     } else {
-        console.error('Failed to add custom sale:', error.message);
+        console.error("Failed to add custom sale:", error.message);
     }
 }
 ```
@@ -161,23 +198,23 @@ Complete workflow with error handling:
 async function addServiceFee(amount: number) {
     try {
         const result = await command.addCustomSale({
-            label: 'Service Fee',
+            label: "Service Fee",
             price: amount,
             applyTaxes: true
         });
-        
+
         if (result.success) {
             console.log(`Service fee of $${result.price} added successfully`);
             return result;
         }
     } catch (error) {
-        console.error('Failed to add service fee:', error);
+        console.error("Failed to add service fee:", error);
         throw error;
     }
 }
 
 // Usage
-await addServiceFee(5.50);
+await addServiceFee(5.5);
 ```
 
 ## Behavior
@@ -186,9 +223,9 @@ When a custom sale is added:
 
 1. The item is validated (label and price must be provided)
 2. The item is added to the current cart in the parent application
-3. The quantity is set to 1 by default
+3. The quantity defaults to 1 unless `quantity` is provided
 4. Taxes are applied if `applyTaxes` is `true`
-5. The item appears in the cart with the specified label and price
+5. The item appears in the cart with the specified label, price and quantity
 
 ## Error Handling
 
@@ -206,7 +243,7 @@ await command.addCustomSale();
 ```typescript
 // Throws: "Label and price are required"
 await command.addCustomSale({
-    label: 'Fee'
+    label: "Fee"
     // Missing price
 });
 ```
@@ -216,7 +253,7 @@ await command.addCustomSale({
 ```typescript
 try {
     const result = await command.addCustomSale({
-        label: 'Test',
+        label: "Test",
         price: 10
     });
 } catch (error) {
@@ -229,6 +266,7 @@ try {
 
 - `label` must be a non-empty string
 - `price` must be provided and can be a number or string representation of a number
+- `quantity` is optional; when provided it must be a positive integer (number or numeric string), otherwise it defaults to `1`
 - `applyTaxes` is optional and defaults to `false`
 - Price can be negative (for discounts)
 - Price will be converted to a number internally (strings are parsed)
@@ -239,11 +277,13 @@ try {
 
 ```json
 {
-  "success": true,
-  "label": "Custom Item",
-  "price": 10,
-  "applyTaxes": false,
-  "timestamp": "2025-12-04T19:24:13.293Z"
+    "success": true,
+    "customSaleId": "sale_x1y2z3abc",
+    "label": "Custom Item",
+    "price": 10,
+    "quantity": 2,
+    "applyTaxes": false,
+    "timestamp": "2025-12-04T19:24:13.293Z"
 }
 ```
 
@@ -251,17 +291,18 @@ try {
 
 ```json
 {
-  "label": "Custom Item",
-  "price": 10,
-  "applyTaxes": false
+    "label": "Custom Item",
+    "price": 10,
+    "quantity": 2,
+    "applyTaxes": false
 }
 ```
 
 ## Notes
 
 - The custom sale is added to the current active cart/session
-- The quantity is always set to 1
+- The quantity defaults to 1 when not provided
+- The quantity can be changed later via `updateCartItemQuantity` using the returned `customSaleId` as the `internalId`
 - The item is immediately available in the cart after successful addition
 - Custom sales are treated as regular cart items and can be removed or modified like other items
 - If taxes are applied, they are calculated based on the current tax settings in the parent application
-

@@ -94,6 +94,7 @@ import type {
     RemoveNonRevenueItem,
     CanTransition,
     GetAvailableTransitions,
+    ApplyTransition,
     IntegrationPayment,
     GetSmartGridLayout,
     SaveSmartGridLayout
@@ -200,6 +201,7 @@ export interface RenderProviderActions {
     removeNonRevenueItem: RemoveNonRevenueItem;
     canTransition: CanTransition;
     getAvailableTransitions: GetAvailableTransitions;
+    applyTransition: ApplyTransition;
     getSmartGridLayout: GetSmartGridLayout;
     saveSmartGridLayout: SaveSmartGridLayout;
 }
