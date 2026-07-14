@@ -1,6 +1,6 @@
 // Add Product Discount Types
 export interface AddProductDiscountParams {
-    /** The discount amount. If isPercent is true, this is a percentage. */
+    /** The discount amount in integer MINOR currency units (e.g. 500 = $5.00). If isPercent is true, this is a percentage (0-100) instead. */
     amount: number;
     /** Defaults to `false`. */
     isPercent?: boolean;

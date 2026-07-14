@@ -81,7 +81,7 @@ await command.setProductActive({
 });
 
 await command.addProductDiscount({
-    amount: 10,
+    amount: 1000, // $10.00 in integer minor units
     isPercent: false,
     label: "Discount"
 });
@@ -92,7 +92,7 @@ await command.addProductToCart({
 
 // Add cart discount
 await command.addCartDiscount({
-    amount: 10,
+    amount: 1000, // $10.00 in integer minor units
     isPercent: false,
     label: "Cart Discount"
 });
@@ -119,22 +119,31 @@ await command.setActiveRefund({ orderId: "order-123" });
 
 // Product Actions
 await command.addProductNote({ note: "Customer requested extra packaging" });
-await command.addProductFee({ amount: 5.0, label: "Service Fee", applyTaxes: true });
+await command.addProductFee({ amount: 500, label: "Service Fee", applyTaxes: true }); // minor units
 await command.adjustInventory({ amount: "10", stockType: "add" });
 
 // Order Actions
 await command.addOrderNote({ note: "Delivery by 3pm" });
-await command.addCartFee({ amount: 5.0, label: "Processing Fee" });
+await command.addCartFee({ amount: 500, label: "Processing Fee" }); // minor units
 await command.removeCartFee({ index: 0 });
 await command.clearCart();
 await command.parkOrder();
 await command.resumeParkedOrder({ orderId: "order-123" });
 await command.deleteParkedOrder({ orderId: "order-123" });
-await command.cashPayment({ amount: 50.0 });
-await command.tapToPayPayment();
-await command.terminalPayment();
-await command.vendaraPayment();
-await command.partialPayment({ amount: 25.0, isPercent: false });
+// All money values are integer MINOR currency units (1575 = $15.75).
+// Tender `amount` is REQUIRED: below the balance due = partial payment (split leg).
+const { cart } = await command.getCurrentCart();
+const balanceDue = cart.amountToBeCharged ?? cart.total;
+
+// Flow-owned cash tender: preview rounding, collect cash, get the change back.
+const { roundedAmount } = await command.getCashRoundingAmount();
+const cashResult = await command.cashPayment({ amount: balanceDue, tenderedAmount: 2000 });
+console.log("Change due (minor units):", cashResult.change);
+
+await command.tapToPayPayment({ amount: balanceDue });
+await command.terminalPayment({ amount: balanceDue });
+await command.vendaraPayment({ amount: balanceDue });
+await command.partialPayment({ amount: 2500, isPercent: false }); // minor units
 
 // Extension / redeem / integration payments (Render host implements these; mocks when not in iframe)
 await command.redeemPayment({ amount: 500, processor: "giftCard", label: "Gift card" }); // amount required (minor units)

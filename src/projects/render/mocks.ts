@@ -27,6 +27,7 @@ import { mockAssignCustomer } from "../../actions/assign-customer/mock";
 import { mockAuthenticateUser } from "../../actions/authenticate-user/mock";
 import { mockCalculateRefundTotal } from "../../actions/calculate-refund-total/mock";
 import { mockCashPayment } from "../../actions/cash-payment/mock";
+import { mockGetCashRoundingAmount } from "../../actions/get-cash-rounding-amount/mock";
 import { mockClearCart } from "../../actions/clear-cart/mock";
 import { mockDeleteParkedOrder } from "../../actions/delete-parked-order/mock";
 import { mockExampleFunction } from "../../actions/example-function/mock";
@@ -117,6 +118,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     authenticateUser: mockAuthenticateUser,
     calculateRefundTotal: mockCalculateRefundTotal,
     cashPayment: mockCashPayment,
+    getCashRoundingAmount: mockGetCashRoundingAmount,
     clearCart: mockClearCart,
     deleteParkedOrder: mockDeleteParkedOrder,
     exampleFunction: mockExampleFunction,

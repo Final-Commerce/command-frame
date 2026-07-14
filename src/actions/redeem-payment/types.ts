@@ -6,6 +6,7 @@ import type { ExtensionPaymentResponse } from "../extension-payment/types";
  * total. The host handler also re-validates this at runtime to catch raw-postMessage callers.
  */
 export interface RedeemPaymentParams {
+    /** Amount in integer MINOR currency units (e.g. 1575 = $15.75). */
     amount: number;
     label?: string;
     extensionId?: string;

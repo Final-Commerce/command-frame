@@ -47,6 +47,22 @@ npm install @final-commerce/command-frame
 
 Commands let the extension iframe call typed functions on the host. Each host environment (Render, Manage) exposes its own set of commands.
 
+### Money values: integer minor units
+
+Every money value on this API — params **and** responses — is an **integer in
+minor currency units**: `1575` means $15.75 in USD, ¥1575 in JPY. The host
+does all money math in minor units and never converts your inputs. Use
+`getContext().minorUnits` (the currency's decimal exponent, e.g. `2` for USD,
+`0` for JPY) to convert user-typed values before sending:
+
+```typescript
+const { minorUnits } = await command.getContext();
+const amount = Math.round(parseFloat(userInput) * 10 ** (minorUnits ?? 2));
+```
+
+The two exceptions, always flagged in the field docs: percentages (`isPercent:
+true` → `amount` is `0–100`), and quantities.
+
 ### Render (POS System)
 
 For building applications that run inside the Render Point of Sale interface.
