@@ -5,7 +5,13 @@ import type { CFTransitionResult } from "../../common-types/order-state";
 export interface ExtensionPaymentParams {
     paymentType: string;
     processor?: string;
-    amount?: number;
+    /**
+     * The amount to pay with this tender, in integer MINOR currency units
+     * (e.g. 1575 = $15.75). Required. Semantics against the cart's balance
+     * due: missing → error; less than balance → partial payment (fixed
+     * split-payment leg); equal → full payment; more → error.
+     */
+    amount: number;
     label?: string;
     referenceId?: string;
     extensionId?: string;
@@ -14,7 +20,7 @@ export interface ExtensionPaymentParams {
     checkoutFulfillmentTarget?: string;
     /** EMV data when the underlying payment carries one (typed as `IntegrationEmvData` by the integration wrapper). */
     emvData?: unknown;
-    /** Processor fee in minor units; recorded on the order's paymentMethod.processorFee. */
+    /** Processor fee in integer MINOR currency units; recorded on the order's paymentMethod.processorFee. */
     processorFee?: number;
 }
 

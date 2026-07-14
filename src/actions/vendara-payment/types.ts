@@ -3,8 +3,16 @@ import type { CFTransitionResult } from "../../common-types/order-state";
 
 // Vendara Payment Types
 export interface VendaraPaymentParams {
-    /** If not provided, uses the cart total. */
-    amount?: number;
+    /**
+     * The amount to pay with this tender, in integer MINOR currency units
+     * (e.g. 1575 = $15.75). Required. Semantics against the cart's balance due:
+     *   - missing            → error
+     *   - less than balance  → partial payment (the POS enters a fixed
+     *                          split-payment leg for this amount)
+     *   - equal to balance   → full payment
+     *   - more than balance  → error
+     */
+    amount: number;
     /** Override the fulfillment state after full payment. Render resolves the cascade. */
     checkoutFulfillmentTarget?: string;
 }

@@ -26,9 +26,9 @@ The label or name for the custom sale item. This will be displayed in the cart.
 
 #### `price` (required)
 
-The price of the custom sale item. Can be provided as:
-- A number (e.g., `10.50`)
-- A string (e.g., `"10.50"`)
+The price of the custom sale item, in integer minor currency units. Can be provided as:
+- A number (e.g., `1050` = $10.50)
+- A string (e.g., `"1050"`)
 
 The price will be converted to a number internally. Negative values can be used for discounts.
 
@@ -90,10 +90,10 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.addCustomSale({
     label: 'Service Fee',
-    price: 5.00
+    price: 500 // $5.00 in minor units
 });
 
-console.log('Added:', result.label, 'for $', result.price);
+console.log('Added:', result.label, 'for', result.price);
 ```
 
 ### Custom Sale with Taxes
@@ -103,7 +103,7 @@ Add a custom sale item with taxes applied:
 ```typescript
 const result = await command.addCustomSale({
     label: 'Delivery Charge',
-    price: 10.50,
+    price: 1050, // $10.50 in minor units
     applyTaxes: true
 });
 ```
@@ -115,7 +115,7 @@ Add a discount as a custom sale:
 ```typescript
 const result = await command.addCustomSale({
     label: 'Loyalty Discount',
-    price: -5.00,  // Negative for discount
+    price: -500,  // Negative for discount, $5.00 in minor units
     applyTaxes: false
 });
 ```
@@ -127,7 +127,7 @@ Provide price as a string (will be converted to number):
 ```typescript
 const result = await command.addCustomSale({
     label: 'Custom Item',
-    price: '15.99',  // String format
+    price: '1599',  // String format, $15.99 in minor units
     applyTaxes: true
 });
 ```
@@ -140,7 +140,7 @@ Handle validation errors:
 try {
     const result = await command.addCustomSale({
         label: '',  // Empty label
-        price: 10
+        price: 1000 // $10.00 in minor units
     });
 } catch (error) {
     if (error.message === 'Label and price are required') {
@@ -167,7 +167,7 @@ async function addServiceFee(amount: number) {
         });
         
         if (result.success) {
-            console.log(`Service fee of $${result.price} added successfully`);
+            console.log(`Service fee of ${result.price} added successfully`);
             return result;
         }
     } catch (error) {
@@ -177,7 +177,7 @@ async function addServiceFee(amount: number) {
 }
 
 // Usage
-await addServiceFee(5.50);
+await addServiceFee(550); // $5.50 in minor units
 ```
 
 ## Behavior
@@ -217,7 +217,7 @@ await command.addCustomSale({
 try {
     const result = await command.addCustomSale({
         label: 'Test',
-        price: 10
+        price: 1000 // $10.00 in minor units
     });
 } catch (error) {
     // error.message contains the error description
@@ -241,7 +241,7 @@ try {
 {
   "success": true,
   "label": "Custom Item",
-  "price": 10,
+  "price": 1000,
   "applyTaxes": false,
   "timestamp": "2025-12-04T19:24:13.293Z"
 }
@@ -252,7 +252,7 @@ try {
 ```json
 {
   "label": "Custom Item",
-  "price": 10,
+  "price": 1000,
   "applyTaxes": false
 }
 ```

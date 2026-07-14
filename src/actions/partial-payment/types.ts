@@ -3,7 +3,7 @@ import type { CFTransitionResult } from "../../common-types/order-state";
 
 // Partial Payment Types
 export interface PartialPaymentParams {
-    /** The payment amount (required if openUI is false). */
+    /** The payment amount in integer MINOR currency units (required if openUI is false). If isPercent is true, this is a percentage (0-100) instead. */
     amount?: number;
     /** Defaults to false. */
     isPercent?: boolean;
