@@ -37,6 +37,8 @@ jobs:
       - name: Build library
         run: npm run build
 
+      # The overrides entry (kaching's cf pin unifier) must move in lockstep with
+      # the direct dep — npm errors with EOVERRIDE when they disagree.
       - name: Point example to local library build
         working-directory: example
         run: |
@@ -44,6 +46,9 @@ jobs:
             const fs = require('fs');
             const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
             pkg.dependencies['@final-commerce/command-frame'] = 'file:..';
+            if (pkg.overrides && pkg.overrides['@final-commerce/command-frame']) {
+              pkg.overrides['@final-commerce/command-frame'] = 'file:..';
+            }
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
