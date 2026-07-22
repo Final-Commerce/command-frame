@@ -33,6 +33,7 @@ import { parkOrder } from "./actions/park-order/action";
 import { resumeParkedOrder } from "./actions/resume-parked-order/action";
 import { deleteParkedOrder } from "./actions/delete-parked-order/action";
 import { cashPayment } from "./actions/cash-payment/action";
+import { getCashRoundingAmount } from "./actions/get-cash-rounding-amount/action";
 import { tapToPayPayment } from "./actions/tap-to-pay-payment/action";
 import { terminalPayment } from "./actions/terminal-payment/action";
 import { vendaraPayment } from "./actions/vendara-payment/action";
@@ -58,11 +59,8 @@ import { getActiveOrder } from "./actions/get-active-order/action";
 import { getActiveCustomer } from "./actions/get-active-customer/action";
 import { setActiveCustomer } from "./actions/set-active-customer/action";
 import { getActiveOutlet } from "./actions/get-active-outlet/action";
-import { setActiveOutlet } from "./actions/set-active-outlet/action";
 import { getActiveStation } from "./actions/get-active-station/action";
-import { setActiveStation } from "./actions/set-active-station/action";
 import { getActiveSession } from "./actions/get-active-session/action";
-import { setActiveSession } from "./actions/set-active-session/action";
 import { getActiveUser } from "./actions/get-active-user/action";
 import { setActiveUser } from "./actions/set-active-user/action";
 import { setActiveRefund } from "./actions/set-active-refund/action";
@@ -75,8 +73,10 @@ import { removeOrderNote } from "./actions/remove-order-note/action";
 import { removeCustomSale } from "./actions/remove-custom-sale/action";
 import { removeNonRevenueItem } from "./actions/remove-non-revenue-item/action";
 // Integration Actions
-import { triggerWebhook } from "./actions/trigger-webhook/action";
-import { triggerZapierWebhook } from "./actions/trigger-zapier-webhook/action";
+
+// Receipt send Actions
+import { sendEmail } from "./actions/send-email/action";
+import { sendSms } from "./actions/send-sms/action";
 
 // Refund Actions
 import { getRefunds } from "./actions/get-refunds/action";
@@ -167,6 +167,7 @@ export const command = {
     resumeParkedOrder,
     deleteParkedOrder,
     cashPayment,
+    getCashRoundingAmount,
     tapToPayPayment,
     terminalPayment,
     vendaraPayment,
@@ -192,11 +193,8 @@ export const command = {
     getActiveCustomer,
     setActiveCustomer,
     getActiveOutlet,
-    setActiveOutlet,
     getActiveStation,
-    setActiveStation,
     getActiveSession,
-    setActiveSession,
     getActiveUser,
     setActiveUser,
     setActiveRefund,
@@ -209,8 +207,9 @@ export const command = {
     removeCustomSale,
     removeNonRevenueItem,
     // Integration Actions
-    triggerWebhook,
-    triggerZapierWebhook,
+    // Receipt send Actions
+    sendEmail,
+    sendSms,
     // Refund Actions
     initiateRefund,
     setRefundStockAction,
@@ -361,6 +360,8 @@ export type { ParkOrder, ParkOrderResponse } from "./actions/park-order/types";
 export type { ResumeParkedOrder, ResumeParkedOrderParams, ResumeParkedOrderResponse } from "./actions/resume-parked-order/types";
 export type { DeleteParkedOrder, DeleteParkedOrderParams, DeleteParkedOrderResponse } from "./actions/delete-parked-order/types";
 export type { CashPayment, CashPaymentParams, CashPaymentResponse } from "./actions/cash-payment/types";
+
+export type { GetCashRoundingAmount, GetCashRoundingAmountParams, GetCashRoundingAmountResponse } from "./actions/get-cash-rounding-amount/types";
 export type { TapToPayPayment, TapToPayPaymentParams, TapToPayPaymentResponse } from "./actions/tap-to-pay-payment/types";
 export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } from "./actions/terminal-payment/types";
 export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from "./actions/vendara-payment/types";
@@ -397,11 +398,8 @@ export type { GetActiveOrder, GetActiveOrderResponse } from "./actions/get-activ
 export type { GetActiveCustomer, GetActiveCustomerResponse } from "./actions/get-active-customer/types";
 export type { SetActiveCustomer, SetActiveCustomerParams, SetActiveCustomerResponse } from "./actions/set-active-customer/types";
 export type { GetActiveOutlet, GetActiveOutletResponse } from "./actions/get-active-outlet/types";
-export type { SetActiveOutlet, SetActiveOutletParams, SetActiveOutletResponse } from "./actions/set-active-outlet/types";
 export type { GetActiveStation, GetActiveStationResponse } from "./actions/get-active-station/types";
-export type { SetActiveStation, SetActiveStationParams, SetActiveStationResponse } from "./actions/set-active-station/types";
 export type { GetActiveSession, GetActiveSessionResponse } from "./actions/get-active-session/types";
-export type { SetActiveSession, SetActiveSessionParams, SetActiveSessionResponse } from "./actions/set-active-session/types";
 export type { GetActiveUser, GetActiveUserResponse } from "./actions/get-active-user/types";
 export type { SetActiveUser, SetActiveUserParams, SetActiveUserResponse } from "./actions/set-active-user/types";
 export type { SetActiveRefund, SetActiveRefundParams, SetActiveRefundResponse } from "./actions/set-active-refund/types";
@@ -414,8 +412,9 @@ export type { RemoveOrderNote, RemoveOrderNoteResponse } from "./actions/remove-
 export type { RemoveCustomSale, RemoveCustomSaleParams, RemoveCustomSaleResponse } from "./actions/remove-custom-sale/types";
 export type { RemoveNonRevenueItem, RemoveNonRevenueItemParams, RemoveNonRevenueItemResponse } from "./actions/remove-non-revenue-item/types";
 // Integration Actions
-export type { TriggerWebhook, TriggerWebhookPresetType, TriggerWebhookParams, TriggerWebhookResponse } from "./actions/trigger-webhook/types";
-export type { TriggerZapierWebhook, TriggerZapierWebhookParams, TriggerZapierWebhookResponse } from "./actions/trigger-zapier-webhook/types";
+// Receipt send Actions
+export type { SendEmail, SendEmailParams, SendEmailResponse, SendReceiptType } from "./actions/send-email/types";
+export type { SendSms, SendSmsParams, SendSmsResponse } from "./actions/send-sms/types";
 
 // Export Common Types
 export * from "./CommonTypes";

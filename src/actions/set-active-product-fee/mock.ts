@@ -15,7 +15,7 @@ export const mockSetActiveProductFee: SetActiveProductFee = async (params: SetAc
         applyTaxes: params.applyTaxes || false
     };
 
-    setMockActiveProduct({ ...MOCK_ACTIVE_PRODUCT, fee });
+    setMockActiveProduct({ ...MOCK_ACTIVE_PRODUCT, fees: [fee] });
 
     return {
         success: true,

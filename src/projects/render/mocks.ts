@@ -27,6 +27,7 @@ import { mockAssignCustomer } from "../../actions/assign-customer/mock";
 import { mockAuthenticateUser } from "../../actions/authenticate-user/mock";
 import { mockCalculateRefundTotal } from "../../actions/calculate-refund-total/mock";
 import { mockCashPayment } from "../../actions/cash-payment/mock";
+import { mockGetCashRoundingAmount } from "../../actions/get-cash-rounding-amount/mock";
 import { mockClearCart } from "../../actions/clear-cart/mock";
 import { mockDeleteParkedOrder } from "../../actions/delete-parked-order/mock";
 import { mockExampleFunction } from "../../actions/example-function/mock";
@@ -57,8 +58,6 @@ import { mockShowNotification } from "../../actions/show-notification/mock";
 import { mockSwitchUser } from "../../actions/switch-user/mock";
 import { mockTapToPayPayment } from "../../actions/tap-to-pay-payment/mock";
 import { mockTerminalPayment } from "../../actions/terminal-payment/mock";
-import { mockTriggerWebhook } from "../../actions/trigger-webhook/mock";
-import { mockTriggerZapierWebhook } from "../../actions/trigger-zapier-webhook/mock";
 import { mockVendaraPayment } from "../../actions/vendara-payment/mock";
 import { mockExtensionPayment } from "../../actions/extension-payment/mock";
 import { mockRedeemPayment } from "../../actions/redeem-payment/mock";
@@ -84,11 +83,8 @@ import { mockGetActiveOrder } from "../../actions/get-active-order/mock";
 import { mockGetActiveCustomer } from "../../actions/get-active-customer/mock";
 import { mockSetActiveCustomer } from "../../actions/set-active-customer/mock";
 import { mockGetActiveOutlet } from "../../actions/get-active-outlet/mock";
-import { mockSetActiveOutlet } from "../../actions/set-active-outlet/mock";
 import { mockGetActiveStation } from "../../actions/get-active-station/mock";
-import { mockSetActiveStation } from "../../actions/set-active-station/mock";
 import { mockGetActiveSession } from "../../actions/get-active-session/mock";
-import { mockSetActiveSession } from "../../actions/set-active-session/mock";
 import { mockGetActiveUser } from "../../actions/get-active-user/mock";
 import { mockSetActiveUser } from "../../actions/set-active-user/mock";
 import { mockSetActiveRefund } from "../../actions/set-active-refund/mock";
@@ -96,6 +92,8 @@ import { canTransitionMock } from "../../actions/can-transition/mock";
 import { getAvailableTransitionsMock } from "../../actions/get-available-transitions/mock";
 import { mockGetSmartGridLayout } from "../../actions/get-smart-grid-layout/mock";
 import { mockSaveSmartGridLayout } from "../../actions/save-smart-grid-layout/mock";
+import { mockSendEmail } from "../../actions/send-email/mock";
+import { mockSendSms } from "../../actions/send-sms/mock";
 import { RenderProviderActions } from "./types";
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -122,6 +120,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     authenticateUser: mockAuthenticateUser,
     calculateRefundTotal: mockCalculateRefundTotal,
     cashPayment: mockCashPayment,
+    getCashRoundingAmount: mockGetCashRoundingAmount,
     clearCart: mockClearCart,
     deleteParkedOrder: mockDeleteParkedOrder,
     exampleFunction: mockExampleFunction,
@@ -153,8 +152,6 @@ export const RENDER_MOCKS: RenderProviderActions = {
     switchUser: mockSwitchUser,
     tapToPayPayment: mockTapToPayPayment,
     terminalPayment: mockTerminalPayment,
-    triggerWebhook: mockTriggerWebhook,
-    triggerZapierWebhook: mockTriggerZapierWebhook,
     vendaraPayment: mockVendaraPayment,
     extensionPayment: mockExtensionPayment,
     redeemPayment: mockRedeemPayment,
@@ -180,11 +177,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
     getActiveCustomer: mockGetActiveCustomer,
     setActiveCustomer: mockSetActiveCustomer,
     getActiveOutlet: mockGetActiveOutlet,
-    setActiveOutlet: mockSetActiveOutlet,
     getActiveStation: mockGetActiveStation,
-    setActiveStation: mockSetActiveStation,
     getActiveSession: mockGetActiveSession,
-    setActiveSession: mockSetActiveSession,
     getActiveUser: mockGetActiveUser,
     setActiveUser: mockSetActiveUser,
     setActiveRefund: mockSetActiveRefund,
@@ -198,5 +192,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     canTransition: canTransitionMock,
     getAvailableTransitions: getAvailableTransitionsMock,
     getSmartGridLayout: mockGetSmartGridLayout,
-    saveSmartGridLayout: mockSaveSmartGridLayout
+    saveSmartGridLayout: mockSaveSmartGridLayout,
+    sendEmail: mockSendEmail,
+    sendSms: mockSendSms
 };

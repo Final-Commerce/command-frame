@@ -14,7 +14,7 @@ export const mockAddProduct: AddProduct = async (params: AddProductParams): Prom
             minorUnits: 2,
             name: params.name,
             description: params.description,
-            categories: params.categories || [],
+            categories: (params.categories || []).map((c: string) => ({ name: c, externalId: c })),
             taxTable: params.taxTable || "",
             images: params.images || [],
             status: params.status || "active",

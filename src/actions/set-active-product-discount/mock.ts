@@ -14,7 +14,7 @@ export const mockSetActiveProductDiscount: SetActiveProductDiscount = async (par
         label: params.label || "Discount"
     };
 
-    setMockActiveProduct({ ...MOCK_ACTIVE_PRODUCT, discount });
+    setMockActiveProduct({ ...MOCK_ACTIVE_PRODUCT, discounts: [discount] });
 
     return {
         success: true,

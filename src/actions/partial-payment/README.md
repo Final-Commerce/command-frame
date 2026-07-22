@@ -9,7 +9,7 @@ Initiates a partial/split payment for the current cart.
 | Parameter  | Type      | Required | Description                                                              |
 | :--------- | :-------- | :------- | :----------------------------------------------------------------------- |
 | `openUI`   | `boolean` | `false`  | If true, opens the split payment UI. If false, processes the payment with the specified amount. |
-| `amount`   | `number`  | `false`  | The payment amount (required if openUI is false).                        |
+| `amount`   | `number`  | `false`  | The payment amount, in integer minor currency units (required if openUI is false). Percentages (`isPercent: true`) are unaffected and remain 0-100. |
 | `isPercent` | `boolean` | `false`  | Whether the amount is a percentage (default: false).                      |
 
 ## Response
@@ -19,7 +19,7 @@ Initiates a partial/split payment for the current cart.
 | Field       | Type     | Description                               |
 | :---------- | :------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the payment was processed successfully. |
-| `amount`    | `number \| undefined` | The payment amount (undefined if openUI is true). |
+| `amount`    | `number \| undefined` | The payment amount, in integer minor currency units (undefined if openUI is true). |
 | `isPercent` | `boolean \| undefined` | Whether the amount is a percentage (undefined if openUI is true). |
 | `openUI`    | `boolean` | Whether the split payment UI was opened. |
 | `order`     | `ActiveOrder \| null` | The created order object after payment processing. May be null for split payments until the final payment completes the order. |
@@ -40,7 +40,7 @@ try {
 
   // Process a partial payment with a fixed amount
   const result2 = await command.partialPayment({
-    amount: 25.00,
+    amount: 2500, // $25.00 in minor units
     isPercent: false
   });
   console.log('Partial payment processed:', result2);
@@ -48,7 +48,7 @@ try {
   // Expected output:
   // {
   //   success: true,
-  //   amount: 25.00,
+  //   amount: 2500,
   //   isPercent: false,
   //   openUI: false,
   //   order: {

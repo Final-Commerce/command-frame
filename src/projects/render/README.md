@@ -69,7 +69,8 @@ The library provides a `command` namespace object containing all available comma
 - **[parkOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/park-order/README.md)** - Park (save) the current order for later retrieval
 - **[resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)** - Resume a previously parked order
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
-- **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Initiate a cash payment
+- **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
+- **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
 - **[vendaraPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/vendara-payment/README.md)** - Initiate a Vendara payment
@@ -98,9 +99,7 @@ The library provides a `command` namespace object containing all available comma
 
 #### Active outlet, station, and session
 
-- **[setActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-outlet/README.md)** - Set the active outlet by id
-- **[setActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-station/README.md)** - Set the active station by id
-- **[setActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-session/README.md)** - Set the active register session by id
+> **Removed:** `setActiveOutlet`, `setActiveStation`, and `setActiveSession` are no longer commands. The active outlet, station, and session are host-owned selection context (set by the host/shell during selection), not settable from the runtime. Use `getActiveOutlet` / `getActiveStation` / `getActiveSession` to read them.
 
 #### Refund Actions
 
@@ -129,11 +128,6 @@ The library provides a `command` namespace object containing all available comma
 - **[getSecretsKeys](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secrets-keys/README.md)** - Retrieve all secret keys for the current company or a specific extension
 - **[getSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-secret-val/README.md)** - Retrieve the value of a specific secret by key
 - **[setSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-secret-val/README.md)** - Create or update a secret key-value pair
-
-#### Integration Actions
-
-- **[triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)** - Trigger a webhook with the specified configuration
-- **[triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)** - Trigger a Zapier webhook with the current context data
 
 #### Additional Commands on `command`
 
@@ -376,7 +370,11 @@ Deletes a parked order from the system.
 
 ### [cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)
 
-Initiates a cash payment for the current cart. Opens the cash payment UI if change calculation is enabled.
+Pays (part of) the current cart with cash. `amount` (minor units) is required — below the balance due it becomes a partial payment (fixed split leg). Pass `tenderedAmount` to have the POS compute the change (after cash rounding) with no POS-owned UI; `openChangeCalculator` is deprecated.
+
+### [getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)
+
+Previews the company's cash-rounding setting for an amount (defaults to the cart's balance due). Returns the input unchanged when no setting is configured. Read-only — build flow-owned cash tender UIs on it.
 
 ### [tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)
 
@@ -511,16 +509,6 @@ Retrieves the value of a specific secret by its key. Supports both company-level
 ### [setSecretVal](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-secret-val/README.md)
 
 Creates or updates a secret key-value pair. Supports both company-level and extension-scoped secrets. Automatically handles create vs update (upsert behavior).
-
-### Integration Actions
-
-### [triggerWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-webhook/README.md)
-
-Triggers a webhook with the specified configuration. Supports custom data, authentication, and various payload types.
-
-### [triggerZapierWebhook](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/trigger-zapier-webhook/README.md)
-
-Triggers a Zapier webhook with the current context data (cart, customer, order, etc.).
 
 ### Reference
 
@@ -675,19 +663,10 @@ import type {
     SetActiveCustomerResponse,
     GetActiveOutlet,
     GetActiveOutletResponse,
-    SetActiveOutlet,
-    SetActiveOutletParams,
-    SetActiveOutletResponse,
     GetActiveStation,
     GetActiveStationResponse,
-    SetActiveStation,
-    SetActiveStationParams,
-    SetActiveStationResponse,
     GetActiveSession,
     GetActiveSessionResponse,
-    SetActiveSession,
-    SetActiveSessionParams,
-    SetActiveSessionResponse,
     GetActiveUser,
     GetActiveUserResponse,
     SetActiveUser,
@@ -824,13 +803,6 @@ import type {
     SetSecretValParams,
     SetSecretValResponse,
     SetSecretVal,
-    // Integration Actions
-    TriggerWebhookParams,
-    TriggerWebhookResponse,
-    TriggerWebhook,
-    TriggerZapierWebhookParams,
-    TriggerZapierWebhookResponse,
-    TriggerZapierWebhook,
     // Reference
     ExampleFunctionParams,
     ExampleFunctionResponse,

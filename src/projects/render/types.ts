@@ -32,6 +32,7 @@ import type {
     DeleteParkedOrder,
     InitiateRefund,
     CashPayment,
+    GetCashRoundingAmount,
     TapToPayPayment,
     TerminalPayment,
     VendaraPayment,
@@ -48,8 +49,6 @@ import type {
     AuthenticateUser,
     PartialPayment,
     SwitchUser,
-    TriggerWebhook,
-    TriggerZapierWebhook,
     SetRefundStockAction,
     SelectAllRefundItems,
     ResetRefundDetails,
@@ -77,11 +76,8 @@ import type {
     GetActiveCustomer,
     SetActiveCustomer,
     GetActiveOutlet,
-    SetActiveOutlet,
     GetActiveStation,
-    SetActiveStation,
     GetActiveSession,
-    SetActiveSession,
     GetActiveUser,
     SetActiveUser,
     SetActiveRefund,
@@ -96,7 +92,9 @@ import type {
     GetAvailableTransitions,
     IntegrationPayment,
     GetSmartGridLayout,
-    SaveSmartGridLayout
+    SaveSmartGridLayout,
+    SendEmail,
+    SendSms
 } from "../../index";
 import type { OpenExtensionOverlay } from "../../actions/open-extension-overlay/types";
 import type { ResolveExtensionOverlay } from "../../actions/resolve-extension-overlay/types";
@@ -137,6 +135,7 @@ export interface RenderProviderActions {
     openExtensionOverlay: OpenExtensionOverlay;
     resolveExtensionOverlay: ResolveExtensionOverlay;
     cashPayment: CashPayment;
+    getCashRoundingAmount: GetCashRoundingAmount;
     tapToPayPayment: TapToPayPayment;
     terminalPayment: TerminalPayment;
     vendaraPayment: VendaraPayment;
@@ -155,8 +154,6 @@ export interface RenderProviderActions {
     authenticateUser: AuthenticateUser;
     partialPayment: PartialPayment;
     switchUser: SwitchUser;
-    triggerWebhook: TriggerWebhook;
-    triggerZapierWebhook: TriggerZapierWebhook;
     setRefundStockAction: SetRefundStockAction;
     selectAllRefundItems: SelectAllRefundItems;
     resetRefundDetails: ResetRefundDetails;
@@ -183,11 +180,8 @@ export interface RenderProviderActions {
     getActiveCustomer: GetActiveCustomer;
     setActiveCustomer: SetActiveCustomer;
     getActiveOutlet: GetActiveOutlet;
-    setActiveOutlet: SetActiveOutlet;
     getActiveStation: GetActiveStation;
-    setActiveStation: SetActiveStation;
     getActiveSession: GetActiveSession;
-    setActiveSession: SetActiveSession;
     getActiveUser: GetActiveUser;
     setActiveUser: SetActiveUser;
     setActiveRefund: SetActiveRefund;
@@ -202,4 +196,6 @@ export interface RenderProviderActions {
     getAvailableTransitions: GetAvailableTransitions;
     getSmartGridLayout: GetSmartGridLayout;
     saveSmartGridLayout: SaveSmartGridLayout;
+    sendEmail: SendEmail;
+    sendSms: SendSms;
 }
