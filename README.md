@@ -1,4 +1,4 @@
-# @final-commerce/command-frame
+# @final-commerce/command-frame (new version)
 
 A TypeScript library for type-safe communication between iframes and their parent windows in the Final Commerce ecosystem.
 
