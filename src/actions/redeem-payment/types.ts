@@ -12,6 +12,8 @@ export interface RedeemPaymentParams {
     processor?: string;
     referenceId?: string;
     metadata?: Record<string, unknown>;
+    /** Override the fulfillment landing on full payment. Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+    targetFulfillmentState?: string;
 }
 
 export type RedeemPaymentResponse = ExtensionPaymentResponse;

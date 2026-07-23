@@ -50,12 +50,11 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
 
     // applyTransition
     const [apOrderId, setApOrderId] = useState("order_1001");
-    const [apPayment, setApPayment] = useState("paid");
-    const [apFulfillment, setApFulfillment] = useState("fulfilled");
+    const [apFulfillment, setApFulfillment] = useState("in_progress");
     const [apLoading, setApLoading] = useState(false);
     const [apResponse, setApResponse] = useState("");
 
-    // Cash payment with checkoutFulfillmentTarget
+    // Cash payment with targetFulfillmentState
     const [cftTarget, setCftTarget] = useState("fulfilled");
     const [cftLoading, setCftLoading] = useState(false);
     const [cftResponse, setCftResponse] = useState("");
@@ -219,23 +218,14 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
 
             <CommandSection title="Apply Transition">
                 <p className="section-description">
-                    Apply a state transition to an order. The host validates the transition before applying it — a blocked result returns the guard
-                    name and reason without changing the order.
+                    Move an order's fulfillment state. The payment axis is never client-settable. The host validates the transition before applying it
+                    — a blocked result returns the guard name and reason without changing the order. Leave Order ID empty to target the active order —
+                    the host materializes one from the live cart if none exists (like park, without park semantics).
                 </p>
                 <div className="form-group">
                     <div className="form-field">
-                        <label>Order ID:</label>
+                        <label>Order ID (empty = active order / live cart):</label>
                         <input type="text" value={apOrderId} onChange={e => setApOrderId(e.target.value)} placeholder="order_1001" />
-                    </div>
-                    <div className="form-field">
-                        <label>Target Payment State:</label>
-                        <select value={apPayment} onChange={e => setApPayment(e.target.value)}>
-                            {PAYMENT_STATES.map(s => (
-                                <option key={s} value={s}>
-                                    {s}
-                                </option>
-                            ))}
-                        </select>
                     </div>
                     <div className="form-field">
                         <label>Target Fulfillment State:</label>
@@ -250,14 +240,12 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
                 </div>
                 <button
                     onClick={async () => {
-                        if (!apOrderId) {
-                            setApResponse("Error: Order ID is required");
-                            return;
-                        }
                         setApLoading(true);
                         setApResponse("");
                         try {
-                            const params = { orderId: apOrderId, to: { payment: apPayment, fulfillment: apFulfillment } };
+                            const params = apOrderId
+                                ? { orderId: apOrderId, targetFulfillmentState: apFulfillment }
+                                : { targetFulfillmentState: apFulfillment };
                             const { result, source } = await callWithFallback(applyTransition, applyTransitionMock, params);
                             const output = { ...result, _source: source };
                             setApResponse(JSON.stringify(output, null, 2));
@@ -274,32 +262,14 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
                 </button>
 
                 <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
-                    <button
-                        className="btn btn--secondary"
-                        onClick={() => {
-                            setApPayment("paid");
-                            setApFulfillment("fulfilled");
-                        }}
-                    >
-                        Try: paid + fulfilled
+                    <button className="btn btn--secondary" onClick={() => setApFulfillment("in_progress")}>
+                        Try: in_progress (send to kitchen)
                     </button>
-                    <button
-                        className="btn btn--secondary"
-                        onClick={() => {
-                            setApPayment("refunded");
-                            setApFulfillment("draft");
-                        }}
-                    >
-                        Try: refunded + draft (blocked)
+                    <button className="btn btn--secondary" onClick={() => setApFulfillment("fulfilled")}>
+                        Try: fulfilled (no payment)
                     </button>
-                    <button
-                        className="btn btn--secondary"
-                        onClick={() => {
-                            setApPayment("paid");
-                            setApFulfillment("cancelled");
-                        }}
-                    >
-                        Try: paid + cancelled (blocked)
+                    <button className="btn btn--secondary" onClick={() => setApFulfillment("cancelled")}>
+                        Try: cancelled (blocked in mock)
                     </button>
                 </div>
 
@@ -311,16 +281,16 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
                 )}
             </CommandSection>
 
-            <CommandSection title="Payment with Checkout Fulfillment Target">
+            <CommandSection title="Payment with Target Fulfillment State">
                 <p className="section-description">
-                    Trigger a cash payment with an explicit <code>checkoutFulfillmentTarget</code>. This override tells Render what fulfillment state
+                    Trigger a cash payment with an explicit <code>targetFulfillmentState</code>. This override tells the host what fulfillment state
                     the order should land in after full payment (e.g. <code>in_progress</code> for restaurants, <code>fulfilled</code> for retail).
                     <br />
                     <strong>Note:</strong> Add items to cart first (use the Cart section).
                 </p>
                 <div className="form-group">
                     <div className="form-field">
-                        <label>Checkout Fulfillment Target:</label>
+                        <label>Target Fulfillment State:</label>
                         <select value={cftTarget} onChange={e => setCftTarget(e.target.value)}>
                             {FULFILLMENT_STATES.map(s => (
                                 <option key={s} value={s}>
@@ -337,7 +307,7 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
                         try {
                             const result = await cashPayment({
                                 openChangeCalculator: false,
-                                checkoutFulfillmentTarget: cftTarget
+                                targetFulfillmentState: cftTarget
                             });
                             setCftResponse(JSON.stringify(result, null, 2));
                         } catch (error) {

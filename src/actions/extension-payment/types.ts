@@ -10,8 +10,8 @@ export interface ExtensionPaymentParams {
     referenceId?: string;
     extensionId?: string;
     metadata?: Record<string, unknown>;
-    /** Override the fulfillment state after full payment. Render resolves the cascade. */
-    checkoutFulfillmentTarget?: string;
+    /** Override the fulfillment landing on full payment. Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+    targetFulfillmentState?: string;
     /** EMV data when the underlying payment carries one (typed as `IntegrationEmvData` by the integration wrapper). */
     emvData?: unknown;
     /** Processor fee in minor units; recorded on the order's paymentMethod.processorFee. */

@@ -7,8 +7,8 @@ export interface CashPaymentParams {
     amount?: number;
     /** Defaults to false. */
     openChangeCalculator?: boolean;
-    /** Override the fulfillment state after full payment. Render resolves the cascade. */
-    checkoutFulfillmentTarget?: string;
+    /** Override the fulfillment landing on full payment. Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+    targetFulfillmentState?: string;
 }
 
 export interface CashPaymentResponse {
@@ -23,4 +23,3 @@ export interface CashPaymentResponse {
 }
 
 export type CashPayment = (params?: CashPaymentParams) => Promise<CashPaymentResponse>;
-

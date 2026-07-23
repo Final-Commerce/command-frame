@@ -53,6 +53,8 @@ export interface IntegrationPaymentParams {
     metadata?: Record<string, unknown>;
     /** Provider fee in minor units — stored on paymentMethod.processorFee. */
     processorFee?: number;
+    /** Override the fulfillment landing on full payment. Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+    targetFulfillmentState?: string;
 }
 
 export type IntegrationPaymentResponse = ExtensionPaymentResponse;

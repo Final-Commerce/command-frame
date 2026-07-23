@@ -20,60 +20,60 @@ describe("applyTransition action", () => {
     it("calls commandFrameClient with applyTransition and params", async () => {
         mockCall.mockResolvedValue({
             result: { allowed: true },
-            from: { payment: "unpaid", fulfillment: "draft" },
-            to: { payment: "paid", fulfillment: "fulfilled" },
-            displayState: "Paid"
+            from: { payment: "unpaid", fulfillment: "pending" },
+            to: { payment: "unpaid", fulfillment: "in_progress" },
+            displayState: "In progress"
         });
 
         await applyTransition({
             orderId: "order-123",
-            to: { payment: "paid", fulfillment: "fulfilled" }
+            targetFulfillmentState: "in_progress"
         });
 
         expect(mockCall).toHaveBeenCalledTimes(1);
         expect(mockCall).toHaveBeenCalledWith("applyTransition", {
             orderId: "order-123",
-            to: { payment: "paid", fulfillment: "fulfilled" }
+            targetFulfillmentState: "in_progress"
         });
     });
 
     it("returns from/to/displayState on a successful transition", async () => {
         mockCall.mockResolvedValue({
             result: { allowed: true },
-            from: { payment: "unpaid", fulfillment: "draft" },
-            to: { payment: "paid", fulfillment: "fulfilled" },
-            displayState: "Paid"
+            from: { payment: "unpaid", fulfillment: "pending" },
+            to: { payment: "unpaid", fulfillment: "fulfilled" },
+            displayState: "Fulfilled"
         });
 
         const response = await applyTransition({
             orderId: "order-123",
-            to: { payment: "paid", fulfillment: "fulfilled" }
+            targetFulfillmentState: "fulfilled"
         });
 
         expect(response.result.allowed).toBe(true);
-        expect(response.from).toEqual({ payment: "unpaid", fulfillment: "draft" });
-        expect(response.to).toEqual({ payment: "paid", fulfillment: "fulfilled" });
-        expect(response.displayState).toBe("Paid");
+        expect(response.from).toEqual({ payment: "unpaid", fulfillment: "pending" });
+        expect(response.to).toEqual({ payment: "unpaid", fulfillment: "fulfilled" });
+        expect(response.displayState).toBe("Fulfilled");
     });
 
     it("returns a blocked result with no state fields when transition is not allowed", async () => {
         mockCall.mockResolvedValue({
             result: {
                 allowed: false,
-                blockedBy: "financial_invariant" as const,
-                guard: "no-refund-in-draft",
-                reason: "Cannot refund an order that is still in draft"
+                blockedBy: "condition" as const,
+                guard: "no-cancel-open-order",
+                reason: "Cannot cancel an order with open items"
             }
         });
 
         const response = await applyTransition({
             orderId: "order-123",
-            to: { payment: "refunded", fulfillment: "draft" }
+            targetFulfillmentState: "cancelled"
         });
 
         expect(response.result.allowed).toBe(false);
-        expect(response.result.blockedBy).toBe("financial_invariant");
-        expect(response.result.reason).toBe("Cannot refund an order that is still in draft");
+        expect(response.result.blockedBy).toBe("condition");
+        expect(response.result.reason).toBe("Cannot cancel an order with open items");
         expect(response.from).toBeUndefined();
         expect(response.to).toBeUndefined();
         expect(response.displayState).toBeUndefined();
@@ -84,35 +84,23 @@ describe("applyTransitionMock", () => {
     it("applies valid transitions and returns from/to/displayState", async () => {
         const response = await applyTransitionMock({
             orderId: "order-123",
-            to: { payment: "paid", fulfillment: "fulfilled" }
+            targetFulfillmentState: "in_progress"
         });
 
         expect(response.result.allowed).toBe(true);
         expect(response.from).toEqual({ payment: "unpaid", fulfillment: "draft" });
-        expect(response.to).toEqual({ payment: "paid", fulfillment: "fulfilled" });
-        expect(response.displayState).toBe("paid / fulfilled");
+        expect(response.to).toEqual({ payment: "unpaid", fulfillment: "in_progress" });
+        expect(response.displayState).toBe("unpaid / in_progress");
     });
 
-    it("blocks financial_invariant violations", async () => {
+    it("blocks the known-invalid cancel transition", async () => {
         const response = await applyTransitionMock({
             orderId: "order-123",
-            to: { payment: "refunded", fulfillment: "draft" }
+            targetFulfillmentState: "cancelled"
         });
 
         expect(response.result.allowed).toBe(false);
-        expect(response.result.blockedBy).toBe("financial_invariant");
-        expect(response.from).toBeUndefined();
-        expect(response.to).toBeUndefined();
-    });
-
-    it("blocks cross_axis_rule violations", async () => {
-        const response = await applyTransitionMock({
-            orderId: "order-123",
-            to: { payment: "paid", fulfillment: "cancelled" }
-        });
-
-        expect(response.result.allowed).toBe(false);
-        expect(response.result.blockedBy).toBe("cross_axis_rule");
+        expect(response.result.blockedBy).toBe("condition");
         expect(response.from).toBeUndefined();
         expect(response.to).toBeUndefined();
     });

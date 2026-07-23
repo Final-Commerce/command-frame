@@ -5,8 +5,8 @@ import type { CFTransitionResult } from "../../common-types/order-state";
 export interface TapToPayPaymentParams {
     /** If not provided, uses the cart total. */
     amount?: number;
-    /** Override the fulfillment state after full payment. Render resolves the cascade. */
-    checkoutFulfillmentTarget?: string;
+    /** Override the fulfillment landing on full payment. Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+    targetFulfillmentState?: string;
 }
 
 export interface TapToPayPaymentResponse {
@@ -20,4 +20,3 @@ export interface TapToPayPaymentResponse {
 }
 
 export type TapToPayPayment = (params?: TapToPayPaymentParams) => Promise<TapToPayPaymentResponse>;
-
