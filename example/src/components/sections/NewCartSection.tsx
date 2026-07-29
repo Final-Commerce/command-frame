@@ -12,14 +12,20 @@ export function CartSection({ isInIframe }: CartSectionProps) {
   const [customSaleLabel, setCustomSaleLabel] = useState<string>('Custom Item');
   const [customSalePrice, setCustomSalePrice] = useState<string>('10.00');
   const [applyTaxes, setApplyTaxes] = useState<boolean>(false);
+  const [customSaleQuantity, setCustomSaleQuantity] = useState<string>('1');
   const [customSaleLoading, setCustomSaleLoading] = useState(false);
   const [customSaleResponse, setCustomSaleResponse] = useState<string>('');
-  
+
+  const [editSaleId, setEditSaleId] = useState<string>('');
+  const [editSaleQuantity, setEditSaleQuantity] = useState<string>('2');
+  const [editSaleLoading, setEditSaleLoading] = useState(false);
+  const [editSaleResponse, setEditSaleResponse] = useState<string>('');
+
   const [addToCartLoading, setAddToCartLoading] = useState(false);
   const [addToCartResponse, setAddToCartResponse] = useState<string>('');
   const [addToCartQuantity, setAddToCartQuantity] = useState<string>('1');
   const [addToCartVariantId, setAddToCartVariantId] = useState<string>('');
-  
+
   const [cartDiscountAmount, setCartDiscountAmount] = useState<string>('10');
   const [cartDiscountIsPercent, setCartDiscountIsPercent] = useState<boolean>(false);
   const [cartDiscountLabel, setCartDiscountLabel] = useState<string>('Cart Discount');
@@ -56,14 +62,39 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       const result = await command.addCustomSale({
         label: customSaleLabel,
         price: parseFloat(customSalePrice) || 0,
+        quantity: parseInt(customSaleQuantity, 10) || 1,
         applyTaxes: applyTaxes,
       });
-      
+
       setCustomSaleResponse(JSON.stringify(result, null, 2));
+      setEditSaleId(result.customSaleId);
     } catch (error) {
       setCustomSaleResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setCustomSaleLoading(false);
+    }
+  };
+
+  const handleEditCustomSale = async () => {
+    if (!isInIframe) {
+      setEditSaleResponse('Error: Not running in iframe');
+      return;
+    }
+
+    setEditSaleLoading(true);
+    setEditSaleResponse('');
+
+    try {
+      const result = await command.editCustomSale({
+        customSaleId: editSaleId,
+        quantity: parseInt(editSaleQuantity, 10) || 1,
+      });
+
+      setEditSaleResponse(JSON.stringify(result, null, 2));
+    } catch (error) {
+      setEditSaleResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setEditSaleLoading(false);
     }
   };
 
@@ -80,9 +111,9 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       const quantity = parseFloat(addToCartQuantity) || 1;
       const result = await command.addProductToCart({
         quantity: quantity,
-        variantId: addToCartVariantId
+        variantId: addToCartVariantId,
       });
-      
+
       setAddToCartResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setAddToCartResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -109,9 +140,9 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       const result = await command.addCartDiscount({
         amount: parseFloat(cartDiscountAmount) || 0,
         isPercent: cartDiscountIsPercent,
-        label: cartDiscountLabel
+        label: cartDiscountLabel,
       });
-      
+
       setAddCartDiscountResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setAddCartDiscountResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -148,36 +179,66 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             />
           </div>
           <div className="form-field">
+            <label>Quantity:</label>
+            <input
+              type="number"
+              value={customSaleQuantity}
+              onChange={(e) => setCustomSaleQuantity(e.target.value)}
+              placeholder="1"
+            />
+          </div>
+          <div className="form-field">
             <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={applyTaxes}
-                onChange={(e) => setApplyTaxes(e.target.checked)}
-              />
+              <input type="checkbox" checked={applyTaxes} onChange={(e) => setApplyTaxes(e.target.checked)} />
               <span>Apply Taxes</span>
             </label>
           </div>
         </div>
-        <button
-          onClick={handleAddCustomSale}
-          disabled={customSaleLoading}
-          className="btn btn--primary"
-        >
+        <button onClick={handleAddCustomSale} disabled={customSaleLoading} className="btn btn--primary">
           {customSaleLoading ? 'Adding...' : 'Add Custom Sale'}
         </button>
         {customSaleResponse && (
-          <JsonViewer
-            data={customSaleResponse}
-            title={customSaleResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={customSaleResponse} title={customSaleResponse.startsWith('Error') ? 'Error' : 'Success'} />
+        )}
+      </CommandSection>
+
+      {/* Edit Custom Sale */}
+      <CommandSection title="Edit Custom Sale">
+        <p className="section-description">
+          Edits an existing custom sale line by its customSaleId (prefilled from the last Add Custom Sale response).
+          Only the fields sent are changed.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Custom Sale ID:</label>
+            <input
+              type="text"
+              value={editSaleId}
+              onChange={(e) => setEditSaleId(e.target.value)}
+              placeholder="customSaleId from addCustomSale"
+            />
+          </div>
+          <div className="form-field">
+            <label>Quantity:</label>
+            <input
+              type="number"
+              value={editSaleQuantity}
+              onChange={(e) => setEditSaleQuantity(e.target.value)}
+              placeholder="1"
+            />
+          </div>
+        </div>
+        <button onClick={handleEditCustomSale} disabled={editSaleLoading || !editSaleId} className="btn btn--primary">
+          {editSaleLoading ? 'Editing...' : 'Edit Custom Sale'}
+        </button>
+        {editSaleResponse && (
+          <JsonViewer data={editSaleResponse} title={editSaleResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Add Product to Cart */}
       <CommandSection title="Add Product to Cart">
-        <p className="section-description">
-          Adds a product to the cart. Requires a Variant ID.
-        </p>
+        <p className="section-description">Adds a product to the cart. Requires a Variant ID.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Variant ID:</label>
@@ -198,26 +259,17 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             />
           </div>
         </div>
-        <button
-          onClick={handleAddProductToCart}
-          disabled={addToCartLoading}
-          className="btn btn--primary"
-        >
+        <button onClick={handleAddProductToCart} disabled={addToCartLoading} className="btn btn--primary">
           {addToCartLoading ? 'Adding...' : 'Add to Cart'}
         </button>
         {addToCartResponse && (
-          <JsonViewer
-            data={addToCartResponse}
-            title={addToCartResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={addToCartResponse} title={addToCartResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Add Cart Discount */}
       <CommandSection title="Add Cart Discount">
-        <p className="section-description">
-          Applies a discount to the entire cart.
-        </p>
+        <p className="section-description">Applies a discount to the entire cart.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Amount:</label>
@@ -248,11 +300,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             </label>
           </div>
         </div>
-        <button
-          onClick={handleAddCartDiscount}
-          disabled={addCartDiscountLoading}
-          className="btn btn--primary"
-        >
+        <button onClick={handleAddCartDiscount} disabled={addCartDiscountLoading} className="btn btn--primary">
           {addCartDiscountLoading ? 'Adding...' : 'Add Cart Discount'}
         </button>
         {addCartDiscountResponse && (
@@ -265,9 +313,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Add Order Note */}
       <CommandSection title="Add Order Note">
-        <p className="section-description">
-          Adds a note to the current order/cart.
-        </p>
+        <p className="section-description">Adds a note to the current order/cart.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Note:</label>
@@ -315,9 +361,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Add Cart Fee */}
       <CommandSection title="Add Cart Fee">
-        <p className="section-description">
-          Adds a fee to the entire cart (e.g., service fee, delivery fee).
-        </p>
+        <p className="section-description">Adds a fee to the entire cart (e.g., service fee, delivery fee).</p>
         <div className="form-group">
           <div className="form-field">
             <label>Amount:</label>
@@ -372,7 +416,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
                 amount: parseFloat(cartFeeAmount) || 0,
                 isPercent: cartFeeIsPercent,
                 label: cartFeeLabel,
-                applyTaxes: cartFeeApplyTaxes
+                applyTaxes: cartFeeApplyTaxes,
               });
               setAddCartFeeResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -387,18 +431,13 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           {addCartFeeLoading ? 'Adding...' : 'Add Cart Fee'}
         </button>
         {addCartFeeResponse && (
-          <JsonViewer
-            data={addCartFeeResponse}
-            title={addCartFeeResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={addCartFeeResponse} title={addCartFeeResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Clear Cart */}
       <CommandSection title="Clear Cart">
-        <p className="section-description">
-          Clears all items from the current cart.
-        </p>
+        <p className="section-description">Clears all items from the current cart.</p>
         <button
           onClick={async () => {
             if (!isInIframe) {
@@ -422,13 +461,9 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           {clearCartLoading ? 'Clearing...' : 'Clear Cart'}
         </button>
         {clearCartResponse && (
-          <JsonViewer
-            data={clearCartResponse}
-            title={clearCartResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={clearCartResponse} title={clearCartResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
     </div>
   );
 }
-
