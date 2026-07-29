@@ -50,8 +50,10 @@ Whether to apply taxes to the custom sale item. Defaults to `false` if not provi
 ```typescript
 interface AddCustomSaleResponse {
   success: boolean;
+  customSaleId: string;
   label: string;
   price: number;
+  quantity: number;
   applyTaxes: boolean;
   timestamp: string;
 }
@@ -190,7 +192,7 @@ When a custom sale is added:
 
 1. The item is validated (label and price must be provided)
 2. The item is added to the current cart in the parent application
-3. The quantity is set to 1 by default
+3. The quantity is set from `quantity` (defaults to 1)
 4. Taxes are applied if `applyTaxes` is `true`
 5. The item appears in the cart with the specified label and price
 
@@ -264,7 +266,7 @@ try {
 ## Notes
 
 - The custom sale is added to the current active cart/session
-- The quantity is always set to 1
+- The quantity defaults to 1 when `quantity` is omitted
 - The item is immediately available in the cart after successful addition
 - Custom sales are treated as regular cart items and can be removed or modified like other items
 - If taxes are applied, they are calculated based on the current tax settings in the parent application
