@@ -130,6 +130,7 @@ await command.clearCart();
 await command.parkOrder();
 await command.resumeParkedOrder({ orderId: "order-123" });
 await command.deleteParkedOrder({ orderId: "order-123" });
+await command.voidOrder({ orderId: "order-123", reason: "Customer request" }); // pure void, or auto full-refund of captured legs
 // All money values are integer MINOR currency units (1575 = $15.75).
 // Tender `amount` is REQUIRED: below the balance due = partial payment (split leg).
 const { cart } = await command.getCurrentCart();
