@@ -92,6 +92,7 @@ import { mockSetActiveUser } from '../../actions/set-active-user/mock';
 import { mockSetActiveRefund } from '../../actions/set-active-refund/mock';
 import { canTransitionMock } from '../../actions/can-transition/mock';
 import { getAvailableTransitionsMock } from '../../actions/get-available-transitions/mock';
+import { applyTransitionMock } from '../../actions/apply-transition/mock';
 import { mockGetSmartGridLayout } from '../../actions/get-smart-grid-layout/mock';
 import { mockSaveSmartGridLayout } from '../../actions/save-smart-grid-layout/mock';
 import { mockSendEmail } from '../../actions/send-email/mock';
@@ -196,6 +197,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
   canTransition: canTransitionMock,
   getAvailableTransitions: getAvailableTransitionsMock,
+  applyTransition: applyTransitionMock,
   getSmartGridLayout: mockGetSmartGridLayout,
   saveSmartGridLayout: mockSaveSmartGridLayout,
   sendEmail: mockSendEmail,

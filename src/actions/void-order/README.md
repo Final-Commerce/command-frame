@@ -4,9 +4,9 @@ Void or cancel an open order. For orders with captured payment legs, refunds the
 
 ## Parameters
 
-| Name      | Type   | Required | Description                                                 |
-| --------- | ------ | -------- | ----------------------------------------------------------- |
-| `orderId` | string | No       | Order to void; defaults to the active order.                |
+| Name      | Type   | Required | Description                                                                                                                                                                                                       |
+| --------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `orderId` | string | No       | Order to void; defaults to the active order.                                                                                                                                                                      |
 | `reason`  | string | No       | Optional cashier-facing reason. On a pure void, recorded on the void audit row and carried on the `order-voided` event; on the refund branch it rides the event only (the refund dispatcher does not consume it). |
 
 ## Response

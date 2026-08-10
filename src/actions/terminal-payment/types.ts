@@ -14,9 +14,9 @@ export interface TerminalPaymentParams {
      */
     amount: number;
     /** "Bluetooth" or "Cloud". Defaults to "Cloud". */
-    paymentType?: 'Bluetooth' | 'Cloud';
-    /** Override the fulfillment state after full payment. Render resolves the cascade. */
-    checkoutFulfillmentTarget?: string;
+    paymentType?: "Bluetooth" | "Cloud";
+    /** Override the fulfillment landing on full payment. Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+    targetFulfillmentState?: string;
 }
 
 export interface TerminalPaymentResponse {
@@ -30,4 +30,3 @@ export interface TerminalPaymentResponse {
 }
 
 export type TerminalPayment = (params?: TerminalPaymentParams) => Promise<TerminalPaymentResponse>;
-

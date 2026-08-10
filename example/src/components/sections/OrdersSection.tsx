@@ -75,18 +75,13 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
           {parkOrderLoading ? 'Parking...' : 'Park Order'}
         </button>
         {parkOrderResponse && (
-          <JsonViewer
-            data={parkOrderResponse}
-            title={parkOrderResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={parkOrderResponse} title={parkOrderResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Resume Parked Order */}
       <CommandSection title="Resume Parked Order">
-        <p className="section-description">
-          Resumes a previously parked order by loading it back into the cart.
-        </p>
+        <p className="section-description">Resumes a previously parked order by loading it back into the cart.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Order ID:</label>
@@ -134,9 +129,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
 
       {/* Delete Parked Order */}
       <CommandSection title="Delete Parked Order">
-        <p className="section-description">
-          Deletes a parked order from the system.
-        </p>
+        <p className="section-description">Deletes a parked order from the system.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Order ID:</label>
@@ -185,9 +178,9 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
       {/* Void Order */}
       <CommandSection title="Void Order">
         <p className="section-description">
-          Cancels an open (not-yet-completed) order: a pure void when nothing was captured, an automatic
-          full refund of captured split legs when a deposit was taken; completed orders are rejected
-          (ORDER_NOT_VOIDABLE) and go through the refund flow.
+          Cancels an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of
+          captured split legs when a deposit was taken; completed orders are rejected (ORDER_NOT_VOIDABLE) and go
+          through the refund flow.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -235,18 +228,15 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
           {voidOrderLoading ? 'Voiding...' : 'Void Order'}
         </button>
         {voidOrderResponse && (
-          <JsonViewer
-            data={voidOrderResponse}
-            title={voidOrderResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={voidOrderResponse} title={voidOrderResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Set Active Order */}
       <CommandSection title="Set Active Order">
         <p className="section-description">
-          Sets an order as the active order by fetching it from the database using the order ID.
-          This is useful for printing receipts or performing operations on a specific order.
+          Sets an order as the active order by fetching it from the database using the order ID. This is useful for
+          printing receipts or performing operations on a specific order.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -330,16 +320,11 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
 
       {/* Get Orders */}
       <CommandSection title="Get Orders">
-        <p className="section-description">
-          Retrieves a list of orders with optional filtering and pagination.
-        </p>
+        <p className="section-description">Retrieves a list of orders with optional filtering and pagination.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Status (optional):</label>
-            <select
-              value={ordersStatus}
-              onChange={(e) => setOrdersStatus(e.target.value)}
-            >
+            <select value={ordersStatus} onChange={(e) => setOrdersStatus(e.target.value)}>
               <option value="">All statuses</option>
               <option value="completed">Completed</option>
               <option value="parked">Parked</option>
@@ -378,7 +363,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
               const params: any = { limit: parseInt(ordersLimit) || 10 };
               if (ordersStatus) params.status = ordersStatus;
               if (ordersCustomerId) params.customerId = ordersCustomerId;
-              
+
               const result = await command.getOrders(params);
               setGetOrdersResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -393,13 +378,9 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
           {getOrdersLoading ? 'Loading...' : 'Get Orders'}
         </button>
         {getOrdersResponse && (
-          <JsonViewer
-            data={getOrdersResponse}
-            title={getOrdersResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={getOrdersResponse} title={getOrdersResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
     </div>
   );
 }
-
