@@ -33,6 +33,7 @@ import { clearCart } from './actions/clear-cart/action';
 import { parkOrder } from './actions/park-order/action';
 import { resumeParkedOrder } from './actions/resume-parked-order/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
+import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
@@ -168,6 +169,7 @@ export const command = {
   parkOrder,
   resumeParkedOrder,
   deleteParkedOrder,
+  voidOrder,
   cashPayment,
   getCashRoundingAmount,
   tapToPayPayment,
@@ -439,6 +441,7 @@ export type {
   DeleteParkedOrderParams,
   DeleteParkedOrderResponse,
 } from './actions/delete-parked-order/types';
+export type { VoidOrder, VoidOrderParams, VoidOrderResponse, VoidOrderOutcome } from './actions/void-order/types';
 export type { CashPayment, CashPaymentParams, CashPaymentResponse } from './actions/cash-payment/types';
 
 export type {

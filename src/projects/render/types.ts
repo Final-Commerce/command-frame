@@ -31,6 +31,7 @@ import type {
   ParkOrder,
   ResumeParkedOrder,
   DeleteParkedOrder,
+  VoidOrder,
   InitiateRefund,
   CashPayment,
   GetCashRoundingAmount,
@@ -133,6 +134,7 @@ export interface RenderProviderActions {
   parkOrder: ParkOrder;
   resumeParkedOrder: ResumeParkedOrder;
   deleteParkedOrder: DeleteParkedOrder;
+  voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;
   openExtensionOverlay: OpenExtensionOverlay;
   resolveExtensionOverlay: ResolveExtensionOverlay;
