@@ -1,3 +1,5 @@
+import type { TopicEvent } from '../../../types';
+
 /**
  * Order Voided Event Types
  */
@@ -8,3 +10,8 @@ export interface OrderVoidedPayload {
   outcome: 'voided' | 'refunded';
   reason?: string;
 }
+
+/**
+ * Typed event for order-voided
+ */
+export type OrderVoidedEvent = TopicEvent<OrderVoidedPayload>;

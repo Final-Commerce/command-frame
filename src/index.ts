@@ -661,10 +661,12 @@ export type {
 export type {
   OrderCreatedPayload,
   OrderUpdatedPayload,
+  OrderVoidedPayload,
   OrderActiveSetPayload,
   OrderActiveGetPayload,
   OrderCreatedEvent,
   OrderUpdatedEvent,
+  OrderVoidedEvent,
   OrderActiveSetEvent,
   OrderActiveGetEvent,
   OrderStateTransitionCompletedPayload,

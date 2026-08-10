@@ -4,39 +4,40 @@
  */
 
 // Re-export all event types
-export * from './order-created/types';
-export * from './order-updated/types';
-export * from './order-voided/types';
-export * from './set-active-order/types';
-export * from './get-active-order/types';
-export * from './state-transition-completed/types';
-export * from './state-transition-blocked/types';
+export * from "./order-created/types";
+export * from "./order-updated/types";
+export * from "./order-voided/types";
+export * from "./set-active-order/types";
+export * from "./get-active-order/types";
+export * from "./state-transition-completed/types";
+export * from "./state-transition-blocked/types";
 
 // Import payload types for union type
-import type { OrderCreatedPayload } from './order-created/types';
-import type { OrderUpdatedPayload } from './order-updated/types';
-import type { OrderVoidedPayload } from './order-voided/types';
-import type { OrderActiveSetPayload } from './set-active-order/types';
-import type { OrderActiveGetPayload } from './get-active-order/types';
-import type { OrderStateTransitionCompletedPayload } from './state-transition-completed/types';
-import type { OrderStateTransitionBlockedPayload } from './state-transition-blocked/types';
+import type { OrderCreatedPayload } from "./order-created/types";
+import type { OrderUpdatedPayload } from "./order-updated/types";
+import type { OrderVoidedPayload } from "./order-voided/types";
+import type { OrderActiveSetPayload } from "./set-active-order/types";
+import type { OrderActiveGetPayload } from "./get-active-order/types";
+import type { OrderStateTransitionCompletedPayload } from "./state-transition-completed/types";
+import type { OrderStateTransitionBlockedPayload } from "./state-transition-blocked/types";
 
 // Union type for all order event payloads
 export type OrdersEventPayload =
-  | OrderCreatedPayload
-  | OrderUpdatedPayload
-  | OrderVoidedPayload
-  | OrderActiveSetPayload
-  | OrderActiveGetPayload
-  | OrderStateTransitionCompletedPayload
-  | OrderStateTransitionBlockedPayload;
+    | OrderCreatedPayload
+    | OrderUpdatedPayload
+    | OrderVoidedPayload
+    | OrderActiveSetPayload
+    | OrderActiveGetPayload
+    | OrderStateTransitionCompletedPayload
+    | OrderStateTransitionBlockedPayload;
 
 // Literal types for event IDs
 export type OrdersEventType =
-  | 'order-created'
-  | 'order-updated'
-  | 'order-voided'
-  | 'set-active-order'
-  | 'get-active-order'
-  | 'state-transition-completed'
-  | 'state-transition-blocked';
+    | "order-created"
+    | "order-updated"
+    | "order-voided"
+    | "set-active-order"
+    | "get-active-order"
+    | "state-transition-completed"
+    | "state-transition-blocked";
+
