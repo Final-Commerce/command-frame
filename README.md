@@ -71,7 +71,7 @@ For building applications that run inside the Render Point of Sale interface.
 - **Features:** Order management, Product catalog, Customer management, Payments, Hardware integration (Cash drawer, Printer), Custom tables, Secrets storage.
 
 ```typescript
-import { RenderClient } from "@final-commerce/command-frame";
+import { RenderClient } from '@final-commerce/command-frame';
 
 const client = new RenderClient();
 const products = await client.getProducts();
@@ -85,7 +85,7 @@ For building applications that run inside the Final Commerce Management Dashboar
 - **Features:** Context, catalog, entities, custom tables, secrets, and optional host-specific commands (navigation, media, tax, branding, notifications) when the dashboard implements them.
 
 ```typescript
-import { ManageClient } from "@final-commerce/command-frame";
+import { ManageClient } from '@final-commerce/command-frame';
 
 const client = new ManageClient();
 const context = await client.getContext();
@@ -96,17 +96,17 @@ const context = await client.getContext();
 The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (16), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** Cart (16), Customers (8), Orders (5), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
 
 ```typescript
-import { topics } from "@final-commerce/command-frame";
+import { topics } from '@final-commerce/command-frame';
 
-const subscriptionId = topics.subscribe("cart", event => {
-    console.log("Cart event:", event.type, event.data);
+const subscriptionId = topics.subscribe('cart', (event) => {
+  console.log('Cart event:', event.type, event.data);
 });
 
 // Unsubscribe when done
-topics.unsubscribe("cart", subscriptionId);
+topics.unsubscribe('cart', subscriptionId);
 ```
 
 ## Hooks
@@ -118,21 +118,21 @@ Hooks are **session-scoped** event callbacks that run in the host (Render) conte
 - A stable `hookId` is required for deduplication (safe on iframe reload).
 
 ```typescript
-import { hooks } from "@final-commerce/command-frame";
+import { hooks } from '@final-commerce/command-frame';
 
 hooks.register(
-    "cart",
-    async (event, hostCommands) => {
-        await hostCommands.upsertCustomTableData({
-            tableName: "cart-events-log",
-            data: { eventType: event.type, payload: event.data, timestamp: event.timestamp }
-        });
-    },
-    { hookId: "my-extension:cart-log" }
+  'cart',
+  async (event, hostCommands) => {
+    await hostCommands.upsertCustomTableData({
+      tableName: 'cart-events-log',
+      data: { eventType: event.type, payload: event.data, timestamp: event.timestamp },
+    });
+  },
+  { hookId: 'my-extension:cart-log' },
 );
 
 // Unregister when no longer needed
-hooks.unregister("my-extension:cart-log");
+hooks.unregister('my-extension:cart-log');
 ```
 
 ## Interceptors
@@ -147,14 +147,14 @@ Interceptors let an extension **gate a POS flow** (approve / modify / block) at 
 import { interceptors } from '@final-commerce/command-frame';
 
 interceptors.register(
-    'refund_start',
-    async (payload, cmds) => {
-        if (payload.paymentTypes.includes('redeem')) {
-            return cmds.openExtensionOverlay({ point: 'refund_start', payload });
-        }
-        return true; // nothing for us to do
-    },
-    { interceptorId: 'my-extension:refund-guard' }
+  'refund_start',
+  async (payload, cmds) => {
+    if (payload.paymentTypes.includes('redeem')) {
+      return cmds.openExtensionOverlay({ point: 'refund_start', payload });
+    }
+    return true; // nothing for us to do
+  },
+  { interceptorId: 'my-extension:refund-guard' },
 );
 ```
 
@@ -171,13 +171,21 @@ interceptors.register(
 Exported APIs: `installExtensionRefundListener`, `EXTENSION_REFUND_REQUEST_ACTION`, types **`ExtensionRefundParams`** / **`ExtensionRefundResponse`**.
 
 ```typescript
-import { installExtensionRefundListener, type ExtensionRefundParams, type ExtensionRefundResponse } from "@final-commerce/command-frame";
+import {
+  installExtensionRefundListener,
+  type ExtensionRefundParams,
+  type ExtensionRefundResponse,
+} from '@final-commerce/command-frame';
 
-const unsubscribe = installExtensionRefundListener(async (params: ExtensionRefundParams): Promise<ExtensionRefundResponse> => {
+const unsubscribe = installExtensionRefundListener(
+  async (params: ExtensionRefundParams): Promise<ExtensionRefundResponse> => {
     // params.paymentType === "redeem", params.amount in major currency units, params.saleId, params.processor, etc.
     const ok = await myGiftCardProvider.refund(params);
-    return ok ? { success: true, extensionTransactionId: ok.providerRefundId } : { success: false, error: "Refund declined" };
-});
+    return ok
+      ? { success: true, extensionTransactionId: ok.providerRefundId }
+      : { success: false, error: 'Refund declined' };
+  },
+);
 
 // on teardown (optional)
 // unsubscribe();

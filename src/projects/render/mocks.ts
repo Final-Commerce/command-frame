@@ -31,6 +31,7 @@ import { mockCashPayment } from '../../actions/cash-payment/mock';
 import { mockGetCashRoundingAmount } from '../../actions/get-cash-rounding-amount/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
 import { mockDeleteParkedOrder } from '../../actions/delete-parked-order/mock';
+import { mockVoidOrder } from '../../actions/void-order/mock';
 import { mockExampleFunction } from '../../actions/example-function/mock';
 import { mockGetCategories } from '../../actions/get-categories/mock';
 import { mockGetContext } from '../../actions/get-context/mock';
@@ -126,6 +127,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getCashRoundingAmount: mockGetCashRoundingAmount,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
+  voidOrder: mockVoidOrder,
   exampleFunction: mockExampleFunction,
   getCategories: mockGetCategories,
   getContext: mockGetContext,
