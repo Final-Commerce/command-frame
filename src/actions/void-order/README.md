@@ -7,7 +7,7 @@ Void or cancel an open order. For orders with captured payment legs, refunds the
 | Name      | Type   | Required | Description                                                 |
 | --------- | ------ | -------- | ----------------------------------------------------------- |
 | `orderId` | string | No       | Order to void; defaults to the active order.                |
-| `reason`  | string | No       | Optional cashier-facing reason, stamped on the audit trail. |
+| `reason`  | string | No       | Optional cashier-facing reason. On a pure void, recorded on the void audit row and carried on the `order-voided` event; on the refund branch it rides the event only (the refund dispatcher does not consume it). |
 
 ## Response
 
@@ -40,11 +40,11 @@ const result = await command.voidOrder({ orderId: 'order_123', reason: 'Duplicat
 
 ## Eligibility
 
-Only open orders (unpaid, processing, or partially paid) are voidable. Orders in `paid` state must use the refund flow (`processPartialRefund` or full refund).
+Only open orders (`unpaid`, `payment_pending`, or `partially_paid`) are voidable. Orders in any other payment state — `paid`, `partially_refunded`, `refunded`, `voided`, or unknown — must use the refund flow (`processPartialRefund` or full refund).
 
 ### Error Handling
 
-- Throws `ORDER_NOT_VOIDABLE` if the order is in `paid` state — use the refund flow instead.
+- Throws `ORDER_NOT_VOIDABLE` if the order is in any non-open state (`paid`, `partially_refunded`, `refunded`, `voided`, or unknown) — use the refund flow instead.
 - Throws if the order is not found or cannot be transitioned.
 
 ## Important Notes

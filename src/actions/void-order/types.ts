@@ -6,7 +6,11 @@ export type VoidOrderOutcome = 'voided' | 'refunded';
 export interface VoidOrderParams {
   /** Order to void; defaults to the active order. */
   orderId?: string;
-  /** Optional cashier-facing reason, stamped on the audit trail. */
+  /**
+   * Optional cashier-facing reason. On a pure void, recorded on the void audit
+   * row and carried on the `order-voided` event. On the refund branch it rides
+   * the event only — the refund dispatcher does not consume it.
+   */
   reason?: string;
 }
 
