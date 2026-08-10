@@ -18,6 +18,7 @@ The `orders` topic provides events related to order lifecycle. Subscribe to this
 | [order-updated](./order-updated/README.md) | Published when an order is updated | [View Details](./order-updated/README.md) |
 | [set-active-order](./set-active-order/README.md) | Published when the active order is set in the host | [View Details](./set-active-order/README.md) |
 | [get-active-order](./get-active-order/README.md) | Reserved for host publish of active order snapshots | [View Details](./get-active-order/README.md) |
+| [order-voided](./order-voided/README.md) | Published when an open order is voided (pure void, or captured legs refunded) | [View Details](./order-voided/README.md) |
 
 ## Quick Start
 
@@ -41,6 +42,9 @@ const subscriptionId = topics.subscribe('orders', (event: TopicEvent) => {
         case 'get-active-order':
             console.log('Active order snapshot:', event.data.order);
             break;
+        case 'order-voided':
+            console.log('Order voided:', event.data.orderId, 'outcome:', event.data.outcome);
+            break;
     }
 });
 ```
@@ -59,6 +63,8 @@ import type {
     OrderActiveSetEvent,
     OrderActiveGetPayload,
     OrderActiveGetEvent,
+    OrderVoidedPayload,
+    OrderVoidedEvent,
     OrdersEventType,
     OrdersEventPayload
 } from '@final-commerce/command-frame';

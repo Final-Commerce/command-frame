@@ -39,6 +39,11 @@ export const ordersTopic: TopicDefinition = {
             id: "state-transition-blocked",
             name: "State Transition Blocked",
             description: "Published when an order state transition is blocked by the state machine"
+        },
+        {
+            id: "order-voided",
+            name: "Order Voided",
+            description: "Published when an open order is voided (pure void, or captured legs refunded)"
         }
     ]
 };

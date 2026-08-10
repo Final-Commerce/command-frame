@@ -23,6 +23,11 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
   const [deleteParkedOrderLoading, setDeleteParkedOrderLoading] = useState(false);
   const [deleteParkedOrderResponse, setDeleteParkedOrderResponse] = useState<string>('');
 
+  // Void Order
+  const [voidOrderId, setVoidOrderId] = useState<string>('');
+  const [voidOrderReason, setVoidOrderReason] = useState<string>('');
+  const [voidOrderLoading, setVoidOrderLoading] = useState(false);
+  const [voidOrderResponse, setVoidOrderResponse] = useState<string>('');
 
   // Set Active Order
   const [activeOrderId, setActiveOrderId] = useState<string>('');
@@ -173,6 +178,66 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
           <JsonViewer
             data={deleteParkedOrderResponse}
             title={deleteParkedOrderResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
+      {/* Void Order */}
+      <CommandSection title="Void Order">
+        <p className="section-description">
+          Cancels an open (not-yet-completed) order: a pure void when nothing was captured, an automatic
+          full refund of captured split legs when a deposit was taken; completed orders are rejected
+          (ORDER_NOT_VOIDABLE) and go through the refund flow.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Order ID (optional, defaults to active order):</label>
+            <input
+              type="text"
+              value={voidOrderId}
+              onChange={(e) => setVoidOrderId(e.target.value)}
+              placeholder="order-id-123"
+            />
+          </div>
+          <div className="form-field">
+            <label>Reason (optional):</label>
+            <input
+              type="text"
+              value={voidOrderReason}
+              onChange={(e) => setVoidOrderReason(e.target.value)}
+              placeholder="Customer request"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setVoidOrderResponse('Error: Not running in iframe');
+              return;
+            }
+            setVoidOrderLoading(true);
+            setVoidOrderResponse('');
+            try {
+              const params: { orderId?: string; reason?: string } = {};
+              if (voidOrderId) params.orderId = voidOrderId;
+              if (voidOrderReason) params.reason = voidOrderReason;
+              const result = await command.voidOrder(params);
+              setVoidOrderResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setVoidOrderResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setVoidOrderLoading(false);
+            }
+          }}
+          disabled={voidOrderLoading}
+          className="btn btn--danger"
+        >
+          {voidOrderLoading ? 'Voiding...' : 'Void Order'}
+        </button>
+        {voidOrderResponse && (
+          <JsonViewer
+            data={voidOrderResponse}
+            title={voidOrderResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
         )}
       </CommandSection>
