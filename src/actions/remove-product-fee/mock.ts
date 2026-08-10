@@ -9,7 +9,7 @@ export const mockRemoveProductFee: RemoveProductFee = (params?: RemoveProductFee
         : MOCK_CART.products[MOCK_CART.products.length - 1];
 
     if (item) {
-        delete item.fee;
+        item.fees = [];
         // Publish so cart subscribers refresh.
         mockPublishEvent("cart", "product-fee-removed", { internalId: params?.internalId });
     }

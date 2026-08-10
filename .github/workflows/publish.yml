@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      id-token: write
+      id-token: write # npm provenance
 
     steps:
       - name: Checkout code
@@ -22,6 +22,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@final-commerce'
           cache: 'npm'
 
       - name: Extract and validate semver from tag
@@ -154,6 +156,8 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Inject version into package.json
         run: |
@@ -167,13 +171,7 @@ jobs:
           echo "✅ package.json version: $(node -p "require('./package.json').version")"
 
       - name: Publish to npm
-        run: |
-          PROVENANCE_FLAG=$([[ "${{ github.event.repository.visibility }}" == "public" ]] && echo "--provenance" || echo "")
-          trap 'cp .npmrc.bak .npmrc && rm .npmrc.bak' EXIT
-          cp .npmrc .npmrc.bak
-          echo "@final-commerce-public:registry=https://registry.npmjs.org/" > .npmrc
-          echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
-          npm publish ${{ steps.dist_tag.outputs.flag }} $PROVENANCE_FLAG
+        run: npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -194,14 +192,13 @@ jobs:
             pkg.version = '${VERSION}';
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
-          npm install --package-lock-only --ignore-scripts
 
-          if git diff --quiet package.json package-lock.json; then
+          if git diff --quiet package.json; then
             echo "ℹ️ package.json already at version $VERSION — nothing to commit"
             exit 0
           fi
 
-          git add package.json package-lock.json
+          git add package.json
           git commit -m "chore: bump version to $VERSION [skip ci]"
           git push origin "$BRANCH"
           echo "✅ Committed version $VERSION to $BRANCH"

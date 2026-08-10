@@ -10,7 +10,7 @@ Initiates an extension-defined payment flow in the host by calling the `extensio
 | :-- | :-- | :-- | :-- |
 | `paymentType` | `string` | `true` | Payment type key used by the host handler (for example `redeem`, `gift-card`, `store-credit`). |
 | `processor` | `string` | `false` | Provider/processor identifier for host-side routing or metadata. |
-| `amount` | `number` | `false` | Amount to charge in major currency units. If omitted, host may use cart remaining total. |
+| `amount` | `number` | `true` | Required, integer minor units; below the balance due → partial payment (fixed split leg); above → error. |
 | `label` | `string` | `false` | Display label for the payment entry. |
 | `referenceId` | `string` | `false` | External payment reference (extension-side id). |
 | `extensionId` | `string` | `false` | Extension identifier when multiple extension handlers exist. |
@@ -23,7 +23,7 @@ Initiates an extension-defined payment flow in the host by calling the `extensio
 | Field | Type | Description |
 | :-- | :-- | :-- |
 | `success` | `boolean` | `true` when host payment handling completed successfully. |
-| `amount` | `number \| null` | Processed amount reported by host. |
+| `amount` | `number \| null` | Processed amount reported by host, in integer minor currency units. |
 | `paymentType` | `string` | Final payment type recorded on the payment entry. |
 | `order` | `CFOrder \| null` | Order snapshot after payment processing. Can be `null` for in-progress split flows. |
 | `timestamp` | `string` | ISO timestamp produced by host action handler. |
@@ -37,7 +37,7 @@ import { command } from '@final-commerce/command-frame';
 const result = await command.extensionPayment({
     paymentType: 'gift-card',
     processor: 'myGiftCardProvider',
-    amount: 25,
+    amount: 2500, // $25.00 in minor units
     label: 'Gift Card',
     referenceId: 'provider-sale-123',
     metadata: { cardLast4: '7890' }

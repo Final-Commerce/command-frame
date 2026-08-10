@@ -60,6 +60,7 @@ export const MOCK_COMPANY: CFActiveCompany = {
     settings: {
         currencyPrefix: "$",
         currencySuffix: "",
+        minorUnits: 2,
         currencySymbol: "$",
         decimalSeparator: ".",
         thousandSeparator: ",",
@@ -215,15 +216,18 @@ export const MOCK_CUSTOMER_5: CFCustomer = {
 
 // --- CATEGORIES ---
 export const MOCK_CATEGORY_PASTES: CFCategory = {
-    _id: "cat_pastes",
+    id: "cat_pastes",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Pastes",
     externalId: "ext_cat_pastes",
     companyId: MOCK_COMPANY.id!,
-    parentId: null
 };
 
 export const MOCK_CATEGORY_SPECIALTY: CFCategory = {
-    _id: "cat_specialty",
+    id: "cat_specialty",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Specialty",
     externalId: "ext_cat_specialty",
     companyId: MOCK_COMPANY.id!,
@@ -231,7 +235,9 @@ export const MOCK_CATEGORY_SPECIALTY: CFCategory = {
 };
 
 export const MOCK_CATEGORY_BASIC: CFCategory = {
-    _id: "cat_basic",
+    id: "cat_basic",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Basic",
     externalId: "ext_cat_basic",
     companyId: MOCK_COMPANY.id!,
@@ -239,19 +245,21 @@ export const MOCK_CATEGORY_BASIC: CFCategory = {
 };
 
 export const MOCK_CATEGORY_VEGAN: CFCategory = {
-    _id: "cat_vegan",
+    id: "cat_vegan",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Vegan",
     externalId: "ext_cat_vegan",
     companyId: MOCK_COMPANY.id!,
-    parentId: null
 };
 
 export const MOCK_CATEGORY_SPICY: CFCategory = {
-    _id: "cat_spicy",
+    id: "cat_spicy",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    updatedAt: "2024-01-01T00:00:00.000Z",
     name: "Spicy",
     externalId: "ext_cat_spicy",
     companyId: MOCK_COMPANY.id!,
-    parentId: null
 };
 
 // --- PRODUCTS ---
@@ -275,7 +283,7 @@ const createSimpleProduct = (id: string, name: string, price: number, image: str
         taxTable: "tax_standard",
         description,
         images: [image],
-        categories: categories.map(c => c._id),
+        categories: categories.map(c => ({ name: c.name, externalId: c.externalId ?? c.id })),
         attributes: [],
         variants: [
             {
@@ -319,7 +327,7 @@ const createVariableProduct = (
         taxTable: "tax_standard",
         description,
         images: [image],
-        categories: categories.map(c => c._id),
+        categories: categories.map(c => ({ name: c.name, externalId: c.externalId ?? c.id })),
         attributes: [{ name: "Size", values: ["Small", "Large"] }],
         variants: [
             {
@@ -493,12 +501,13 @@ const createLineItem = (product: CFProduct, variantIndex: number = 0, quantity: 
         price: variant.price,
         taxes: [],
         discount: {
-            itemDiscount: { percentage: 0, amount: 0 },
+            itemDiscounts: [],
             cartDiscount: { percentage: 0, amount: 0 }
         },
-        fee: { itemFee: { percentage: 0, amount: 0, tax: 0, taxTableId: "" } },
+        fee: { itemFees: [] },
         totalTax: 0,
         total: variant.price * quantity,
+        lineNetWithFees: variant.price * quantity,
         metadata: [],
         image: product.images?.[0] || "",
         sku: variant.sku,
@@ -521,7 +530,7 @@ export const MOCK_ORDER_1: CFActiveOrder = {
     customer: MOCK_CUSTOMER_1,
     summary: {
         total: 2100,
-        subTotal: 2100,
+        subtotalAfterFees: 2100,
         discountTotal: 0,
         shippingTotal: 0,
         totalTaxes: 0,
@@ -572,7 +581,7 @@ export const MOCK_ORDER_2: CFActiveOrder = {
     customer: MOCK_CUSTOMER_2,
     summary: {
         total: 3000,
-        subTotal: 3000,
+        subtotalAfterFees: 3000,
         discountTotal: 0,
         shippingTotal: 0,
         totalTaxes: 0,
@@ -623,7 +632,7 @@ export const MOCK_ORDER_3: CFActiveOrder = {
     customer: MOCK_CUSTOMER_3,
     summary: {
         total: 1500,
-        subTotal: 1500,
+        subtotalAfterFees: 1500,
         discountTotal: 0,
         shippingTotal: 0,
         totalTaxes: 0,
@@ -669,12 +678,12 @@ export const MOCK_PARKED_ORDER_1: CFActiveOrder = {
     externalId: null,
     status: "parked",
     paymentState: "unpaid",
-    fulfillmentState: "unfulfilled",
+    fulfillmentState: "pending",
     displayState: "Parked",
     customer: MOCK_CUSTOMER_4,
     summary: {
         total: 2100,
-        subTotal: 2100,
+        subtotalAfterFees: 2100,
         discountTotal: 0,
         shippingTotal: 0,
         totalTaxes: 0,
@@ -712,12 +721,12 @@ export const MOCK_PARKED_ORDER_2: CFActiveOrder = {
     externalId: null,
     status: "parked",
     paymentState: "unpaid",
-    fulfillmentState: "unfulfilled",
+    fulfillmentState: "pending",
     displayState: "Parked",
     customer: null,
     summary: {
         total: 2500,
-        subTotal: 2500,
+        subtotalAfterFees: 2500,
         discountTotal: 0,
         shippingTotal: 0,
         totalTaxes: 0,
@@ -930,12 +939,13 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
             price: p.price,
             taxes: [],
             discount: {
-                itemDiscount: { percentage: 0, amount: 0, const: "0" },
-                cartDiscount: { percentage: 0, amount: 0, const: "0" }
+                itemDiscounts: [],
+                cartDiscount: { percentage: 0, amount: 0 }
             },
-            fee: { itemFee: { percentage: 0, amount: 0, tax: 0, taxTableId: "" } },
+            fee: { itemFees: [] },
             totalTax: 0,
             total: p.price * p.quantity,
+            lineNetWithFees: p.price * p.quantity,
             metadata: [],
             image: p.images?.[0] || "",
             sku: p.sku || "",
@@ -960,7 +970,7 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
         customer: MOCK_CART.customer ? (MOCK_CART.customer as CFCustomer) : null,
         summary: {
             total: totalNum,
-            subTotal: totalNum,
+            subtotalAfterFees: totalNum,
             discountTotal: 0,
             shippingTotal: 0,
             totalTaxes: 0,

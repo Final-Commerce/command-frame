@@ -7,7 +7,6 @@ export const mockGetUsers: GetUsers = async (params): Promise<GetUsersResponse> 
         users: [
             {
                 id: "691df9c2047bfc55994d703f",
-                _id: "691df9c2047bfc55994d703f",
                 firstName: "Sarah",
                 lastName: "Mitchell",
                 email: "sarah.mitchell@company.com",
@@ -15,25 +14,22 @@ export const mockGetUsers: GetUsers = async (params): Promise<GetUsersResponse> 
                 type: CFUserTypes.ORG_OWNER,
                 role: {
                     id: "691df9c6c478bada1fb23d0b",
-                    _id: "691df9c6c478bada1fb23d0b",
                     name: "Owner",
-                    companyId: "691df9c4c478bada1fb23bff",
                     permissions: [
-                        { category: "hub_access", name: "general", value: true, subCategory: "store_management" },
-                        { category: "hub_access", name: "products", value: true, subCategory: "store_management" },
-                        { category: "hub_access", name: "reports", value: true, subCategory: "store_management" },
-                        { category: "hub_access", name: "users", value: true, subCategory: "store_management" },
-                        { category: "hub_access", name: "builder", value: true, subCategory: "builder_access" },
-                        { category: "hub_access", name: "billing", value: true, subCategory: "payments_access" },
-                        { category: "station_access", name: "give_discounts", value: true, subCategory: "pos_actions" },
-                        { category: "station_access", name: "issue_refunds", value: true, subCategory: "pos_actions" },
+                        { category: "hub_access", label: "general", name: "general", value: true },
+                        { category: "hub_access", label: "products", name: "products", value: true },
+                        { category: "hub_access", label: "reports", name: "reports", value: true },
+                        { category: "hub_access", label: "users", name: "users", value: true },
+                        { category: "hub_access", label: "builder", name: "builder", value: true },
+                        { category: "hub_access", label: "billing", name: "billing", value: true },
+                        { category: "station_access", label: "give_discounts", name: "give_discounts", value: true },
+                        { category: "station_access", label: "issue_refunds", name: "issue_refunds", value: true },
                     ]
                 },
                 outlets: []
             },
             {
                 id: "692a1b3c4d5e6f7890abcde1",
-                _id: "692a1b3c4d5e6f7890abcde1",
                 firstName: "James",
                 lastName: "Rodriguez",
                 email: "james.rodriguez@company.com",
@@ -41,22 +37,19 @@ export const mockGetUsers: GetUsers = async (params): Promise<GetUsersResponse> 
                 type: CFUserTypes.ADMIN,
                 role: {
                     id: "691df9c6c478bada1fb23d0c",
-                    _id: "691df9c6c478bada1fb23d0c",
                     name: "admin",
-                    companyId: "691df9c4c478bada1fb23bff",
                     permissions: [
-                        { category: "hub_access", name: "general", value: true, subCategory: "store_management" },
-                        { category: "hub_access", name: "products", value: true, subCategory: "store_management" },
-                        { category: "hub_access", name: "reports", value: true, subCategory: "store_management" },
-                        { category: "hub_access", name: "users", value: true, subCategory: "store_management" },
-                        { category: "station_access", name: "give_discounts", value: true, subCategory: "pos_actions" },
+                        { category: "hub_access", label: "general", name: "general", value: true },
+                        { category: "hub_access", label: "products", name: "products", value: true },
+                        { category: "hub_access", label: "reports", name: "reports", value: true },
+                        { category: "hub_access", label: "users", name: "users", value: true },
+                        { category: "station_access", label: "give_discounts", name: "give_discounts", value: true },
                     ]
                 },
                 outlets: ["outlet-main", "outlet-downtown"]
             },
             {
                 id: "692a1b3c4d5e6f7890abcde2",
-                _id: "692a1b3c4d5e6f7890abcde2",
                 firstName: "Lisa",
                 lastName: "Chen",
                 email: "lisa.chen@company.com",
@@ -64,13 +57,11 @@ export const mockGetUsers: GetUsers = async (params): Promise<GetUsersResponse> 
                 type: CFUserTypes.CASHIER,
                 role: {
                     id: "691df9c6c478bada1fb23d0d",
-                    _id: "691df9c6c478bada1fb23d0d",
                     name: "cashier",
-                    companyId: "691df9c4c478bada1fb23bff",
                     permissions: [
-                        { category: "station_access", name: "give_discounts", value: false, subCategory: "pos_actions" },
-                        { category: "station_access", name: "issue_refunds", value: false, subCategory: "pos_actions" },
-                        { category: "station_access", name: "session_reports", value: true, subCategory: "station_home" },
+                        { category: "station_access", label: "give_discounts", name: "give_discounts", value: false },
+                        { category: "station_access", label: "issue_refunds", name: "issue_refunds", value: false },
+                        { category: "station_access", label: "session_reports", name: "session_reports", value: true },
                     ]
                 },
                 outlets: ["outlet-main"]

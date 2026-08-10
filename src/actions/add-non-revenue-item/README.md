@@ -9,7 +9,7 @@ Adds a non-revenue line to the host cart (for example gift-card load / liability
 | Field | Type | Required | Description |
 | :---- | :--- | :------- | :---------- |
 | `id` | `string` | Yes | Extension reference (e.g. product key). Copied into line `metadata.refId`. |
-| `amount` | `number` | Yes | Amount in major currency units (e.g. dollars), same convention as cart totals. |
+| `amount` | `number` | Yes | Amount in integer minor currency units (e.g. `1575` = $15.75), same convention as cart totals. |
 | `label` | `string` | No | Short label for receipts/UI. |
 | `metadata` | `Record<string, unknown>` | No | Extra fields (`customTableId`, `cardCode`, etc.). |
 | `applyTaxes` | `boolean` | No | When true, line may be taxed (requires `taxTableId` when taxing is implemented). Default false. |
@@ -38,7 +38,7 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.addNonRevenueItem({
   id: 'gift-card-sku-1',
-  amount: 25,
+  amount: 2500, // $25.00 in minor units
   label: 'Gift card load',
 });
 console.log('Line id:', result.externalId);

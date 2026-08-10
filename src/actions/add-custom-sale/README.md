@@ -8,9 +8,11 @@ Adds a custom sale item to the cart in the parent window. This is useful for add
 
 ```typescript
 interface AddCustomSaleParams {
-    label: string;           // Required
-    price: number | string; // Required
-    applyTaxes?: boolean;   // Optional, default: false
+  label: string; // Required
+  price: number | string; // Required
+  quantity?: number; // Optional, default: 1 — positive integer
+  applyTaxes?: boolean; // Optional, default: false
+  taxTableId?: string; // Optional — tax table when applyTaxes is true
 }
 ```
 
@@ -19,6 +21,7 @@ interface AddCustomSaleParams {
 The label or name for the custom sale item. This will be displayed in the cart.
 
 **Example:**
+
 - "Service Fee"
 - "Delivery Charge"
 - "Custom Item"
@@ -26,9 +29,10 @@ The label or name for the custom sale item. This will be displayed in the cart.
 
 #### `price` (required)
 
-The price of the custom sale item. Can be provided as:
-- A number (e.g., `10.50`)
-- A string (e.g., `"10.50"`)
+The price of the custom sale item, in integer minor currency units. Can be provided as:
+
+- A number (e.g., `1050` = $10.50)
+- A string (e.g., `"1050"`)
 
 The price will be converted to a number internally. Negative values can be used for discounts.
 
@@ -45,11 +49,13 @@ Whether to apply taxes to the custom sale item. Defaults to `false` if not provi
 
 ```typescript
 interface AddCustomSaleResponse {
-    success: boolean;
-    label: string;
-    price: number;
-    applyTaxes: boolean;
-    timestamp: string;
+  success: boolean;
+  customSaleId: string;
+  label: string;
+  price: number;
+  quantity: number;
+  applyTaxes: boolean;
+  timestamp: string;
 }
 ```
 
@@ -89,11 +95,11 @@ Add a simple custom sale item without taxes:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.addCustomSale({
-    label: 'Service Fee',
-    price: 5.00
+  label: 'Service Fee',
+  price: 500, // $5.00 in minor units
 });
 
-console.log('Added:', result.label, 'for $', result.price);
+console.log('Added:', result.label, 'for', result.price);
 ```
 
 ### Custom Sale with Taxes
@@ -102,9 +108,9 @@ Add a custom sale item with taxes applied:
 
 ```typescript
 const result = await command.addCustomSale({
-    label: 'Delivery Charge',
-    price: 10.50,
-    applyTaxes: true
+  label: 'Delivery Charge',
+  price: 1050, // $10.50 in minor units
+  applyTaxes: true,
 });
 ```
 
@@ -114,9 +120,9 @@ Add a discount as a custom sale:
 
 ```typescript
 const result = await command.addCustomSale({
-    label: 'Loyalty Discount',
-    price: -5.00,  // Negative for discount
-    applyTaxes: false
+  label: 'Loyalty Discount',
+  price: -500, // Negative for discount, $5.00 in minor units
+  applyTaxes: false,
 });
 ```
 
@@ -126,9 +132,9 @@ Provide price as a string (will be converted to number):
 
 ```typescript
 const result = await command.addCustomSale({
-    label: 'Custom Item',
-    price: '15.99',  // String format
-    applyTaxes: true
+  label: 'Custom Item',
+  price: '1599', // String format, $15.99 in minor units
+  applyTaxes: true,
 });
 ```
 
@@ -138,18 +144,18 @@ Handle validation errors:
 
 ```typescript
 try {
-    const result = await command.addCustomSale({
-        label: '',  // Empty label
-        price: 10
-    });
+  const result = await command.addCustomSale({
+    label: '', // Empty label
+    price: 1000, // $10.00 in minor units
+  });
 } catch (error) {
-    if (error.message === 'Label and price are required') {
-        console.error('Please provide both label and price');
-    } else if (error.message === 'Parameters are required for addCustomSale') {
-        console.error('Please provide parameters');
-    } else {
-        console.error('Failed to add custom sale:', error.message);
-    }
+  if (error.message === 'Label and price are required') {
+    console.error('Please provide both label and price');
+  } else if (error.message === 'Parameters are required for addCustomSale') {
+    console.error('Please provide parameters');
+  } else {
+    console.error('Failed to add custom sale:', error.message);
+  }
 }
 ```
 
@@ -159,25 +165,25 @@ Complete workflow with error handling:
 
 ```typescript
 async function addServiceFee(amount: number) {
-    try {
-        const result = await command.addCustomSale({
-            label: 'Service Fee',
-            price: amount,
-            applyTaxes: true
-        });
-        
-        if (result.success) {
-            console.log(`Service fee of $${result.price} added successfully`);
-            return result;
-        }
-    } catch (error) {
-        console.error('Failed to add service fee:', error);
-        throw error;
+  try {
+    const result = await command.addCustomSale({
+      label: 'Service Fee',
+      price: amount,
+      applyTaxes: true,
+    });
+
+    if (result.success) {
+      console.log(`Service fee of ${result.price} added successfully`);
+      return result;
     }
+  } catch (error) {
+    console.error('Failed to add service fee:', error);
+    throw error;
+  }
 }
 
 // Usage
-await addServiceFee(5.50);
+await addServiceFee(550); // $5.50 in minor units
 ```
 
 ## Behavior
@@ -186,7 +192,7 @@ When a custom sale is added:
 
 1. The item is validated (label and price must be provided)
 2. The item is added to the current cart in the parent application
-3. The quantity is set to 1 by default
+3. The quantity is set from `quantity` (defaults to 1)
 4. Taxes are applied if `applyTaxes` is `true`
 5. The item appears in the cart with the specified label and price
 
@@ -206,8 +212,8 @@ await command.addCustomSale();
 ```typescript
 // Throws: "Label and price are required"
 await command.addCustomSale({
-    label: 'Fee'
-    // Missing price
+  label: 'Fee',
+  // Missing price
 });
 ```
 
@@ -215,13 +221,13 @@ await command.addCustomSale({
 
 ```typescript
 try {
-    const result = await command.addCustomSale({
-        label: 'Test',
-        price: 10
-    });
+  const result = await command.addCustomSale({
+    label: 'Test',
+    price: 1000, // $10.00 in minor units
+  });
 } catch (error) {
-    // error.message contains the error description
-    console.error(error.message);
+  // error.message contains the error description
+  console.error(error.message);
 }
 ```
 
@@ -241,7 +247,7 @@ try {
 {
   "success": true,
   "label": "Custom Item",
-  "price": 10,
+  "price": 1000,
   "applyTaxes": false,
   "timestamp": "2025-12-04T19:24:13.293Z"
 }
@@ -252,7 +258,7 @@ try {
 ```json
 {
   "label": "Custom Item",
-  "price": 10,
+  "price": 1000,
   "applyTaxes": false
 }
 ```
@@ -260,8 +266,7 @@ try {
 ## Notes
 
 - The custom sale is added to the current active cart/session
-- The quantity is always set to 1
+- The quantity defaults to 1 when `quantity` is omitted
 - The item is immediately available in the cart after successful addition
 - Custom sales are treated as regular cart items and can be removed or modified like other items
 - If taxes are applied, they are calculated based on the current tax settings in the parent application
-

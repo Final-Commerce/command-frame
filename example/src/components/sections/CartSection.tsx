@@ -101,7 +101,8 @@ export function CartSection({ isInIframe }: CartSectionProps) {
     try {
       const result = await command.addCustomSale({
         label: customSaleLabel,
-        price: parseFloat(customSalePrice) || 0,
+        // integer minor units (e.g. 1575 = $15.75)
+        price: parseInt(customSalePrice, 10) || 0,
         applyTaxes: applyTaxes,
       });
       
@@ -153,6 +154,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
     try {
       const result = await command.addCartDiscount({
+        // minor units unless isPercent (then 0-100)
         amount: parseFloat(cartDiscountAmount) || 0,
         isPercent: cartDiscountIsPercent,
         label: cartDiscountLabel
@@ -208,7 +210,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             <label>Price:</label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               value={customSalePrice}
               onChange={(e) => setCustomSalePrice(e.target.value)}
               placeholder="0.00"
@@ -256,7 +258,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             <label>amount:</label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               min="0.01"
               value={nrAmount}
               onChange={(e) => setNrAmount(e.target.value)}
@@ -291,7 +293,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
               if (trimmed) {
                 metadata = JSON.parse(trimmed) as Record<string, unknown>;
               }
-              const amount = parseFloat(nrAmount);
+              const amount = parseInt(nrAmount, 10); // integer minor units
               if (!nrId.trim()) throw new Error('id is required');
               if (!Number.isFinite(amount) || amount <= 0) throw new Error('amount must be a positive number');
 
@@ -488,7 +490,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             <label>Amount:</label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               value={cartFeeAmount}
               onChange={(e) => setCartFeeAmount(e.target.value)}
               placeholder="0.00"
@@ -534,6 +536,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             setAddCartFeeResponse('');
             try {
               const result = await command.addCartFee({
+                // minor units unless isPercent (then 0-100)
                 amount: parseFloat(cartFeeAmount) || 0,
                 isPercent: cartFeeIsPercent,
                 label: cartFeeLabel,

@@ -484,7 +484,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             <label>Amount:</label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               value={productFeeAmount}
               onChange={(e) => setProductFeeAmount(e.target.value)}
               placeholder="0.00"
@@ -541,7 +541,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
                 variantId,
                 quantity: 1,
                 fees: [{
-                  amount: parseFloat(productFeeAmount) || 0,
+                  // minor units unless isPercent (then 0-100)
+                amount: parseFloat(productFeeAmount) || 0,
                   isPercent: productFeeIsPercent,
                   label: productFeeLabel,
                   applyTaxes: productFeeApplyTaxes
@@ -645,7 +646,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             <label>Amount:</label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               value={discountAmount}
               onChange={(e) => setDiscountAmount(e.target.value)}
               placeholder="0.00"
@@ -690,6 +691,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             setAddDiscountResponse('');
             try {
               const result = await command.addProductDiscount({
+                // minor units unless isPercent (then 0-100)
                 amount: parseFloat(discountAmount) || 0,
                 isPercent: discountIsPercent,
                 label: discountLabel,
@@ -769,7 +771,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             <label>Amount:</label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               value={standaloneFeeAmount}
               onChange={(e) => setStandaloneFeeAmount(e.target.value)}
               placeholder="0.00"
@@ -824,6 +826,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             setAddStandaloneFeeResponse('');
             try {
               const result = await command.addProductFee({
+                // minor units unless isPercent (then 0-100)
                 amount: parseFloat(standaloneFeeAmount) || 0,
                 isPercent: standaloneFeeIsPercent,
                 label: standaloneFeeLabel,

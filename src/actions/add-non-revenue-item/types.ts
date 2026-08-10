@@ -8,7 +8,7 @@ export interface AddNonRevenueItemParams {
      * The cart uses a separate unique line id per add so multiple lines can share the same refId.
      */
     id: string;
-    /** Amount in major currency units (e.g. dollars), same as cart totals */
+    /** Amount in integer MINOR currency units (e.g. 1575 = $15.75), same as cart totals. */
     amount: number;
     /** Short label for receipts/UI */
     label?: string;

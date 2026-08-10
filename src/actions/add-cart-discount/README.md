@@ -18,11 +18,11 @@ interface AddCartDiscountParams {
 
 The discount amount. The interpretation depends on the `isPercent` flag:
 
-- If `isPercent` is `false` (default): The amount is a fixed dollar value (e.g., `10` = $10.00 discount)
+- If `isPercent` is `false` (default): The amount is a fixed amount in integer minor currency units (e.g., `1000` = $10.00 discount)
 - If `isPercent` is `true`: The amount is a percentage value (e.g., `10` = 10% discount)
 
 **Examples:**
-- Fixed amount: `amount: 5.50` with `isPercent: false` → $5.50 discount
+- Fixed amount: `amount: 550` with `isPercent: false` → $5.50 discount
 - Percentage: `amount: 15` with `isPercent: true` → 15% discount
 
 #### `isPercent` (optional)
@@ -30,7 +30,7 @@ The discount amount. The interpretation depends on the `isPercent` flag:
 Whether the discount amount is a percentage or a fixed amount. Defaults to `false` (fixed amount).
 
 - `true`: The `amount` is treated as a percentage (0-100)
-- `false`: The `amount` is treated as a fixed dollar value (default)
+- `false`: The `amount` is treated as a fixed amount in integer minor currency units (default)
 
 #### `label` (optional)
 
@@ -92,12 +92,12 @@ Add a fixed $10 discount to the entire cart:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.addCartDiscount({
-    amount: 10,
+    amount: 1000, // $10.00 in minor units
     isPercent: false,
     label: 'Holiday Sale'
 });
 
-console.log(`Added $${result.amount} cart discount`);
+console.log(`Added ${result.amount} cart discount`);
 ```
 
 ### Percentage Cart Discount
@@ -120,7 +120,7 @@ Add a discount with a descriptive label:
 
 ```typescript
 const result = await command.addCartDiscount({
-    amount: 5.50,
+    amount: 550, // $5.50 in minor units
     isPercent: false,
     label: 'Loyalty Customer Discount'
 });
@@ -151,7 +151,7 @@ await command.addProductToCart({
 
 // 3. Apply cart discount
 await command.addCartDiscount({
-    amount: 10,
+    amount: 1000, // $10.00 in minor units
     isPercent: false,
     label: 'Promotion Discount'
 });
@@ -164,7 +164,7 @@ Handle validation errors:
 ```typescript
 try {
     const result = await command.addCartDiscount({
-        amount: 10,
+        amount: 1000, // $10.00 in minor units
         isPercent: false
     });
 } catch (error) {
@@ -252,7 +252,7 @@ await command.addCartDiscount({
 ```json
 {
   "success": true,
-  "amount": 10,
+  "amount": 1000,
   "isPercent": false,
   "label": "Cart Discount",
   "timestamp": "2025-12-04T19:25:28.241Z"
@@ -263,7 +263,7 @@ await command.addCartDiscount({
 
 ```json
 {
-  "amount": 10,
+  "amount": 1000,
   "isPercent": false,
   "label": "Cart Discount"
 }

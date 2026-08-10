@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write # Workload Identity Federation for Artifact Registry
 
 jobs:
   deploy:
@@ -64,8 +65,30 @@ jobs:
             pkg.name = 'command-frame-example-web-app';
             pkg.version = '${APP_VERSION}';
             pkg.dependencies['@final-commerce/command-frame'] = '^${LIB_VERSION}';
+            // ONE command-frame copy: kaching pins an exact command-frame version,
+            // and a caret rewrite that outruns that pin makes npm nest a second
+            // copy under kaching — splitting renderClient from kaching's
+            // in-window host. Override the whole tree to the lib version.
+            pkg.overrides = Object.assign({}, pkg.overrides, {
+              '@final-commerce/command-frame': '^${LIB_VERSION}',
+            });
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        id: gcp-auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+          token_format: access_token
+
+      # The repo .npmrc maps @final-commerce-internal to Artifact Registry via
+      # ${NPM_REGISTRY_TOKEN} — the example depends on @final-commerce-internal/kaching.
+      # Same WIF pattern as the kaching repo's own CI (org-level secrets, no
+      # long-lived key).
+      - name: Expose registry token to npm
+        run: echo "NPM_REGISTRY_TOKEN=${{ steps.gcp-auth.outputs.access_token }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         working-directory: example

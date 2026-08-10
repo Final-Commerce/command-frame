@@ -21,6 +21,7 @@ export const mockGetContext: GetContext = (): Promise<GetContextResponse> => {
         buildIsPremium: true,
         isOffline: false,
         currency: "USD",
+        minorUnits: 2,
         currencySymbol: "$",
         currencyPrefix: "$",
         currencySuffix: "",

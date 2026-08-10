@@ -12,7 +12,7 @@ export const mockEditProduct: EditProduct = async (params: EditProductParams): P
             minorUnits: 2,
             name: params.changes.name || "Updated Product",
             description: params.changes.description,
-            categories: params.changes.categories || [],
+            categories: (params.changes.categories || []).map((c: string) => ({ name: c, externalId: c })),
             taxTable: params.changes.taxTable || "",
             images: params.changes.images || [],
             status: params.changes.status || "active",

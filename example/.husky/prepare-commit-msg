@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null)
+if [ -z "$BRANCH" ]; then exit 0; fi
+
+# Skip protected branches
+if echo "$BRANCH" | grep -qE '^(main|master|develop|pre-prod|release-staging.*)$'; then exit 0; fi
+
+TICKET=$(echo "$BRANCH" | grep -oE '[A-Z]+-[0-9]+' | head -1)
+if [ -z "$TICKET" ]; then exit 0; fi
+
+MSG_FILE="$1"
+CURRENT=$(cat "$MSG_FILE")
+if echo "$CURRENT" | grep -q "$TICKET"; then exit 0; fi
+
+awk -v ticket="[$TICKET]" 'NR==1{print $0 " " ticket; next}{print}' "$MSG_FILE" > "$MSG_FILE.tmp" && mv "$MSG_FILE.tmp" "$MSG_FILE"

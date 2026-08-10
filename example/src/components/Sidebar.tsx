@@ -16,13 +16,13 @@ export type SectionId =
     | "payments"
     | "split-payments"
     | "system"
-    | "integration"
     | "events"
     | "examples"
     | "custom-extensions"
     | "custom-tables"
     | "secrets"
     | "print"
+    | "receipts"
     | "users"
     | "roles"
     | "variants"
@@ -55,13 +55,13 @@ const sections: Section[] = [
     { id: "payments", label: "Payments" },
     { id: "split-payments", label: "Split Payments" },
     { id: "system", label: "System" },
-    { id: "integration", label: "Integration" },
     { id: "events", label: "Events" },
     { id: "examples", label: "Examples" },
     { id: "custom-extensions", label: "Custom Extensions" },
     { id: "custom-tables", label: "Custom Tables" },
     { id: "secrets", label: "Secrets" },
     { id: "print", label: "Print" },
+    { id: "receipts", label: "Receipts" },
     { id: "users", label: "Users" },
     { id: "roles", label: "Roles" },
     { id: "variants", label: "Variants" },

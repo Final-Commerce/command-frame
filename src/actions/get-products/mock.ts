@@ -20,13 +20,13 @@ export const mockGetProducts: GetProducts = async (params?: GetProductsParams): 
         // Handle categories filter: { $in: [...] } or direct string
         const catFilter = query.categories;
         if (typeof catFilter === 'string') {
-            products = products.filter(p => (p.categories || []).includes(catFilter));
+            products = products.filter(p => (p.categories || []).some(c => c.name === catFilter));
         } else if (typeof catFilter === 'object' && '$in' in catFilter) {
             const inList = (catFilter as any).$in as string[];
-            products = products.filter(p => (p.categories || []).some(c => inList.includes(c)));
+            products = products.filter(p => (p.categories || []).some(c => inList.includes(c.name)));
         } else if (typeof catFilter === 'object' && '$contains' in catFilter) {
              const containsVal = (catFilter as any).$contains as string;
-             products = products.filter(p => (p.categories || []).includes(containsVal));
+             products = products.filter(p => (p.categories || []).some(c => c.name.includes(containsVal)));
         }
     }
 

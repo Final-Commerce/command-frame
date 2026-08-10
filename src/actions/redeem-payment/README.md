@@ -10,7 +10,7 @@ Use this when your extension handles a custom tender (for example gift card / wa
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `amount` | `number` | No | Payment amount in major currency units |
+| `amount` | `number` | Yes | Required, integer minor units; below the balance due → partial payment (fixed split leg); above → error. |
 | `processor` | `string` | No | Provider identifier (for reporting/troubleshooting) |
 | `label` | `string` | No | Human-readable label shown in host payment records |
 | `referenceId` | `string` | No | Provider-side reference ID |
@@ -26,7 +26,7 @@ Use this when your extension handles a custom tender (for example gift card / wa
 | Field | Type | Description |
 |-------|------|-------------|
 | `success` | `boolean` | Whether the host accepted/processed the payment |
-| `amount` | `number \| null` | Applied payment amount |
+| `amount` | `number \| null` | Applied payment amount, in integer minor currency units |
 | `paymentType` | `string` | Always `"redeem"` for this command |
 | `order` | [`CFOrder`](../../types/README.md#cforder) `\| null` | Order snapshot returned by host |
 | `timestamp` | `string` | ISO timestamp from the host |
@@ -37,7 +37,7 @@ Use this when your extension handles a custom tender (for example gift card / wa
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.redeemPayment({
-    amount: 25,
+    amount: 2500, // $25.00 in minor units
     processor: 'giftCard',
     label: 'Gift Card',
     referenceId: 'giftcard-tx-123',

@@ -22,7 +22,7 @@ The unique `internalId` of the line item in the cart. This ID is returned in the
 #### `amount` (required)
 
 The discount amount. 
-- If `isPercent` is `false`: Fixed amount (e.g., `10` = $10.00 off).
+- If `isPercent` is `false`: Fixed amount in integer minor currency units (e.g., `1000` = $10.00 off).
 - If `isPercent` is `true`: Percentage amount (e.g., `10` = 10% off).
 
 #### `isPercent` (optional)

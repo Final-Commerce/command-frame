@@ -46,7 +46,7 @@ export const mockResumeParkedOrder: ResumeParkedOrder = async (params?: ResumePa
         attributes: li.attributes
     } as any));
 
-    MOCK_CART.subtotal = orderToResume.summary.subTotal;
+    MOCK_CART.subtotal = orderToResume.summary.subtotalAfterFees;
     MOCK_CART.total = orderToResume.summary.total;
     MOCK_CART.amountToBeCharged = MOCK_CART.total;
     MOCK_CART.remainingBalance = MOCK_CART.total;
