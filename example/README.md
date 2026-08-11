@@ -188,7 +188,7 @@ await command.triggerZapierWebhook({
 
 ## Refunding redeem payments
 
-Refunding a **redeem** payment is initiated by calling the **`redeemRefund`** command (see [redeemRefund](../../src/actions/redeem-refund/README.md) in the main command-frame documentation). This supports refunding a redeem payment back onto a gift card when the extension credits the card first.
+Refunding a **redeem** payment is initiated by calling the **`redeemRefund`** command (see [redeemRefund](../src/actions/redeem-refund/README.md) in the main command-frame documentation). This supports refunding a redeem payment back onto a gift card when the extension credits the card first.
 
 Plain refunds on redeem sources still fail by design (`REDEEM_REFUND_UNSUPPORTED`); use `redeemRefund` to refund onto a gift card instead.
 
