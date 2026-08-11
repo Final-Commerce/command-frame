@@ -10,13 +10,13 @@ Command Frame provides a structured way to build integrations that run inside Fi
 
 The library provides three main capabilities:
 
-| Capability                | Purpose                                                                                         | Scope                                          |
-| ------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| **Commands**              | Call host functions from the iframe (e.g. get products, open cash drawer)                       | Request/response per call                      |
-| **Pub/Sub**               | Subscribe to real-time events from the host (e.g. cart changes, payments)                       | Page-scoped (while iframe is mounted)          |
-| **Hooks**                 | Register business-logic callbacks that persist across all pages                                 | Session-scoped (survives page navigation)      |
-| **Interceptors**          | Gate POS flows (approve / modify / block) at named points                                       | Blocking; host waits for your response         |
-| **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
+| Capability          | Purpose                                                                   | Scope                                     |
+| ------------------- | ------------------------------------------------------------------------- | ----------------------------------------- |
+| **Commands**        | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call                 |
+| **Pub/Sub**         | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted)     |
+| **Hooks**           | Register business-logic callbacks that persist across all pages           | Session-scoped (survives page navigation) |
+| **Interceptors**    | Gate POS flows (approve / modify / block) at named points                 | Blocking; host waits for your response    |
+| **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`        | Request/response per call                 |
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
 
@@ -158,40 +158,27 @@ interceptors.register(
 );
 ```
 
-## Host-initiated extension refunds (redeem / gift card)
+## Refunding redeem / extension payments
 
-**Extensions that accept redeem / extension payments must implement a refund listener.** When staff refund an order paid with `paymentType: "redeem"`, Render (host) `postMessage`s into your iframe **before** it records the refund locally. If your app does not handle this message, redeem refunds will time out or fail.
+When staff refund an order that was paid with `paymentType: "redeem"` (via `redeemPayment` or `extensionPayment`), use the **`redeemRefund`** command to refund the amount onto a gift card or redeem tender.
 
-### What you should do
-
-1. **Recommended:** call **`installExtensionRefundListener`** once when your extension boots (e.g. next to your `RenderClient` setup). Pass an `async` handler that calls your provider (gift card API, wallet, etc.) and returns an **`ExtensionRefundResponse`** (`success`, optional `error`, optional `extensionTransactionId` for receipts / support).
-2. The helper validates `event.source === window.top`, parses params, and replies with the same **`PostMessageResponse`** envelope as the rest of Command Frame (`requestId`, `success`, `data` / `error`).
-3. **Alternative:** implement a `window` `message` listener yourself using the same contract (action name: **`extensionRefundRequest`**, or import **`EXTENSION_REFUND_REQUEST_ACTION`** from this package).
-
-Exported APIs: `installExtensionRefundListener`, `EXTENSION_REFUND_REQUEST_ACTION`, types **`ExtensionRefundParams`** / **`ExtensionRefundResponse`**.
+**Key point:** Plain refunds on redeem sources still fail by design (`REDEEM_REFUND_UNSUPPORTED`). Use `redeemRefund` to refund onto a gift card when your extension credits the card first.
 
 ```typescript
-import {
-  installExtensionRefundListener,
-  type ExtensionRefundParams,
-  type ExtensionRefundResponse,
-} from '@final-commerce/command-frame';
+import { command } from '@final-commerce/command-frame';
 
-const unsubscribe = installExtensionRefundListener(
-  async (params: ExtensionRefundParams): Promise<ExtensionRefundResponse> => {
-    // params.paymentType === "redeem", params.amount in major currency units, params.saleId, params.processor, etc.
-    const ok = await myGiftCardProvider.refund(params);
-    return ok
-      ? { success: true, extensionTransactionId: ok.providerRefundId }
-      : { success: false, error: 'Refund declined' };
-  },
-);
-
-// on teardown (optional)
-// unsubscribe();
+// Refund a redeem order back onto a gift card
+const result = await command.redeemRefund({
+  orderId: 'order_123',
+  amount: 2500, // $25.00
+  referenceId: 'GIFTCARD-456', // destination card
+  processor: 'giftCard',
+  label: 'Gift Card Refund',
+  reason: 'Customer requested return',
+});
 ```
 
-**Full protocol, edge cases, and manual handling:** **[Extension refund documentation](./src/actions/extension-refund/README.md)**.
+**Full documentation:** **[redeemRefund](./src/actions/redeem-refund/README.md)**.
 
 ## Development & Testing
 

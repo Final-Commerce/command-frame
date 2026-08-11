@@ -6,27 +6,27 @@ Initiates an extension-defined payment flow in the host by calling the `extensio
 
 `params?: ExtensionPaymentParams`
 
-| Parameter | Type | Required | Description |
-| :-- | :-- | :-- | :-- |
-| `paymentType` | `string` | `true` | Payment type key used by the host handler (for example `redeem`, `gift-card`, `store-credit`). |
-| `processor` | `string` | `false` | Provider/processor identifier for host-side routing or metadata. |
-| `amount` | `number` | `true` | Required, integer minor units; below the balance due → partial payment (fixed split leg); above → error. |
-| `label` | `string` | `false` | Display label for the payment entry. |
-| `referenceId` | `string` | `false` | External payment reference (extension-side id). |
-| `extensionId` | `string` | `false` | Extension identifier when multiple extension handlers exist. |
-| `metadata` | `Record<string, unknown>` | `false` | Extra provider-specific data forwarded to host payment handling. |
+| Parameter     | Type                      | Required | Description                                                                                              |
+| :------------ | :------------------------ | :------- | :------------------------------------------------------------------------------------------------------- |
+| `paymentType` | `string`                  | `true`   | Payment type key used by the host handler (for example `redeem`, `gift-card`, `store-credit`).           |
+| `processor`   | `string`                  | `false`  | Provider/processor identifier for host-side routing or metadata.                                         |
+| `amount`      | `number`                  | `true`   | Required, integer minor units; below the balance due → partial payment (fixed split leg); above → error. |
+| `label`       | `string`                  | `false`  | Display label for the payment entry.                                                                     |
+| `referenceId` | `string`                  | `false`  | External payment reference (extension-side id).                                                          |
+| `extensionId` | `string`                  | `false`  | Extension identifier when multiple extension handlers exist.                                             |
+| `metadata`    | `Record<string, unknown>` | `false`  | Extra provider-specific data forwarded to host payment handling.                                         |
 
 ## Response
 
 `Promise<ExtensionPaymentResponse>`
 
-| Field | Type | Description |
-| :-- | :-- | :-- |
-| `success` | `boolean` | `true` when host payment handling completed successfully. |
-| `amount` | `number \| null` | Processed amount reported by host, in integer minor currency units. |
-| `paymentType` | `string` | Final payment type recorded on the payment entry. |
-| `order` | `CFOrder \| null` | Order snapshot after payment processing. Can be `null` for in-progress split flows. |
-| `timestamp` | `string` | ISO timestamp produced by host action handler. |
+| Field         | Type              | Description                                                                         |
+| :------------ | :---------------- | :---------------------------------------------------------------------------------- |
+| `success`     | `boolean`         | `true` when host payment handling completed successfully.                           |
+| `amount`      | `number \| null`  | Processed amount reported by host, in integer minor currency units.                 |
+| `paymentType` | `string`          | Final payment type recorded on the payment entry.                                   |
+| `order`       | `CFOrder \| null` | Order snapshot after payment processing. Can be `null` for in-progress split flows. |
+| `timestamp`   | `string`          | ISO timestamp produced by host action handler.                                      |
 
 ## Example Usage
 
@@ -35,12 +35,12 @@ import { command } from '@final-commerce/command-frame';
 
 // Generic extension payment
 const result = await command.extensionPayment({
-    paymentType: 'gift-card',
-    processor: 'myGiftCardProvider',
-    amount: 2500, // $25.00 in minor units
-    label: 'Gift Card',
-    referenceId: 'provider-sale-123',
-    metadata: { cardLast4: '7890' }
+  paymentType: 'gift-card',
+  processor: 'myGiftCardProvider',
+  amount: 2500, // $25.00 in minor units
+  label: 'Gift Card',
+  referenceId: 'provider-sale-123',
+  metadata: { cardLast4: '7890' },
 });
 
 console.log(result.success, result.paymentType, result.order?._id);
@@ -50,4 +50,4 @@ console.log(result.success, result.paymentType, result.order?._id);
 
 - `extensionPayment` is the generic primitive; `redeemPayment` is a convenience wrapper that forces `paymentType: "redeem"`.
 - The host must implement an `extensionPayment` action handler for your payment type.
-- Refunds of extension/redeem tenders are not currently supported: the host-initiated extension-refund listener was retired (FI-6491/FI-6492).
+- Refunds of extension/redeem tenders are supported via the `redeemRefund` command: plain refunds on redeem sources still fail by design (`REDEEM_REFUND_UNSUPPORTED`), but refunding onto a gift card is supported when the extension credits the card first. See [redeemRefund](../redeem-refund/README.md) for details.

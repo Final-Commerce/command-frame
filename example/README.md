@@ -186,13 +186,11 @@ await command.triggerZapierWebhook({
 });
 ```
 
-## Host-initiated extension refunds (mock, without Render)
+## Refunding redeem payments
 
-Refunding a **redeem** payment is started by the **host** (Render), not by `command.redeemPayment`. The host `postMessage`s into your iframe; your extension must implement **`installExtensionRefundListener`** (see the main command-frame README).
+Refunding a **redeem** payment is initiated by calling the **`redeemRefund`** command (see [redeemRefund](../../src/actions/redeem-refund/README.md) in the main command-frame documentation). This supports refunding a redeem payment back onto a gift card when the extension credits the card first.
 
-- **In this example app**, `src/main.tsx` registers a **mock** listener that always succeeds after a short delay, so you can verify the wire protocol locally.
-- **Without running Render:** start the dev server, then open **`http://localhost:5179/host-simulator.html`**. That page embeds the example in an iframe (like Render) and sends a fake `extensionRefundRequest`. You should see a JSON reply in the log and a matching log line in the iframe console.
-- **Full flow:** embed the example (or your extension) in Render’s flow iframe and run a real redeem sale + refund in the POS.
+Plain refunds on redeem sources still fail by design (`REDEEM_REFUND_UNSUPPORTED`); use `redeemRefund` to refund onto a gift card instead.
 
 ## Testing in an Iframe
 

@@ -36,12 +36,9 @@
     </style>
   </head>
   <body>
-    <h1>Mock host: extension refund</h1>
+    <h1>Extension example</h1>
     <p class="note">
-      This page imitates <strong>Render</strong> (parent): it loads the example app in an iframe and sends
-      <code>extensionRefundRequest</code> — the same message the real POS sends when refunding a
-      <code>redeem</code> payment. The example app registers <code>installExtensionRefundListener</code> in
-      <code>main.tsx</code> with a mock provider refund.
+      This page loads the extension example app in an iframe for local testing and development.
     </p>
     <p class="note">
       Run <code>npm run dev</code> in <code>example/</code>, then open this file at
@@ -50,55 +47,8 @@
 
     <iframe id="ext" src="/" title="Extension example"></iframe>
 
-    <div>
-      <button type="button" id="sendOk">Send mock refund request (success)</button>
-      <button type="button" id="clear">Clear log</button>
-    </div>
-    <h2>Replies from iframe (PostMessageResponse)</h2>
-    <pre id="log"></pre>
-
-    <script>
-      // Keep in sync with EXTENSION_REFUND_REQUEST_ACTION in @final-commerce/command-frame
-      var EXTENSION_REFUND_REQUEST_ACTION = 'extensionRefundRequest';
-
-      var iframe = document.getElementById('ext');
-      var logEl = document.getElementById('log');
-
-      function appendLog(obj) {
-        logEl.textContent += JSON.stringify(obj, null, 2) + '\n---\n';
-      }
-
-      window.addEventListener('message', function (e) {
-        if (e.source !== iframe.contentWindow) return;
-        if (e.data && typeof e.data.requestId === 'string') {
-          appendLog({ from: 'iframe', origin: e.origin, data: e.data });
-        }
-      });
-
-      document.getElementById('sendOk').onclick = function () {
-        var win = iframe.contentWindow;
-        if (!win) return;
-        var requestId = 'sim-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
-        var payload = {
-          action: EXTENSION_REFUND_REQUEST_ACTION,
-          requestId: requestId,
-          params: {
-            paymentType: 'redeem',
-            amount: 10.5,
-            saleId: 'mock-sale-transaction-id',
-            processor: 'giftCard',
-            orderId: 'mock-order-id',
-            referenceId: 'mock-ref-123'
-          }
-        };
-        var targetOrigin = window.location.origin;
-        win.postMessage(payload, targetOrigin);
-        appendLog({ from: 'parent', sent: payload });
-      };
-
-      document.getElementById('clear').onclick = function () {
-        logEl.textContent = '';
-      };
-    </script>
+    <p class="note">
+      For refunding redeem payments, use the <code>redeemRefund</code> command (see the main command-frame documentation).
+    </p>
   </body>
 </html>
