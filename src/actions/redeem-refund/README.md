@@ -126,4 +126,4 @@ try {
 - **Missing `referenceId`**: throws "referenceId is required"
 - **Invalid order ID**: throws "Order with ID {orderId} not found"
 - **Non-refundable order state**: throws "ORDER_NOT_REFUNDABLE: order {orderId} is '{state}' — only 'paid' or 'partially_refunded' orders can be refunded"
-- **Exceeds order total**: throws "Refund amount {amount} exceeds order total {total}"
+- **Exceeds remaining capacity**: throws "Refund amount {amount} exceeds remaining refundable capacity {remainingCapacity}"
