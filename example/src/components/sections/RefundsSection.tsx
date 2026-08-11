@@ -50,6 +50,15 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
   const [processRefundLoading, setProcessRefundLoading] = useState(false);
   const [processRefundResponse, setProcessRefundResponse] = useState<string>('');
 
+  // Redeem Refund
+  const [redeemOrderId, setRedeemOrderId] = useState<string>('');
+  const [redeemAmount, setRedeemAmount] = useState<string>('');
+  const [redeemReferenceId, setRedeemReferenceId] = useState<string>('');
+  const [redeemProcessor, setRedeemProcessor] = useState<string>('giftCard');
+  const [redeemReason, setRedeemReason] = useState<string>('');
+  const [redeemRefundLoading, setRedeemRefundLoading] = useState(false);
+  const [redeemRefundResponse, setRedeemRefundResponse] = useState<string>('');
+
   return (
     <div className="section-content">
       {/* Initiate Refund */}
@@ -99,7 +108,9 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
       </CommandSection>
 
       <CommandSection title="Set Active Refund">
-        <p className="section-description">Loads an order by id and opens the refund flow with initial selection state.</p>
+        <p className="section-description">
+          Loads an order by id and opens the refund flow with initial selection state.
+        </p>
         <div className="form-group">
           <div className="form-field">
             <label>Order ID:</label>
@@ -147,9 +158,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
 
       {/* Get Refunds */}
       <CommandSection title="Get Refunds">
-        <p className="section-description">
-          Retrieves a list of refunds with optional filtering and pagination.
-        </p>
+        <p className="section-description">Retrieves a list of refunds with optional filtering and pagination.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Order ID (optional):</label>
@@ -181,7 +190,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             try {
               const params: any = { limit: parseInt(refundsLimit) || 10 };
               if (refundsOrderId) params.orderId = refundsOrderId;
-              
+
               const result = await command.getRefunds(params);
               setGetRefundsResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -196,16 +205,14 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
           {getRefundsLoading ? 'Loading...' : 'Get Refunds'}
         </button>
         {getRefundsResponse && (
-          <JsonViewer
-            data={getRefundsResponse}
-            title={getRefundsResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={getRefundsResponse} title={getRefundsResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       <CommandSection title="Set Refund Stock Action">
         <p className="section-description">
-          Sets the stock handling option for a refunded item (restock or mark as damaged). Use the <code>key</code> field from the <code>getLineItemsByOrder</code> response (or <code>internalId</code>/<code>variantId</code>).
+          Sets the stock handling option for a refunded item (restock or mark as damaged). Use the <code>key</code>{' '}
+          field from the <code>getLineItemsByOrder</code> response (or <code>internalId</code>/<code>variantId</code>).
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -219,10 +226,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
           </div>
           <div className="form-field">
             <label>Action:</label>
-            <select
-              value={stockAction}
-              onChange={(e) => setStockAction(e.target.value as 'RESTOCK' | 'REFUND_DAMAGE')}
-            >
+            <select value={stockAction} onChange={(e) => setStockAction(e.target.value as 'RESTOCK' | 'REFUND_DAMAGE')}>
               <option value="RESTOCK">Return to Stock</option>
               <option value="REFUND_DAMAGE">Mark as Damaged</option>
             </select>
@@ -243,7 +247,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             try {
               const result = await command.setRefundStockAction({
                 itemKey: stockActionItemKey,
-                action: stockAction
+                action: stockAction,
               });
               setSetStockActionResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -267,9 +271,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
 
       {/* Select All Refund Items */}
       <CommandSection title="Select All Refund Items">
-        <p className="section-description">
-          Selects all remaining refundable items for a full refund.
-        </p>
+        <p className="section-description">Selects all remaining refundable items for a full refund.</p>
         <button
           onClick={async () => {
             if (!isInIframe) {
@@ -293,18 +295,13 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
           {selectAllLoading ? 'Selecting...' : 'Select All Items'}
         </button>
         {selectAllResponse && (
-          <JsonViewer
-            data={selectAllResponse}
-            title={selectAllResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={selectAllResponse} title={selectAllResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Reset Refund Details */}
       <CommandSection title="Reset Refund Details">
-        <p className="section-description">
-          Clears all refund selections.
-        </p>
+        <p className="section-description">Clears all refund selections.</p>
         <button
           onClick={async () => {
             if (!isInIframe) {
@@ -337,9 +334,7 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
 
       {/* Calculate Refund Total */}
       <CommandSection title="Calculate Refund Total">
-        <p className="section-description">
-          Calculates and previews the refund total based on current selections.
-        </p>
+        <p className="section-description">Calculates and previews the refund total based on current selections.</p>
         <button
           onClick={async () => {
             if (!isInIframe) {
@@ -450,7 +445,111 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
           />
         )}
       </CommandSection>
+
+      {/* Redeem Refund */}
+      <CommandSection title="Redeem Refund">
+        <p className="section-description">
+          Records a refund onto a gift-card/redeem tender (credit-first contract), drawing from the order's remaining
+          refundable capacity across all source payments.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Order ID (optional):</label>
+            <input
+              type="text"
+              value={redeemOrderId}
+              onChange={(e) => setRedeemOrderId(e.target.value)}
+              placeholder="Leave empty to use active order"
+            />
+          </div>
+          <div className="form-field">
+            <label>Amount (minor units):</label>
+            <input
+              type="number"
+              value={redeemAmount}
+              onChange={(e) => setRedeemAmount(e.target.value)}
+              placeholder="1575 = $15.75"
+            />
+          </div>
+          <div className="form-field">
+            <label>Reference ID (card number):</label>
+            <input
+              type="text"
+              value={redeemReferenceId}
+              onChange={(e) => setRedeemReferenceId(e.target.value)}
+              placeholder="gift-card-number"
+            />
+          </div>
+          <div className="form-field">
+            <label>Processor:</label>
+            <input
+              type="text"
+              value={redeemProcessor}
+              onChange={(e) => setRedeemProcessor(e.target.value)}
+              placeholder="giftCard"
+            />
+          </div>
+          <div className="form-field">
+            <label>Reason (optional):</label>
+            <input
+              type="text"
+              value={redeemReason}
+              onChange={(e) => setRedeemReason(e.target.value)}
+              placeholder="Refund reason"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setRedeemRefundResponse('Error: Not running in iframe');
+              return;
+            }
+            const amount = parseInt(redeemAmount, 10);
+            if (!amount || amount <= 0) {
+              setRedeemRefundResponse('Error: Amount must be greater than 0');
+              return;
+            }
+            if (!redeemReferenceId) {
+              setRedeemRefundResponse('Error: Reference ID is required');
+              return;
+            }
+            setRedeemRefundLoading(true);
+            setRedeemRefundResponse('');
+            try {
+              const params: {
+                orderId?: string;
+                amount: number;
+                referenceId: string;
+                processor?: string;
+                reason?: string;
+              } = {
+                amount,
+                referenceId: redeemReferenceId,
+              };
+              if (redeemOrderId) params.orderId = redeemOrderId;
+              if (redeemProcessor) params.processor = redeemProcessor;
+              if (redeemReason) params.reason = redeemReason;
+              const result = await command.redeemRefund(params);
+              setRedeemRefundResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setRedeemRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setRedeemRefundLoading(false);
+            }
+          }}
+          disabled={redeemRefundLoading}
+          className="btn btn--warning"
+        >
+          {redeemRefundLoading ? 'Processing...' : 'Redeem Refund'}
+        </button>
+        {redeemRefundResponse && (
+          <JsonViewer
+            data={redeemRefundResponse}
+            title={redeemRefundResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
     </div>
   );
 }
-
