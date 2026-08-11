@@ -50,6 +50,7 @@ import { mockOpenCashDrawer } from '../../actions/open-cash-drawer/mock';
 import { mockParkOrder } from '../../actions/park-order/mock';
 import { mockPartialPayment } from '../../actions/partial-payment/mock';
 import { mockProcessPartialRefund } from '../../actions/process-partial-refund/mock';
+import { mockRedeemRefund } from '../../actions/redeem-refund/mock';
 import { mockRemoveCustomerFromCart } from '../../actions/remove-customer-from-cart/mock';
 import { mockResetRefundDetails } from '../../actions/reset-refund-details/mock';
 import { mockResumeParkedOrder } from '../../actions/resume-parked-order/mock';
@@ -146,6 +147,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   parkOrder: mockParkOrder,
   partialPayment: mockPartialPayment,
   processPartialRefund: mockProcessPartialRefund,
+  redeemRefund: mockRedeemRefund,
   removeCustomerFromCart: mockRemoveCustomerFromCart,
   removeCartDiscount: mockRemoveCartDiscount,
   resetRefundDetails: mockResetRefundDetails,
