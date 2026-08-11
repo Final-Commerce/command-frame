@@ -6,9 +6,12 @@ Processes a partial refund based on the current refund selections in the refund 
 
 `params?: ProcessPartialRefundParams`
 
-| Parameter | Type     | Required | Description                                                              |
-| :-------- | :------- | :------- | :----------------------------------------------------------------------- |
-| `reason`  | `string` | `false`  | Optional reason for the refund.                                         |
+| Parameter | Type      | Required | Description                                                              |
+| :-------- | :-------- | :------- | :----------------------------------------------------------------------- |
+| `reason`  | `string`  | `false`  | Optional reason for the refund.                                         |
+| `orderId` | `string`  | `false`  | Optional order to refund (sets it active first).                        |
+| `items`   | `array`   | `false`  | Optional items to select for refund before processing.                 |
+| `openUI`  | `boolean` | `false`  | Multi-tender only. Defaults to `true`. See "Multi-tender orders" below. |
 
 ## Response
 
@@ -61,10 +64,35 @@ try {
 }
 ```
 
+## Multi-tender orders
+
+An order paid across more than one payment method needs the refund allocated
+across the original sources. By default (`openUI` omitted or `true`) this command
+raises the POS split-payment refund modal so the cashier chooses the allocation,
+and returns without committing — the modal drives the commit.
+
+Flows that render their own refund UI can opt out of that modal with
+`openUI: false`. The refund is then committed **headlessly** against the
+planner's default proportional allocation across the original sources (every
+cash-rounding invariant preserved), with no modal shown:
+
+```typescript
+// Headless multi-tender partial refund — no split-payment modal.
+await command.processPartialRefund({
+  orderId: 'order-123',
+  items: [{ itemKey: 'line-1', quantity: 1, type: 'product' }],
+  openUI: false,
+});
+```
+
+`openUI` has no effect on single-tender orders (they are already headless — there
+is nothing to allocate).
+
 ## Notes
 
 - This command processes the refund asynchronously through the refund handler system.
 - The refund is created in the database and the order status is updated accordingly.
 - Payment refunds are processed based on the original payment methods.
 - Stock actions (restock/damage) are applied based on the refund details options.
+- `openUI` defaults to `true`; existing callers keep the split-payment modal behavior for multi-tender orders.
 
