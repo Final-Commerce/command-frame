@@ -6,16 +6,16 @@ Records a refund of one or more order payments onto a gift-card or redeem tender
 
 `params: RedeemRefundParams`
 
-| Parameter     | Type                      | Required | Description                                                                                                                                          |
-| ------------- | ------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `amount`      | `number`                  | Yes      | Refund amount in integer minor currency units (e.g., 1575 = $15.75). Must be > 0 and within the order's total.                                       |
-| `referenceId` | `string`                  | Yes      | Destination card/account identifier (e.g., gift-card number). Recorded on every refund leg.                                                          |
-| `orderId`     | `string`                  | No       | Order to refund; defaults to the active order.                                                                                                       |
-| `processor`   | `string`                  | No       | Destination provider label; defaults to "giftCard".                                                                                                  |
-| `label`       | `string`                  | No       | Human-readable label for receipts/reporting.                                                                                                         |
-| `extensionId` | `string`                  | No       | Extension identity, recorded on the legs when provided.                                                                                              |
-| `metadata`    | `Record<string, unknown>` | No       | Opaque extension payload, recorded on the legs when provided. Note: `metadata` is not persisted on payment legs today; this is a future enhancement. |
-| `reason`      | `string`                  | No       | Cashier-facing reason, recorded on the refund and state-event audit rows.                                                                            |
+| Parameter     | Type                      | Required | Description                                                                                                                                                                        |
+| ------------- | ------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `amount`      | `number`                  | Yes      | Refund amount in integer minor currency units (e.g., 1575 = $15.75). Must be > 0 and within the order's remaining refundable capacity (tip-inclusive, across all source payments). |
+| `referenceId` | `string`                  | Yes      | Destination card/account identifier (e.g., gift-card number). Recorded on every refund leg.                                                                                        |
+| `orderId`     | `string`                  | No       | Order to refund; defaults to the active order.                                                                                                                                     |
+| `processor`   | `string`                  | No       | Destination provider label; defaults to "giftCard".                                                                                                                                |
+| `label`       | `string`                  | No       | Human-readable label for receipts/reporting.                                                                                                                                       |
+| `extensionId` | `string`                  | No       | Extension identity, recorded on the legs when provided.                                                                                                                            |
+| `metadata`    | `Record<string, unknown>` | No       | Opaque extension payload, recorded on the legs when provided. Note: `metadata` is not persisted on payment legs today; this is a future enhancement.                               |
+| `reason`      | `string`                  | No       | Cashier-facing reason, recorded on the refund and state-event audit rows.                                                                                                          |
 
 ## Response
 

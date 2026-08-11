@@ -4,6 +4,9 @@ import { MOCK_ORDERS, mockPublishEvent } from '../../demo/database';
 // Payment states in which an order is refundable
 const REFUNDABLE_PAYMENT_STATES = ['paid', 'partially_refunded'];
 
+// Track refunded amounts per order to enforce remaining capacity gate
+const mockRefundedAmounts: Record<string, number> = {};
+
 export const mockRedeemRefund: RedeemRefund = async (params: RedeemRefundParams): Promise<RedeemRefundResponse> => {
   console.log('[Mock] redeemRefund called', params);
 
@@ -29,13 +32,20 @@ export const mockRedeemRefund: RedeemRefund = async (params: RedeemRefundParams)
     );
   }
 
-  // Check if amount is within refundable capacity
-  if (params.amount > order.summary.total) {
-    throw new Error(`Refund amount ${params.amount} exceeds order total ${order.summary.total}`);
+  // Track refunded amounts and check remaining capacity
+  const refundedSoFar = mockRefundedAmounts[orderId] || 0;
+  const remainingCapacity = order.summary.total - refundedSoFar;
+
+  if (params.amount > remainingCapacity) {
+    throw new Error(`Refund amount ${params.amount} exceeds remaining refundable capacity ${remainingCapacity}`);
   }
 
-  // Update order state based on refund amount
-  const remainingAfterRefund = order.summary.total - params.amount;
+  // Update refunded amount tracking
+  const refundedAfter = refundedSoFar + params.amount;
+  mockRefundedAmounts[orderId] = refundedAfter;
+
+  // Update order state based on remaining capacity after this refund
+  const remainingAfterRefund = order.summary.total - refundedAfter;
   if (remainingAfterRefund > 0) {
     order.paymentState = 'partially_refunded';
   } else {
