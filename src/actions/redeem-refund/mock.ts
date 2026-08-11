@@ -37,7 +37,9 @@ export const mockRedeemRefund: RedeemRefund = async (params: RedeemRefundParams)
   const remainingCapacity = order.summary.total - refundedSoFar;
 
   if (params.amount > remainingCapacity) {
-    throw new Error(`Refund amount ${params.amount} exceeds remaining refundable capacity ${remainingCapacity}`);
+    throw new Error(
+      `REFUND_AMOUNT_EXCEEDS_CAPACITY: Refund amount ${params.amount} exceeds remaining refundable capacity ${remainingCapacity}`,
+    );
   }
 
   // Update refunded amount tracking

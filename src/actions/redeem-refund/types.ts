@@ -11,8 +11,9 @@ export interface RedeemRefundParams {
   amount: number;
   /**
    * Destination card/account identifier the funds were credited to
-   * (e.g. the gift-card number). Recorded on every refund leg's paymentData
-   * for the audit trail. Required.
+   * (e.g. the gift-card number). Recorded in the emv block (`'Card Number'`)
+   * of every refund payment entry on the order, and in paymentData on the
+   * local transaction rows, for the audit trail. Required.
    */
   referenceId: string;
   /** Destination provider label; defaults to "giftCard" (matches redeemPayment). */

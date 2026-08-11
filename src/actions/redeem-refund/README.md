@@ -55,14 +55,20 @@ const result = await command.redeemRefund({
 
 Refund a gift-card order back onto an existing card. This is now supported via `redeemRefund` only (plain `processPartialRefund` on redeem sources still fails by design).
 
-**Same-Card Prefill Pattern**: If the original tender was a gift card, you can read the card number from the original redeem leg's `paymentData.referenceId` and pass it back as the destination `referenceId`:
+**Same-Card Prefill Pattern**: The order-doc `PaymentMethod` has no `paymentData` field — that field lives on the *local transaction row*, not on the order. If the original tender was a gift card, the card number is only readable from the leg's `emv` JSON, and only for captures made by kaching ≥1.9.2:
 
 ```typescript
 const originalLeg = order.paymentMethods.find((pm) => pm.paymentType === 'redeem');
+let cardNumber: string | undefined;
+try {
+  cardNumber = originalLeg.emv ? JSON.parse(originalLeg.emv)['Card Number'] : undefined;
+} catch {
+  // emv missing/unparseable (older capture) — fall through to manual input
+}
 const result = await command.redeemRefund({
   orderId: order._id,
   amount: originalLeg.amount,
-  referenceId: originalLeg.paymentData?.referenceId, // Re-use original card
+  referenceId: cardNumber ?? (await promptForCardNumber()), // Re-use original card, or ask the cashier
   reason: 'Customer requested return',
 });
 ```
@@ -77,11 +83,11 @@ If this command throws:
 
 ## Order State Requirements
 
-Orders must be in `paid` or `partially_refunded` state to be refundable via this command. States like `unpaid`, `refunded`, or `voided` will cause the command to throw with `ORDER_NOT_REFUNDABLE`.
+There is no state gate in the runtime: any order with captured payments can be drawn from, including `partially_paid` orders. Capacity is computed per-source (`remainingRefundableOnSource`) — an order with nothing left to refund (e.g. fully refunded) simply has zero remaining capacity, so the command rejects it with the capacity error below rather than a distinct "not refundable" error.
 
 ## EMV Data
 
-For both payment and refund transactions, the card number is readable at the canonical EMV location:
+The `emv` block lives on the **order's** payment and refund entries — `order.paymentMethods[].emv` for captures, `order.refund[].refundPayment[].emv` for refund legs — not on the local transaction row. That's the only flow-readable location for the card number:
 
 ```typescript
 const emvData = JSON.parse(tx.emv);
@@ -89,15 +95,16 @@ const cardNumber = emvData['Card Number']; // e.g., '1234'
 const brand = emvData['Brand']; // Processor sent; defaults to 'giftCard' if absent
 ```
 
-This is the standard external-consumer location for EMV details.
+This is the standard external-consumer location for EMV details. The local transaction row's `paymentData` carries `referenceId`/`processor`/`label` instead, but flows don't have access to it — only the order doc.
 
 ## Persistence Notes
 
 When a refund is recorded:
 
-- `processor`, `referenceId`, and `label` are persisted on the refund legs.
+- On the **order doc**: the refund leg's `emv` JSON carries the card number (`'Card Number'`) and brand; this is what flows read back.
+- On the **local transaction row**: `processor`, `referenceId`, and `label` are persisted on `paymentData` — not readable by flows, but present for internal reporting/receipts.
 - `metadata` is **not** stored on payment legs today (future enhancement).
-- The capture legs from the original tender retain their original `referenceId` (e.g., the gift-card number from `redeemPayment`).
+- The capture legs from the original tender retain their original `referenceId` (e.g., the gift-card number from `redeemPayment`) on their transaction row's `paymentData`, and their card number in `emv` on the order doc.
 
 ## Example Usage
 
@@ -122,8 +129,9 @@ try {
 
 ## Error Handling
 
-- **Missing `amount`**: throws "Amount must be greater than 0"
-- **Missing `referenceId`**: throws "referenceId is required"
+- **Missing/invalid `amount`**: throws "redeemRefund: amount is required and must be a positive integer (minor currency units)" (kaching `handler.ts`)
+- **Missing `referenceId`**: throws "redeemRefund: referenceId is required"
 - **Invalid order ID**: throws "Order with ID {orderId} not found"
-- **Non-refundable order state**: throws "ORDER_NOT_REFUNDABLE: order {orderId} is '{state}' — only 'paid' or 'partially_refunded' orders can be refunded"
-- **Exceeds remaining capacity**: throws "Refund amount {amount} exceeds remaining refundable capacity {remainingCapacity}"
+- **Exceeds remaining capacity**: throws "REFUND_AMOUNT_EXCEEDS_CAPACITY: requested {amount} exceeds remaining refundable {totalCapacity}" (kaching `planRefund.ts`). Extensions matching on this should match the `REFUND_AMOUNT_EXCEEDS_CAPACITY` prefix, not the exact phrasing after it.
+
+The demo mock (`mock.ts`) approximates these gates for local development but doesn't reproduce the runtime strings exactly — match the runtime strings above, not the mock's.
