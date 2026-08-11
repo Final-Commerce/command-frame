@@ -12,6 +12,7 @@ Processes a partial refund based on the current refund selections in the refund 
 | `orderId` | `string`  | `false`  | Optional order to refund (sets it active first).                        |
 | `items`   | `array`   | `false`  | Optional items to select for refund before processing.                 |
 | `openUI`  | `boolean` | `false`  | Multi-tender only. Defaults to `true`. See "Multi-tender orders" below. |
+| `legs`    | `array`   | `false`  | Explicit per-tender allocation (minor units). Requires `openUI: false`. See "Choosing which payments to refund to" below. |
 
 ## Response
 
@@ -87,6 +88,42 @@ await command.processPartialRefund({
 
 `openUI` has no effect on single-tender orders (they are already headless — there
 is nothing to allocate).
+
+## Choosing which payments to refund to
+
+The split-payment refund modal let a cashier pick **which original payment** each
+refunded dollar returns to. `legs` is the headless replacement: with
+`openUI: false`, pass an explicit per-tender allocation and the refund is
+committed exactly as staged — no modal.
+
+Each leg names an original payment by its `transactionId` and the amount, **in
+minor units** (cents), to return to that source:
+
+```typescript
+// Refund a 15.00 selection: 7.00 back to the cash payment, 8.00 back to the card.
+await command.processPartialRefund({
+  orderId: 'order-123',
+  items: [{ itemKey: 'line-1', quantity: 1, type: 'product' }],
+  openUI: false,
+  legs: [
+    { transactionId: 'cash-txn-id', amount: 700 },
+    { transactionId: 'card-txn-id', amount: 800 },
+  ],
+});
+```
+
+Rules (each throws and commits nothing on failure):
+
+- **`legs` requires `openUI: false`.** With the modal path (`openUI` omitted or
+  `true`) the modal owns allocation and `legs` are ignored.
+- **Σ `amount` must equal the refund total** computed from the selected `items`.
+- **Each `amount` must be ≤ that source's remaining refundable capacity.**
+- **Each `transactionId` must match a payment on the order.**
+
+Cash legs receive the same drawer-rounding and residue handling the modal
+applied, so the engine's refund invariants hold. Omit `legs` (with
+`openUI: false`) to fall back to the default proportional allocation across all
+sources.
 
 ## Notes
 

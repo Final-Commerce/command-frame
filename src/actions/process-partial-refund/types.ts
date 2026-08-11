@@ -24,6 +24,30 @@ export interface ProcessPartialRefundParams {
      * nothing to allocate).
      */
     openUI?: boolean;
+    /**
+     * Explicit per-tender allocation for the refund — the headless replacement
+     * for choosing, in the split-payment refund modal, WHICH original payment
+     * each refunded dollar returns to. Each entry names an original payment by
+     * its `transactionId` and the amount, **in minor units** (cents), to return
+     * to that source.
+     *
+     * Requires `openUI: false` — with the modal path (`openUI` omitted/`true`)
+     * the modal owns allocation and `legs` are ignored. Validation:
+     * - Σ of all `amount`s **must equal** the refund total computed from the
+     *   selected `items` (a mismatch throws; nothing is committed);
+     * - each `amount` must be ≤ that source's remaining refundable capacity
+     *   (over-cap throws, naming the source);
+     * - an unknown `transactionId` throws, naming it.
+     *
+     * Omit `legs` to keep the default proportional allocation across sources.
+     * See "Choosing which payments to refund to" in the README.
+     */
+    legs?: {
+        /** `transactionId` of the original payment this leg returns money to. */
+        transactionId: string;
+        /** Amount to return to that source, in minor units (cents). */
+        amount: number;
+    }[];
     /** Optional items to refund. */
     items?: {
         /** internalId or variantId or customSaleId. */
