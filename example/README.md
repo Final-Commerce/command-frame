@@ -158,6 +158,23 @@ await command.integrationPayment({
 // Refund Actions
 await command.initiateRefund({ orderId: 'order-123' });
 
+// Read-only: the engine's own per-source/order-level refund capacity — prefill refund UI from this, don't recompute it
+const plan = await command.getRefundPlan({ orderId: 'order-123' });
+console.log('Remaining refundable (minor units):', plan.remainingRefundable);
+
+// Headless multi-tender partial refund with an explicit per-tender allocation (openUI: false required for legs)
+await command.processPartialRefund({
+  orderId: 'order-123',
+  openUI: false,
+  legs: [
+    { transactionId: 'cash-txn-id', amount: 700 },
+    { transactionId: 'card-txn-id', amount: 800, giftCard: { referenceId: 'GC1' } }, // mixed return onto a gift card
+  ],
+});
+
+// Refund an already-captured payment onto a gift card/redeem tender (credit-first — credit the card before calling)
+await command.redeemRefund({ orderId: 'order-123', amount: 2500, referenceId: 'GIFTCARD-456' });
+
 // Customer Actions
 await command.addCustomerNote({ customerId: 'customer-123', note: 'VIP customer' });
 await command.removeCustomerNote({ noteId: 'note-id-from-customer-notes-array' });
@@ -186,13 +203,13 @@ await command.triggerZapierWebhook({
 });
 ```
 
-## Host-initiated extension refunds (mock, without Render)
+## Refunding redeem payments
 
-Refunding a **redeem** payment is started by the **host** (Render), not by `command.redeemPayment`. The host `postMessage`s into your iframe; your extension must implement **`installExtensionRefundListener`** (see the main command-frame README).
+Refunding a **redeem** payment is initiated by calling the **`redeemRefund`** command (see [redeemRefund](../src/actions/redeem-refund/README.md) in the main command-frame documentation). This supports refunding a redeem payment back onto a gift card when the extension credits the card first.
 
-- **In this example app**, `src/main.tsx` registers a **mock** listener that always succeeds after a short delay, so you can verify the wire protocol locally.
-- **Without running Render:** start the dev server, then open **`http://localhost:5179/host-simulator.html`**. That page embeds the example in an iframe (like Render) and sends a fake `extensionRefundRequest`. You should see a JSON reply in the log and a matching log line in the iframe console.
-- **Full flow:** embed the example (or your extension) in Render’s flow iframe and run a real redeem sale + refund in the POS.
+Plain refunds on redeem sources still fail by design (`REDEEM_REFUND_UNSUPPORTED`); use `redeemRefund` to refund onto a gift card instead.
+
+Before prompting for an amount, call **[getRefundPlan](../src/actions/get-refund-plan/README.md)** (read-only) to get the order's own per-source caps and same-card `cardNumber` prefill — see the **Refunds** tab in this example app for a live panel, and [processPartialRefund](../src/actions/process-partial-refund/README.md) for the headless `legs`/mixed-gift-card-destination path.
 
 ## Testing in an Iframe
 
