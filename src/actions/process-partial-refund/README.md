@@ -51,6 +51,7 @@ try {
 
 ## Error Handling
 
+- **Permission**: throws `REFUND_PERMISSION_DENIED: active user lacks the 'issue_refunds' permission` when the active user's role doesn't grant `issue_refunds` (role-less user types — company owner, final/org staff — bypass). Prefix-match `REFUND_PERMISSION_DENIED`; pre-gate your UI with [`checkPermission`](../check-permission/README.md).
 - Throws an error if no order is currently active.
 - Throws an error if no refund details exist.
 - Throws an error if no items are selected for refund.
@@ -218,14 +219,10 @@ per-row dropdown produced), so hub-side inventory ingest applies the disposition
 `stockAction` is ignored for non-`product` items — custom sales, fees and tips
 carry no stock action, exactly as the popup only offered the choice on line items.
 
-## Known limitation: `reason` is not persisted on this path
+## `reason` persistence
 
-`reason` is accepted by this command but is **not** currently threaded through to
-the persisted `Refund` doc or the state-event audit row on the item-selection
-commit path (`legs` or the default proportional allocation) — the runtime's
-refund dispatcher takes an unused `_reason` parameter here and falls back to a
-fixed `'partial-refund'` label instead. Contrast with `redeemRefund`, whose
-`reason` **is** recorded on the refund and audit rows. Flows that need the
-reason to show up on the refund record should track it themselves (e.g. a
-custom table row) until this is wired up; do not rely on it appearing on the
-order's refund history.
+`reason` is recorded verbatim on the persisted `Refund` doc's `reason` field and
+on the state-event audit row, on every commit path (default allocation, `legs`,
+full refund) — same as `redeemRefund`. When omitted, the refund doc's `reason`
+stays unset and only the audit row carries the `'partial-refund'` /
+`'full-refund'` fallback label.

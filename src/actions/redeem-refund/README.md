@@ -129,6 +129,7 @@ try {
 
 ## Error Handling
 
+- **Permission**: throws `REFUND_PERMISSION_DENIED: active user lacks the 'issue_refunds' permission` when the active user's role doesn't grant `issue_refunds` (role-less user types bypass). Prefix-match `REFUND_PERMISSION_DENIED`; pre-gate your UI with [`checkPermission`](../check-permission/README.md).
 - **Missing/invalid `amount`**: throws "redeemRefund: amount is required and must be a positive integer (minor currency units)" (kaching `handler.ts`)
 - **Missing `referenceId`**: throws "redeemRefund: referenceId is required"
 - **Invalid order ID**: throws "Order with ID {orderId} not found"

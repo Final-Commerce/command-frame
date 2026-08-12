@@ -91,6 +91,7 @@ import { getRemainingRefundableQuantities } from './actions/get-remaining-refund
 import { processPartialRefund } from './actions/process-partial-refund/action';
 import { redeemRefund } from './actions/redeem-refund/action';
 import { getRefundPlan } from './actions/get-refund-plan/action';
+import { checkPermission } from './actions/check-permission/action';
 // Custom Tables Actions
 import { getCustomTables } from './actions/get-custom-tables/action';
 import { getCustomTableFields } from './actions/get-custom-table-fields/action';
@@ -226,6 +227,7 @@ export const command = {
   processPartialRefund,
   redeemRefund,
   getRefundPlan,
+  checkPermission,
   // Product CRUD Actions
   addProduct,
   editProduct,
@@ -363,6 +365,11 @@ export type {
   GetRefundPlanResponse,
   RefundPlanSource,
 } from './actions/get-refund-plan/types';
+export type {
+  CheckPermission,
+  CheckPermissionParams,
+  CheckPermissionResponse,
+} from './actions/check-permission/types';
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from './actions/initiate-refund/types';
 export type {
