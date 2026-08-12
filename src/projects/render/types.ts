@@ -58,6 +58,7 @@ import type {
   GetRemainingRefundableQuantities,
   ProcessPartialRefund,
   RedeemRefund,
+  GetRefundPlan,
   GetCurrentCart,
   Print,
   SetActiveOrder,
@@ -167,6 +168,7 @@ export interface RenderProviderActions {
   getRemainingRefundableQuantities: GetRemainingRefundableQuantities;
   processPartialRefund: ProcessPartialRefund;
   redeemRefund: RedeemRefund;
+  getRefundPlan: GetRefundPlan;
   getCurrentCart: GetCurrentCart;
   print: Print;
   setActiveOrder: SetActiveOrder;
