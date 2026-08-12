@@ -96,6 +96,20 @@ export interface ProcessPartialRefundParams {
         itemKey: string;
         quantity: number;
         type?: 'product' | 'customSale' | 'fee' | 'tip'; // Optional type hint
+        /**
+         * Per-item stock disposition for a refunded **product** line — the
+         * headless equivalent of the old refund popup's per-row restock/damaged
+         * dropdown. Recorded on the persisted refund line so hub-side inventory
+         * ingest knows whether the returned units go back on the shelf.
+         *
+         * - `'RESTOCK'` (default when omitted): units return to sellable stock
+         *   — the popup's default first option.
+         * - `'REFUND_DAMAGE'`: units are written off as damaged, not restocked.
+         *
+         * Ignored for non-`product` items (custom sales / fees / tips carry no
+         * stock action, exactly as the popup only offered it on line items).
+         */
+        stockAction?: 'RESTOCK' | 'REFUND_DAMAGE';
     }[];
 }
 

@@ -10,7 +10,7 @@ Processes a partial refund based on the current refund selections in the refund 
 | :-------- | :-------- | :------- | :----------------------------------------------------------------------- |
 | `reason`  | `string`  | `false`  | Optional reason for the refund.                                         |
 | `orderId` | `string`  | `false`  | Optional order to refund (sets it active first).                        |
-| `items`   | `array`   | `false`  | Optional items to select for refund before processing.                 |
+| `items`   | `array`   | `false`  | Optional items to select for refund before processing. A `product` entry may carry `stockAction` — see "Per-item stock actions" below. |
 | `openUI`  | `boolean` | `false`  | Multi-tender only. Defaults to `true`. See "Multi-tender orders" below. |
 | `legs`    | `array`   | `false`  | Explicit per-tender allocation (minor units); a leg may carry a `giftCard` destination for mixed returns. Requires `openUI: false`. See "Choosing which payments to refund to" and "Mixed returns" below. |
 
@@ -187,6 +187,32 @@ up front; keep at least one leg returning to a cash/card source, or use
 - Payment refunds are processed based on the original payment methods.
 - Stock actions (restock/damage) are applied based on the refund details options.
 - `openUI` defaults to `true`; existing callers keep the split-payment modal behavior for multi-tender orders.
+
+## Per-item stock actions (restock vs damaged)
+
+The old refund popup let a cashier choose, per product row, whether the returned
+units go **back to stock** or are written off as **damaged**. The headless path
+carries the same choice on each `product` item via `stockAction`:
+
+```typescript
+await command.processPartialRefund({
+  orderId: 'order-123',
+  openUI: false,
+  items: [
+    { itemKey: 'line-1', quantity: 1, type: 'product', stockAction: 'RESTOCK' },
+    { itemKey: 'line-2', quantity: 2, type: 'product', stockAction: 'REFUND_DAMAGE' },
+  ],
+});
+```
+
+- `'RESTOCK'` — the returned units go back on the shelf. **This is the default**
+  when `stockAction` is omitted, matching the popup's default first option.
+- `'REFUND_DAMAGE'` — the units are written off as damaged, not restocked.
+
+The value is recorded on the persisted refund line (the same field the popup's
+per-row dropdown produced), so hub-side inventory ingest applies the disposition.
+`stockAction` is ignored for non-`product` items — custom sales, fees and tips
+carry no stock action, exactly as the popup only offered the choice on line items.
 
 ## Known limitation: `reason` is not persisted on this path
 
