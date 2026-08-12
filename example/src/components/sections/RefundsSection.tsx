@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { renderClient as command } from '@final-commerce/command-frame';
-import type { GetRefundPlanResponse } from '@final-commerce/command-frame';
+import type { GetRefundPlanResponse, ProcessPartialRefundParams } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -412,10 +412,10 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
       {/* Process Partial Refund */}
       <CommandSection title="Process Partial Refund">
         <p className="section-description">
-          Processes the refund with current selections. Make sure to set items to refund first. On a multi-tender
-          order, uncheck "Open split-payment UI" to commit headlessly — either against the planner's default
-          proportional allocation, or against an explicit <code>legs</code> allocation (JSON below; per-tender
-          amount in minor units, with an optional <code>giftCard</code> destination for mixed returns).
+          Processes the refund with current selections. Make sure to set items to refund first. On a multi-tender order,
+          uncheck "Open split-payment UI" to commit headlessly — either against the planner's default proportional
+          allocation, or against an explicit <code>legs</code> allocation (JSON below; per-tender amount in minor units,
+          with an optional <code>giftCard</code> destination for mixed returns).
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -455,10 +455,10 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
               setProcessRefundResponse('Error: Not running in iframe');
               return;
             }
-            let legs;
+            let legs: ProcessPartialRefundParams['legs'];
             if (processRefundLegsJson.trim()) {
               try {
-                legs = JSON.parse(processRefundLegsJson);
+                legs = JSON.parse(processRefundLegsJson) as ProcessPartialRefundParams['legs'];
               } catch {
                 setProcessRefundResponse('Error: Legs is not valid JSON');
                 return;
@@ -496,9 +496,9 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
       <CommandSection title="Get Refund Plan">
         <p className="section-description">
           Read-only: queries the refund engine's own per-source and order-level capacity for an order. Use this to
-          prefill refund UI (e.g. <code>legs</code> for Process Partial Refund, or <code>redeemRefund</code>'s
-          same-card refund) instead of recomputing capacity client-side — the numbers are an advisory snapshot, so
-          the mutating commands still re-validate at commit time.
+          prefill refund UI (e.g. <code>legs</code> for Process Partial Refund, or <code>redeemRefund</code>'s same-card
+          refund) instead of recomputing capacity client-side — the numbers are an advisory snapshot, so the mutating
+          commands still re-validate at commit time.
         </p>
         <div className="form-group">
           <div className="form-field">

@@ -1,9 +1,6 @@
 import { RedeemRefund, RedeemRefundParams, RedeemRefundResponse } from './types';
 import { MOCK_ORDERS, mockPublishEvent } from '../../demo/database';
 
-// Payment states in which an order is refundable
-const REFUNDABLE_PAYMENT_STATES = ['paid', 'partially_refunded'];
-
 // Track refunded amounts per order to enforce remaining capacity gate
 const mockRefundedAmounts: Record<string, number> = {};
 
@@ -25,12 +22,8 @@ export const mockRedeemRefund: RedeemRefund = async (params: RedeemRefundParams)
   }
   const orderId = order._id;
 
-  // Check if order is in a refundable state
-  if (!REFUNDABLE_PAYMENT_STATES.includes(order.paymentState as string)) {
-    throw new Error(
-      `ORDER_NOT_REFUNDABLE: order ${orderId} is '${order.paymentState}' — only 'paid' or 'partially_refunded' orders can be refunded`,
-    );
-  }
+  // NO payment-state gate — the runtime has none (partially_paid orders are
+  // refundable too); mirroring it here would teach devs a phantom error class.
 
   // Track refunded amounts and check remaining capacity
   const refundedSoFar = mockRefundedAmounts[orderId] || 0;
