@@ -48,7 +48,9 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
 
   // Process Partial Refund
   const [refundReason, setRefundReason] = useState<string>('');
+  const [processRefundOrderId, setProcessRefundOrderId] = useState<string>('');
   const [processRefundOpenUI, setProcessRefundOpenUI] = useState<boolean>(true);
+  const [processRefundItemsJson, setProcessRefundItemsJson] = useState<string>('');
   const [processRefundLegsJson, setProcessRefundLegsJson] = useState<string>('');
   const [processRefundLoading, setProcessRefundLoading] = useState(false);
   const [processRefundResponse, setProcessRefundResponse] = useState<string>('');
@@ -419,6 +421,15 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
         </p>
         <div className="form-group">
           <div className="form-field">
+            <label>Order ID (optional):</label>
+            <input
+              type="text"
+              value={processRefundOrderId}
+              onChange={(e) => setProcessRefundOrderId(e.target.value)}
+              placeholder="Leave empty to use active refund order"
+            />
+          </div>
+          <div className="form-field">
             <label>Reason (optional):</label>
             <input
               type="text"
@@ -436,6 +447,17 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
               />{' '}
               Open split-payment UI (openUI) — uncheck for headless multi-tender commit
             </label>
+          </div>
+          <div className="form-field">
+            <label>Items (optional, JSON array — per-item stockAction: RESTOCK | REFUND_DAMAGE):</label>
+            <textarea
+              value={processRefundItemsJson}
+              onChange={(e) => setProcessRefundItemsJson(e.target.value)}
+              placeholder={
+                '[\n  { "itemKey": "line-1", "quantity": 1, "type": "product", "stockAction": "RESTOCK" },\n  { "itemKey": "line-2", "quantity": 2, "type": "product", "stockAction": "REFUND_DAMAGE" }\n]'
+              }
+              rows={5}
+            />
           </div>
           <div className="form-field">
             <label>Legs (optional, JSON array — requires openUI unchecked):</label>
@@ -464,12 +486,23 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
                 return;
               }
             }
+            let items: ProcessPartialRefundParams['items'];
+            if (processRefundItemsJson.trim()) {
+              try {
+                items = JSON.parse(processRefundItemsJson) as ProcessPartialRefundParams['items'];
+              } catch {
+                setProcessRefundResponse('Error: Items is not valid JSON');
+                return;
+              }
+            }
             setProcessRefundLoading(true);
             setProcessRefundResponse('');
             try {
               const result = await command.processPartialRefund({
+                ...(processRefundOrderId ? { orderId: processRefundOrderId } : {}),
                 ...(refundReason ? { reason: refundReason } : {}),
                 openUI: processRefundOpenUI,
+                ...(items ? { items } : {}),
                 ...(legs ? { legs } : {}),
               });
               setProcessRefundResponse(JSON.stringify(result, null, 2));
