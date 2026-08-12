@@ -16,7 +16,7 @@ The library provides three main capabilities:
 | **Pub/Sub**         | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted)     |
 | **Hooks**           | Register business-logic callbacks that persist across all pages           | Session-scoped (survives page navigation) |
 | **Interceptors**    | Gate POS flows (approve / modify / block) at named points                 | Blocking; host waits for your response    |
-| **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`, or mixed-destination legs on `processPartialRefund`; query engine capacity with `getRefundPlan` | Request/response per call                 |
+| **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`, or mixed-destination legs on `processPartialRefund`; query engine capacity with `getRefundPlan`; pre-gate UI with `checkPermission` (`issue_refunds` is enforced runtime-side) | Request/response per call                 |
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
 
