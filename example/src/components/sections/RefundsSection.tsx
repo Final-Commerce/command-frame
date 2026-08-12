@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { renderClient as command } from '@final-commerce/command-frame';
+import type { GetRefundPlanResponse } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -47,8 +48,16 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
 
   // Process Partial Refund
   const [refundReason, setRefundReason] = useState<string>('');
+  const [processRefundOpenUI, setProcessRefundOpenUI] = useState<boolean>(true);
+  const [processRefundLegsJson, setProcessRefundLegsJson] = useState<string>('');
   const [processRefundLoading, setProcessRefundLoading] = useState(false);
   const [processRefundResponse, setProcessRefundResponse] = useState<string>('');
+
+  // Get Refund Plan
+  const [refundPlanOrderId, setRefundPlanOrderId] = useState<string>('');
+  const [getRefundPlanLoading, setGetRefundPlanLoading] = useState(false);
+  const [getRefundPlanResponse, setGetRefundPlanResponse] = useState<GetRefundPlanResponse | null>(null);
+  const [getRefundPlanError, setGetRefundPlanError] = useState<string>('');
 
   // Redeem Refund
   const [redeemOrderId, setRedeemOrderId] = useState<string>('');
@@ -403,7 +412,10 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
       {/* Process Partial Refund */}
       <CommandSection title="Process Partial Refund">
         <p className="section-description">
-          Processes the refund with current selections. Make sure to set items to refund first.
+          Processes the refund with current selections. Make sure to set items to refund first. On a multi-tender
+          order, uncheck "Open split-payment UI" to commit headlessly — either against the planner's default
+          proportional allocation, or against an explicit <code>legs</code> allocation (JSON below; per-tender
+          amount in minor units, with an optional <code>giftCard</code> destination for mixed returns).
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -415,6 +427,27 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
               placeholder="Refund reason"
             />
           </div>
+          <div className="form-field">
+            <label>
+              <input
+                type="checkbox"
+                checked={processRefundOpenUI}
+                onChange={(e) => setProcessRefundOpenUI(e.target.checked)}
+              />{' '}
+              Open split-payment UI (openUI) — uncheck for headless multi-tender commit
+            </label>
+          </div>
+          <div className="form-field">
+            <label>Legs (optional, JSON array — requires openUI unchecked):</label>
+            <textarea
+              value={processRefundLegsJson}
+              onChange={(e) => setProcessRefundLegsJson(e.target.value)}
+              placeholder={
+                '[\n  { "transactionId": "cash-txn-id", "amount": 700 },\n  { "transactionId": "card-txn-id", "amount": 800, "giftCard": { "referenceId": "GC1" } }\n]'
+              }
+              rows={5}
+            />
+          </div>
         </div>
         <button
           onClick={async () => {
@@ -422,10 +455,23 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
               setProcessRefundResponse('Error: Not running in iframe');
               return;
             }
+            let legs;
+            if (processRefundLegsJson.trim()) {
+              try {
+                legs = JSON.parse(processRefundLegsJson);
+              } catch {
+                setProcessRefundResponse('Error: Legs is not valid JSON');
+                return;
+              }
+            }
             setProcessRefundLoading(true);
             setProcessRefundResponse('');
             try {
-              const result = await command.processPartialRefund(refundReason ? { reason: refundReason } : undefined);
+              const result = await command.processPartialRefund({
+                ...(refundReason ? { reason: refundReason } : {}),
+                openUI: processRefundOpenUI,
+                ...(legs ? { legs } : {}),
+              });
               setProcessRefundResponse(JSON.stringify(result, null, 2));
             } catch (error) {
               setProcessRefundResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -443,6 +489,95 @@ export function RefundsSection({ isInIframe }: RefundsSectionProps) {
             data={processRefundResponse}
             title={processRefundResponse.startsWith('Error') ? 'Error' : 'Success'}
           />
+        )}
+      </CommandSection>
+
+      {/* Get Refund Plan */}
+      <CommandSection title="Get Refund Plan">
+        <p className="section-description">
+          Read-only: queries the refund engine's own per-source and order-level capacity for an order. Use this to
+          prefill refund UI (e.g. <code>legs</code> for Process Partial Refund, or <code>redeemRefund</code>'s
+          same-card refund) instead of recomputing capacity client-side — the numbers are an advisory snapshot, so
+          the mutating commands still re-validate at commit time.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Order ID (optional):</label>
+            <input
+              type="text"
+              value={refundPlanOrderId}
+              onChange={(e) => setRefundPlanOrderId(e.target.value)}
+              placeholder="Leave empty to use active order"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!isInIframe) {
+              setGetRefundPlanError('Error: Not running in iframe');
+              setGetRefundPlanResponse(null);
+              return;
+            }
+            setGetRefundPlanLoading(true);
+            setGetRefundPlanError('');
+            setGetRefundPlanResponse(null);
+            try {
+              const result = await command.getRefundPlan(
+                refundPlanOrderId ? { orderId: refundPlanOrderId } : undefined,
+              );
+              setGetRefundPlanResponse(result);
+            } catch (error) {
+              setGetRefundPlanError(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setGetRefundPlanLoading(false);
+            }
+          }}
+          disabled={getRefundPlanLoading}
+          className="btn btn--primary"
+        >
+          {getRefundPlanLoading ? 'Loading...' : 'Get Refund Plan'}
+        </button>
+        {getRefundPlanError && <JsonViewer data={getRefundPlanError} title="Error" />}
+        {getRefundPlanResponse && (
+          <div className="data-table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Type</th>
+                  <th>Processor</th>
+                  <th>Captured</th>
+                  <th>Refunded</th>
+                  <th>Max Refundable</th>
+                  <th>Refundable To Source</th>
+                  <th>Card Number</th>
+                </tr>
+              </thead>
+              <tbody>
+                {getRefundPlanResponse.sources.map((source) => (
+                  <tr key={source.transactionId}>
+                    <td>{source.transactionId}</td>
+                    <td>{source.paymentType}</td>
+                    <td>{source.processor ?? ''}</td>
+                    <td className="text-right">{source.capturedAmount}</td>
+                    <td className="text-right">{source.refundedAmount}</td>
+                    <td className="text-right">{source.maxRefundable}</td>
+                    <td>{source.refundableToSource ? 'yes' : 'no'}</td>
+                    <td>{source.cardNumber ?? ''}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="data-table-footer">
+              <strong>Remaining refundable: {getRefundPlanResponse.remainingRefundable}</strong>
+              {' · '}
+              Non-refundable liability: {getRefundPlanResponse.nonRefundableLiability}
+              {' · '}
+              Total captured: {getRefundPlanResponse.totalCaptured}
+              {' · '}
+              Total refunded: {getRefundPlanResponse.totalRefunded}
+            </div>
+          </div>
         )}
       </CommandSection>
 

@@ -16,7 +16,7 @@ The library provides three main capabilities:
 | **Pub/Sub**         | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted)     |
 | **Hooks**           | Register business-logic callbacks that persist across all pages           | Session-scoped (survives page navigation) |
 | **Interceptors**    | Gate POS flows (approve / modify / block) at named points                 | Blocking; host waits for your response    |
-| **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`        | Request/response per call                 |
+| **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`, or mixed-destination legs on `processPartialRefund`; query engine capacity with `getRefundPlan` | Request/response per call                 |
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
 
@@ -179,6 +179,8 @@ const result = await command.redeemRefund({
 ```
 
 **Full documentation:** **[redeemRefund](./src/actions/redeem-refund/README.md)**.
+
+Before prompting the cashier for an amount, query **[getRefundPlan](./src/actions/get-refund-plan/README.md)** (read-only) for the order's own per-source caps (`maxRefundable`, `cardNumber` for same-card prefill) and order-level `remainingRefundable` — don't recompute this client-side, and always handle a `REFUND_AMOUNT_EXCEEDS_CAPACITY` rejection from the mutating call since the plan is only an advisory snapshot.
 
 ## Development & Testing
 

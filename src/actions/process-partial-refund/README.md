@@ -188,3 +188,15 @@ up front; keep at least one leg returning to a cash/card source, or use
 - Stock actions (restock/damage) are applied based on the refund details options.
 - `openUI` defaults to `true`; existing callers keep the split-payment modal behavior for multi-tender orders.
 
+## Known limitation: `reason` is not persisted on this path
+
+`reason` is accepted by this command but is **not** currently threaded through to
+the persisted `Refund` doc or the state-event audit row on the item-selection
+commit path (`legs` or the default proportional allocation) — the runtime's
+refund dispatcher takes an unused `_reason` parameter here and falls back to a
+fixed `'partial-refund'` label instead. Contrast with `redeemRefund`, whose
+`reason` **is** recorded on the refund and audit rows. Flows that need the
+reason to show up on the refund record should track it themselves (e.g. a
+custom table row) until this is wired up; do not rely on it appearing on the
+order's refund history.
+

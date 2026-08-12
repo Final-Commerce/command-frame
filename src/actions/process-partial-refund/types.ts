@@ -2,7 +2,14 @@ import type { CFTransitionResult } from "../../common-types/order-state";
 
 // Process Partial Refund Types
 export interface ProcessPartialRefundParams {
-    /** Optional refund reason. */
+    /**
+     * Optional refund reason.
+     *
+     * KNOWN LIMITATION: not currently persisted on the `Refund` doc or the
+     * state-event audit row via this command — the runtime falls back to a
+     * fixed 'partial-refund' label instead. Unlike `redeemRefund`, whose
+     * `reason` IS recorded. See the README's "Known limitation" section.
+     */
     reason?: string;
     /** Optional: specify which order to refund (sets it as active). */
     orderId?: string;

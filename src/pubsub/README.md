@@ -24,7 +24,7 @@ topics.unsubscribe("customers", subscriptionId);
 | Topic                                               | Description                                                            | Events    | Documentation                                     |
 | --------------------------------------------------- | ---------------------------------------------------------------------- | --------- | ------------------------------------------------- |
 | [customers](./topics/customers/README.md)           | Customer lifecycle events                                              | 8 events  | [View Details](./topics/customers/README.md)      |
-| [orders](./topics/orders/README.md)                 | Order lifecycle events                                                 | 4 events  | [View Details](./topics/orders/README.md)         |
+| [orders](./topics/orders/README.md)                 | Order lifecycle events                                                 | 5 events  | [View Details](./topics/orders/README.md)         |
 | [refunds](./topics/refunds/README.md)               | Refund lifecycle events                                                | 4 events  | [View Details](./topics/refunds/README.md)        |
 | [products](./topics/products/README.md)             | Product sync events                                                    | 4 events  | [View Details](./topics/products/README.md)       |
 | [cart](./topics/cart/README.md)                     | Cart operation events                                                  | 16 events | [View Details](./topics/cart/README.md)           |
