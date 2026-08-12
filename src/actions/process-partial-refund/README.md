@@ -126,7 +126,10 @@ Rules (each throws and commits nothing on failure):
   capture.)
 - **The amounts aggregated per source must be ≤ that source's remaining
   refundable capacity** (two legs on the same source are summed before the check).
-- **Each `amount` must be a positive minor-unit value.**
+- **Zero-amount entries are ignored; negative amounts are rejected.** A `0` leg
+  is dropped like an omitted row — matching the split-payment modal, which let a
+  cashier put all the money on one tender and leave the other row at 0. A
+  negative `amount` throws.
 - **Each `transactionId` must match a payment on the order.**
 
 Cash legs receive the same drawer-rounding and residue handling the modal

@@ -40,7 +40,9 @@ export interface ProcessPartialRefundParams {
      *   mismatch throws; nothing is committed);
      * - the amounts **aggregated per source** must be ≤ that source's remaining
      *   refundable capacity (over-cap throws, naming the source);
-     * - each `amount` must be a positive minor-unit value;
+     * - a **zero** `amount` entry is IGNORED — dropped like an omitted row,
+     *   matching the modal (which let a cashier leave a tender at 0 and filtered
+     *   it at commit) — while a **negative** `amount` is rejected;
      * - an unknown `transactionId` throws, naming it.
      *
      * MIXED RETURNS — set `giftCard` on a leg to land that leg's amount on a
@@ -58,7 +60,8 @@ export interface ProcessPartialRefundParams {
     legs?: {
         /** `transactionId` of the original payment this leg draws from. */
         transactionId: string;
-        /** Amount for this leg, in minor units (cents). */
+        /** Amount for this leg, in minor units (cents). `0` is ignored (dropped
+         *  like an omitted row); a negative value is rejected. */
         amount: number;
         /**
          * When set, this leg's amount lands on the gift-card / store-credit
