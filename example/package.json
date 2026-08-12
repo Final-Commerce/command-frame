@@ -12,7 +12,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@final-commerce/command-frame": "^0.4.0-preprod.1",
+    "@final-commerce/command-frame": "^0.4.1-preprod.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.12.0",
@@ -45,6 +45,6 @@
     ]
   },
   "overrides": {
-    "@final-commerce/command-frame": "^0.4.0-preprod.1"
+    "@final-commerce/command-frame": "^0.4.1-preprod.1"
   }
 }

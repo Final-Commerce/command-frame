@@ -6,16 +6,16 @@ Records a refund of one or more order payments onto a gift-card or redeem tender
 
 `params: RedeemRefundParams`
 
-| Parameter     | Type                      | Required | Description                                                                                                                                                                        |
-| ------------- | ------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `amount`      | `number`                  | Yes      | Refund amount in integer minor currency units (e.g., 1575 = $15.75). Must be > 0 and within the order's remaining refundable capacity (tip-inclusive, across all source payments). |
-| `referenceId` | `string`                  | Yes      | Destination card/account identifier (e.g., gift-card number). Recorded on every refund leg.                                                                                        |
-| `orderId`     | `string`                  | No       | Order to refund; defaults to the active order.                                                                                                                                     |
-| `processor`   | `string`                  | No       | Destination provider label; defaults to "giftCard".                                                                                                                                |
-| `label`       | `string`                  | No       | Human-readable label for receipts/reporting.                                                                                                                                       |
-| `extensionId` | `string`                  | No       | Extension identity, recorded on the legs when provided.                                                                                                                            |
-| `metadata`    | `Record<string, unknown>` | No       | Opaque extension payload, recorded on the legs when provided. Note: `metadata` is not persisted on payment legs today; this is a future enhancement.                               |
-| `reason`      | `string`                  | No       | Cashier-facing reason, recorded on the refund and state-event audit rows.                                                                                                          |
+| Parameter     | Type                      | Required | Description                                                                                                                                                                                                    |
+| ------------- | ------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `amount`      | `number`                  | Yes      | Refund amount in integer minor currency units (e.g., 1575 = $15.75). Must be > 0 and within the order's remaining refundable capacity (tip-inclusive, across all source payments).                             |
+| `referenceId` | `string`                  | Yes      | Destination card/account identifier (e.g., gift-card number). Recorded on every refund leg.                                                                                                                    |
+| `orderId`     | `string`                  | No       | Order to refund; defaults to the active order.                                                                                                                                                                 |
+| `processor`   | `string`                  | No       | Destination provider label; defaults to "giftCard".                                                                                                                                                            |
+| `label`       | `string`                  | No       | Human-readable label for receipts/reporting.                                                                                                                                                                   |
+| `extensionId` | `string`                  | No       | Extension identity, recorded on the legs when provided.                                                                                                                                                        |
+| `metadata`    | `Record<string, unknown>` | No       | Opaque extension payload. Persisted (with `extensionId`) in each refund transaction's `paymentData` — read it back from the transaction rows, not from the order document's refund legs, which don't carry it. |
+| `reason`      | `string`                  | No       | Cashier-facing reason, recorded on the refund and state-event audit rows.                                                                                                                                      |
 
 ## Response
 
@@ -55,7 +55,7 @@ const result = await command.redeemRefund({
 
 Refund a gift-card order back onto an existing card. This is now supported via `redeemRefund` only (plain `processPartialRefund` on redeem sources still fails by design).
 
-**Same-Card Prefill Pattern**: The order-doc `PaymentMethod` has no `paymentData` field — that field lives on the *local transaction row*, not on the order. If the original tender was a gift card, the card number is only readable from the leg's `emv` JSON, and only for captures made by kaching ≥1.9.2:
+**Same-Card Prefill Pattern**: The order-doc `PaymentMethod` has no `paymentData` field — that field lives on the _local transaction row_, not on the order. If the original tender was a gift card, the card number is only readable from the leg's `emv` JSON, and only for captures made by kaching ≥1.9.2:
 
 ```typescript
 const originalLeg = order.paymentMethods.find((pm) => pm.paymentType === 'redeem');
@@ -103,7 +103,7 @@ When a refund is recorded:
 
 - On the **order doc**: the refund leg's `emv` JSON carries the card number (`'Card Number'`) and brand; this is what flows read back.
 - On the **local transaction row**: `processor`, `referenceId`, and `label` are persisted on `paymentData` — not readable by flows, but present for internal reporting/receipts.
-- `metadata` is **not** stored on payment legs today (future enhancement).
+- `metadata`/`extensionId` are stored in the refund **transaction rows'** `paymentData`, not on the order document's refund legs. (The capture-side `redeemPayment` is the command that does **not** persist `metadata` today.)
 - The capture legs from the original tender retain their original `referenceId` (e.g., the gift-card number from `redeemPayment`) on their transaction row's `paymentData`, and their card number in `emv` on the order doc.
 
 ## Example Usage
