@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - release-staging
+      - pre-prod
 
     paths:
       - "example/**"
@@ -19,9 +20,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    # Chained selects: release-staging -> staging, pre-prod -> pre-prod, else prod.
+    # An unmatched branch (or an empty secret) lands on PROD, so the "Determine
+    # environment" step below hard-fails on both rather than deploying to prod.
     env:
-      WEB_HOSTING_API_KEY: ${{ github.ref_name == 'release-staging' && secrets.WEB_HOSTING_API_KEY_STAGING || secrets.WEB_HOSTING_API_KEY_PROD }}
-      WEB_HOSTING_API_SECRET: ${{ github.ref_name == 'release-staging' && secrets.WEB_HOSTING_API_SECRET_STAGING || secrets.WEB_HOSTING_API_SECRET_PROD }}
+      WEB_HOSTING_API_KEY: ${{ github.ref_name == 'release-staging' && secrets.WEB_HOSTING_API_KEY_STAGING || github.ref_name == 'pre-prod' && secrets.WEB_HOSTING_API_KEY_PRE_PROD || secrets.WEB_HOSTING_API_KEY_PROD }}
+      WEB_HOSTING_API_SECRET: ${{ github.ref_name == 'release-staging' && secrets.WEB_HOSTING_API_SECRET_STAGING || github.ref_name == 'pre-prod' && secrets.WEB_HOSTING_API_SECRET_PRE_PROD || secrets.WEB_HOSTING_API_SECRET_PROD }}
 
     steps:
       - name: Checkout code
@@ -37,12 +41,30 @@ jobs:
       - name: Determine environment
         id: env
         run: |
-          if [ "${{ github.ref_name }}" == "release-staging" ]; then
-            echo "api_url=https://staging.hosting.finalpos.com/v1/api" >> $GITHUB_OUTPUT
-            echo "environment=staging" >> $GITHUB_OUTPUT
-          else
-            echo "api_url=https://hosting.finalpos.com/v1/api" >> $GITHUB_OUTPUT
-            echo "environment=production" >> $GITHUB_OUTPUT
+          case "${{ github.ref_name }}" in
+            release-staging)
+              echo "api_url=https://staging.hosting.finalpos.com/v1/api" >> $GITHUB_OUTPUT
+              echo "environment=staging" >> $GITHUB_OUTPUT
+              ;;
+            pre-prod)
+              echo "api_url=https://pre-prod.hosting.finalpos.com/v1/api" >> $GITHUB_OUTPUT
+              echo "environment=pre-prod" >> $GITHUB_OUTPUT
+              ;;
+            main)
+              echo "api_url=https://hosting.finalpos.com/v1/api" >> $GITHUB_OUTPUT
+              echo "environment=production" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "::error::Unsupported branch '${{ github.ref_name }}' — refusing to deploy (the credential select would fall through to PRODUCTION)."
+              exit 1
+              ;;
+          esac
+
+          # The credential select is also a fall-through-to-prod: an empty/missing
+          # per-env secret would silently deploy this branch with prod creds.
+          if [ -z "$WEB_HOSTING_API_KEY" ] || [ -z "$WEB_HOSTING_API_SECRET" ]; then
+            echo "::error::Missing web-hosting API key/secret for branch '${{ github.ref_name }}'."
+            exit 1
           fi
 
       - name: Get versions
