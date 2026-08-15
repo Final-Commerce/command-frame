@@ -5,7 +5,19 @@ import type { AddProductFeeParams } from "../add-product-fee/types";
 export interface AddProductToCartParams {
     /** ID of the variant to add. */
     variantId: string;
-    /** Defaults to 1. */
+    /**
+     * Defaults to 1. **May be fractional** — a variant sold by weight, volume or length is priced
+     * per its own unit and keyed in that unit, so `0.456` kg is a quantity, not a typo.
+     *
+     * How many decimals are allowed is the variant's own business: `variant.unit.precision` —
+     * `3` for a litre, `0` for anything sold by the piece. The engine refuses a quantity finer
+     * than that and says which unit it was measured against; do not round, floor or clamp before
+     * sending, and never key a quantity in base units to work around it (a per-100g price with a
+     * gram count is explicitly not supported).
+     *
+     * A quantity field should take its step and its decimal count from `variant.unit.precision`,
+     * not from a constant.
+     */
     quantity?: number;
     /** Array of discounts to apply immediately. */
     discounts?: AddProductDiscountParams[];

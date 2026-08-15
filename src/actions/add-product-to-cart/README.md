@@ -36,6 +36,40 @@ An array of fee objects to apply to this specific cart item upon addition. See `
 
 A string or array of strings containing notes to attach to this cart item.
 
+### Quantities and units
+
+A variant may be sold by measure — per kilogram, per litre, per metre — rather than by the piece.
+Such a variant carries a resolved `unit` alongside its `unitId`:
+
+```typescript
+variant.unit = {
+    _id: string;
+    name: string;          // "Litre"
+    abbreviation: string;  // "l"
+    ratioToBase: number;   // 1000 — millilitres in a litre
+    precision: number;     // 3 — decimals a quantity may carry
+}
+```
+
+`price` is per that unit, and `quantity` is denominated in it. `0.456` is a real quantity.
+
+**Build the quantity field from `unit.precision`**, never from a constant:
+
+```typescript
+const precision = variant.unit?.precision ?? 0;   // no unit → sold by the piece
+const step = 1 / 10 ** precision;                  // 0.001 for a litre, 1 for a piece
+```
+
+The engine refuses a quantity finer than the unit allows and names the unit in the error — surface
+that message; the cashier needs to know whether to drop a decimal or whether the item simply is not
+sold that way. Do not round, floor or clamp the typed value first: a quantity that is silently
+altered is charged and deducted differently from the one the cashier entered, and neither of them
+is the one on the scale.
+
+The line total is `price × quantity`, rounded to the currency's minor unit exactly once. Compute it
+with `extendPrice` from `@final-commerce/common` rather than multiplying — a float multiply drifts,
+and coercing the quantity to an integer first is how `4.234 L` was once charged as four.
+
 ## Response
 
 ### `AddProductToCartResponse`
