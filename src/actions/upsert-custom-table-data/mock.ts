@@ -18,7 +18,7 @@ export const mockUpsertCustomTableData: UpsertCustomTableData = async <T = any>(
     
     return {
         success: true,
-        data: resultData as T,
+        data: resultData as UpsertCustomTableDataResponse<T>['data'],
         timestamp: now
     };
 };

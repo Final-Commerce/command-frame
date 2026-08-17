@@ -44,8 +44,6 @@ import { mockGetTaxTables } from '../../actions/get-tax-tables/mock';
 import { mockGetRemainingRefundableQuantities } from '../../actions/get-remaining-refundable-quantities/mock';
 import { mockGoToStationHome } from '../../actions/go-to-station-home/mock';
 import { mockInitiateRefund } from '../../actions/initiate-refund/mock';
-import { mockOpenExtensionOverlay } from '../../actions/open-extension-overlay/mock';
-import { mockResolveExtensionOverlay } from '../../actions/resolve-extension-overlay/mock';
 import { mockOpenCashDrawer } from '../../actions/open-cash-drawer/mock';
 import { mockParkOrder } from '../../actions/park-order/mock';
 import { mockPartialPayment } from '../../actions/partial-payment/mock';
@@ -63,7 +61,6 @@ import { mockShowNotification } from '../../actions/show-notification/mock';
 import { mockSwitchUser } from '../../actions/switch-user/mock';
 import { mockTapToPayPayment } from '../../actions/tap-to-pay-payment/mock';
 import { mockTerminalPayment } from '../../actions/terminal-payment/mock';
-import { mockVendaraPayment } from '../../actions/vendara-payment/mock';
 import { mockExtensionPayment } from '../../actions/extension-payment/mock';
 import { mockRedeemPayment } from '../../actions/redeem-payment/mock';
 import { mockIntegrationPayment } from '../../actions/integration-payment/mock';
@@ -143,8 +140,6 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getRemainingRefundableQuantities: mockGetRemainingRefundableQuantities,
   goToStationHome: mockGoToStationHome,
   initiateRefund: mockInitiateRefund,
-  openExtensionOverlay: mockOpenExtensionOverlay,
-  resolveExtensionOverlay: mockResolveExtensionOverlay,
   openCashDrawer: mockOpenCashDrawer,
   parkOrder: mockParkOrder,
   partialPayment: mockPartialPayment,
@@ -163,7 +158,6 @@ export const RENDER_MOCKS: RenderProviderActions = {
   switchUser: mockSwitchUser,
   tapToPayPayment: mockTapToPayPayment,
   terminalPayment: mockTerminalPayment,
-  vendaraPayment: mockVendaraPayment,
   extensionPayment: mockExtensionPayment,
   redeemPayment: mockRedeemPayment,
   integrationPayment: mockIntegrationPayment,
