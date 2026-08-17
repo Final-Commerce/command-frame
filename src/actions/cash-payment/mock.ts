@@ -14,7 +14,9 @@ export const mockCashPayment: CashPayment = async (params: CashPaymentParams): P
             cashRounding: 0,
             paymentType: "cash",
             order: null,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            saleFinalized: false,
+            remainingBalance: 0
         };
     };
 
@@ -61,6 +63,8 @@ export const mockCashPayment: CashPayment = async (params: CashPaymentParams): P
         cashRounding: 0,
         paymentType: "cash",
         order,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        saleFinalized: true,
+        remainingBalance: 0
     };
 };

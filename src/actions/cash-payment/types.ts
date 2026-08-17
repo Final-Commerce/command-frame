@@ -1,5 +1,4 @@
 import { CFOrder } from "../../CommonTypes";
-import type { CFTransitionResult } from "../../common-types/order-state";
 
 // Cash Payment Types
 export interface CashPaymentParams {
@@ -31,7 +30,7 @@ export interface CashPaymentParams {
      * POS still opens its legacy change-calculator modal.
      */
     openChangeCalculator?: boolean;
-    /** Override the fulfillment state after full payment. Render resolves the cascade. */
+    /** Override the fulfillment state after full payment. kaching resolves the cascade. */
     checkoutFulfillmentTarget?: string;
 }
 
@@ -59,8 +58,10 @@ export interface CashPaymentResponse {
     paymentType: string;
     order: CFOrder | null; // ActiveOrder | null
     timestamp: string;
-    /** Present when the state machine blocked or forced the transition. */
-    transitionResult?: CFTransitionResult;
+    /** True when this tender settled the cart's remaining balance (the sale completed). */
+    saleFinalized: boolean;
+    /** Balance still due after this tender, in integer MINOR currency units (0 once the sale is finalized). */
+    remainingBalance: number;
 }
 
 export type CashPayment = (params: CashPaymentParams) => Promise<CashPaymentResponse>;

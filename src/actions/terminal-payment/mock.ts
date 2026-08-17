@@ -17,6 +17,10 @@ export const mockTerminalPayment: TerminalPayment = async (params?: TerminalPaym
         amount: due,
         paymentType: "terminal",
         order,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        change: 0,
+        cashRounding: 0,
+        saleFinalized: true,
+        remainingBalance: 0
     };
 };

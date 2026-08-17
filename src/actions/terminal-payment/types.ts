@@ -1,5 +1,4 @@
 import { CFOrder } from "../../CommonTypes";
-import type { CFTransitionResult } from "../../common-types/order-state";
 
 // Terminal Payment Types
 export interface TerminalPaymentParams {
@@ -13,10 +12,10 @@ export interface TerminalPaymentParams {
      *   - more than balance  → error
      */
     amount: number;
-    /** "Bluetooth" or "Cloud". Defaults to "Cloud". */
+    /** "Bluetooth" or "Cloud". Only "Cloud" routes to the cloud processor; omitted or "Bluetooth" uses the native card reader. */
     paymentType?: "Bluetooth" | "Cloud";
-    /** Override the fulfillment landing on full payment. Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
-    targetFulfillmentState?: string;
+    /** Override the fulfillment state the order lands in on full payment (validated against the fulfillment state machine; invalid values throw). Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+    checkoutFulfillmentTarget?: string;
 }
 
 export interface TerminalPaymentResponse {
@@ -25,8 +24,14 @@ export interface TerminalPaymentResponse {
     paymentType: string;
     order: CFOrder | null; // ActiveOrder | null
     timestamp: string;
-    /** Present when the state machine blocked or forced the transition. */
-    transitionResult?: CFTransitionResult;
+    /** Change due back to the customer in integer MINOR currency units (0 for non-cash tenders). */
+    change: number;
+    /** Signed cash-rounding delta applied to the charge, in integer MINOR currency units (positive = rounded up); 0 when the company has no cash-rounding setting. */
+    cashRounding: number;
+    /** True when this tender settled the cart's remaining balance (the sale completed). */
+    saleFinalized: boolean;
+    /** Balance still due after this tender, in integer MINOR currency units (0 once the sale is finalized). */
+    remainingBalance: number;
 }
 
 export type TerminalPayment = (params?: TerminalPaymentParams) => Promise<TerminalPaymentResponse>;

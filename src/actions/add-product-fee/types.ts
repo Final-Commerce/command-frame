@@ -6,9 +6,8 @@ export interface AddProductFeeParams {
     isPercent?: boolean;
     /** Defaults to "Fee". */
     label?: string;
-    /** Defaults to `false`. */
+    /** Defaults to `false`. When true, the fee inherits the target cart line's own tax table (a caller-supplied tax table is not honored). */
     applyTaxes?: boolean;
-    taxTableId?: string;
     /** The unique identifier for a specific line item in the cart. */
     internalId?: string;
 }
