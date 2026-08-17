@@ -52,7 +52,10 @@ await command.adjustInventory({
 
 ## Error Handling
 
-- Throws an error if parameters are missing
+- Throws an error if parameters, `amount`, or `stockType` are missing
 - Throws an error if `variantId` is not provided (and no active product context exists)
+- Throws an error if `variantId` is provided but the variant/product cannot be found
+- Throws an error if the resolved product has unlimited (infinite) inventory — stock adjustments aren't tracked for these products
+- Throws an error if there is no active company in context
 - Throws an error if subtracting would result in negative stock
 - Throws an error if the API call fails

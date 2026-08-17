@@ -9,6 +9,8 @@ Initiates a terminal payment for the current cart.
 | Parameter | Type     | Required | Description                                                              |
 | :-------- | :------- | :------- | :----------------------------------------------------------------------- |
 | `amount`  | `number` | `true`   | Required, integer minor units; below the balance due → partial payment (fixed split leg); above → error. |
+| `paymentType` | `"Bluetooth" \| "Cloud"` | `false` | Selects the terminal route. Omitted, or `"Bluetooth"`, routes to the native device-bridge reader (physical terminal). `"Cloud"` routes to the cloud/HTTP terminal processor instead. Note: the type's JSDoc says this defaults to `"Cloud"`, but the handler only switches processors when the value is explicitly `"Cloud"` — the observed default is the native reader. |
+| `targetFulfillmentState` | `string` | `false` | Documented as overriding the post-payment fulfillment landing, but the terminalPayment handler only reads a `checkoutFulfillmentTarget` field internally — this parameter currently has no effect. |
 
 ## Response
 
@@ -16,11 +18,17 @@ Initiates a terminal payment for the current cart.
 
 | Field       | Type     | Description                               |
 | :---------- | :------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the payment was initiated successfully. |
+| `success`   | `boolean` | Always `true` — a failed payment rejects the promise instead of resolving `false` (see Error Handling). |
 | `amount`    | `number \| null` | The payment amount, in integer minor currency units. |
 | `paymentType` | `string` | The payment type ('terminal').            |
-| `order`     | `ActiveOrder \| null` | The created order object after payment processing. May be null if order creation is delayed. |
+| `order`     | `ActiveOrder \| null` | The order after payment processing. `null` on a non-final split-payment leg — only the leg that finalizes the sale returns the order. |
+| `change`\*  | `number` | Cash change due back, integer minor units. Always `0` for terminal payments (no cash tender). |
+| `cashRounding`\* | `number` | Signed cash-rounding delta, integer minor units. Always `0` for terminal payments (rounding only applies to cash legs). |
+| `saleFinalized`\* | `boolean` | `true` only when this leg finalized the sale (the last, or only, leg captured). |
+| `remainingBalance`\* | `number` | Balance still due after this leg, integer minor units; `0` when finalized. |
 | `timestamp` | `string` | ISO date string of when the action occurred. |
+
+\* Returned by the runtime today but not yet part of the published `TerminalPaymentResponse` type.
 
 ## Example Usage
 
@@ -63,10 +71,20 @@ try {
 - The actual payment processing happens through the parent application's payment system
 - Requires the cart to have items
 - May request tip if tip functionality is enabled
-- The order is created asynchronously after payment processing completes
-- The order field may be null if payment processing is still in progress or if there's a timeout
+- `terminalPayment` awaits the payment engine directly and returns its result in the same call — the order is not created asynchronously in the background, and there is no timeout-driven null
+- `order` is `null` specifically when this tender is a non-final leg of a split payment (the sale isn't complete yet); the leg that finalizes the sale returns the order
+
+## Events
+
+- Publishes a `payment-done` event on the `payments` topic when this tender fully completes the sale (`saleFinalized: true` — a single-tender payment or the final leg of a split): `{ payment, order, amount }`, where `payment` is the order's last captured payment-method entry, `order` is the completed order, and `amount` is that payment's captured amount as a string (minor units). Not published for a mid-flight split leg.
 
 ## Error Handling
 
-- Throws an error if the cart is empty
-- May throw an error if payment processing fails
+Every failure below **rejects the returned promise** — the handler never resolves with `success: false`.
+
+- Cart is empty: throws `Cart is empty. Cannot process payment.`
+- Missing `amount` (on a cart with a balance due greater than `$0`): throws `terminalPayment: amount is required (integer minor currency units)`.
+- `amount` is not a positive integer (on a cart with a balance due greater than `$0`): throws `terminalPayment: amount must be a positive integer (minor units)`.
+- `amount` exceeds the balance due: throws `terminalPayment: amount {amount} exceeds the balance due {balanceDue}`.
+- An invalid `checkoutFulfillmentTarget` (the internal field the handler actually reads — see `targetFulfillmentState` in Parameters) throws `terminalPayment: invalid checkoutFulfillmentTarget "<value>"`.
+- A cancelled payment (e.g. a dismissed modal mid-flow) surfaces as `Payment cancelled` rather than the underlying error.

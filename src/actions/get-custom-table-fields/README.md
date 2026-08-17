@@ -177,13 +177,14 @@ fieldsResult.fields.forEach(field => {
 
 ## Error Handling
 
-If the field retrieval fails, the handler will throw an error. Common error scenarios include:
-- Invalid `tableId` (table does not exist)
-- Database connection issues
+The handler throws an error if `tableId` is missing:
+- `tableId is required` — thrown when `tableId` is not provided (or falsy)
+
+If `tableId` does not match any existing custom table, the handler does **not** throw — it returns a success response with an empty `fields` array.
 
 ## Validation Rules
 
-- `tableId` is required and must reference an existing custom table
+- `tableId` is required (throws if missing); it is not validated against existing tables
 
 ## Real Data Examples
 

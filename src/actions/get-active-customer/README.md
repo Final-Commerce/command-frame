@@ -24,6 +24,14 @@ import { command } from '@final-commerce/command-frame';
 const { customer } = await command.getActiveCustomer();
 ```
 
+## Events
+
+Publishes the active customer snapshot on the `customers` channel:
+
+| Channel     | Event                  | Payload |
+| :---------- | :---------------------- | :------ |
+| `customers` | `get-active-customer`   | `{ customer: CFActiveCustomer \| null }` |
+
 ## Notes
 
 - Pair with [`setActiveCustomer`](../set-active-customer/README.md) to load a customer by id from the host database.

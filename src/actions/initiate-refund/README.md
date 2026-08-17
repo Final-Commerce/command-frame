@@ -32,12 +32,12 @@ await command.initiateRefund();
 
 ## Notes
 
-- This opens the refund UI modal in the parent application
+- This opens the refund UI modal in the parent application, when an order is already active or a valid `orderId` is provided
 - The actual refund processing happens through the UI
 - If orderId is provided, that order will be set as active before opening the refund UI
+- If no `orderId` is given and no order is currently active, this does **not** throw: kaching enters refund-scan mode instead — the next barcode scan selects the order and opens the refund UI — and the call resolves with `{ success: true, orderId: '', timestamp }`
 
 ## Error Handling
 
-- Throws an error if orderId is provided but the order is not found
-- Throws an error if no active order exists and no orderId is provided
+- Throws an error if `orderId` is provided but the order is not found (`Order with ID {orderId} not found`)
 

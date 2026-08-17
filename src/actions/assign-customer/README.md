@@ -23,10 +23,17 @@ The ID of the customer to assign to the current session.
 ```typescript
 interface AssignCustomerResponse {
     success: boolean;
-    customer: any;
+    customer: CFCustomer;
     timestamp: string;
 }
 ```
+
+## Errors
+
+The returned promise rejects if:
+
+- `customerId` is missing/empty — `Error("customerId is required")`
+- No customer with that ID exists in the local database — `Error("Customer not found")`
 
 ## Usage Example
 
@@ -45,3 +52,11 @@ console.log('Assigned customer:', result.customer.firstName);
 1. Retrieves the customer by ID from the local database.
 2. Sets this customer as the active customer for the current cart/session.
 3. Subsequent orders will be associated with this customer.
+4. Publishes a `customer-assigned` event on both the `customers` and `cart` channels, with the assigned customer as payload.
+
+## Events
+
+| Channel | Event | Payload |
+| --- | --- | --- |
+| `customers` | `customer-assigned` | `{ customer: CFCustomer }` |
+| `cart` | `customer-assigned` | `{ customer: CFCustomer }` |

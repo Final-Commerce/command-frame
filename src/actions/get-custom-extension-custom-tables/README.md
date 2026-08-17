@@ -52,7 +52,7 @@ type CFCustomTable = BaseEntity & {
 - `_id` (string): Unique identifier for the custom table
 - `name` (string): The name of the custom table
 - `description` (string, optional): A description of the custom table
-- `metadata` (Array, optional): Custom metadata as key-value pairs (typically includes `extensionId`)
+- `metadata` (Array, optional): Custom metadata as key-value pairs. The extension-to-table association itself is resolved internally by the handler (via a separate join lookup), not by an `extensionId` entry in this field
 - `createdAt` (string): Creation timestamp
 - `updatedAt` (string): Last update timestamp
 
@@ -199,13 +199,14 @@ if (result.customTables.length === 0) {
 
 ## Error Handling
 
-If the retrieval fails, the handler will throw an error. Common error scenarios include:
-- Invalid `extensionId` (extension does not exist)
-- Database connection issues
+The handler throws:
+- `Error('extensionId is required')` — when `extensionId` is missing or falsy
+
+An `extensionId` that doesn't match any existing custom extension does **not** throw — the call resolves normally with `customTables: []`.
 
 ## Validation Rules
 
-- `extensionId` is required and must reference an existing custom extension
+- `extensionId` is required (the handler throws if it is missing); it is not validated against existing custom extensions — an unrecognized `extensionId` simply yields an empty `customTables` array
 
 ## Real Data Examples
 
@@ -275,7 +276,7 @@ If the retrieval fails, the handler will throw an error. Common error scenarios 
 
 - Custom tables are stored in the local IndexedDB database (LokiJS)
 - Custom tables are synchronized with the central MongoDB database via station-sync
-- The metadata typically includes the `extensionId` to link tables to their parent extension
+- The handler resolves the extension-to-table association internally (via a separate join lookup keyed by extension ID); the `metadata` field is generic custom metadata and is not how this handler determines which tables belong to the extension
 - Use `getCustomTableFields` to retrieve field definitions for any table
 - Use `getCustomTableData` to retrieve the actual data stored in a table
 - An extension may have zero or multiple associated custom tables

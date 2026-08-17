@@ -44,7 +44,7 @@ Prints a base64-encoded image directly.
 
 #### 3. Receipt Print (`type: "receipt"`) — **DEPRECATED**
 
-> **Deprecated — use `type: "image"`.** The station **requires** `order` (no active-order fallback and it throws without one), **ignores** `globalBlockId` (no global-block templates), and **drops all `PrintOptions`** including tag routing. Compose + rasterize your receipt and print it as an image.
+> **Deprecated — use `type: "image"`.** If `order` is omitted, the station falls back to the current active order in the POS store — it throws only if there is no active order (or the active order has no `_id`). It **ignores** `globalBlockId` (no global-block templates) and **drops all `PrintOptions`** including tag routing. Compose + rasterize your receipt and print it as an image.
 
 ```typescript
 {
@@ -68,8 +68,11 @@ interface PrintOptions {
         bottom?: number;
         left?: number;
     };
+    /** @deprecated Not consumed by the runtime — paper size comes from the station's per-printer settings. */
     paperSize?: string;
     width?: string;
+    /** Routing tag for multi-printer stations (FI-7113): names the print category (e.g. "receipt", "kitchen"), never a printer. Untagged prints keep the station's default behavior. */
+    tag?: string;
 }
 ```
 
@@ -149,5 +152,7 @@ await command.print({
 
 The command will throw an error if:
 
-- Required parameters are missing (`[pos-brain] print requires params`)
-- (receipt, deprecated) no `order` payload was provided
+- No parameters are passed (`Print parameters are required`)
+- (`type: "image"`) `data.image` is missing (`Image data is required for image print type`)
+- (`type: "html"`, deprecated) `data.html` is missing (`HTML content is required for html print type`)
+- (`type: "receipt"`, deprecated) no `order` was provided **and** there is no active order in the store (`No active order found. Please provide an order or ensure there is an active order in the store.`)

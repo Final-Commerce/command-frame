@@ -67,5 +67,6 @@ const result = await command.getSecretVal({
 ## Error Handling
 
 - Throws an error if `key` is missing
-- Throws an error if the secret is not found for the given key and scope
-- Throws an error if the parent frame is unavailable or the user/extension is not authorized
+- Throws an error if there is no active company in the current session
+- Throws an error if the secrets request returns no value for the given key and scope
+- Propagates any error from the underlying authenticated request (e.g. network failure, or the caller not being authorized to read the secret)

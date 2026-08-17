@@ -49,6 +49,5 @@ console.log('Parked order:', result.order);
 
 ## Error Handling
 
-- Throws an error if no active station is found
-- Throws an error if the order cannot be created
-- Throws an error if the order cannot be saved to the database
+- Throws `No active station found` if there is no active station.
+- Throws `Failed to create parked order` if the park operation is blocked or otherwise fails to produce a parked order — e.g. the state machine rejects the transition (such as parking an order that's already parked).

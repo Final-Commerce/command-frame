@@ -34,7 +34,7 @@ The number of records to skip. Useful for pagination. Defaults to 0.
 
 #### `limit` (optional)
 
-The maximum number of records to return. Useful for pagination. If not specified, all matching records are returned.
+The maximum number of records to return. Useful for pagination. Defaults to 100 if not specified.
 
 ## Response
 
@@ -152,17 +152,15 @@ result.data.forEach(pref => {
 
 ## Error Handling
 
-If the data retrieval fails, the handler will throw an error. Common error scenarios include:
-- Invalid `tableName` (table does not exist)
-- Invalid query syntax
-- Database connection issues
+The handler throws if `tableName` is missing:
+- `tableName is required`
+
+A `tableName` that does not match any existing custom table is **not** an error — it returns a successful response with an empty `data` array.
 
 ## Validation Rules
 
-- `tableName` is required and must reference an existing custom table
-- `query` must be a valid MongoDB query object if provided
-- `offset` must be a non-negative number if provided
-- `limit` must be a positive number if provided
+- `tableName` is required (the handler throws `tableName is required` if it is missing); it does not need to reference an existing table
+- `query`, `offset`, and `limit` are not validated by the handler — malformed values are passed through to the underlying query engine as-is
 
 ## Real Data Examples
 
@@ -214,6 +212,7 @@ If the data retrieval fails, the handler will throw an error. Common error scena
 - Custom table data is stored in the local IndexedDB database (LokiJS)
 - Data is synchronized with the central MongoDB database via station-sync
 - Query syntax follows MongoDB query operators
+- Soft-deleted rows (`isDeleted: true`) are always excluded from results, regardless of the `query` filter
 - Use `getCustomTables` to list all available tables
 - Use `getCustomTableFields` to get the field definitions for a table
 

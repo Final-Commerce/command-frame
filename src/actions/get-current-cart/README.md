@@ -65,9 +65,9 @@ try {
     //   cart: {
     //     products: [...],
     //     customSales: [...],
-    //     total: 25.50,
-    //     subtotal: 20.00,
-    //     tax: 5.50,
+    //     total: 2550, // $25.50 in minor units
+    //     subtotal: 2000, // $20.00 in minor units
+    //     tax: 550, // $5.50 in minor units
     //     discount: {...},
     //     customer: {...},
     //     ...

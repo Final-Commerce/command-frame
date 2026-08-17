@@ -1,6 +1,6 @@
 # removeCustomerNote
 
-Removes a note from a customer's record using only the note's `_id`. The host (Render) finds the customer that owns the note in the local database, updates the customer document, and refreshes active/selected customer state when applicable.
+Removes a note from a customer's record using only the note's `_id`. The host (kaching) finds the customer that owns the note in the local database, updates the customer document, and refreshes active/selected customer state when applicable.
 
 You do **not** pass `customerId`; use the note id returned when the note was created (for example from [`addCustomerNote`](../add-customer-note/README.md) or from `getCustomers` / active customer `notes`).
 
@@ -30,12 +30,12 @@ await command.removeCustomerNote({
 
 ## Pub/Sub
 
-After a successful delete, Render publishes **`customer-note-deleted`** on the **`customers`** topic. See [customer-note-deleted event](../../pubsub/topics/customers/customer-note-deleted/README.md).
+After a successful delete, kaching publishes **`customer-note-deleted`** on the **`customers`** topic. See [customer-note-deleted event](../../pubsub/topics/customers/customer-note-deleted/README.md).
 
 ## Error Handling
 
 - Throws if `noteId` is missing
-- Throws if the note is not found in the local customer data (Render)
+- Throws if the note is not found in the local customer data (kaching)
 
 ## See also
 

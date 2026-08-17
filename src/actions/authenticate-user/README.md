@@ -35,5 +35,7 @@ await command.authenticateUser({
 
 ## Error Handling
 
-- Throws an error if roleIds is missing or empty
+- Throws an error (`Role IDs are required`) if `roleIds` is missing or empty
+- Throws an error (`Invalid role ID(s)`) if none of the provided role IDs resolve to existing roles
+- Throws an error (`Authentication failed`) if the user does not successfully authenticate (e.g. cancels or fails verification)
 

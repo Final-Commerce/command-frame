@@ -10,7 +10,9 @@ None.
 
 | Field       | Type     | Description |
 | :---------- | :------- | :---------- |
-| `session`   | [`CFSession`](../../types/README.md#cfsession) ` \| null` | |
+| `success`   | `boolean` | `true` on success. |
+| `session`   | [`CFSession`](../../types/README.md#cfsession) ` \| null` | The open cash-register session, or `null` if none. |
+| `timestamp` | `string` | ISO timestamp. |
 
 ## Example
 
@@ -18,4 +20,4 @@ None.
 const { session } = await command.getActiveSession();
 ```
 
-See [`setActiveSession`](../set-active-session/README.md).
+See the [`set-active-session`](../../pubsub/topics/session/set-active-session/README.md) event.

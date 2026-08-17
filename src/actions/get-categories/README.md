@@ -113,7 +113,9 @@ Key fields that may be present:
 
 ## Error Handling
 
-If the query fails or no categories are found, the handler returns an empty array:
+The handler does not catch errors: if the underlying database query fails, the promise rejects with that error rather than resolving to an empty response.
+
+If the query succeeds but simply matches no categories, the handler returns an empty array:
 
 ```typescript
 {
@@ -124,6 +126,7 @@ If the query fails or no categories are found, the handler returns an empty arra
 
 ## Notes
 
-- Deleted categories (`isDeleted: true`) are automatically excluded
+- Deleted categories (`isDeleted: true`) are automatically excluded, regardless of what is passed in `query`
 - Categories can be organized in a hierarchical structure using `parentId`
+- On first use after app startup, the handler waits for the categories collection's initial sync to finish (bounded by an internal timeout) before querying
 

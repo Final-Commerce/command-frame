@@ -4,7 +4,9 @@ Gets the remaining refundable quantities for all line items and custom sales in 
 
 ## Parameters
 
-None.
+| Field     | Type     | Required | Description                                                                                                                             |
+| :-------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------|
+| `orderId` | `string` | No       | ID of an order to check. If provided, that order is looked up and set as the active order before quantities are calculated. If omitted, the currently active order is used. |
 
 ## Response
 
@@ -41,14 +43,15 @@ try {
 
 ## Error Handling
 
-- Throws an error if no order is currently active.
+- Throws an error if `orderId` is provided but no matching order is found: `Order with ID {orderId} not found`
+- Throws an error if no order is active and no `orderId` was provided.
 
 ```typescript
 // Example of error when no active order
 try {
   await command.getRemainingRefundableQuantities();
 } catch (error) {
-  console.error(error.message); // "No active order. Please set an order as active first."
+  console.error(error.message); // "No order selected. Please provide orderId."
 }
 ```
 

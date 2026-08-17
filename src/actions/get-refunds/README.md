@@ -11,7 +11,7 @@ Retrieves a list of refunds from the system with optional filtering, sorting, an
 | `orderId`       | `string` | `false`  | Filter refunds by order ID.                                              |
 | `sessionId`     | `string` | `false`  | Filter refunds by session ID.                                            |
 | `outletId`      | `string` | `false`  | Filter refunds by outlet ID.                                             |
-| `limit`         | `number` | `false`  | Maximum number of refunds to return (default: 50).                       |
+| `limit`         | `number` | `false`  | Maximum number of refunds to return. If omitted, all refunds matching the query are returned (no default limit). |
 | `offset`        | `number` | `false`  | Number of refunds to skip for pagination (default: 0).                   |
 | `sortBy`        | `string` | `false`  | Field to sort by (e.g., 'createdAt'). Default: 'createdAt'.             |
 | `sortDirection` | `'asc' \| 'desc'` | `false`  | Sort direction. Default: 'desc'.                                |
@@ -75,14 +75,15 @@ try {
 
 ## Error Handling
 
-- Throws an error if there's an issue querying the database.
+- If `orderId` is provided, it must reference an existing order — an unknown `orderId` throws `Order with ID {orderId} not found`. (`sessionId` and `outletId` are not validated the same way; an unmatched value just yields an empty/filtered result.)
+- Underlying database/sync errors propagate as-is (not wrapped in a custom message).
 
 ```typescript
 // Example of error handling
 try {
-  await command.getRefunds({ limit: 10 });
+  await command.getRefunds({ orderId: 'does-not-exist' });
 } catch (error) {
-  console.error(error.message); // "Failed to fetch refunds: ..."
+  console.error(error.message); // "Order with ID does-not-exist not found"
 }
 ```
 

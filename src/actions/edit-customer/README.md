@@ -2,6 +2,8 @@
 
 Updates an existing customer's information. Only the provided fields in `changes` are modified; all other fields remain unchanged.
 
+**Note:** the `changes` type allows any `CFCustomer` field, but the current handler only applies `firstName`, `lastName`, `email`, and `phone`. Other fields listed below (`tags`, `metadata`, `notes`, `billing`, `shipping`, `externalId`, `fromOliver`) are accepted by the type but silently ignored by the handler.
+
 ## Parameters
 
 ### `EditCustomerParams`
@@ -21,12 +23,17 @@ The ID of the customer to update.
 
 Object containing the fields to update. Only provided fields are changed.
 
-**Updatable fields:**
+**Updatable fields (applied by the handler):**
 
 - `email` (string): Customer email address.
 - `firstName` (string): Customer's first name.
 - `lastName` (string): Customer's last name.
 - `phone` (string): Customer's phone number.
+
+At least one of these four fields must be provided in `changes`, or the call throws.
+
+**Accepted by the type but currently ignored by the handler:**
+
 - `tags` (string[]): Array of tags to associate with the customer.
 - `metadata` (Array<{ key: string; value: string }>): Custom metadata as key-value pairs.
 - `notes` (Array<{ createdAt: string; message: string }>): Array of notes associated with the customer.
@@ -66,4 +73,9 @@ console.log(result.customer.firstName); // "Jane"
 
 ## Error Handling
 
-If the update fails, the handler will throw an error. Common error scenarios include missing `customerId`, invalid email format, or customer not found.
+The handler throws in these cases:
+
+- `customerId` missing: `"customerId is required"`
+- `changes` missing: `"changes object is required"`
+- none of `firstName`, `lastName`, `email`, `phone` provided in `changes`: `"At least one of firstName, lastName, email, or phone must be provided in changes"`
+- no customer found for `customerId`: `` "Customer with ID ${customerId} not found" ``

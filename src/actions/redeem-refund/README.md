@@ -83,7 +83,9 @@ If this command throws:
 
 ## Order State Requirements
 
-There is no state gate in the runtime: any order with captured payments can be drawn from, including `partially_paid` orders. Capacity is computed per-source (`remainingRefundableOnSource`) — an order with nothing left to refund (e.g. fully refunded) simply has zero remaining capacity, so the command rejects it with the capacity error below rather than a distinct "not refundable" error.
+There is no payment-state gate in the runtime: any order with captured payments can be drawn from, including `partially_paid` orders. Capacity is computed per-source (`remainingRefundableOnSource`) — an order with nothing left to refund (e.g. fully refunded) simply has zero remaining capacity, so the command rejects it with the capacity error below rather than a distinct "not refundable" error.
+
+There **is** a fulfillment-state gate, though: if this refund's amount is less than the order's full remaining refundable value (so the order lands on `partially_refunded` rather than `refunded`) and the order's fulfillment state is `draft`, `pending`, or `on_hold` (never fulfilled), the command is rejected — see "Partial refund on an unfulfilled order" below. Refund the full remaining amount instead, or fulfill/void the order first.
 
 ## EMV Data
 
@@ -133,6 +135,9 @@ try {
 - **Missing/invalid `amount`**: throws "redeemRefund: amount is required and must be a positive integer (minor currency units)" (kaching `handler.ts`)
 - **Missing `referenceId`**: throws "redeemRefund: referenceId is required"
 - **Invalid order ID**: throws "Order with ID {orderId} not found"
+- **No active order**: throws "No order selected. Please provide orderId." when `orderId` is omitted and no order is currently active in the POS session.
 - **Exceeds remaining capacity**: throws "REFUND_AMOUNT_EXCEEDS_CAPACITY: requested {amount} exceeds remaining refundable {totalCapacity}" (kaching `planRefund.ts`). Extensions matching on this should match the `REFUND_AMOUNT_EXCEEDS_CAPACITY` prefix, not the exact phrasing after it.
+- **Partial refund on an unfulfilled order**: throws "refund.blocked: partial-refund-on-unfulfilled — Cannot partially refund an order that has not been fulfilled — use void or full refund instead" when this refund's amount is less than the order's full remaining refundable value and the order's fulfillment state is `draft`, `pending`, or `on_hold`. Prefix-match `refund.blocked`, not the guard/reason text that follows it. (kaching `runOrderOperation.ts` preflight)
+- **Refund engine failure**: throws the order engine's own error message, or "refund.failed" if none is available, when the refund fails after preflight passes. (kaching `refundDispatcher.ts`)
 
 The demo mock (`mock.ts`) approximates these gates for local development but doesn't reproduce the runtime strings exactly — match the runtime strings above, not the mock's.

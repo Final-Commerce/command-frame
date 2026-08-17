@@ -1,6 +1,6 @@
 # integrationPayment
 
-Extension-driven payment for Stripe-style integrations. The extension processes the payment with its provider, then calls `integrationPayment(...)` so Render can record the resulting transaction + order. Functionally identical to `redeemPayment` on the wire — both delegate to `extensionPayment` — but `integrationPayment` carries `emvData` (required) and `processorFee` typed at the param level.
+Extension-driven payment for Stripe-style integrations. The extension processes the payment with its provider, then calls `integrationPayment(...)` so kaching can record the resulting transaction + order. Functionally identical to `redeemPayment` on the wire — both delegate to `extensionPayment` — but `integrationPayment` carries `emvData` (required) and `processorFee` typed at the param level.
 
 ## Required fields
 
@@ -9,7 +9,7 @@ Extension-driven payment for Stripe-style integrations. The extension processes 
 | `amount`  | `number`             | Minor units of the captured amount. The host won't fall back to cart total — caller must specify.                                                                                                                                                                   |
 | `emvData` | `IntegrationEmvData` | Typed card display fields (object, not string). Host maps to the platform's canonical EMV keys and JSON-serializes onto `paymentMethod.emv` — same persisted shape as the native card flow. All inner fields are optional; pass `{}` if you genuinely have nothing. |
 
-Optional: `label`, `extensionId`, `processor` (defaults to `"integration"`), `referenceId`, `metadata`, `processorFee`.
+Optional: `label`, `extensionId`, `processor` (defaults to `"integration"`), `referenceId`, `metadata`, `processorFee`, `targetFulfillmentState` (overrides the fulfillment landing on full payment; omitted preserves advanced fulfillment / auto-fulfills from draft, pending, or on_hold — an invalid value is a hard error, not silently dropped).
 
 ### `IntegrationEmvData`
 
@@ -23,6 +23,24 @@ camelCase on the wire; the host translates to the platform's canonical persisted
 | `expiryDate`      | `"Expiry date"`     | Display string, e.g. `"12/26"`.                                                                          |
 | `issuer`          | `"Issuer"`          | Issuing bank.                                                                                            |
 | `cardNumberLast4` | `"Card Number"`     | Just the last 4 digits — host masks to `**** **** **** XXXX` for display (matches the native card flow). |
+
+## Response
+
+`Promise<IntegrationPaymentResponse>` (alias of `ExtensionPaymentResponse`):
+
+| Field              | Type              | Description                                                                                     |
+| :----------------- | :---------------- | :------------------------------------------------------------------------------------------------ |
+| `success`          | `boolean`         | `true` when host payment handling completed successfully.                                       |
+| `amount`           | `number \| null`  | Processed amount reported by host, in integer minor currency units.                              |
+| `paymentType`      | `string`          | Always `"integration"`.                                                                          |
+| `order`            | `CFOrder \| null` | Order snapshot after payment processing. `null` for a non-final split-payment leg.                |
+| `change`           | `number`          | Always `0` — no cash tender on an integration payment.                                           |
+| `cashRounding`     | `number`          | Always `0` — rounding only applies to cash legs.                                                 |
+| `saleFinalized`    | `boolean`         | `true` only when this leg finalized the sale (the last, or only, leg captured).                  |
+| `remainingBalance` | `number`          | Balance still due after this leg, integer minor units; `0` when finalized.                       |
+| `timestamp`        | `string`          | ISO timestamp produced by the host action handler.                                               |
+
+A payment failure (including a cancelled modal) rejects the promise rather than resolving with `success: false` — the host never returns `success: true` with a failed charge.
 
 ## Usage
 

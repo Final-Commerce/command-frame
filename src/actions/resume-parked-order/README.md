@@ -55,7 +55,7 @@ try {
 
 - Throws an error if `orderId` is not provided.
 - Throws an error if the order is not found.
-- Throws an error if the order cannot be updated after resuming.
+- Throws an error if the order can no longer be found immediately after the resume transition completes (e.g. it was deleted concurrently).
 
 ```typescript
 // Example of error when order not found
@@ -74,3 +74,7 @@ try {
 - The order status is updated from "parked" to "in-cart".
 - The cart is replaced with the contents of the resumed order.
 - The returned order object reflects the updated status and all order details.
+
+## Events
+
+Publishes a `cart-created` event on the `cart` topic with the resumed cart (`{ cart }`) once the transition completes.
