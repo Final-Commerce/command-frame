@@ -272,9 +272,8 @@ export function ManageApp() {
                 throw new Error("Table ID is required");
             }
             const offset = newOffset !== undefined ? newOffset : paginationOffset;
-            // Use tableId if the types support it
             const result = await manageClient.getCustomTableData({
-                tableId: tableIdInput,
+                tableName: tableIdInput,
                 offset,
                 limit: paginationLimit
             });
