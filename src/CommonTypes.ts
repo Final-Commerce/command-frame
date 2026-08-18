@@ -172,7 +172,7 @@ export interface CFActiveRefundDetails {
 }
 
 // Project name type for identifying which provider environment is active
-export type CFProjectName = "Render" | "Manage";
+export type CFProjectName = "kaching" | "Manage";
 
 // Context for Render project (POS terminal context)
 export interface CFContextRender {

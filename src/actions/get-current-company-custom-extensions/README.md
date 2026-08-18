@@ -45,7 +45,7 @@ type CustomExtension = BaseEntity & {
     short_description?: string;
     long_description?: string;
     main_image?: string;
-    price: string;
+    price: number;
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
@@ -81,7 +81,7 @@ console.log('Custom Extensions:', result.customExtensions);
       "category": "Customer Management",
       "short_description": "Loyalty points tracking",
       "main_image": "https://example.com/images/loyalty-extension.png",
-      "price": "$29.99",
+      "price": 2999,
       "isDeleted": false,
       "createdAt": "2024-01-01T10:00:00.000Z",
       "updatedAt": "2024-01-10T14:30:00.000Z",
@@ -96,6 +96,6 @@ console.log('Custom Extensions:', result.customExtensions);
 
 - Returns only extensions for the current company (filtered by `companyId`)
 - Data is retrieved from the local IndexedDB database
-- Extensions with `isDeleted: true` are included in results
+- Extensions with `isDeleted: true` are excluded from results
 - Each company only sees their own custom extensions due to multi-tenancy filtering
 

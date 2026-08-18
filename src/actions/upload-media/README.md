@@ -17,6 +17,7 @@ interface UploadMediaParams {
 
 - `base64`: Raw base64 (no `data:image/...;base64,` prefix unless the host documents otherwise).
 - `filename`, `mimeType`: Required for the upload.
+- `folder`: Optional target folder label; the host applies its own default when omitted.
 - Keep payloads within host limits; very large files may exceed postMessage limits.
 
 ## Response

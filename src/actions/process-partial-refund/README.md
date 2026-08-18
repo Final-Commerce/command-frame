@@ -21,7 +21,7 @@ Processes a partial refund based on the current refund selections in the refund 
 | Field       | Type      | Description                                                 |
 | :---------- | :-------- | :---------------------------------------------------------- |
 | `success`   | `boolean` | `true` if the refund processing was initiated successfully. |
-| `refundId`  | `string`  | The ID of the created refund (may be 'pending' initially).  |
+| `refundId`  | `string`  | Always the literal string `'processed'`. A real refund ID is generated and persisted on the `Refund` doc internally, but this command does not currently surface it in the response. |
 | `timestamp` | `string`  | ISO date string of when the action occurred.                |
 
 ## Example Usage
@@ -41,7 +41,7 @@ try {
   // Expected output:
   // {
   //   success: true,
-  //   refundId: 'refund-id-456',
+  //   refundId: 'processed', // always this literal string, not a generated ID — see Response above
   //   timestamp: '2023-10-27T10:00:00.000Z'
   // }
 } catch (error) {
@@ -52,9 +52,11 @@ try {
 ## Error Handling
 
 - **Permission**: throws `REFUND_PERMISSION_DENIED: active user lacks the 'issue_refunds' permission` when the active user's role doesn't grant `issue_refunds` (role-less user types — company owner, final/org staff — bypass). Prefix-match `REFUND_PERMISSION_DENIED`; pre-gate your UI with [`checkPermission`](../check-permission/README.md).
+- Throws `Order with ID {orderId} not found` when the passed `orderId` doesn't match any order.
 - Throws an error if no order is currently active.
 - Throws an error if no refund details exist.
 - Throws an error if no items are selected for refund.
+- Throws `refund.partialNotAllowedOnUnfulfilled` when the order's fulfillment state is `draft`, `pending`, or `on_hold` — a partial refund requires an already-fulfilled order; void the order instead.
 
 ```typescript
 // Example of error when no items selected
@@ -131,6 +133,7 @@ remaining refundable capacity)`. On a **full** selection this is the captured
   cashier put all the money on one tender and leave the other row at 0. A
   negative `amount` throws.
 - **Each `transactionId` must match a payment on the order.**
+- **A leg drawing from a gift-card / store-credit (`redeem`) source must carry a `giftCard` destination.** The engine can't push money onto a card without the flow's credit-first cooperation — a `redeem`-source leg without `giftCard` throws (`REDEEM_REFUND_UNSUPPORTED`).
 
 Cash legs receive the same drawer-rounding and residue handling the modal
 applied, so the engine's refund invariants hold. Omit `legs` (with

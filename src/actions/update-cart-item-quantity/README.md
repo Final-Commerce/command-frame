@@ -19,7 +19,7 @@ The unique identifier for the specific cart item instance to update. This is the
 
 #### `quantity` (required)
 
-The new quantity for the cart item. If set to 0, the item will be removed from the cart (equivalent to calling `removeProductFromCart`).
+The new quantity for the cart item. If set to 0, the item will be removed from the cart (equivalent to calling `removeProductFromCart`). Must be a non-negative integer — a negative or non-integer value throws an error.
 
 ## Response
 
@@ -77,6 +77,14 @@ try {
 }
 ```
 
+## Errors
+
+- `"internalId is required"` — missing or falsy `internalId`
+- `"quantity is required"` — `quantity` is `undefined` or `null`
+- `"quantity must be a non-negative integer"` — `quantity` is negative, fractional, or not parseable as an integer
+- `"Insufficient stock. Available: {stock}, Requested: {requested}"` — increasing quantity would push the combined quantity of that variant across all cart lines past available stock
+- `"Cart item with internalId {internalId} not found"` — no matching product or custom sale line exists in the cart
+
 ## Events
 
 - If quantity is updated (quantity > 0): Publishes a `product-updated` event on the `cart` topic
@@ -84,7 +92,12 @@ try {
 
 ## Stock Validation
 
-When increasing quantity, this action validates stock availability. If insufficient stock is available, an error will be thrown.
+When increasing quantity on a product line, this action validates stock availability for variants that have stock management enabled (unlimited-stock variants skip the check). The check sums the requested quantity together with the quantity of that same variant on any other cart lines — if the combined total exceeds available stock, an `Insufficient stock. Available: X, Requested: Y` error is thrown.
+
+## Notes
+
+- `internalId` may also refer to a custom sale line in the cart, not just a product line. Custom sale lines are updated or removed the same way, but stock validation does not apply to them.
+- For custom sale lines, the `product-updated` / `product-deleted` events are still published on the `cart` topic, but the event's `product` field carries the custom sale object rather than an `ActiveProduct` (there is currently no dedicated custom-sale cart event).
 
 ## Related Actions
 

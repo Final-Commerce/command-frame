@@ -39,4 +39,4 @@ await command.showNotification({
 
 ## Error Handling
 
-- Hosts may return `success: false` when `message` is empty or invalid.
+- The promise rejects (throws `Error('Message is required')`) when `message` is missing or empty — it does not resolve with `success: false`.

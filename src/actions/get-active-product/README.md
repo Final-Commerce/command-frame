@@ -34,22 +34,26 @@ When a product is active, the returned `CFActiveProduct` object includes:
 | `variantId` | `string` | Yes | Variant identifier |
 | `name` | `string` | Yes | Product display name |
 | `sku` | `string` | Yes | Stock keeping unit |
-| `price` | `number` | Yes | Unit price |
+| `price` | `number` | Yes | Unit price, in integer minor currency units (e.g. `1999` = $19.99) |
 | `images` | `string[]` | Yes | Product image URLs |
 | `taxTableId` | `string` | Yes | Tax table identifier |
 | `quantity` | `number` | Yes | Quantity in the cart |
 | `stock` | `number` | Yes | Available stock count |
 | `note` | `string` | No | Product-level note |
-| `discount` | `CFDiscount` | No | Discount applied to the product |
+| `discounts` | `CFDiscount[]` | No | Discounts applied to the product |
 | `description` | `string` | No | Short product description |
 | `longDescription` | `string` | No | Full product description |
 | `shortDescription` | `string` | No | Brief product description |
 | `barcodeId` | `string` | No | Barcode identifier |
 | `allowBackOrder` | `boolean` | No | Whether back-ordering is allowed |
-| `fee` | `CFCustomFee` | No | Custom fee applied to the product |
+| `fees` | `CFCustomFee[]` | No | Custom fees applied to the product |
 | `isUnlimited` | `boolean` | No | Whether stock is unlimited |
 | `attributes` | `string` | No | Product attributes |
 | `localQuantity` | `number` | No | Locally tracked quantity |
+| `_id` | `string` | No | Mongo-style id when retained from the catalog |
+| `productType` | `CFProductType` | No | `"simple"` or `"variable"` |
+| `currency` | `CurrencyCode` | No | Currency code for the line price |
+| `minorUnits` | `number` | No | Decimal places for the line currency |
 
 ## Example Usage
 
@@ -74,7 +78,7 @@ try {
   //     id: '123',
   //     name: 'Example Product',
   //     sku: 'EX-001',
-  //     price: 19.99,
+  //     price: 1999, // $19.99 in minor units
   //     quantity: 1,
   //     stock: 50,
   //     images: ['https://...'],
@@ -91,6 +95,14 @@ try {
 ## Error Handling
 
 This action typically does not throw errors unless there's an underlying system issue.
+
+## Events
+
+Publishes the active product snapshot on the `products` channel — unconditionally, including `null` when there is no active selection:
+
+| Channel    | Event               | Payload |
+| :--------- | :------------------- | :------ |
+| `products` | `get-active-product` | `{ product: CFActiveProduct \| null }` |
 
 ## Notes
 

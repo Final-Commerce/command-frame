@@ -43,6 +43,10 @@ if (!allowed) {
 
 **This is UI pre-gating, not the security boundary.** The mutating refund commands enforce `issue_refunds` runtime-side regardless of what your UI shows — always handle a `REFUND_PERMISSION_DENIED: `-prefixed rejection from `processPartialRefund` / `redeemRefund` (prefix-match, like `REFUND_AMOUNT_EXCEEDS_CAPACITY:`).
 
+## Error Handling
+
+- **Missing `permission`**: throws `checkPermission: permission is required` (kaching `handler.ts`). The mock throws `permission is required` (no prefix) — match the runtime string above, not the mock's.
+
 ## Mock divergence
 
 The standalone mock returns `allowed: true` for every permission except the magic name `'mock_denied'` (returns `allowed: false`), so both UI branches are testable outside the iframe. Real role evaluation happens only in the runtime.

@@ -1,9 +1,13 @@
 import type { CFActiveOrder } from "../../CommonTypes";
 
-// Print type discriminator
+// Print type discriminator.
+// Only `"image"` is supported. `"html"` and `"receipt"` are DEPRECATED — the
+// station's print path renders a pre-rasterized image, so flows should
+// rasterize their own receipt/label markup and print it via `type: "image"`
+// (that is also the only path that carries multi-printer tag routing reliably).
 export type PrintType = "image" | "html" | "receipt";
 
-// Print parameters (discriminated union)
+// Print parameters (discriminated union).
 export type PrintParams =
     | {
           type: "image";
@@ -11,11 +15,17 @@ export type PrintParams =
           options?: PrintOptions;
       }
     | {
+          /** @deprecated Rasterize your HTML and use `type: "image"`. The native path posts raw HTML to the shell (no html2canvas/sanitization) and PrintOptions may be dropped. */
           type: "html";
           data: { html: string };
           options?: PrintOptions;
       }
     | {
+          /**
+           * @deprecated Compose + rasterize your receipt and use `type: "image"`.
+           * The station requires `order` (no active-order fallback), ignores
+           * `globalBlockId`, and drops ALL PrintOptions (including tag routing).
+           */
           type: "receipt";
           data: { order?: Omit<CFActiveOrder, "_id">; globalBlockId?: string };
           options?: PrintOptions;
@@ -29,6 +39,7 @@ export interface PrintOptions {
         bottom?: number;
         left?: number;
     };
+    /** @deprecated Not consumed by the runtime — paper size comes from the station's per-printer settings. */
     paperSize?: string;
     width?: string;
     /**

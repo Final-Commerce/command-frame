@@ -4,8 +4,8 @@ export interface AdjustInventoryParams {
     amount: string;
     /** 'add' (increase), 'subtract' (decrease), or 'set' (recount). */
     stockType: 'add' | 'subtract' | 'set';
+    /** Variant to adjust. Omit to use the active product's selected variant. */
     variantId?: string;
-    productId?: string;
 }
 
 export interface AdjustInventoryResponse {

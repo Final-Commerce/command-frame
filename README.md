@@ -4,7 +4,7 @@ A TypeScript library for type-safe communication between iframes and their paren
 
 ## Overview
 
-Command Frame provides a structured way to build integrations that run inside Final Commerce applications (like Render POS or Manage Dashboard). It handles the underlying `postMessage` communication while enforcing strict type safety for both the host application (Provider) and the embedded app (Client).
+Command Frame provides a structured way to build integrations that run inside Final Commerce applications (the kaching POS runtime or the Manage Dashboard). It handles the underlying `postMessage` communication while enforcing strict type safety for both the host application (Provider) and the embedded app (Client).
 
 `RenderClient` and `ManageClient` extend `CommandFrameClient`: dynamic methods such as `getProducts()` map to `postMessage` actions named after the method (camelCase), with typed params and responses per project.
 
@@ -14,8 +14,6 @@ The library provides three main capabilities:
 | ------------------- | ------------------------------------------------------------------------- | ----------------------------------------- |
 | **Commands**        | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call                 |
 | **Pub/Sub**         | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted)     |
-| **Hooks**           | Register business-logic callbacks that persist across all pages           | Session-scoped (survives page navigation) |
-| **Interceptors**    | Gate POS flows (approve / modify / block) at named points                 | Blocking; host waits for your response    |
 | **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`, or mixed-destination legs on `processPartialRefund`; query engine capacity with `getRefundPlan`; pre-gate UI with `checkPermission` (`issue_refunds` is enforced runtime-side) | Request/response per call                 |
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
@@ -65,7 +63,7 @@ true` → `amount` is `0–100`), and quantities.
 
 ### Render (POS System)
 
-For building applications that run inside the Render Point of Sale interface.
+For building applications that run inside the Final Commerce POS (the kaching runtime).
 
 - **[Render Documentation](./src/projects/render/README.md)**
 - **Features:** Order management, Product catalog, Customer management, Payments, Hardware integration (Cash drawer, Printer), Custom tables, Secrets storage.
@@ -93,10 +91,10 @@ const context = await client.getContext();
 
 ## Pub/Sub
 
-The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
+The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the POS host (kaching). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (16), Customers (8), Orders (5), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** Cart (16), Customers (8), Orders (7), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (4), Variants (2), Transactions (2), Categories (2), Attributes (2), Split Payments (1).
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';
@@ -107,55 +105,6 @@ const subscriptionId = topics.subscribe('cart', (event) => {
 
 // Unsubscribe when done
 topics.unsubscribe('cart', subscriptionId);
-```
-
-## Hooks
-
-Hooks are **session-scoped** event callbacks that run in the host (Render) context and persist across all page navigations -- even when the extension iframe is no longer on the current page. Use hooks for business logic that must run on every event (e.g. logging to custom tables, triggering webhooks).
-
-- **[Hooks Documentation](./src/hooks/README.md)**
-- The callback is serialized and sent to the host; it must be **self-contained** (no closures, no imports).
-- A stable `hookId` is required for deduplication (safe on iframe reload).
-
-```typescript
-import { hooks } from '@final-commerce/command-frame';
-
-hooks.register(
-  'cart',
-  async (event, hostCommands) => {
-    await hostCommands.upsertCustomTableData({
-      tableName: 'cart-events-log',
-      data: { eventType: event.type, payload: event.data, timestamp: event.timestamp },
-    });
-  },
-  { hookId: 'my-extension:cart-log' },
-);
-
-// Unregister when no longer needed
-hooks.unregister('my-extension:cart-log');
-```
-
-## Interceptors
-
-Interceptors let an extension **gate a POS flow** (approve / modify / block) at a named point — the host waits for your interceptor and acts on what it returns. Unlike hooks, interceptors are **blocking**.
-
-- **[Interceptors Documentation](./src/interceptors/README.md)**
-- The callback is serialized and reconstructed on the host; it must be **self-contained** (no closures, no imports).
-- A stable `interceptorId` is required for deduplication (safe on iframe reload).
-
-```typescript
-import { interceptors } from '@final-commerce/command-frame';
-
-interceptors.register(
-  'refund_start',
-  async (payload, cmds) => {
-    if (payload.paymentTypes.includes('redeem')) {
-      return cmds.openExtensionOverlay({ point: 'refund_start', payload });
-    }
-    return true; // nothing for us to do
-  },
-  { interceptorId: 'my-extension:refund-guard' },
-);
 ```
 
 ## Refunding redeem / extension payments

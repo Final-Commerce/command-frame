@@ -11,6 +11,10 @@ export const mockExtensionPayment: ExtensionPayment = async (
         amount: params?.amount ?? null,
         paymentType,
         order: MOCK_ORDERS[0],
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        change: 0,
+        cashRounding: 0,
+        saleFinalized: true,
+        remainingBalance: 0
     };
 };

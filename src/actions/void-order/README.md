@@ -7,7 +7,7 @@ Void or cancel an open order. For orders with captured payment legs, refunds the
 | Name      | Type   | Required | Description                                                                                                                                                                                                       |
 | --------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `orderId` | string | No       | Order to void; defaults to the active order.                                                                                                                                                                      |
-| `reason`  | string | No       | Optional cashier-facing reason. On a pure void, recorded on the void audit row and carried on the `order-voided` event; on the refund branch it rides the event only (the refund dispatcher does not consume it). |
+| `reason`  | string | No       | Optional cashier-facing reason. Recorded on both branches — the void audit trail on a pure void, and (verbatim) on the persisted refund plus its own audit trail on the refund branch — and always carried on the `order-voided` event either way. |
 
 ## Response
 
@@ -17,7 +17,6 @@ Void or cancel an open order. For orders with captured payment legs, refunds the
   orderId: string;
   outcome: "voided" | "refunded";
   timestamp: string;
-  transitionResult?: CFTransitionResult;
 }
 ```
 
@@ -44,8 +43,10 @@ Only open orders (`unpaid`, `payment_pending`, or `partially_paid`) are voidable
 
 ### Error Handling
 
-- Throws `ORDER_NOT_VOIDABLE` if the order is in any non-open state (`paid`, `partially_refunded`, `refunded`, `voided`, or unknown) — use the refund flow instead.
-- Throws if the order is not found or cannot be transitioned.
+- Throws `ORDER_NOT_VOIDABLE: order {orderId} is '{paymentState}' — use the refund flow for completed orders` if the order is in any non-open state (`paid`, `partially_refunded`, `refunded`, `voided`, or unknown).
+- Throws `Order with ID {orderId} not found` if an explicit `orderId` is given and doesn't resolve to an order.
+- Throws `No order selected. Please provide orderId.` if no `orderId` is given and there is no active order.
+- Throws (message from the blocking guard, or `Void blocked ({guard})` if the guard has no reason) if the state machine blocks the transition for any reason other than captured payments.
 
 ## Important Notes
 

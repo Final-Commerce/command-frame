@@ -176,11 +176,10 @@ console.log(`Deleted ${successCount} of ${recordIdsToDelete.length} records`);
 
 ## Error Handling
 
-If the delete operation fails, the handler will throw an error. Common error scenarios include:
-- Invalid `tableName` (table does not exist)
-- Invalid `rowId` (record does not exist)
-- Database connection issues
-- Permission errors
+If the delete operation fails, the handler throws an error:
+- `tableName is required` — thrown when `tableName` is missing from the params
+- `Table "<tableName>" not found` — thrown when no custom table with that name exists
+- `Row "<rowId>" not found in table "<tableName>"` — thrown when the row does not exist in the specified table
 
 ## Validation Rules
 
@@ -209,10 +208,10 @@ If the delete operation fails, the handler will throw an error. Common error sce
 
 ## Notes
 
-- The deletion is permanent and cannot be undone
+- This is a soft delete: the row and its values are flagged `isDeleted: true` rather than being physically removed from the local database
 - The record is deleted from the local IndexedDB database (LokiJS)
 - The deletion is synchronized with the central MongoDB database via station-sync
-- Consider implementing a soft delete pattern (marking records as deleted) if you need the ability to restore deleted records
+- Publishes a `row-deleted` event on the `custom-tables` topic with `{ tableName, rowId }` after a successful delete
 - Use `getCustomTableData` to verify the record exists before attempting to delete it
 - Consider showing a confirmation dialog before deleting critical data
 

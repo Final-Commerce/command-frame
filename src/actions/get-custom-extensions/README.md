@@ -37,7 +37,7 @@ type CustomExtension = BaseEntity & {
     short_description?: string;
     long_description?: string;
     main_image?: string;
-    price: string;
+    price: number;
     isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
@@ -57,7 +57,7 @@ type CustomExtension = BaseEntity & {
 - `main_image` (string, optional): URL to the main image/icon for the extension
 - `backgroundUrl` (string, optional): URL to a background image
 - `gallery` (string[], optional): Array of image URLs for the extension gallery
-- `price` (string): Price of the extension (formatted as string, e.g., "$10.00")
+- `price` (number): Price of the extension in integer minor currency units (e.g., cents) — e.g. `2999` represents $29.99
 - `website` (string, optional): Website URL for the extension
 - `isDeleted` (boolean): Whether the extension has been marked as deleted
 - `createdAt` (string): Creation timestamp
@@ -191,7 +191,7 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
         "https://example.com/images/loyalty-1.png",
         "https://example.com/images/loyalty-2.png"
       ],
-      "price": "$29.99",
+      "price": 2999,
       "website": "https://loyalty-extension.example.com",
       "isDeleted": false,
       "createdAt": "2024-01-01T10:00:00.000Z",
@@ -206,7 +206,7 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
       "short_description": "Real-time inventory insights",
       "long_description": "Get detailed insights into your inventory with real-time tracking, low stock alerts, and comprehensive reporting.",
       "main_image": "https://example.com/images/inventory-extension.png",
-      "price": "$49.99",
+      "price": 4999,
       "isDeleted": false,
       "createdAt": "2024-01-05T08:00:00.000Z",
       "updatedAt": "2024-01-05T08:00:00.000Z",
@@ -222,6 +222,6 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
 - Custom extensions are stored in the local IndexedDB database (LokiJS)
 - Custom extensions are synchronized with the central MongoDB database via station-sync
 - Each extension may have associated custom tables (use `getCustomExtensionCustomTables` to retrieve them)
-- Extensions marked with `isDeleted: true` are typically hidden from the user interface but remain in the database
-- The `price` field is a string representation and may need parsing for numerical operations
+- The handler queries for extensions where `isDeleted` is not `true`, so deleted extensions are excluded from `customExtensions` entirely — they remain in the local database but are never returned by this command
+- The `price` field is a number in integer minor currency units (e.g., cents), not a formatted string
 

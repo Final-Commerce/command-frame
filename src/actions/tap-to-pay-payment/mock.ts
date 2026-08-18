@@ -15,6 +15,10 @@ export const mockTapToPayPayment: TapToPayPayment = async (params?: TapToPayPaym
         amount: due,
         paymentType: "tapToPay",
         order,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        change: 0,
+        cashRounding: 0,
+        saleFinalized: true,
+        remainingBalance: 0
     };
 };

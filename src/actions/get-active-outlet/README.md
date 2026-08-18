@@ -1,6 +1,6 @@
 # getActiveOutlet
 
-Returns the outlet currently active on the station (`activeEntities.outlet`), or `null`.
+Returns the outlet currently active on the station (`activeShell.outlet`), or `null`.
 
 ## Parameters
 

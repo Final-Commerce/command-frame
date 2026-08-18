@@ -1,5 +1,3 @@
-import type { CFTransitionResult } from '../../common-types/order-state';
-
 // Void Order Types
 export type VoidOrderOutcome = 'voided' | 'refunded';
 
@@ -25,8 +23,6 @@ export interface VoidOrderResponse {
    */
   outcome: VoidOrderOutcome;
   timestamp: string;
-  /** Present when the state machine blocked or forced the transition. */
-  transitionResult?: CFTransitionResult;
 }
 
 export type VoidOrder = (params?: VoidOrderParams) => Promise<VoidOrderResponse>;

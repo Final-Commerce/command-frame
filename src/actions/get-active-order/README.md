@@ -98,9 +98,17 @@ try {
 }
 ```
 
+## Events
+
+Publishes the active order snapshot on the `orders` channel:
+
+| Channel  | Event              | Payload |
+| :------- | :------------------ | :------ |
+| `orders` | `get-active-order`  | `{ order: CFActiveOrder \| null }` |
+
 ## Notes
 
 - Returns `null` for the `order` field when no order has been set as active.
 - The active order is typically set using [`setActiveOrder`](../set-active-order/README.md).
 - Useful for checking the current order context before performing order-specific operations (refunds, reprints, etc.).
-- The returned order includes all fields from [`CFActiveOrder`](../../types/README.md#cfactiveorder), which extends [`CFOrder`](../../types/README.md#cforder) with runtime POS session fields (`user`, `outlet`, `station`, etc.).
+- The returned order includes all fields from [`CFActiveOrder`](../../types/README.md#cfactiveorder), which is a direct alias of the same underlying type as [`CFOrder`](../../types/README.md#cforder) (both alias common's `ActiveOrder`) — runtime POS session fields (`user`, `outlet`, `station`, etc.) are present directly, not via an extends relationship.

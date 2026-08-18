@@ -25,6 +25,11 @@ The discount amount. The interpretation depends on the `isPercent` flag:
 - Fixed amount: `amount: 550` with `isPercent: false` → $5.50 discount
 - Percentage: `amount: 15` with `isPercent: true` → 15% discount
 
+The handler validates `amount` before applying it:
+- It must be a finite number greater than `0` (zero and negative values are rejected).
+- If `isPercent` is `true`, it must also be `100` or less.
+- If `isPercent` is `false`, it must be an integer (a fractional minor-unit amount is rejected).
+
 #### `isPercent` (optional)
 
 Whether the discount amount is a percentage or a fixed amount. Defaults to `false` (fixed amount).
@@ -182,12 +187,33 @@ try {
 
 When a cart discount is added:
 
-1. The discount is validated (amount must be provided)
+1. The discount is validated (amount must be provided, be a finite number greater than 0, no more than 100 for percentages, and an integer minor-unit amount for fixed discounts)
 2. The discount is applied to the entire cart in the parent application
 3. The discount type (percentage or fixed) is stored correctly
 4. The discount label is stored for display purposes
 5. The discount affects the cart's total calculation
 6. Taxes are recalculated based on the discounted subtotal
+7. A `cart-discount-added` event is published on the `cart` channel
+
+## Events
+
+Adding a cart discount publishes a `cart-discount-added` event on the `cart` channel:
+
+```json
+{
+  "discount": {
+    "value": 1000,
+    "label": "Holiday Sale",
+    "isPercent": false
+  }
+}
+```
+
+`discount.value` reflects the internal storage format, not the raw `amount` you passed in:
+- Fixed discounts: the integer minor-units amount (unchanged from `amount`).
+- Percentage discounts: the percentage stored as a fraction (e.g., `amount: 15` becomes `value: 0.15`).
+
+**Fractional percentages are silently truncated.** The handler computes the stored/published value as `parseInt(amount) / 100`, not `amount / 100`. Validation only requires `0 < amount <= 100` — it does not reject non-integer percentages — so a call like `amount: 12.5, isPercent: true` passes validation but stores/publishes `value: 0.12` (12%) instead of `0.125` (12.5%). The response's echoed `amount` still shows `12.5`, so the truncation isn't visible in the response — only in `cart.discount` / the published event.
 
 ## Discount Calculation
 
@@ -237,13 +263,43 @@ await command.addCartDiscount({
 });
 ```
 
+### Invalid Amount
+
+```typescript
+// Throws: "Discount amount must be a valid number"
+await command.addCartDiscount({
+    amount: NaN
+});
+
+// Throws: "Discount amount must be greater than 0"
+await command.addCartDiscount({
+    amount: 0,
+    isPercent: false
+});
+
+// Throws: "Discount percentage must be between 0 and 100"
+await command.addCartDiscount({
+    amount: 150,
+    isPercent: true
+});
+
+// Throws: "Discount amount must be an integer in minor currency units (e.g. 1575 = $15.75)"
+await command.addCartDiscount({
+    amount: 10.5,
+    isPercent: false
+});
+```
+
 ## Validation Rules
 
-- `amount` must be provided and can be any number
+- `amount` must be provided
+- `amount` must be a finite number greater than `0`; zero and negative values are rejected
 - `isPercent` is optional and defaults to `false`
 - `label` is optional and defaults to `"Discount"`
-- For percentage discounts, the amount typically ranges from 0 to 100, but the handler doesn't enforce this limit
-- Negative amounts are allowed (though not typically used)
+- For percentage discounts (`isPercent: true`), `amount` must be `100` or less — the handler enforces this range
+- For fixed discounts (`isPercent: false`), `amount` must be an integer (a fractional minor-unit amount is rejected)
+- Fractional percentages (e.g. `12.5`) are **not** rejected by validation, but are truncated when stored/published (see [Events](#events))
+- Negative amounts are rejected, not just discouraged
 
 ## Real Data Examples
 

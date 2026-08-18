@@ -12,13 +12,13 @@ None
 
 ```typescript
 interface GetFinalContextResponse {
-    projectName: string;
+    projectName: CFProjectName; // "kaching" | "Manage"
 }
 ```
 
-#### `projectName` (string)
+#### `projectName` (`"kaching" | "Manage"`)
 
-The name of the current project context.
+Identifies which app is hosting command-frame. In kaching, this always resolves to `projectName: 'kaching'`.
 
 ## Usage
 
@@ -33,5 +33,5 @@ if (context) {
 
 ## Error Handling
 
-- Returns `null` if context cannot be retrieved.
+- The return type allows for `null` if context cannot be retrieved. The kaching handler does not implement this case — it always resolves with a value and never throws.
 

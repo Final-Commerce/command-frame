@@ -38,7 +38,6 @@ import { cashPayment } from './actions/cash-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
 import { terminalPayment } from './actions/terminal-payment/action';
-import { vendaraPayment } from './actions/vendara-payment/action';
 import { extensionPayment } from './actions/extension-payment/action';
 import { redeemPayment } from './actions/redeem-payment/action';
 import { integrationPayment } from './actions/integration-payment/action';
@@ -177,7 +176,6 @@ export const command = {
   getCashRoundingAmount,
   tapToPayPayment,
   terminalPayment,
-  vendaraPayment,
   extensionPayment,
   redeemPayment,
   integrationPayment,
@@ -372,16 +370,6 @@ export type {
 } from './actions/check-permission/types';
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from './actions/initiate-refund/types';
-export type {
-  OpenExtensionOverlay,
-  OpenExtensionOverlayParams,
-  OpenExtensionOverlayResponse,
-} from './actions/open-extension-overlay/types';
-export type {
-  ResolveExtensionOverlay,
-  ResolveExtensionOverlayParams,
-  ResolveExtensionOverlayResponse,
-} from './actions/resolve-extension-overlay/types';
 
 export type { GetCurrentCart, GetCurrentCartResponse } from './actions/get-current-cart/types';
 
@@ -473,7 +461,6 @@ export type {
   TapToPayPaymentResponse,
 } from './actions/tap-to-pay-payment/types';
 export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } from './actions/terminal-payment/types';
-export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from './actions/vendara-payment/types';
 export type {
   ExtensionPayment,
   ExtensionPaymentParams,
@@ -616,21 +603,6 @@ export type {
   HookRegistration,
 } from './pubsub/types';
 export type { TopicEventPayloadMap } from './pubsub/topics/types';
-
-// Export Hooks (extension iframe API for session-scoped event callbacks)
-export { hooks } from './hooks';
-export type { HookFunction, HookRegisterOptions } from './hooks';
-
-// Export Interceptors (extension iframe API for gating host flows)
-export { interceptors } from './interceptors';
-export type {
-  InterceptorFunction,
-  InterceptorPoint,
-  InterceptorRegisterOptions,
-  InterceptorReturn,
-  InterceptorOverlayContext,
-  InterceptorHostCommands,
-} from './interceptors';
 
 // Export Pub/Sub Topics
 export { customersTopic } from './pubsub/topics/customers';
