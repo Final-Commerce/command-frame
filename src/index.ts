@@ -132,6 +132,13 @@ import { addAttribute } from './actions/add-attribute/action';
 import { getAttributes } from './actions/get-attributes/action';
 import { editAttribute } from './actions/edit-attribute/action';
 import { deleteAttribute } from './actions/delete-attribute/action';
+// Product orchestrators (P3)
+import { previewVariants } from './actions/preview-variants/action';
+import { computeVariantChanges } from './actions/compute-variant-changes/action';
+import { createProductWithVariants } from './actions/create-product-with-variants/action';
+import { updateProductBundle } from './actions/update-product-bundle/action';
+import { adjustStock } from './actions/adjust-stock/action';
+import { setProductOutlets } from './actions/set-product-outlets/action';
 // Entity Actions
 import { getOutlets } from './actions/get-outlets/action';
 import { getStations } from './actions/get-stations/action';
@@ -257,6 +264,13 @@ export const command = {
   getAttributes,
   editAttribute,
   deleteAttribute,
+  // Product orchestrators (P3)
+  previewVariants,
+  computeVariantChanges,
+  createProductWithVariants,
+  updateProductBundle,
+  adjustStock,
+  setProductOutlets,
   // Entity Actions
   getOutlets,
   getStations,
@@ -363,6 +377,31 @@ export type { AddAttribute, AddAttributeParams, AddAttributeResponse } from './a
 export type { GetAttributes, GetAttributesResponse } from './actions/get-attributes/types';
 export type { EditAttribute, EditAttributeParams, EditAttributeResponse } from './actions/edit-attribute/types';
 export type { DeleteAttribute, DeleteAttributeParams, DeleteAttributeResponse } from './actions/delete-attribute/types';
+
+// Product orchestrators (P3)
+export type { PreviewVariants, PreviewVariantsParams, PreviewVariantsResponse } from './actions/preview-variants/types';
+export type {
+  ComputeVariantChanges,
+  ComputeVariantChangesParams,
+  ComputeVariantChangesResponse,
+} from './actions/compute-variant-changes/types';
+export type {
+  CreateProductVariantInput,
+  CreateProductWithVariants,
+  CreateProductWithVariantsParams,
+  CreateProductWithVariantsResponse,
+} from './actions/create-product-with-variants/types';
+export type {
+  UpdateProductBundle,
+  UpdateProductBundleParams,
+  UpdateProductBundleResponse,
+} from './actions/update-product-bundle/types';
+export type { AdjustStock, AdjustStockParams, AdjustStockResponse } from './actions/adjust-stock/types';
+export type {
+  SetProductOutlets,
+  SetProductOutletsParams,
+  SetProductOutletsResponse,
+} from './actions/set-product-outlets/types';
 
 export type { GetOutlets, GetOutletsResponse } from './actions/get-outlets/types';
 

@@ -113,6 +113,12 @@ import { mockAddAttribute } from '../../actions/add-attribute/mock';
 import { mockGetAttributes } from '../../actions/get-attributes/mock';
 import { mockEditAttribute } from '../../actions/edit-attribute/mock';
 import { mockDeleteAttribute } from '../../actions/delete-attribute/mock';
+import { mockPreviewVariants } from '../../actions/preview-variants/mock';
+import { mockComputeVariantChanges } from '../../actions/compute-variant-changes/mock';
+import { mockCreateProductWithVariants } from '../../actions/create-product-with-variants/mock';
+import { mockUpdateProductBundle } from '../../actions/update-product-bundle/mock';
+import { mockAdjustStock } from '../../actions/adjust-stock/mock';
+import { mockSetProductOutlets } from '../../actions/set-product-outlets/mock';
 import { RenderProviderActions } from './types';
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -236,4 +242,11 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getAttributes: mockGetAttributes,
   editAttribute: mockEditAttribute,
   deleteAttribute: mockDeleteAttribute,
+  // Product orchestrators (P3)
+  previewVariants: mockPreviewVariants,
+  computeVariantChanges: mockComputeVariantChanges,
+  createProductWithVariants: mockCreateProductWithVariants,
+  updateProductBundle: mockUpdateProductBundle,
+  adjustStock: mockAdjustStock,
+  setProductOutlets: mockSetProductOutlets,
 };

@@ -116,6 +116,12 @@ import type {
   GetAttributes,
   EditAttribute,
   DeleteAttribute,
+  PreviewVariants,
+  ComputeVariantChanges,
+  CreateProductWithVariants,
+  UpdateProductBundle,
+  AdjustStock,
+  SetProductOutlets,
 } from '../../index';
 
 export interface RenderProviderActions {
@@ -238,4 +244,11 @@ export interface RenderProviderActions {
   getAttributes: GetAttributes;
   editAttribute: EditAttribute;
   deleteAttribute: DeleteAttribute;
+  // Product orchestrators (P3)
+  previewVariants: PreviewVariants;
+  computeVariantChanges: ComputeVariantChanges;
+  createProductWithVariants: CreateProductWithVariants;
+  updateProductBundle: UpdateProductBundle;
+  adjustStock: AdjustStock;
+  setProductOutlets: SetProductOutlets;
 }
