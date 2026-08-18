@@ -74,6 +74,8 @@ interface CreateProductWithVariantsParams {
 - **Dense-seed inventory across ALL active outlets (§6.1/§6.3):** every live variant gets one inventory row per **active** company outlet (`isDeleted:false`) — never only the outlets named in `outlets` or in a variant's own `inventory` hint. This is a deliberate resurface-bug guard (hub-api parity, `product.service.ts:410-416`): an outlet added to the company later must not silently exclude products created before it existed. Every seeded row starts at `quantity: 0`; `manageStock` is `manageStock` (top-level) unless a variant input overrides it.
 - **`outlets` ⇒ CV reconcile (§3.3.4):** a non-empty `outlets[]` reconciles catalog-visibility so the product is visible **only** at those outlets (see `setProductOutlets` for the exact hide/show algorithm). Omitted or empty `outlets[]` skips CV entirely — the product is visible everywhere, which is the common case.
 
+Known limitation (mock, not visible in the real handler): `outlets` is accepted but silently ignored — the mock does not simulate the catalog-visibility reconcile described above. Only the real kaching command-frame handler performs it; the mock's returned `product` is unaffected by whatever is passed in `outlets`.
+
 ## Response
 
 ### `CreateProductWithVariantsResponse`

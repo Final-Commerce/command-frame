@@ -19,20 +19,22 @@ interface UpdateProductBundleParams {
 }
 ```
 
-| Param              | Type                                                    | Required | Notes                                                                                                                                                                                           |
-| ------------------ | ------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `productId`        | `string`                                                | yes      | The product to update.                                                                                                                                                                          |
-| `productChanges`   | `EditProductParams['changes']`                          | no       | Product-level scalar fields (name, description, categories, taxTable, images, status, sku, barcode, tags). Attributes are **never** set here — attribute values live on variants only.          |
-| `variantChanges`   | `{ _id: string; changes: Partial<CFProductVariant> }[]` | no       | Per-variant field diffs — the direct output shape of `computeVariantChanges`.                                                                                                                   |
-| `variantAdditions` | `CreateProductVariantInput[]`                           | no       | New variants to add (full docs). A non-empty list flips the product's `productType` to `'variable'`. Deduped by combo upstream (`previewVariants`).                                             |
-| `variantDeletions` | `string[]`                                              | no       | Variant ids to soft-delete — cascades to soft-deleting those variants' inventory rows (§6.6).                                                                                                   |
-| `outlets`          | `string[]`                                              | no       | `undefined` leaves visibility untouched; an array (including `[]`) reconciles CV to exactly that outlet set — same algorithm as `setProductOutlets`. Never persisted on the product doc itself. |
+| Param              | Type                                                    | Required | Notes                                                                                                                                                                                                    |
+| ------------------ | ------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `productId`        | `string`                                                | yes      | The product to update.                                                                                                                                                                                   |
+| `productChanges`   | `EditProductParams['changes']`                          | no       | Product-level scalar fields (name, description, shortDescription, categories, taxTable, images, status, sku, barcode, tags). Attributes are **never** set here — attribute values live on variants only. |
+| `variantChanges`   | `{ _id: string; changes: Partial<CFProductVariant> }[]` | no       | Per-variant field diffs — the direct output shape of `computeVariantChanges`.                                                                                                                            |
+| `variantAdditions` | `CreateProductVariantInput[]`                           | no       | New variants to add (full docs). A non-empty list flips the product's `productType` to `'variable'`. Deduped by combo upstream (`previewVariants`).                                                      |
+| `variantDeletions` | `string[]`                                              | no       | Variant ids to soft-delete — cascades to soft-deleting those variants' inventory rows (§6.6).                                                                                                            |
+| `outlets`          | `string[]`                                              | no       | `undefined` leaves visibility untouched; an array (including `[]`) reconciles CV to exactly that outlet set — same algorithm as `setProductOutlets`. Never persisted on the product doc itself.          |
 
 ### Parity notes (spec §3.3.2)
 
 - **Additions dense-seed inventory** across all active outlets, same rule as `createProductWithVariants` (§6.1/§6.3) — never only the outlets in `outlets`.
 - **Simple-product SKU/barcode routing:** for a product with exactly one live variant, `sku`/`barcode` are variant-level fields — pass them through `variantChanges` targeting that one variant, not `productChanges` (parity: deerlake `show.tsx:413-426` / FI-5617). This routing never applies once a product has more than one variant.
 - **External products** (`source !== 'standalone'`, e.g. WooCommerce-synced): the writable whitelist narrows to `productChanges.taxTable` and `outlets` (plus the inventory seeds outlet changes imply) — everything else on the payload is ignored server-side.
+
+Known limitation (mock, not visible in the real handler): `outlets` is accepted but silently ignored — the mock does not simulate the catalog-visibility reconcile (the hide/show exception algorithm described above). Only the real kaching command-frame handler performs it; the mock's returned `product` is unaffected by whatever is passed in `outlets`.
 
 ## Response
 

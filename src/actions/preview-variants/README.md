@@ -40,6 +40,8 @@ interface PreviewVariantsResponse {
 - **`existing`** — entries from `existingVariants` whose attribute combo still exists in the new `selectedOptions` set (matched by a stable dedup key, e.g. `"Color:Red|Size:S"` — order-independent, so renaming an option's declared order doesn't false-positive a diff). These survive unchanged; don't resubmit them as additions.
 - **`autoDeleteIds`** — ids of attribute-less placeholder variants in `existingVariants` (the mandatory default variant on a still-simple product, §6.2) that become stale once `additions` lands — pass them as `variantDeletions` on the same save. Empty whenever `additions` is empty (nothing is replacing the placeholder yet).
 
+Known limitation: an existing variant whose combo disappears from the newly generated set (a deselected attribute value, or `selectedOptions` emptied out) is **not** returned in any of the three arrays — it's not in `additions` (not new), not in `existing` (its combo no longer matches), and not in `autoDeleteIds` (that list is scoped to attribute-less placeholders only, §6.2). Callers must handle these orphaned variants explicitly — e.g. diff `existingVariants` against the returned `existing` + `autoDeleteIds` via `computeVariantChanges`, or delete them manually — before submitting `variantDeletions`.
+
 ## Usage
 
 ```typescript

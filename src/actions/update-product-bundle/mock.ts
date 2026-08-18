@@ -1,5 +1,5 @@
 import { CFProduct, CFProductType, CFProductVariant, CurrencyCode } from '../../CommonTypes';
-import { MOCK_PRODUCTS, safeSerialize } from '../../demo/database';
+import { MOCK_OUTLETS, MOCK_PRODUCTS, safeSerialize } from '../../demo/database';
 import { UpdateProductBundle, UpdateProductBundleParams, UpdateProductBundleResponse } from './types';
 
 export const mockUpdateProductBundle: UpdateProductBundle = async (
@@ -18,6 +18,9 @@ export const mockUpdateProductBundle: UpdateProductBundle = async (
       return change ? { ...v, ...change.changes } : v;
     });
 
+  // Dense-seed inventory across ALL active outlets, same rule as
+  // createProductWithVariants (§6.1/§6.3) — never only the outlets in
+  // `outlets`, and regardless of any inventory hint on the addition itself.
   const newVariants: CFProductVariant[] = (params.variantAdditions || []).map((v, i) => {
     const _id = v._id || `mock_variant_${Date.now()}_${i}`;
     return {
@@ -34,7 +37,7 @@ export const mockUpdateProductBundle: UpdateProductBundle = async (
       images: v.images || [],
       attributes: v.attributes || [],
       metadata: [],
-      inventory: [],
+      inventory: MOCK_OUTLETS.map((o) => ({ warehouse: 'main', outletId: o.id, stock: 0 })),
     };
   });
 

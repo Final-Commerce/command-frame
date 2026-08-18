@@ -3,7 +3,7 @@ import { ComputeVariantChanges, ComputeVariantChangesParams, ComputeVariantChang
 
 // Deep-equal via JSON — every diffed field is plain JSON-serializable data
 // (numbers, strings, booleans, or arrays/objects of those).
-const isEqual = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
+const isEqual = <T>(a: T, b: T): boolean => JSON.stringify(a) === JSON.stringify(b);
 
 export const mockComputeVariantChanges: ComputeVariantChanges = async (
   params: ComputeVariantChangesParams,
