@@ -77,4 +77,5 @@ try {
 
 ## Events
 
-Publishes a `cart-created` event on the `cart` topic with the resumed cart (`{ cart }`) once the transition completes.
+- Publishes a `cart-created` event on the `cart` topic with the resumed cart (`{ cart }`) once the transition completes.
+- Publishes a `state-transition-completed` event on the `order-state` topic with `{ orderId, from, to, display, timestamp }`, reflecting the order's state transition from "parked" to its resumed state.

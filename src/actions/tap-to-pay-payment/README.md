@@ -23,13 +23,11 @@ Initiates a tap-to-pay payment for the current cart.
 | `amount`    | `number` | The amount charged for this tender, in integer minor currency units. |
 | `paymentType` | `string` | The payment type ('tapToPay').            |
 | `order`     | `ActiveOrder \| null` | The created/updated order. `null` on a partial leg that didn't complete the sale. |
-| `change`\*  | `number` | Always `0` for tap-to-pay (change/cash-rounding only apply to cash tenders). |
-| `cashRounding`\* | `number` | Always `0` for tap-to-pay (cash-only). |
-| `saleFinalized`\* | `boolean` | `true` only when this tender fully completed the sale (the only or final leg); `false` on a still-open split leg. |
-| `remainingBalance`\* | `number` | Balance still due after this tender (minor units); `0` once the sale is finalized. |
+| `change`  | `number` | Always `0` for tap-to-pay (change/cash-rounding only apply to cash tenders). |
+| `cashRounding` | `number` | Always `0` for tap-to-pay (cash-only). |
+| `saleFinalized` | `boolean` | `true` only when this tender fully completed the sale (the only or final leg); `false` on a still-open split leg. |
+| `remainingBalance` | `number` | Balance still due after this tender (minor units); `0` once the sale is finalized. |
 | `timestamp` | `string` | ISO date string of when the action occurred. |
-
-\* Returned by the runtime today but not yet part of the published `TapToPayPaymentResponse` type.
 
 ## Example Usage
 

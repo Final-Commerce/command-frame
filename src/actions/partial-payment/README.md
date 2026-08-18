@@ -13,7 +13,6 @@ Although the parameter is typed optional, the handler throws if no `params` obje
 | `openUI`   | `boolean` | `false`  | If true, opens the split payment UI. If false, processes the payment with the specified amount. |
 | `amount`   | `number`  | `false`  | The payment amount, in integer minor currency units (required if openUI is false). Percentages (`isPercent: true`) are unaffected and remain 0-100. |
 | `isPercent` | `boolean` | `false`  | Whether the amount is a percentage (default: false).                      |
-| `targetFulfillmentState` | `string` | `false` | Present in the type contract but not currently implemented by this handler (ignored). |
 
 ## Response
 

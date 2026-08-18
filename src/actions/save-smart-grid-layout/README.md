@@ -80,7 +80,7 @@ const { success, gridId } = await command.saveSmartGridLayout({
    - `cells` fully replaces the grid's tiles.
    - `folders`, if present, fully replaces the grid's folder map; if omitted, the previously stored folders for this `gridId` are kept as-is.
    - `name`, if present, replaces the stored display name; if omitted, the previous name is kept.
-4. If a settings record already existed, updates it in the local database and pushes the change out over sync so other devices/the backend pick it up; otherwise inserts a new settings record.
+4. If a settings record already existed, updates it in the local database; otherwise inserts a new settings record. Either way, the change is pushed out over sync so other devices/the backend pick it up.
 5. Updates in-memory (Redux) settings state to match what was just persisted.
 6. Returns `{ success: true, gridId, timestamp }`.
 

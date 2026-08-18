@@ -36,12 +36,9 @@ cash from the customer, and pass it as `tenderedAmount` — the response's
 | `openChangeCalculator` | `boolean` | **@deprecated** mirror of the request flag. |
 | `paymentType`        | `string`  | `'cash'`.                                 |
 | `order`              | `ActiveOrder \| null` | The created/updated order. Null on a partial leg that didn't complete the sale. |
-| `saleFinalized`\*    | `boolean` | `true` only when this tender fully completed the sale (the only or final leg); `false` on a still-open split leg. |
-| `remainingBalance`\* | `number`  | Balance still due after this tender (minor units); `0` once the sale is finalized. |
+| `saleFinalized`     | `boolean` | `true` only when this tender fully completed the sale (the only or final leg); `false` on a still-open split leg. |
+| `remainingBalance`  | `number`  | Balance still due after this tender (minor units); `0` once the sale is finalized. |
 | `timestamp`          | `string`  | ISO date string.                          |
-
-\* Returned by the runtime today but not yet part of the published
-`CashPaymentResponse` type.
 
 ## Example Usage
 

@@ -145,7 +145,7 @@ await command.print({
 
 - **Image printing**: The image must be base64-encoded. For native apps, the image is sent directly to the printer. For web, a print dialog is opened.
 - **HTML printing** (deprecated): on web a print window opens; on native the raw HTML is posted to the shell — it is NOT converted via html2canvas and is not sanitized. Prefer `type: "image"`.
-- **Receipt printing** (deprecated): composes a minimal receipt from the order and rasterizes it; `globalBlockId` is ignored and all `PrintOptions` (margins/width/tag) are dropped. Prefer `type: "image"`.
+- **Receipt printing** (deprecated): composes a minimal HTML receipt from the order and routes it through the same path as `type: "html"` — on web a print window opens; on native the raw HTML is posted to the shell (NOT converted via html2canvas). `globalBlockId` is ignored and all `PrintOptions` (margins/width/tag) are dropped. Prefer `type: "image"`.
 - **Error handling**: Invalid HTML may cause rendering issues.
 
 ## Error Handling
@@ -156,3 +156,4 @@ The command will throw an error if:
 - (`type: "image"`) `data.image` is missing (`Image data is required for image print type`)
 - (`type: "html"`, deprecated) `data.html` is missing (`HTML content is required for html print type`)
 - (`type: "receipt"`, deprecated) no `order` was provided **and** there is no active order in the store (`No active order found. Please provide an order or ensure there is an active order in the store.`)
+- `type` is not `"image"`, `"html"`, or `"receipt"` (`Unknown print type: <type>`)

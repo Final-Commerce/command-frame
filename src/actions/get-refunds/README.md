@@ -90,20 +90,16 @@ try {
 ## Refund Object Structure
 
 Each refund in the `refunds` array contains:
-- `_id`: Refund ID
-- `orderId`: Associated order ID
-- `sessionId`: Session ID
-- `outletId`: Outlet ID
-- `receiptId`: Receipt identifier
-- `refundedBy`: User ID who processed the refund
-- `reason`: Reason for refund (if provided)
-- `createdAt`: Creation timestamp
-- `updatedAt`: Last update timestamp
 - `lineItems`: Array of refunded line items
 - `customSales`: Array of refunded custom sales
 - `cartFees`: Array of refunded cart fees
 - `tips`: Array of refunded tips
-- `summary`: Refund summary information
+- `refundedBy`: User ID who processed the refund
+- `timestamp`: ISO date string of when the refund occurred (may be `undefined`)
+- `summary`: Refund summary information (optional)
 - `refundPayment`: Payment refund details
-- And more fields depending on the refund
+- `balance`: Remaining balance after the refund (optional)
+- `receiptId`: Receipt identifier (optional)
+- `currency`: Currency code for the refund (optional)
+- `minorUnits`: Minor unit precision for the currency (optional)
 

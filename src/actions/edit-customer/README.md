@@ -2,7 +2,7 @@
 
 Updates an existing customer's information. Only the provided fields in `changes` are modified; all other fields remain unchanged.
 
-**Note:** the `changes` type allows any `CFCustomer` field, but the current handler only applies `firstName`, `lastName`, `email`, and `phone`. Other fields listed below (`tags`, `metadata`, `notes`, `billing`, `shipping`, `externalId`, `fromOliver`) are accepted by the type but silently ignored by the handler.
+**Note:** the `changes` type allows any `CFCustomer` field, but the current handler only applies `firstName`, `lastName`, `email`, and `phone`. Other fields listed below (`tags`, `metadata`, `notes`, `billing`, `shipping`, `externalId`, `fromOliver`, `id`, `source`, `outletId`, `totalSpent`, `lastAction`) are accepted by the type but silently ignored by the handler.
 
 ## Parameters
 
@@ -35,12 +35,17 @@ At least one of these four fields must be provided in `changes`, or the call thr
 **Accepted by the type but currently ignored by the handler:**
 
 - `tags` (string[]): Array of tags to associate with the customer.
-- `metadata` (Array<{ key: string; value: string }>): Custom metadata as key-value pairs.
-- `notes` (Array<{ createdAt: string; message: string }>): Array of notes associated with the customer.
+- `metadata` (Record<string, string>[]): Custom metadata as key-value records.
+- `notes` (Array<{ _id: string; createdAt: string; message: string }>): Array of notes associated with the customer.
 - `billing` (CFAddress | null): Billing address information.
 - `shipping` (CFAddress | null): Shipping address information.
 - `externalId` (string): External system identifier.
 - `fromOliver` (boolean): Indicates if the customer originated from Oliver system.
+- `id` (string): Public string id.
+- `source` (CustomerPlatform): Origin platform of the customer record.
+- `outletId` (string): ID of the outlet associated with the customer.
+- `totalSpent` (number): Customer's total spend.
+- `lastAction` (string): ISO 8601 timestamp of the customer's last action.
 
 ## Response
 

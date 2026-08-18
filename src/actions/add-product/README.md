@@ -38,7 +38,7 @@ Cost price for a simple product, in integer minor units (cents).
 
 #### `variants` (optional)
 
-Array of variant objects for a variable product. Each variant includes SKU, price, attributes, etc. Omit `_id` as the backend assigns one.
+Array of variant objects for a variable product. Each variant includes SKU, price, attributes, `externalId`, etc. Omit `_id` as the backend assigns one — `externalId` is still required.
 
 ## Response
 
@@ -71,8 +71,8 @@ console.log(result.product._id);
 const result2 = await command.addProduct({
     name: 'T-Shirt',
     variants: [
-        { sku: 'SHIRT-S', price: 2500, salePrice: 0, isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'S' }] },
-        { sku: 'SHIRT-M', price: 2500, salePrice: 0, isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'M' }] },
+        { sku: 'SHIRT-S', externalId: 'ext-shirt-s', price: 2500, salePrice: 0, isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'S' }] },
+        { sku: 'SHIRT-M', externalId: 'ext-shirt-m', price: 2500, salePrice: 0, isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'M' }] },
     ],
 });
 ```

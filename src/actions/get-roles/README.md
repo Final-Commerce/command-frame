@@ -131,5 +131,5 @@ for (const role of result.roles) {
 ## Notes
 
 - The permissions array includes all possible permissions for the role, with the `value` boolean indicating whether that specific permission is granted (`true`) or denied (`false`)
-- Each permission includes `category`, `subCategory`, `name`, `value`, and optionally `permissionId`
+- Each permission includes `category`, `subCategory`, `name`, `value`, and `permissionId` (always present, not optional)
 - Each role object carries the raw Mongo `_id` only — no separate `id` field is mirrored onto it

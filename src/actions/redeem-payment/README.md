@@ -16,7 +16,7 @@ Use this when your extension handles a custom tender (for example gift card / wa
 | `referenceId`            | `string`                  | No       | Provider-side reference ID. Also stamped into the payment's `emv` field as `{ Brand: processor, "Card Number": referenceId }` — the location `redeemRefund`'s same-card prefill reads back. |
 | `extensionId`            | `string`                  | No       | Extension identifier. Accepted by the type but **not persisted** by the redeem-payment handler today (unlike `integrationPayment`, which does record it). |
 | `metadata`               | `Record<string, unknown>` | No       | Additional provider/context metadata. Accepted by the type but **not persisted** by the redeem-payment handler today. |
-| `targetFulfillmentState` | `string`                  | No       | Documented as overriding the post-payment fulfillment landing, but the redeem-payment handler only reads a `checkoutFulfillmentTarget` field internally — this parameter currently has no effect. |
+| `checkoutFulfillmentTarget` | `string`                  | No       | Override the fulfillment state the order lands in on full payment (validated against the fulfillment state machine; invalid values throw `redeemPayment: invalid checkoutFulfillmentTarget "..."`). Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. |
 
 ## Response
 
@@ -30,13 +30,11 @@ Use this when your extension handles a custom tender (for example gift card / wa
 | `amount`              | `number \| null`                                     | Applied payment amount, in integer minor currency units |
 | `paymentType`         | `string`                                             | Always `"redeem"` for this command                      |
 | `order`               | [`CFOrder`](../../types/README.md#cforder) `\| null` | Order snapshot returned by host. `null` on a non-final split leg — only the leg that finalizes the sale returns the order. |
-| `change`\*            | `number`                                             | Cash change due back, integer minor units. Always `0` for redeem payments (no cash tender). |
-| `cashRounding`\*      | `number`                                             | Signed cash-rounding delta, integer minor units. Always `0` for redeem payments (rounding only applies to cash legs). |
-| `saleFinalized`\*     | `boolean`                                            | `true` only when this leg finalized the sale (the last, or only, leg captured). |
-| `remainingBalance`\*  | `number`                                             | Balance still due after this leg, integer minor units; `0` when finalized. |
+| `change`              | `number`                                             | Cash change due back, integer minor units. Always `0` for redeem payments (no cash tender). |
+| `cashRounding`        | `number`                                             | Signed cash-rounding delta, integer minor units. Always `0` for redeem payments (rounding only applies to cash legs). |
+| `saleFinalized`       | `boolean`                                            | `true` only when this leg finalized the sale (the last, or only, leg captured). |
+| `remainingBalance`    | `number`                                             | Balance still due after this leg, integer minor units; `0` when finalized. |
 | `timestamp`           | `string`                                             | ISO timestamp from the host                             |
-
-\* Returned by the runtime today but not yet part of the published `RedeemPaymentResponse` type.
 
 ## Example Usage
 
@@ -68,6 +66,7 @@ Every failure below **rejects the returned promise** — the handler never resol
 - Empty cart: throws `Cart is empty. Cannot process payment.`
 - `amount` is not a positive integer (on a cart with a balance due greater than `$0`): throws `redeemPayment: amount must be a positive integer (minor units)`.
 - `amount` exceeds the balance due: throws `redeemPayment: amount {amount} exceeds the balance due {balanceDue}`.
+- Invalid `checkoutFulfillmentTarget` (not a recognized fulfillment state): throws `redeemPayment: invalid checkoutFulfillmentTarget "..."`.
 - A cancelled payment (e.g. a dismissed modal mid-flow) surfaces as `Payment cancelled` rather than the underlying error.
 
 ## Events

@@ -13,7 +13,6 @@ interface AddProductFeeParams {
     isPercent?: boolean;    // Optional, default: false
     label?: string;         // Optional, default: "Fee"
     applyTaxes?: boolean;   // Optional, default: false
-    taxTableId?: string;    // Optional: not currently applied (see below)
 }
 ```
 
@@ -35,11 +34,7 @@ Label for the fee.
 
 #### `applyTaxes` (optional)
 
-Whether taxes should be calculated on this fee.
-
-#### `taxTableId` (optional)
-
-Part of the contract, but not currently applied: the handler always uses the cart item's own existing tax table and ignores any `taxTableId` passed here.
+Whether taxes should be calculated on this fee. When `true`, the fee is taxed using the **tax table of the product line it is attached to** — a product fee has no tax table of its own, so there is no `taxTableId` parameter here. (This differs from [`addCartFee`](../add-cart-fee/README.md), a cart-level fee not tied to a line, which does take an explicit `taxTableId`.)
 
 ## Response
 

@@ -1,6 +1,6 @@
 # deleteParkedOrder
 
-Deletes a parked order. This is a state transition, not a database delete: the order moves to `voided` × `cancelled` state and remains in the database (the legacy `status`/`isDeleted` fields are stamped, not the record itself). Only succeeds on an order currently in `parked` status.
+Deletes a parked order. This is a state transition, not a database delete: the order moves to `voided` × `cancelled` state and remains in the database (the legacy `status` field is stamped, not the record itself). Only succeeds on an order currently in `parked` status.
 
 ## Parameters
 

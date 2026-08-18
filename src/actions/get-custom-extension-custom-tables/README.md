@@ -52,7 +52,7 @@ type CFCustomTable = BaseEntity & {
 - `_id` (string): Unique identifier for the custom table
 - `name` (string): The name of the custom table
 - `description` (string, optional): A description of the custom table
-- `metadata` (Array, optional): Custom metadata as key-value pairs. The extension-to-table association itself is resolved internally by the handler (via a separate join lookup), not by an `extensionId` entry in this field
+- `metadata` (Array, optional): Part of the `CFCustomTable` type contract, but not populated by the current handler — it casts straight from port-louis's `CustomTable` record (`BaseModel & { name; description? }`), which has no `metadata` property, so this field is always `undefined` on real responses. The extension-to-table association itself is resolved internally by the handler (via a separate join lookup), not by an `extensionId` entry in this field
 - `createdAt` (string): Creation timestamp
 - `updatedAt` (string): Last update timestamp
 
@@ -220,16 +220,6 @@ An `extensionId` that doesn't match any existing custom extension does **not** t
       "_id": "65a1b2c3d4e5f6g7h8i9j0k3",
       "name": "loyalty_points",
       "description": "Track customer loyalty points",
-      "metadata": [
-        {
-          "key": "extensionId",
-          "value": "65a1b2c3d4e5f6g7h8i9j0k1"
-        },
-        {
-          "key": "version",
-          "value": "1.0"
-        }
-      ],
       "createdAt": "2024-01-01T10:30:00.000Z",
       "updatedAt": "2024-01-01T10:30:00.000Z"
     },
@@ -237,12 +227,6 @@ An `extensionId` that doesn't match any existing custom extension does **not** t
       "_id": "65a1b2c3d4e5f6g7h8i9j0k4",
       "name": "loyalty_rewards",
       "description": "Available rewards for loyalty program",
-      "metadata": [
-        {
-          "key": "extensionId",
-          "value": "65a1b2c3d4e5f6g7h8i9j0k1"
-        }
-      ],
       "createdAt": "2024-01-01T10:31:00.000Z",
       "updatedAt": "2024-01-05T14:20:00.000Z"
     },
@@ -250,12 +234,6 @@ An `extensionId` that doesn't match any existing custom extension does **not** t
       "_id": "65a1b2c3d4e5f6g7h8i9j0k5",
       "name": "loyalty_transactions",
       "description": "History of loyalty point transactions",
-      "metadata": [
-        {
-          "key": "extensionId",
-          "value": "65a1b2c3d4e5f6g7h8i9j0k1"
-        }
-      ],
       "createdAt": "2024-01-01T10:32:00.000Z",
       "updatedAt": "2024-01-01T10:32:00.000Z"
     }
@@ -276,7 +254,7 @@ An `extensionId` that doesn't match any existing custom extension does **not** t
 
 - Custom tables are stored in the local IndexedDB database (LokiJS)
 - Custom tables are synchronized with the central MongoDB database via station-sync
-- The handler resolves the extension-to-table association internally (via a separate join lookup keyed by extension ID); the `metadata` field is generic custom metadata and is not how this handler determines which tables belong to the extension
+- The handler resolves the extension-to-table association internally (via a separate join lookup keyed by extension ID); `metadata` is part of the `CFCustomTable` type contract but is never populated by this handler — real responses always have `metadata: undefined`
 - Use `getCustomTableFields` to retrieve field definitions for any table
 - Use `getCustomTableData` to retrieve the actual data stored in a table
 - An extension may have zero or multiple associated custom tables

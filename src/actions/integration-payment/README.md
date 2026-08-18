@@ -9,7 +9,7 @@ Extension-driven payment for Stripe-style integrations. The extension processes 
 | `amount`  | `number`             | Minor units of the captured amount. The host won't fall back to cart total — caller must specify.                                                                                                                                                                   |
 | `emvData` | `IntegrationEmvData` | Typed card display fields (object, not string). Host maps to the platform's canonical EMV keys and JSON-serializes onto `paymentMethod.emv` — same persisted shape as the native card flow. All inner fields are optional; pass `{}` if you genuinely have nothing. |
 
-Optional: `label`, `extensionId`, `processor` (defaults to `"integration"`), `referenceId`, `metadata`, `processorFee`, `targetFulfillmentState` (overrides the fulfillment landing on full payment; omitted preserves advanced fulfillment / auto-fulfills from draft, pending, or on_hold — an invalid value is a hard error, not silently dropped).
+Optional: `label`, `extensionId`, `processor` (defaults to `"integration"`), `referenceId`, `metadata`, `processorFee`, `checkoutFulfillmentTarget` (overrides the fulfillment landing on full payment; omitted preserves advanced fulfillment / auto-fulfills from draft, pending, or on_hold — an invalid value is a hard error, not silently dropped).
 
 ### `IntegrationEmvData`
 

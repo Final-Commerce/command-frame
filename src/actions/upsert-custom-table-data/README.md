@@ -182,9 +182,10 @@ console.log(`Upserted ${results.length} records`);
 
 ## Error Handling
 
-The handler throws in exactly two cases:
+The handler has two guarded checks, plus one undocumented crash path:
 - `tableName` is missing/empty - `Error: tableName is required`
 - `tableName` doesn't match an existing custom table - `Error: Table "<tableName>" not found`
+- `data` is `undefined` while `tableName` DOES match an existing table - not a guarded error: `data` is `required` in the type signature, but nothing at runtime checks for it, so a caller that omits it (e.g. a dynamic/JS invocation bypassing the TS contract) hits an uncaught `TypeError` ("Cannot destructure property '_id' of 'values' as it is undefined") when the handler tries to pull `_id` out of it
 
 There is no schema-level validation beyond that: missing required fields, field values that don't match the schema's declared type, and an `_id` that doesn't match an existing row are all NOT errors - see Parameters above for what happens in each case instead.
 

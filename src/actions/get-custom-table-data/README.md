@@ -212,7 +212,7 @@ A `tableName` that does not match any existing custom table is **not** an error 
 - Custom table data is stored in the local IndexedDB database (LokiJS)
 - Data is synchronized with the central MongoDB database via station-sync
 - Query syntax follows MongoDB query operators
-- Soft-deleted rows (`isDeleted: true`) are always excluded from results, regardless of the `query` filter
+- Soft-deleted rows (`isDeleted: true`) are excluded by default via an internal `isDeleted: { $ne: true }` filter merged with `query`. An `isDeleted` key inside `query` overrides this default (the caller's query is merged in last), so `query: { isDeleted: true }` will return soft-deleted rows instead of excluding them
 - Use `getCustomTables` to list all available tables
 - Use `getCustomTableFields` to get the field definitions for a table
 

@@ -59,7 +59,7 @@ try {
 
 - Throws an error if `orderId` is provided but no matching order is found: `"Order with ID {orderId} not found"`.
 - Throws an error if no order is currently active and no `orderId` was provided: `"No order selected. Please provide orderId."`
-- Throws an error if no refund details exist (no items selected for refund).
+- Throws an error if `refundDetails` is missing entirely from state (e.g. no refund flow has been started, so `setActiveRefund` was never called). It does **not** throw once `refundDetails` exists but has no items/fees/tips selected (e.g. right after `setActiveRefund`) — in that case the calculation still succeeds, returning all-zero totals.
 
 ```typescript
 // Example of error when no refund details

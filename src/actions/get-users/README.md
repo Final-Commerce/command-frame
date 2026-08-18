@@ -1,6 +1,6 @@
 # getUsers
 
-Retrieves a list of users (employees) for the current company from the parent application's backend.
+Retrieves a list of users (employees) for the current company from the parent application's local database.
 
 ## Parameters
 
@@ -109,9 +109,7 @@ console.log('Users with hub access:', admins);
       "type": "admin",
       "role": {
         "id": "691df9c6c478bada1fb23d0b",
-        "_id": "691df9c6c478bada1fb23d0b",
         "name": "Owner",
-        "companyId": "691df9c4c478bada1fb23bff",
         "permissions": [
           {
             "category": "hub_access",

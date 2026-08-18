@@ -213,6 +213,8 @@ Adding a cart discount publishes a `cart-discount-added` event on the `cart` cha
 - Fixed discounts: the integer minor-units amount (unchanged from `amount`).
 - Percentage discounts: the percentage stored as a fraction (e.g., `amount: 15` becomes `value: 0.15`).
 
+**Fractional percentages are silently truncated.** The handler computes the stored/published value as `parseInt(amount) / 100`, not `amount / 100`. Validation only requires `0 < amount <= 100` — it does not reject non-integer percentages — so a call like `amount: 12.5, isPercent: true` passes validation but stores/publishes `value: 0.12` (12%) instead of `0.125` (12.5%). The response's echoed `amount` still shows `12.5`, so the truncation isn't visible in the response — only in `cart.discount` / the published event.
+
 ## Discount Calculation
 
 ### Fixed Amount Discount
@@ -296,6 +298,7 @@ await command.addCartDiscount({
 - `label` is optional and defaults to `"Discount"`
 - For percentage discounts (`isPercent: true`), `amount` must be `100` or less — the handler enforces this range
 - For fixed discounts (`isPercent: false`), `amount` must be an integer (a fractional minor-unit amount is rejected)
+- Fractional percentages (e.g. `12.5`) are **not** rejected by validation, but are truncated when stored/published (see [Events](#events))
 - Negative amounts are rejected, not just discouraged
 
 ## Real Data Examples
