@@ -1,6 +1,6 @@
 # removeProductFee
 
-Clears all fees from a specific cart line item, or from the current active product if no `internalId` is given.
+Removes ONE fee (by 0-based `index`, in the order fees were added) or — when `index` is omitted — clears ALL fees from a specific cart line item, or from the current active product if no `internalId` is given. Fees stack (`addProductFee` appends), so per-fee removal is how a single fee is edited: remove at its index, then re-add.
 
 ## Parameters
 
@@ -9,12 +9,17 @@ Clears all fees from a specific cart line item, or from the current active produ
 ```typescript
 interface RemoveProductFeeParams {
     internalId?: string;
+    index?: number;
 }
 ```
 
 #### `internalId` (optional)
 
-The `internalId` of the cart line item to clear fees from. This ID is returned in the response of `addProductToCart` or `getCurrentCart`. If omitted, fees are cleared from the current active product context instead; if there is no `internalId` and no active product, the call throws.
+The `internalId` of the cart line item to remove fee(s) from. This ID is returned in the response of `addProductToCart` or `getCurrentCart`. If omitted, the current active product context is used instead; if there is no `internalId` and no active product, the call throws.
+
+#### `index` (optional)
+
+0-based index of the single fee to remove, in the order the line's fees were added. Omit to clear ALL fees on the line (legacy behavior). An out-of-range index is a no-op.
 
 ## Response
 
