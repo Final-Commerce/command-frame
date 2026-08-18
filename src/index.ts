@@ -124,6 +124,14 @@ import { getProductVariants } from './actions/get-product-variants/action';
 import { getInventory } from './actions/get-inventory/action';
 import { getStockHistory } from './actions/get-stock-history/action';
 import { getProductVisibility } from './actions/get-product-visibility/action';
+// Category & attribute CRUD
+import { addCategory } from './actions/add-category/action';
+import { editCategory } from './actions/edit-category/action';
+import { deleteCategory } from './actions/delete-category/action';
+import { addAttribute } from './actions/add-attribute/action';
+import { getAttributes } from './actions/get-attributes/action';
+import { editAttribute } from './actions/edit-attribute/action';
+import { deleteAttribute } from './actions/delete-attribute/action';
 // Entity Actions
 import { getOutlets } from './actions/get-outlets/action';
 import { getStations } from './actions/get-stations/action';
@@ -241,6 +249,14 @@ export const command = {
   getInventory,
   getStockHistory,
   getProductVisibility,
+  // Category & attribute CRUD
+  addCategory,
+  editCategory,
+  deleteCategory,
+  addAttribute,
+  getAttributes,
+  editAttribute,
+  deleteAttribute,
   // Entity Actions
   getOutlets,
   getStations,
@@ -338,6 +354,15 @@ export type {
   GetProductVisibilityParams,
   GetProductVisibilityResponse,
 } from './actions/get-product-visibility/types';
+
+// Category & attribute CRUD
+export type { AddCategory, AddCategoryParams, AddCategoryResponse } from './actions/add-category/types';
+export type { EditCategory, EditCategoryParams, EditCategoryResponse } from './actions/edit-category/types';
+export type { DeleteCategory, DeleteCategoryParams, DeleteCategoryResponse } from './actions/delete-category/types';
+export type { AddAttribute, AddAttributeParams, AddAttributeResponse } from './actions/add-attribute/types';
+export type { GetAttributes, GetAttributesResponse } from './actions/get-attributes/types';
+export type { EditAttribute, EditAttributeParams, EditAttributeResponse } from './actions/edit-attribute/types';
+export type { DeleteAttribute, DeleteAttributeParams, DeleteAttributeResponse } from './actions/delete-attribute/types';
 
 export type { GetOutlets, GetOutletsResponse } from './actions/get-outlets/types';
 

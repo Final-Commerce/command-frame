@@ -106,6 +106,13 @@ import { mockGetInventory } from '../../actions/get-inventory/mock';
 import { mockGetStockHistory } from '../../actions/get-stock-history/mock';
 import { mockGetProductVisibility } from '../../actions/get-product-visibility/mock';
 import { mockGetOutlets } from '../../actions/get-outlets/mock';
+import { mockAddCategory } from '../../actions/add-category/mock';
+import { mockEditCategory } from '../../actions/edit-category/mock';
+import { mockDeleteCategory } from '../../actions/delete-category/mock';
+import { mockAddAttribute } from '../../actions/add-attribute/mock';
+import { mockGetAttributes } from '../../actions/get-attributes/mock';
+import { mockEditAttribute } from '../../actions/edit-attribute/mock';
+import { mockDeleteAttribute } from '../../actions/delete-attribute/mock';
 import { RenderProviderActions } from './types';
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -221,4 +228,12 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getStockHistory: mockGetStockHistory,
   getProductVisibility: mockGetProductVisibility,
   getOutlets: mockGetOutlets,
+  // Category & attribute CRUD
+  addCategory: mockAddCategory,
+  editCategory: mockEditCategory,
+  deleteCategory: mockDeleteCategory,
+  addAttribute: mockAddAttribute,
+  getAttributes: mockGetAttributes,
+  editAttribute: mockEditAttribute,
+  deleteAttribute: mockDeleteAttribute,
 };

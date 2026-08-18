@@ -15,6 +15,7 @@ import {
   CFUserTypes,
   CFActiveCart,
   CFCategory,
+  CFAttribute,
   CurrencyCode,
   CFActiveProduct,
   CFSession,
@@ -262,6 +263,34 @@ export const MOCK_CATEGORY_SPICY: CFCategory = {
   name: 'Spicy',
   externalId: 'ext_cat_spicy',
   companyId: MOCK_COMPANY.id!,
+};
+
+// --- ATTRIBUTES ---
+export const MOCK_ATTRIBUTE_SIZE: CFAttribute = {
+  id: 'attr_size',
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+  companyId: MOCK_COMPANY.id!,
+  optionName: 'Size',
+  sortingOrder: 0,
+  options: [
+    { name: 'S', order: 0 },
+    { name: 'M', order: 1 },
+    { name: 'L', order: 2 },
+  ],
+};
+
+export const MOCK_ATTRIBUTE_COLOR: CFAttribute = {
+  id: 'attr_color',
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+  companyId: MOCK_COMPANY.id!,
+  optionName: 'Color',
+  sortingOrder: 1,
+  options: [
+    { name: 'Red', order: 0 },
+    { name: 'Blue', order: 1 },
+  ],
 };
 
 // --- PRODUCTS ---
@@ -831,6 +860,7 @@ export const MOCK_CATEGORIES = [
   MOCK_CATEGORY_VEGAN,
   MOCK_CATEGORY_SPICY,
 ];
+export const MOCK_ATTRIBUTES: CFAttribute[] = [MOCK_ATTRIBUTE_SIZE, MOCK_ATTRIBUTE_COLOR];
 export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_BASIL_ALMOND,
   MOCK_PRODUCT_BEER,
@@ -957,11 +987,10 @@ export const safeSerialize = <T>(data: T): T => {
 };
 
 // Mock Event Emitter for pub/sub simulation in mock mode
- 
+
 type MockEventCallback = (event: any) => void;
 const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
 
- 
 export const mockPublishEvent = (topic: string, eventType: string, data: any) => {
   const subscribers = mockTopicSubscribers[topic] || [];
   const event = {

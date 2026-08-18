@@ -109,6 +109,13 @@ import type {
   GetStockHistory,
   GetProductVisibility,
   GetOutlets,
+  AddCategory,
+  EditCategory,
+  DeleteCategory,
+  AddAttribute,
+  GetAttributes,
+  EditAttribute,
+  DeleteAttribute,
 } from '../../index';
 
 export interface RenderProviderActions {
@@ -223,4 +230,12 @@ export interface RenderProviderActions {
   getStockHistory: GetStockHistory;
   getProductVisibility: GetProductVisibility;
   getOutlets: GetOutlets;
+  // Category & attribute CRUD
+  addCategory: AddCategory;
+  editCategory: EditCategory;
+  deleteCategory: DeleteCategory;
+  addAttribute: AddAttribute;
+  getAttributes: GetAttributes;
+  editAttribute: EditAttribute;
+  deleteAttribute: DeleteAttribute;
 }
