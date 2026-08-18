@@ -53,10 +53,6 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
     const [cloudLoading, setCloudLoading] = useState(false);
     const [cloudResponse, setCloudResponse] = useState<string>("");
 
-    // Vendara Payment
-    const [vendaraAmount, setVendaraAmount] = useState<string>("");
-    const [vendaraLoading, setVendaraLoading] = useState(false);
-    const [vendaraResponse, setVendaraResponse] = useState<string>("");
 
     // Redeem (gift card / extension) — calls wire action `redeemPayment` → host routes like Render Phase 2
     const [redeemAmount, setRedeemAmount] = useState<string>("");
@@ -345,46 +341,6 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
                     {cloudLoading ? "Processing..." : "Cloud Payment"}
                 </button>
                 {cloudResponse && <JsonViewer data={cloudResponse} title={cloudResponse.startsWith("Error") ? "Error" : "Success"} />}
-            </CommandSection>
-
-            {/* Vendara Payment */}
-            <CommandSection title="Vendara Payment">
-                <p className="section-description">Initiates a Vendara payment. Leave amount empty to use cart total.</p>
-                <div className="form-group">
-                    <div className="form-field">
-                        <label>Amount (optional):</label>
-                        <input
-                            type="number"
-                            step="1"
-                            value={vendaraAmount}
-                            onChange={e => setVendaraAmount(e.target.value)}
-                            placeholder="Minor units — empty = balance due"
-                        />
-                    </div>
-                </div>
-                <button
-                    onClick={async () => {
-                        if (!isInIframe) {
-                            setVendaraResponse("Error: Not running in iframe");
-                            return;
-                        }
-                        setVendaraLoading(true);
-                        setVendaraResponse("");
-                        try {
-                            const result = await command.vendaraPayment({ amount: await resolveTenderAmount(vendaraAmount) });
-                            setVendaraResponse(JSON.stringify(result, null, 2));
-                        } catch (error) {
-                            setVendaraResponse(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
-                        } finally {
-                            setVendaraLoading(false);
-                        }
-                    }}
-                    disabled={vendaraLoading}
-                    className="btn btn--primary"
-                >
-                    {vendaraLoading ? "Processing..." : "Vendara Payment"}
-                </button>
-                {vendaraResponse && <JsonViewer data={vendaraResponse} title={vendaraResponse.startsWith("Error") ? "Error" : "Success"} />}
             </CommandSection>
 
             {/* Redeem payment (extension gift card, etc.) */}
