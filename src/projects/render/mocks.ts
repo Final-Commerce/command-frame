@@ -97,6 +97,10 @@ import { mockGetSmartGridLayout } from '../../actions/get-smart-grid-layout/mock
 import { mockSaveSmartGridLayout } from '../../actions/save-smart-grid-layout/mock';
 import { mockSendEmail } from '../../actions/send-email/mock';
 import { mockSendSms } from '../../actions/send-sms/mock';
+import { mockAddProduct } from '../../actions/add-product/mock';
+import { mockEditProduct } from '../../actions/edit-product/mock';
+import { mockEditProductVariants } from '../../actions/edit-product-variants/mock';
+import { mockDeleteProduct } from '../../actions/delete-product/mock';
 import { RenderProviderActions } from './types';
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -202,4 +206,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   saveSmartGridLayout: mockSaveSmartGridLayout,
   sendEmail: mockSendEmail,
   sendSms: mockSendSms,
+  addProduct: mockAddProduct,
+  editProduct: mockEditProduct,
+  editProductVariants: mockEditProductVariants,
+  deleteProduct: mockDeleteProduct,
 };

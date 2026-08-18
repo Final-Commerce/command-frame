@@ -100,6 +100,10 @@ import type {
   SaveSmartGridLayout,
   SendEmail,
   SendSms,
+  AddProduct,
+  EditProduct,
+  EditProductVariants,
+  DeleteProduct,
 } from '../../index';
 
 export interface RenderProviderActions {
@@ -204,4 +208,8 @@ export interface RenderProviderActions {
   saveSmartGridLayout: SaveSmartGridLayout;
   sendEmail: SendEmail;
   sendSms: SendSms;
+  addProduct: AddProduct;
+  editProduct: EditProduct;
+  editProductVariants: EditProductVariants;
+  deleteProduct: DeleteProduct;
 }

@@ -2,6 +2,8 @@
 
 Creates a new product in the parent application's product catalog.
 
+**Low-level: creates only the product document.** Use `createProductWithVariants` for the full deerlake-style nested create (product + variants + inventory in one call).
+
 **Manage-only command.** This runs in the Manage admin app, not the kaching POS runtime — there is no kaching command-frame handler for it.
 
 ## Parameters
@@ -10,35 +12,35 @@ Creates a new product in the parent application's product catalog.
 
 ```typescript
 interface AddProductParams {
-    name: string;
-    description?: string;
-    categories?: string[];
-    taxTable?: string;
-    images?: string[];
-    status?: 'active' | 'inactive';
-    price?: number;
-    sku?: string;
-    costPrice?: number;
-    manageStock?: boolean;
-    variants?: Omit<CFProductVariant, '_id'>[];
+  name: string;
+  description?: string;
+  shortDescription?: string;
+  categories?: string[];
+  taxTable?: string;
+  images?: string[];
+  status?: 'active' | 'inactive' | 'draft';
+  sku?: string;
+  barcode?: string;
+  tags?: string[];
+  productType?: 'simple' | 'variable';
+  _id?: string;
 }
 ```
 
-#### `name` (required)
-
-The product name.
-
-#### `price` (optional)
-
-Price for a simple product (single variant), in integer minor units (cents). If `variants` array is provided, this is ignored.
-
-#### `costPrice` (optional)
-
-Cost price for a simple product, in integer minor units (cents).
-
-#### `variants` (optional)
-
-Array of variant objects for a variable product. Each variant includes SKU, price, attributes, `externalId`, etc. Omit `_id` as the backend assigns one — `externalId` is still required.
+| Param              | Type                                | Required | Notes                                                                                                                                                        |
+| ------------------ | ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`             | `string`                            | yes      | The product name.                                                                                                                                            |
+| `description`      | `string`                            | no       | Full description.                                                                                                                                            |
+| `shortDescription` | `string`                            | no       | Short/teaser description.                                                                                                                                    |
+| `categories`       | `string[]`                          | no       | Category ids (ObjectId strings). Defaults to `[]`.                                                                                                           |
+| `taxTable`         | `string`                            | no       | Tax table id. Only set on the product when provided (spec §6.1).                                                                                             |
+| `images`           | `string[]`                          | no       | Image URLs, uploaded separately (see `uploadImage`). Defaults to `[]`.                                                                                       |
+| `status`           | `'active' \| 'inactive' \| 'draft'` | no       | Defaults to `'active'`.                                                                                                                                      |
+| `sku`              | `string`                            | no       | Product-level SKU.                                                                                                                                           |
+| `barcode`          | `string`                            | no       | Product-level barcode.                                                                                                                                       |
+| `tags`             | `string[]`                          | no       | Free-form tags.                                                                                                                                              |
+| `productType`      | `'simple' \| 'variable'`            | no       | `'variable'` when the caller will attach variants afterward (via `editProductVariants`); defaults to `'simple'`.                                             |
+| `_id`              | `string`                            | no       | Honor a caller-generated ObjectId — orchestrators (like `createProductWithVariants`) pre-generate ids so they can reference the product before it's created. |
 
 ## Response
 
@@ -46,33 +48,29 @@ Array of variant objects for a variable product. Each variant includes SKU, pric
 
 ```typescript
 interface AddProductResponse {
-    product: CFProduct;
-    timestamp: string;
+  success: boolean;
+  product: CFProduct;
+  timestamp: string;
 }
 ```
 
-Returns the full created product including variants and assigned IDs.
+Returns the created product document (no variants — see above).
 
 ## Usage
 
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
-// Simple product (price is in integer minor units, e.g. cents)
 const result = await command.addProduct({
-    name: 'My Product',
-    price: 1999,
-    sku: 'PROD-001',
-    status: 'active',
+  name: 'My Product',
+  sku: 'PROD-001',
+  status: 'active',
 });
 console.log(result.product._id);
 
-// Variable product with variants
+// Variable product — variants are attached in a follow-up editProductVariants call
 const result2 = await command.addProduct({
-    name: 'T-Shirt',
-    variants: [
-        { sku: 'SHIRT-S', externalId: 'ext-shirt-s', price: 2500, salePrice: 0, isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'S' }] },
-        { sku: 'SHIRT-M', externalId: 'ext-shirt-m', price: 2500, salePrice: 0, isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'M' }] },
-    ],
+  name: 'T-Shirt',
+  productType: 'variable',
 });
 ```
