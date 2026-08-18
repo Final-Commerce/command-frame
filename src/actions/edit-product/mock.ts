@@ -1,7 +1,6 @@
 import { CFProductType, CurrencyCode } from '../../CommonTypes';
 import { EditProduct, EditProductParams, EditProductResponse } from './types';
 
- 
 export const mockEditProduct: EditProduct = async (params: EditProductParams): Promise<EditProductResponse> => {
   console.log('[Mock] editProduct called', params);
   return {

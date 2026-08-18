@@ -1,7 +1,6 @@
 import { CFProductType, CurrencyCode } from '../../CommonTypes';
 import { AddProduct, AddProductParams, AddProductResponse } from './types';
 
- 
 export const mockAddProduct: AddProduct = async (params: AddProductParams): Promise<AddProductResponse> => {
   console.log('[Mock] addProduct called', params);
   const productId = params._id || 'mock_product_' + Date.now();
