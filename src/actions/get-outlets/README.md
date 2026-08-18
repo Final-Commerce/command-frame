@@ -1,6 +1,8 @@
 # getOutlets
 
-Retrieves the list of active outlets (store locations) for the current company — lightweight dropdown data (e.g. for catalog-visibility outlet pickers).
+Retrieves the list of outlets (store locations) for the current company.
+
+> **Shared across projects.** Serves both Manage (outlet/station admin) and Render (product-domain outlet pickers, e.g. catalog-visibility dropdowns). Render call sites typically only need `_id`/`name`; Manage consumes the full `CFOutletInfo` shape below.
 
 ## Parameters
 
@@ -11,26 +13,20 @@ No parameters required.
 ### `GetOutletsResponse`
 
 ```typescript
-interface CFOutletSummary {
-  _id: string;
-  name: string;
-  isDeleted?: boolean;
-}
-
 interface GetOutletsResponse {
-  success: boolean;
-  outlets: CFOutletSummary[];
+  outlets: CFOutletInfo[];
   timestamp: string;
 }
 ```
 
-#### `outlets` (`CFOutletSummary[]`)
+#### `outlets` ([CFOutletInfo](../../types/README.md#cfoutletinfo)[])
 
-Array of outlet summaries. Each outlet contains:
+Array of outlet objects. Each outlet contains:
 
-- `_id` -- Outlet ID
+- `_id` / `id` -- Outlet ID
 - `name` -- Outlet name
-- `isDeleted` -- Present and `true` for soft-deleted outlets
+- `address` -- Street address (string or structured object)
+- `city`, `state`, `country` -- Location fields
 
 ## Usage
 
@@ -39,6 +35,6 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getOutlets();
 result.outlets.forEach((outlet) => {
-  console.log(outlet.name);
+  console.log(outlet.name, outlet.city);
 });
 ```

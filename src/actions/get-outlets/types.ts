@@ -1,13 +1,7 @@
-// get-outlets — dropdown data (active company outlets)
-export interface CFOutletSummary {
-  _id: string;
-  name: string;
-  isDeleted?: boolean;
-}
+import { CFOutletInfo } from '../../CommonTypes';
 
 export interface GetOutletsResponse {
-  success: boolean;
-  outlets: CFOutletSummary[];
+  outlets: CFOutletInfo[];
   timestamp: string;
 }
 

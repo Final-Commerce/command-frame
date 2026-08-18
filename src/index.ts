@@ -339,7 +339,7 @@ export type {
   GetProductVisibilityResponse,
 } from './actions/get-product-visibility/types';
 
-export type { GetOutlets, GetOutletsResponse, CFOutletSummary } from './actions/get-outlets/types';
+export type { GetOutlets, GetOutletsResponse } from './actions/get-outlets/types';
 
 export type { GetStations, GetStationsParams, GetStationsResponse } from './actions/get-stations/types';
 
