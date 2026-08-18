@@ -101,6 +101,11 @@ import { mockAddProduct } from '../../actions/add-product/mock';
 import { mockEditProduct } from '../../actions/edit-product/mock';
 import { mockEditProductVariants } from '../../actions/edit-product-variants/mock';
 import { mockDeleteProduct } from '../../actions/delete-product/mock';
+import { mockGetProductVariants } from '../../actions/get-product-variants/mock';
+import { mockGetInventory } from '../../actions/get-inventory/mock';
+import { mockGetStockHistory } from '../../actions/get-stock-history/mock';
+import { mockGetProductVisibility } from '../../actions/get-product-visibility/mock';
+import { mockGetOutlets } from '../../actions/get-outlets/mock';
 import { RenderProviderActions } from './types';
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -210,4 +215,10 @@ export const RENDER_MOCKS: RenderProviderActions = {
   editProduct: mockEditProduct,
   editProductVariants: mockEditProductVariants,
   deleteProduct: mockDeleteProduct,
+  // Product domain reads
+  getProductVariants: mockGetProductVariants,
+  getInventory: mockGetInventory,
+  getStockHistory: mockGetStockHistory,
+  getProductVisibility: mockGetProductVisibility,
+  getOutlets: mockGetOutlets,
 };

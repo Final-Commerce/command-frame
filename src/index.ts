@@ -119,6 +119,11 @@ import { addProduct } from './actions/add-product/action';
 import { editProduct } from './actions/edit-product/action';
 import { editProductVariants } from './actions/edit-product-variants/action';
 import { deleteProduct } from './actions/delete-product/action';
+// Product domain reads
+import { getProductVariants } from './actions/get-product-variants/action';
+import { getInventory } from './actions/get-inventory/action';
+import { getStockHistory } from './actions/get-stock-history/action';
+import { getProductVisibility } from './actions/get-product-visibility/action';
 // Entity Actions
 import { getOutlets } from './actions/get-outlets/action';
 import { getStations } from './actions/get-stations/action';
@@ -231,6 +236,11 @@ export const command = {
   editProduct,
   editProductVariants,
   deleteProduct,
+  // Product domain reads
+  getProductVariants,
+  getInventory,
+  getStockHistory,
+  getProductVisibility,
   // Entity Actions
   getOutlets,
   getStations,
@@ -305,7 +315,31 @@ export type {
 
 export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from './actions/delete-product/types';
 
-export type { GetOutlets, GetOutletsResponse } from './actions/get-outlets/types';
+// Product domain reads
+export type {
+  GetProductVariants,
+  GetProductVariantsParams,
+  GetProductVariantsResponse,
+} from './actions/get-product-variants/types';
+export type {
+  GetInventory,
+  GetInventoryParams,
+  GetInventoryResponse,
+  CFInventoryRow,
+} from './actions/get-inventory/types';
+export type {
+  GetStockHistory,
+  GetStockHistoryParams,
+  GetStockHistoryResponse,
+  CFStockChange,
+} from './actions/get-stock-history/types';
+export type {
+  GetProductVisibility,
+  GetProductVisibilityParams,
+  GetProductVisibilityResponse,
+} from './actions/get-product-visibility/types';
+
+export type { GetOutlets, GetOutletsResponse, CFOutletSummary } from './actions/get-outlets/types';
 
 export type { GetStations, GetStationsParams, GetStationsResponse } from './actions/get-stations/types';
 
@@ -363,11 +397,7 @@ export type {
   GetRefundPlanResponse,
   RefundPlanSource,
 } from './actions/get-refund-plan/types';
-export type {
-  CheckPermission,
-  CheckPermissionParams,
-  CheckPermissionResponse,
-} from './actions/check-permission/types';
+export type { CheckPermission, CheckPermissionParams, CheckPermissionResponse } from './actions/check-permission/types';
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from './actions/initiate-refund/types';
 

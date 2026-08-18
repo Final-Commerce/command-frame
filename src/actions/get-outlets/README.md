@@ -1,8 +1,6 @@
 # getOutlets
 
-Retrieves the list of outlets (store locations) for the current company.
-
-> **Manage-scoped command.** This is a Manage administrative command (outlet/station admin), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
+Retrieves the list of active outlets (store locations) for the current company — lightweight dropdown data (e.g. for catalog-visibility outlet pickers).
 
 ## Parameters
 
@@ -13,20 +11,26 @@ No parameters required.
 ### `GetOutletsResponse`
 
 ```typescript
+interface CFOutletSummary {
+  _id: string;
+  name: string;
+  isDeleted?: boolean;
+}
+
 interface GetOutletsResponse {
-    outlets: CFOutletInfo[];
-    timestamp: string;
+  success: boolean;
+  outlets: CFOutletSummary[];
+  timestamp: string;
 }
 ```
 
-#### `outlets` ([CFOutletInfo](../../types/README.md#cfoutletinfo)[])
+#### `outlets` (`CFOutletSummary[]`)
 
-Array of outlet objects. Each outlet contains:
+Array of outlet summaries. Each outlet contains:
 
-- `_id` / `id` -- Outlet ID
+- `_id` -- Outlet ID
 - `name` -- Outlet name
-- `address` -- Street address (string or structured object)
-- `city`, `state`, `country` -- Location fields
+- `isDeleted` -- Present and `true` for soft-deleted outlets
 
 ## Usage
 
@@ -35,6 +39,6 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getOutlets();
 result.outlets.forEach((outlet) => {
-    console.log(outlet.name, outlet.city);
+  console.log(outlet.name);
 });
 ```

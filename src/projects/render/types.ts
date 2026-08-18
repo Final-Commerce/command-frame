@@ -104,6 +104,11 @@ import type {
   EditProduct,
   EditProductVariants,
   DeleteProduct,
+  GetProductVariants,
+  GetInventory,
+  GetStockHistory,
+  GetProductVisibility,
+  GetOutlets,
 } from '../../index';
 
 export interface RenderProviderActions {
@@ -212,4 +217,10 @@ export interface RenderProviderActions {
   editProduct: EditProduct;
   editProductVariants: EditProductVariants;
   deleteProduct: DeleteProduct;
+  // Product domain reads
+  getProductVariants: GetProductVariants;
+  getInventory: GetInventory;
+  getStockHistory: GetStockHistory;
+  getProductVisibility: GetProductVisibility;
+  getOutlets: GetOutlets;
 }
