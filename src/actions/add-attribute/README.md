@@ -4,7 +4,7 @@ Creates a new attribute (deerlake-style option set, e.g. Size, Color) in the par
 
 Deerlake option semantics: an attribute is an `optionName` plus an ordered list of option values (spec §3.1).
 
-> **Manage-only command.** This runs in the Manage admin app, not the kaching POS runtime — there is no kaching command-frame handler for it.
+> **Render-side command.** Handled by kaching's command-frame handler — a low-level building block for attribute catalog management.
 
 ## Parameters
 

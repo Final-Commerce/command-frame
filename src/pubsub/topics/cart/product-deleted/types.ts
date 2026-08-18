@@ -1,16 +1,15 @@
-import type { CFActiveProduct } from "../../../../CommonTypes";
-import type { TopicEvent } from "../../../types";
+import type { CFActiveProduct } from '../../../../CommonTypes';
+import type { TopicEvent } from '../../../types';
 
 /**
- * Payload for product-deleted event
+ * Payload for cart product-deleted event
  */
-export interface ProductDeletedPayload {
-    product: CFActiveProduct;
-    internalId: string;
+export interface CartProductDeletedPayload {
+  product: CFActiveProduct;
+  internalId: string;
 }
 
 /**
- * Typed event for product-deleted
+ * Typed event for cart product-deleted
  */
-export type ProductDeletedEvent = TopicEvent<ProductDeletedPayload>;
-
+export type CartProductDeletedEvent = TopicEvent<CartProductDeletedPayload>;

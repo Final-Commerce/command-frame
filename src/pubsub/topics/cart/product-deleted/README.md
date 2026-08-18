@@ -12,18 +12,18 @@ Published when a product is removed from the cart.
 ## Payload
 
 ```typescript
-interface ProductDeletedPayload {
-    product: CFActiveProduct;
-    internalId: string;
+interface CartProductDeletedPayload {
+  product: CFActiveProduct;
+  internalId: string;
 }
 ```
 
 ### Payload Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `product` | [`CFActiveProduct`](../../../../types/README.md#cfactiveproduct) | The product object that was removed from the cart. |
-| `internalId` | `string` | The internal ID of the product that was removed. |
+| Field        | Type                                                             | Description                                        |
+| ------------ | ---------------------------------------------------------------- | -------------------------------------------------- |
+| `product`    | [`CFActiveProduct`](../../../../types/README.md#cfactiveproduct) | The product object that was removed from the cart. |
+| `internalId` | `string`                                                         | The internal ID of the product that was removed.   |
 
 ## Example Usage
 
@@ -31,12 +31,12 @@ interface ProductDeletedPayload {
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';
-import type { ProductDeletedEvent } from '@final-commerce/command-frame';
+import type { CartProductDeletedEvent } from '@final-commerce/command-frame';
 
-const subscriptionId = topics.subscribe('cart', (event: ProductDeletedEvent) => {
-    if (event.type === 'product-deleted') {
-        console.log('Product removed from cart:', event.data.product);
-    }
+const subscriptionId = topics.subscribe('cart', (event: CartProductDeletedEvent) => {
+  if (event.type === 'product-deleted') {
+    console.log('Product removed from cart:', event.data.product);
+  }
 });
 ```
 
@@ -44,18 +44,17 @@ const subscriptionId = topics.subscribe('cart', (event: ProductDeletedEvent) => 
 
 ```typescript
 import { topicPublisher } from '@render/command-frame';
-import type { ProductDeletedPayload } from '@final-commerce/command-frame';
+import type { CartProductDeletedPayload } from '@final-commerce/command-frame';
 
 // When a product is removed from the cart
 topicPublisher.publish('cart', 'product-deleted', {
-    product: removedProduct,
-    internalId: internalId
-} as ProductDeletedPayload);
+  product: removedProduct,
+  internalId: internalId,
+} as CartProductDeletedPayload);
 ```
 
 ## Related Types
 
 - [`CFActiveProduct`](../../../../types/README.md#cfactiveproduct) - Product type from CommonTypes
-- `ProductDeletedPayload` - Event payload type
-- `ProductDeletedEvent` - Full event type with topic, type, data, and timestamp
-
+- `CartProductDeletedPayload` - Event payload type
+- `CartProductDeletedEvent` - Full event type with topic, type, data, and timestamp

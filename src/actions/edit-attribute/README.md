@@ -4,7 +4,7 @@ Updates an existing attribute: rename the `optionName` and/or replace its full o
 
 Deerlake parity: `options`, when provided, is a **full replacement** of the option set — not a merge (spec §3.1).
 
-> **Manage-only command.** This runs in the Manage admin app, not the kaching POS runtime — there is no kaching command-frame handler for it.
+> **Render-side command.** Handled by kaching's command-frame handler — a low-level building block for attribute catalog management.
 
 ## Parameters
 

@@ -4,7 +4,7 @@ Deletes a category from the catalog.
 
 Soft delete (spec §6.6).
 
-> **Manage-only command.** This runs in the Manage admin app, not the kaching POS runtime — there is no kaching command-frame handler for it.
+> **Render-side command.** Handled by kaching's command-frame handler — a low-level building block for category catalog management.
 
 ## Parameters
 
