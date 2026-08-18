@@ -1,6 +1,8 @@
 # initiateRefund
 
-Opens the refund UI for the specified order or the currently active order.
+> **DEPRECATED** — the host-side refund popup is disabled (kaching ≥1.9.5-preprod.4); this command no longer opens any UI. It still stages the given/active order and, with no `orderId`, arms barcode refund-scan routing. Build the refund UI in your flow with `getRefundPlan`, `getRemainingRefundableQuantities`, `processPartialRefund`, and `redeemRefund`.
+
+Stages the specified order (or the currently active order) as the refund target. Historically this opened the host's refund popup — it no longer does.
 
 ## Parameters
 
@@ -32,10 +34,10 @@ await command.initiateRefund();
 
 ## Notes
 
-- This opens the refund UI modal in the parent application, when an order is already active or a valid `orderId` is provided
+- No UI opens (deprecated popup); the order is staged as the active refund target
 - The actual refund processing happens through the UI
-- If orderId is provided, that order will be set as active before opening the refund UI
-- If no `orderId` is given and no order is currently active, this does **not** throw: kaching enters refund-scan mode instead — the next barcode scan selects the order and opens the refund UI — and the call resolves with `{ success: true, orderId: '', timestamp }`
+- If `orderId` is provided, that order is set as the active order
+- If no `orderId` is given and no order is currently active, this does **not** throw: kaching enters refund-scan mode instead — the next barcode scan selects the order (announced on the `barcode` topic as `refund-order-selected`) — and the call resolves with `{ success: true, orderId: '', timestamp }`
 
 ## Error Handling
 

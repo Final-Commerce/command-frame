@@ -105,7 +105,7 @@ The library provides a `command` namespace object containing all available comma
 
 #### Refund Actions
 
-- **[initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)** - Open the refund UI for an order
+- **[initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)** - **Deprecated** — stages an order as the refund target (no UI opens; the host popup is disabled). Build refund UI in the flow.
 - **[setActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-refund/README.md)** - Load an order by id, open refund UI, and initialize refund selection state
 - **[selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)** - Select all remaining refundable items for a full refund
 - **[resetRefundDetails](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/reset-refund-details/README.md)** - Clear all refund selections
@@ -452,7 +452,7 @@ Prints content to a connected printer or opens the browser print dialog. Support
 
 ### [initiateRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/initiate-refund/README.md)
 
-Opens the refund UI for the specified order or the currently active order.
+**Deprecated** — stages the specified (or active) order as the refund target; the host-side popup is disabled, no UI opens. Build refund UI in the flow with `getRefundPlan` / `getRemainingRefundableQuantities` / `processPartialRefund` / `redeemRefund`.
 
 ### [selectAllRefundItems](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/select-all-refund-items/README.md)
 
