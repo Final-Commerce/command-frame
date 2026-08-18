@@ -152,6 +152,10 @@ import { getMedia } from './actions/get-media/action';
 import { uploadMedia } from './actions/upload-media/action';
 import { getTaxTables } from './actions/get-tax-tables/action';
 import { getBranding } from './actions/get-branding/action';
+// Image API (P4)
+import { uploadImage } from './actions/upload-image/action';
+import { getImages } from './actions/get-images/action';
+import { deleteImage } from './actions/delete-image/action';
 
 // Export actions as command object
 export const command = {
@@ -305,6 +309,10 @@ export const command = {
   canTransition,
   getAvailableTransitions,
   applyTransition,
+  // Image API (P4)
+  uploadImage,
+  getImages,
+  deleteImage,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -662,6 +670,11 @@ export type {
 // Receipt send Actions
 export type { SendEmail, SendEmailParams, SendEmailResponse, SendReceiptType } from './actions/send-email/types';
 export type { SendSms, SendSmsParams, SendSmsResponse } from './actions/send-sms/types';
+
+// Image API (P4)
+export type { UploadImage, UploadImageParams, UploadImageResponse } from './actions/upload-image/types';
+export type { GetImages, GetImagesResponse, CFImageAttachment } from './actions/get-images/types';
+export type { DeleteImage, DeleteImageParams, DeleteImageResponse } from './actions/delete-image/types';
 
 // Export Common Types
 export * from './CommonTypes';

@@ -907,6 +907,10 @@ export const setMockActiveProduct = (activeProduct: CFActiveProduct) => {
 // round-trip layouts within a session.
 export const MOCK_SMART_GRID_LAYOUTS: Record<string, CFSmartGridLayout> = {};
 
+// Image API (P4): in-memory image attachments populated by mockUploadImage,
+// read by mockGetImages, pruned by mockDeleteImage.
+export const MOCK_IMAGES: { _id: string; name: string; url: string }[] = [];
+
 // Helper to reset cart
 export const resetMockCart = () => {
   MOCK_CART = {

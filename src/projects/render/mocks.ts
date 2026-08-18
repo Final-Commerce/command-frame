@@ -119,6 +119,10 @@ import { mockCreateProductWithVariants } from '../../actions/create-product-with
 import { mockUpdateProductBundle } from '../../actions/update-product-bundle/mock';
 import { mockAdjustStock } from '../../actions/adjust-stock/mock';
 import { mockSetProductOutlets } from '../../actions/set-product-outlets/mock';
+// Image API (P4)
+import { mockUploadImage } from '../../actions/upload-image/mock';
+import { mockGetImages } from '../../actions/get-images/mock';
+import { mockDeleteImage } from '../../actions/delete-image/mock';
 import { RenderProviderActions } from './types';
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -249,4 +253,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   updateProductBundle: mockUpdateProductBundle,
   adjustStock: mockAdjustStock,
   setProductOutlets: mockSetProductOutlets,
+  // Image API (P4)
+  uploadImage: mockUploadImage,
+  getImages: mockGetImages,
+  deleteImage: mockDeleteImage,
 };

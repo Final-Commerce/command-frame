@@ -122,6 +122,10 @@ import type {
   UpdateProductBundle,
   AdjustStock,
   SetProductOutlets,
+  // Image API (P4)
+  UploadImage,
+  GetImages,
+  DeleteImage,
 } from '../../index';
 
 export interface RenderProviderActions {
@@ -251,4 +255,8 @@ export interface RenderProviderActions {
   updateProductBundle: UpdateProductBundle;
   adjustStock: AdjustStock;
   setProductOutlets: SetProductOutlets;
+  // Image API (P4)
+  uploadImage: UploadImage;
+  getImages: GetImages;
+  deleteImage: DeleteImage;
 }
