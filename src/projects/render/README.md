@@ -114,7 +114,7 @@ The library provides a `command` namespace object containing all available comma
 - **[getRefundPlan](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-refund-plan/README.md)** - Read-only: query the engine's own per-source and order-level refund capacity, so a flow can present accurate options without recomputing them client-side
 - **[processPartialRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/process-partial-refund/README.md)** - Process a partial refund based on current selections, with optional headless multi-tender allocation (`openUI: false` + `legs`, including mixed gift-card destinations)
 - **[redeemRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/redeem-refund/README.md)** - Refund an already-captured payment (cash, card, or a prior redeem) onto a gift-card/redeem tender; credit-first — the flow must credit the destination before calling
-- **[getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)** - Get remaining refundable quantities for items in the active order
+- **[getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)** - Get remaining refundable quantities for line items, custom sales, cart fees, and tips in the active order
 
 #### Custom Tables & Extensions
 
@@ -476,7 +476,7 @@ Processes a partial refund based on the current refund selections in the refund 
 
 ### [getRemainingRefundableQuantities](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-remaining-refundable-quantities/README.md)
 
-Gets the remaining refundable quantities for all line items and custom sales in the active order.
+Gets the remaining refundable quantities for all line items, custom sales, cart fees, and tips in the active order.
 
 ### Custom Tables & Extensions
 
