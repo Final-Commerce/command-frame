@@ -6,10 +6,13 @@
 import { commandFrameClient } from "../../client";
 import type {
     GetRemainingRefundableQuantities,
+    GetRemainingRefundableQuantitiesParams,
     GetRemainingRefundableQuantitiesResponse
 } from "./types";
 
-export const getRemainingRefundableQuantities: GetRemainingRefundableQuantities = async (): Promise<GetRemainingRefundableQuantitiesResponse> => {
-    return await commandFrameClient.call<undefined, GetRemainingRefundableQuantitiesResponse>("getRemainingRefundableQuantities");
+export const getRemainingRefundableQuantities: GetRemainingRefundableQuantities = async (
+    params?: GetRemainingRefundableQuantitiesParams
+): Promise<GetRemainingRefundableQuantitiesResponse> => {
+    return await commandFrameClient.call<GetRemainingRefundableQuantitiesParams | undefined, GetRemainingRefundableQuantitiesResponse>("getRemainingRefundableQuantities", params);
 };
 
