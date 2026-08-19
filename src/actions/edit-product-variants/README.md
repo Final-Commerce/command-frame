@@ -28,6 +28,14 @@ interface EditProductVariantsParams {
 | `changes`   | `Array<{ _id: string; changes: Partial<CFProductVariant> }>` | no       | Each entry has `_id` (the variant to update) and `changes` (partial variant fields to update).                                                           |
 | `deletions` | `string[]`                                                   | no       | Variant ids to soft-delete, along with their inventory rows.                                                                                             |
 
+### Validation (host-enforced)
+
+The product must exist; `changes[]._id` and `deletions` ids must belong to
+**this product's** live variants (cross-product write protection); `additions`
+are fully validated (integer minor-unit money, attribute name+value pairs,
+inventory seeds with `outletId` + integer `stock`, no duplicate attribute
+combinations in one payload). Rejections happen before any write.
+
 ## Response
 
 ### `EditProductVariantsResponse`

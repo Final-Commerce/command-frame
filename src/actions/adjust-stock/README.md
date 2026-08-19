@@ -43,6 +43,16 @@ interface AdjustStockParams {
 | `quantity`       | `number` | yes      | Integer. **Signed** for `ADD`/`REMOVE` (a `REMOVE` movement arrives as a **negative** number — don't pass a positive number expecting the command to negate it); **absolute** for `RECOUNT` (the new on-hand total, not a delta). Ignored (but still required) for `SKIP`. |
 | `userId`         | `string` | no       | Attributed on the stock-changes history row.                                                                                                                                                                                                                               |
 
+### Validation (host-enforced)
+
+The handler rejects — with `{success: false, error}` — before writing anything:
+`productId`/`variantId`/`outletId` missing; non-integer `quantity`; an explicit
+`baseAction` that mismatches the `specificAction`; and **sign-vs-movement
+mismatches**: `ADD` movements need `quantity > 0`, `REMOVE` movements need
+`quantity < 0`, `RECOUNT` needs `quantity >= 0`. (An `ADD` with a negative
+number would decrement stock while the audit doc claims a receipt — the
+command refuses instead.)
+
 ### §6.5 mapping table (`specificAction` → `baseAction`)
 
 | `specificAction`                                            | `baseAction` |

@@ -67,6 +67,16 @@ interface CreateProductWithVariantsParams {
 
 `CreateProductVariantInput.inventory` is an optional hint only — actual inventory rows are always dense-seeded per the §6.3 rule below, regardless of what's passed here.
 
+### Validation (host-enforced)
+
+Rejects before any write lands: missing `name`; a simple product (no
+`variants[]`) without an integer minor-unit `price >= 0`; any variant with a
+non-integer/negative `price` (and `costPrice`/`salePrice` when present); a
+variant with neither a name nor attributes; attribute entries missing `name`
+or `value`; inventory seeds without `outletId` or with non-integer `stock`;
+and **duplicate attribute combinations** within the payload. The write is
+atomic — a rejected or failed create syncs nothing.
+
 ### §6.1/§6.2/§6.3 defaults (byte-level parity)
 
 - **Product type:** `variants.length > 0 ? 'variable' : 'simple'` (§6.1). There is no way to create a `'variable'` product with zero variants through this command.

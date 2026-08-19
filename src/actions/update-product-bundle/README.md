@@ -28,6 +28,18 @@ interface UpdateProductBundleParams {
 | `variantDeletions` | `string[]`                                              | no       | Variant ids to soft-delete — cascades to soft-deleting those variants' inventory rows (§6.6).                                                                                                            |
 | `outlets`          | `string[]`                                              | no       | `undefined` leaves visibility untouched; an array (including `[]`) reconciles CV to exactly that outlet set — same algorithm as `setProductOutlets`. Never persisted on the product doc itself.          |
 
+### Validation (host-enforced)
+
+- `variantChanges[]._id` and every `variantDeletions` id must belong to **this
+  product's** live variants — a stray id from another product rejects the whole
+  bundle (cross-product write protection).
+- `variantAdditions` are validated like create's variants: integer minor-unit
+  money (`price` required, `costPrice`/`salePrice` when present), attributes
+  need both `name` and `value`, inventory seeds need `outletId` + integer
+  `stock`, and duplicate attribute combinations within the payload reject.
+- Any rejection happens **before** the atomic write — nothing lands, nothing
+  syncs.
+
 ### Parity notes (spec §3.3.2)
 
 - **Additions dense-seed inventory** across all active outlets, same rule as `createProductWithVariants` (§6.1/§6.3) — never only the outlets in `outlets`.
