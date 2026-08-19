@@ -166,13 +166,13 @@ async function buildExtensionDashboard(extensionId: string) {
     console.log(`\nData Tables (${tablesResult.customTables.length}):`);
     
     for (const table of tablesResult.customTables) {
-        // Get record count
+        // There is no count API — fetch a page of rows.
+        // (An omitted or falsy limit defaults to 100 host-side.)
         const dataResult = await command.getCustomTableData({
-            tableName: table.name,
-            limit: 0  // Just to get count
+            tableName: table.name
         });
         
-        console.log(`  ${table.name}: ${dataResult.data.length} records`);
+        console.log(`  ${table.name}: ${dataResult.data.length} rows (first page, max 100)`);
     }
 }
 

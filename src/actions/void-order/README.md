@@ -32,9 +32,12 @@ import { command } from '@final-commerce/command-frame';
 
 // Void the active order
 const result = await command.voidOrder({ reason: 'Customer request' });
+if (result.outcome === 'refunded') {
+  // captured legs were refunded to their original tenders
+}
 
 // Void a specific order
-const result = await command.voidOrder({ orderId: 'order_123', reason: 'Duplicate entry' });
+const specific = await command.voidOrder({ orderId: '66b1c2d3e4f5a6b7c8d9e0f1', reason: 'Duplicate entry' });
 ```
 
 ## Eligibility

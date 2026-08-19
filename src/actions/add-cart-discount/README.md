@@ -137,20 +137,22 @@ Typical workflow: Add products to cart, then apply cart discount:
 
 ```typescript
 // 1. Set product as active and add to cart
-await command.setProductActive({
-    variantId: 'variant-id-123'
+await command.setActiveProduct({
+    variantId: '64a1f2c3b4d5e6f708192a3b'
 });
 
 await command.addProductToCart({
+    variantId: '64a1f2c3b4d5e6f708192a3b',
     quantity: 2
 });
 
 // 2. Add another product
-await command.setProductActive({
-    variantId: 'variant-id-456'
+await command.setActiveProduct({
+    variantId: '64a1f2c3b4d5e6f708192a3c'
 });
 
 await command.addProductToCart({
+    variantId: '64a1f2c3b4d5e6f708192a3c',
     quantity: 1
 });
 

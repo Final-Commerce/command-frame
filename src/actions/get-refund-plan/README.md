@@ -83,11 +83,16 @@ from the mutating call.
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
-const plan = await command.getRefundPlan({ orderId: 'order_123' });
+const plan = await command.getRefundPlan({ orderId: '66b1c2d3e4f5a6b7c8d9e0f1' });
 
 // Prefill per-tender refund inputs straight from the engine's caps.
+// A redeem source is only a valid leg when it carries a gift-card
+// destination — skip sources the engine can't refund to directly
+// (`refundableToSource: false`, i.e. redeem with no `cardNumber`)
+// unless you collect a destination card from the cashier.
 const legs = plan.sources
   .filter((s) => s.maxRefundable > 0)
+  .filter((s) => s.refundableToSource || (s.paymentType === 'redeem' && s.cardNumber))
   .map((s) => ({
     transactionId: s.transactionId,
     amount: s.maxRefundable,

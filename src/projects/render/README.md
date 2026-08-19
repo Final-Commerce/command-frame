@@ -40,7 +40,6 @@ The library provides a `command` namespace object containing all available comma
 - **[getActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-station/README.md)** - Retrieve the active station
 - **[getActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-session/README.md)** - Retrieve the active register session (cash session)
 - **[getActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-user/README.md)** - Retrieve the active POS user (employee)
-- **[getActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-refund/README.md)** - Retrieve current refund selection state
 - **[getContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-context/README.md)** - Get current environment/context information (user, company, device, station, outlet, build)
 - **[getFinalContext](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-final-context/README.md)** - Get final context information (project name)
 - **[getActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-product/README.md)** - Retrieve the currently active/selected product in the POS interface
@@ -75,7 +74,6 @@ The library provides a `command` namespace object containing all available comma
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
-- **[vendaraPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/vendara-payment/README.md)** - Initiate a Vendara payment
 - **[partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)** - Initiate a partial/split payment
 - **[setActiveOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-order/README.md)** - Load an order by id and set it as the active order
 
@@ -98,6 +96,7 @@ The library provides a `command` namespace object containing all available comma
 - **[authenticateUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/authenticate-user/README.md)** - Trigger user authentication for specific roles
 - **[switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)** - Switch the current user to a different user
 - **[setActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-user/README.md)** - Set the active POS user by id (loads from local DB; respects outlet access when an outlet is active)
+- **[checkPermission](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/check-permission/README.md)** - Check whether the active user's role grants a permission (pure read, for UI pre-gating)
 
 #### Active outlet, station, and session
 
@@ -140,7 +139,8 @@ The `command` object also exports several actions that are documented in their o
 - **Manage / optional host actions:** [generateAPIKey](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/generate-api-key/README.md), [navigateTo](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/navigate-to/README.md), [refreshResource](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/refresh-resource/README.md), [getMedia](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-media/README.md), [uploadMedia](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/upload-media/README.md), [getTaxTables](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-tax-tables/README.md), [getBranding](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-branding/README.md)
 - **Entity / company lookups:** [getOutlets](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-outlets/README.md), [getStations](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-stations/README.md), [getUsers](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-users/README.md), [getRoles](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-roles/README.md)
 - **Catalog management:** [addProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product/README.md), [editCustomer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/edit-customer/README.md), [editProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/edit-product/README.md), [editProductVariants](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/edit-product-variants/README.md), [deleteProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-product/README.md)
-- **Refund/payment variants:** [getRefunds](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-refunds/README.md), [redeemPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/redeem-payment/README.md), [extensionPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/extension-payment/README.md) (`redeemRefund` and `getRefundPlan` are listed under Refund Actions above)
+- **Refund/payment variants:** [getRefunds](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-refunds/README.md), [redeemPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/redeem-payment/README.md), [extensionPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/extension-payment/README.md), [integrationPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/integration-payment/README.md) (`redeemRefund` and `getRefundPlan` are listed under Refund Actions above)
+- **Messaging & layout:** [sendEmail](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/send-email/README.md), [sendSms](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/send-sms/README.md), [getSmartGridLayout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-smart-grid-layout/README.md), [saveSmartGridLayout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/save-smart-grid-layout/README.md)
 
 #### Reference
 
@@ -264,25 +264,25 @@ Loads an order from the host local database by `orderId` and sets it as the acti
 
 Read or set the active customer by id (`setActiveCustomer` loads from IndexedDB). Mirrors cart/session customer selection.
 
-### [getActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-outlet/README.md) / [setActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-outlet/README.md)
+### [getActiveOutlet](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-outlet/README.md)
 
-Read or set the active outlet by id for the POS context.
+Read the active outlet for the POS context. The active outlet is host-owned selection context and cannot be set from the runtime (see the note above).
 
-### [getActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-station/README.md) / [setActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-station/README.md)
+### [getActiveStation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-station/README.md)
 
-Read or set the active station by id.
+Read the active station. Host-owned selection context; not settable from the runtime.
 
-### [getActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-session/README.md) / [setActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-session/README.md)
+### [getActiveSession](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-session/README.md)
 
-Read or set the active register (cash) session by id.
+Read the active register (cash) session. Host-owned selection context; not settable from the runtime.
 
 ### [getActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-user/README.md) / [setActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-user/README.md)
 
 Read or set the active POS employee user; `setActiveUser` resolves role permissions when applicable.
 
-### [getActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-active-refund/README.md) / [setActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-refund/README.md)
+### [setActiveRefund](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-refund/README.md)
 
-Read refund UI state or start a refund flow for a given `orderId` (sets active order, opens refund UI, seeds selection).
+Stages an order as the refund target for a given `orderId` (sets active order and seeds refund selection state). No UI opens — the host refund popup is disabled; build refund UI in the flow.
 
 ### [addCustomSale](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-custom-sale/README.md)
 
@@ -396,10 +396,6 @@ Initiates a tap-to-pay payment for the current cart. May request tip if tip func
 
 Initiates a terminal payment for the current cart. May request tip if tip functionality is enabled.
 
-### [vendaraPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/vendara-payment/README.md)
-
-Initiates a Vendara payment for the current cart. May request tip if tip functionality is enabled.
-
 ### [partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)
 
 Initiates a partial/split payment for the current cart. Can open the split payment UI or process a payment with a specified amount.
@@ -439,6 +435,10 @@ Shows a confirmation dialog to the user. The actual promise resolution (accept/d
 ### [authenticateUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/authenticate-user/README.md)
 
 Triggers user authentication for specific roles. Shows an authentication dialog in the parent application.
+
+### [checkPermission](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/check-permission/README.md)
+
+Checks whether the ACTIVE user's role grants a permission (canonical keys such as `issue_refunds`). Pure read of `role.permissions` — intended for UI pre-gating only; command handlers still enforce their own guards.
 
 ### [switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)
 
@@ -684,8 +684,6 @@ import type {
   SetActiveUser,
   SetActiveUserParams,
   SetActiveUserResponse,
-  GetActiveRefund,
-  GetActiveRefundResponse,
   SetActiveRefund,
   SetActiveRefundParams,
   SetActiveRefundResponse,
@@ -750,9 +748,6 @@ import type {
   TerminalPaymentParams,
   TerminalPaymentResponse,
   TerminalPayment,
-  VendaraPaymentParams,
-  VendaraPaymentResponse,
-  VendaraPayment,
   PartialPaymentParams,
   PartialPaymentResponse,
   PartialPayment,

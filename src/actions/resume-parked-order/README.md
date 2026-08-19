@@ -17,7 +17,7 @@ Resumes a parked order by loading it back into the cart. The order status is upd
 | Field       | Type     | Description                               |
 | :---------- | :------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the order was resumed successfully. |
-| `order`     | `ActiveOrder` | The resumed order object with updated status and all details. |
+| `order`     | `CFOrder` | The resumed order object with updated status and all details. |
 | `timestamp` | `string` | ISO date string of when the action occurred. |
 
 ## Example Usage

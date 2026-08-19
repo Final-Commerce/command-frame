@@ -23,6 +23,8 @@ Adjusts the inventory/stock level for a specific product variant.
 }
 ```
 
+Note: `amount` is accepted as a string and coerced with `Number()` by the host, while `newStock` is the resulting numeric stock level.
+
 ## Usage
 
 ```typescript

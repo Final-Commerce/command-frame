@@ -25,7 +25,7 @@ Initiates an extension-defined payment flow in the host by calling the `extensio
 
 | Field         | Type              | Description                                                                         |
 | :------------ | :---------------- | :---------------------------------------------------------------------------------- |
-| `success`          | `boolean`         | `true` when host payment handling completed successfully.                           |
+| `success`          | `boolean`         | Always `true` — failures reject the promise instead (see Error Handling).           |
 | `amount`           | `number \| null`  | Processed amount reported by host, in integer minor currency units.                 |
 | `paymentType`      | `string`          | Final payment type recorded on the payment entry (`"redeem"` or `"integration"`).   |
 | `order`            | `CFOrder \| null` | Order snapshot after payment processing. Can be `null` for in-progress split flows. |
@@ -53,6 +53,15 @@ const result = await command.extensionPayment({
 
 console.log(result.success, result.paymentType, result.order?._id);
 ```
+
+## Error Handling
+
+Every failure **rejects the returned promise** — the handler never resolves with `success: false`. Notable rejections (see Parameters for details):
+
+- `Unsupported extension payment type: <value>` — `paymentType` is not `"redeem"` or `"integration"`.
+- Missing or invalid `amount` (integer minor units; an amount above the balance due is rejected).
+- `<paymentType>Payment: invalid checkoutFulfillmentTarget "<value>"` — target not accepted by the fulfillment state machine.
+- Missing `emvData` when `paymentType` is `"integration"`.
 
 ## Notes
 

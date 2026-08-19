@@ -5,14 +5,17 @@ export interface CashPaymentParams {
     /**
      * The amount to pay with this tender, in integer MINOR currency units
      * (e.g. 1575 = $15.75 — see `getContext().minorUnits` for the currency's
-     * exponent). Required. Semantics against the cart's balance due:
-     *   - missing            → error
+     * exponent). Required whenever the balance due is greater than $0; may be
+     * omitted only on a cart that already nets to a $0 balance due (e.g. fully
+     * discounted), where it defaults to 0. Semantics against the cart's
+     * balance due:
+     *   - missing            → error, unless the balance due is $0 (→ 0)
      *   - less than balance  → partial payment (the POS enters a fixed
      *                          split-payment leg for this amount)
      *   - equal to balance   → full payment
      *   - more than balance  → error (overpayment is `tenderedAmount`'s job)
      */
-    amount: number;
+    amount?: number;
     /**
      * Cash physically handed over by the customer, in integer MINOR currency
      * units. When provided, the POS computes the change itself (after applying

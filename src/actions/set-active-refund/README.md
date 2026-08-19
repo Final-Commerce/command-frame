@@ -26,7 +26,7 @@ Loads the order for the given `orderId`, sets it as the active order, and resets
 await command.setActiveRefund({ orderId: 'order_123' });
 ```
 
-For full refund UX, use [`initiateRefund`](../initiate-refund/README.md) as well when appropriate.
+For the full refund flow, pair this with [`getRefundPlan`](../get-refund-plan/README.md) and [`processPartialRefund`](../process-partial-refund/README.md) (and [`getRemainingRefundableQuantities`](../get-remaining-refundable-quantities/README.md)).
 
 ## Error Handling
 

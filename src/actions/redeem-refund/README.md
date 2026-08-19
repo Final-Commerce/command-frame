@@ -55,20 +55,17 @@ const result = await command.redeemRefund({
 
 Refund a gift-card order back onto an existing card. This is now supported via `redeemRefund` only (plain `processPartialRefund` on redeem sources still fails by design).
 
-**Same-Card Prefill Pattern**: The order-doc `PaymentMethod` has no `paymentData` field — that field lives on the _local transaction row_, not on the order. If the original tender was a gift card, the card number is only readable from the leg's `emv` JSON, and only for captures made by kaching ≥1.9.2:
+**Same-Card Prefill Pattern**: Don't derive the amount from `order.paymentMethods` — the original captured amount ignores anything already refunded against that source, so it throws `REFUND_AMOUNT_EXCEEDS_CAPACITY` on a partially-refunded order. Query [`getRefundPlan`](../get-refund-plan/README.md) instead: it exposes the engine's own remaining capacity per source (`maxRefundable`), and for redeem sources the card number directly as `sources[].cardNumber` (parsed from the leg's `emv` JSON; present only for captures made by kaching ≥1.9.2):
 
 ```typescript
-const originalLeg = order.paymentMethods.find((pm) => pm.paymentType === 'redeem');
-let cardNumber: string | undefined;
-try {
-  cardNumber = originalLeg.emv ? JSON.parse(originalLeg.emv)['Card Number'] : undefined;
-} catch {
-  // emv missing/unparseable (older capture) — fall through to manual input
-}
+const plan = await command.getRefundPlan({ orderId: order._id });
+const source = plan.sources.find((s) => s.paymentType === 'redeem' && s.maxRefundable > 0);
+if (!source) throw new Error('nothing left to refund on a redeem source');
+
 const result = await command.redeemRefund({
   orderId: order._id,
-  amount: originalLeg.amount,
-  referenceId: cardNumber ?? (await promptForCardNumber()), // Re-use original card, or ask the cashier
+  amount: source.maxRefundable, // remaining capacity, NOT the original captured amount
+  referenceId: source.cardNumber ?? (await promptForCardNumber()), // Re-use original card, or ask the cashier
   reason: 'Customer requested return',
 });
 ```

@@ -4,14 +4,17 @@ import { CFOrder } from "../../CommonTypes";
 export interface TapToPayPaymentParams {
     /**
      * The amount to pay with this tender, in integer MINOR currency units
-     * (e.g. 1575 = $15.75). Required. Semantics against the cart's balance due:
-     *   - missing            → error
+     * (e.g. 1575 = $15.75). Required whenever the balance due is greater than
+     * $0; may be omitted only on a cart that already nets to a $0 balance due
+     * (e.g. fully discounted), where it defaults to 0. Semantics against the
+     * cart's balance due:
+     *   - missing            → error, unless the balance due is $0 (→ 0)
      *   - less than balance  → partial payment (the POS enters a fixed
      *                          split-payment leg for this amount)
      *   - equal to balance   → full payment
      *   - more than balance  → error
      */
-    amount: number;
+    amount?: number;
     /** Override the fulfillment state after full payment. kaching resolves the cascade. */
     checkoutFulfillmentTarget?: string;
 }

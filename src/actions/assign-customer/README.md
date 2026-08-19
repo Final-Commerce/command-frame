@@ -41,7 +41,7 @@ The returned promise rejects if:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.assignCustomer({
-    customerId: 'cust_123456789'
+    customerId: '65f4a2b91c3d8e07a6b5c4d3'
 });
 
 console.log('Assigned customer:', result.customer.firstName);
