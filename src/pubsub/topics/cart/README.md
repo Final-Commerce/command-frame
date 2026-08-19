@@ -38,50 +38,50 @@ Per-event READMEs exist for the first nine rows; the rest are documented via Typ
 ### Subscribe to All Cart Events
 
 ```typescript
-import { topics } from "@final-commerce/command-frame";
-import type { TopicEvent } from "@final-commerce/command-frame";
+import { topics } from '@final-commerce/command-frame';
+import type { TopicEvent } from '@final-commerce/command-frame';
 
-const subscriptionId = topics.subscribe("cart", (event: TopicEvent) => {
-    switch (event.type) {
-        case "cart-created":
-            console.log("New cart created:", event.data.cart);
-            break;
-        case "customer-assigned":
-            console.log("Customer assigned:", event.data.customer);
-            break;
-        case "customer-unassigned":
-            console.log("Customer unassigned");
-            break;
-        case "product-added":
-            console.log("Product added:", event.data.product);
-            break;
-        case "product-deleted":
-            console.log("Product removed:", event.data.product);
-            break;
-        case "product-updated":
-            console.log("Product updated:", event.data.product);
-            break;
-        case "cart-discount-added":
-            console.log("Discount added:", event.data.discount);
-            break;
-        case "cart-discount-removed":
-            console.log("Discount removed");
-            break;
-        case "cart-fee-added":
-            console.log("Fee added:", event.data.fee);
-            break;
-        case "cart-fee-removed":
-            console.log("Fee removed at index:", event.data.feeIndex);
-            break;
-        case "product-discount-added":
-        case "product-discount-removed":
-        case "product-fee-added":
-        case "product-fee-removed":
-        case "product-note-added":
-        case "product-note-removed":
-            console.log("Cart line changed:", event.type, event.data);
-            break;
-    }
+const subscriptionId = topics.subscribe('cart', (event: TopicEvent) => {
+  switch (event.type) {
+    case 'cart-created':
+      console.log('New cart created:', event.data.cart);
+      break;
+    case 'customer-assigned':
+      console.log('Customer assigned:', event.data.customer);
+      break;
+    case 'customer-unassigned':
+      console.log('Customer unassigned');
+      break;
+    case 'product-added':
+      console.log('Product added:', event.data.product);
+      break;
+    case 'product-deleted':
+      console.log('Product removed:', event.data.product);
+      break;
+    case 'product-updated':
+      console.log('Product updated:', event.data.product);
+      break;
+    case 'cart-discount-added':
+      console.log('Discount added:', event.data.discount);
+      break;
+    case 'cart-discount-removed':
+      console.log('Discount removed');
+      break;
+    case 'cart-fee-added':
+      console.log('Fee added:', event.data.fee);
+      break;
+    case 'cart-fee-removed':
+      console.log('Fee removed at index:', event.data.feeIndex);
+      break;
+    case 'product-discount-added':
+    case 'product-discount-removed':
+    case 'product-fee-added':
+    case 'product-fee-removed':
+    case 'product-note-added':
+    case 'product-note-removed':
+      console.log('Cart line changed:', event.type, event.data);
+      break;
+  }
 });
 ```
 
@@ -91,41 +91,41 @@ All event types are fully typed. Import specific event types for better type saf
 
 ```typescript
 import type {
-    CartCreatedPayload,
-    CartCreatedEvent,
-    CartCustomerAssignedPayload,
-    CartCustomerAssignedEvent,
-    CustomerUnassignedPayload,
-    CustomerUnassignedEvent,
-    ProductAddedPayload,
-    ProductAddedEvent,
-    ProductDeletedPayload,
-    ProductDeletedEvent,
-    CartProductUpdatedPayload,
-    CartProductUpdatedEvent,
-    CartDiscountAddedPayload,
-    CartDiscountAddedEvent,
-    CartDiscountRemovedPayload,
-    CartDiscountRemovedEvent,
-    CartFeeAddedPayload,
-    CartFeeAddedEvent,
-    CartFeeRemovedPayload,
-    CartFeeRemovedEvent,
-    ProductDiscountAddedPayload,
-    ProductDiscountAddedEvent,
-    ProductDiscountRemovedPayload,
-    ProductDiscountRemovedEvent,
-    ProductFeeAddedPayload,
-    ProductFeeAddedEvent,
-    ProductFeeRemovedPayload,
-    ProductFeeRemovedEvent,
-    ProductNoteAddedPayload,
-    ProductNoteAddedEvent,
-    ProductNoteRemovedPayload,
-    ProductNoteRemovedEvent,
-    CartEventType,
-    CartEventPayload
-} from "@final-commerce/command-frame";
+  CartCreatedPayload,
+  CartCreatedEvent,
+  CartCustomerAssignedPayload,
+  CartCustomerAssignedEvent,
+  CustomerUnassignedPayload,
+  CustomerUnassignedEvent,
+  ProductAddedPayload,
+  ProductAddedEvent,
+  CartProductDeletedPayload,
+  CartProductDeletedEvent,
+  CartProductUpdatedPayload,
+  CartProductUpdatedEvent,
+  CartDiscountAddedPayload,
+  CartDiscountAddedEvent,
+  CartDiscountRemovedPayload,
+  CartDiscountRemovedEvent,
+  CartFeeAddedPayload,
+  CartFeeAddedEvent,
+  CartFeeRemovedPayload,
+  CartFeeRemovedEvent,
+  ProductDiscountAddedPayload,
+  ProductDiscountAddedEvent,
+  ProductDiscountRemovedPayload,
+  ProductDiscountRemovedEvent,
+  ProductFeeAddedPayload,
+  ProductFeeAddedEvent,
+  ProductFeeRemovedPayload,
+  ProductFeeRemovedEvent,
+  ProductNoteAddedPayload,
+  ProductNoteAddedEvent,
+  ProductNoteRemovedPayload,
+  ProductNoteRemovedEvent,
+  CartEventType,
+  CartEventPayload,
+} from '@final-commerce/command-frame';
 ```
 
 ## Related Types

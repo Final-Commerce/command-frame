@@ -97,6 +97,32 @@ import { mockGetSmartGridLayout } from '../../actions/get-smart-grid-layout/mock
 import { mockSaveSmartGridLayout } from '../../actions/save-smart-grid-layout/mock';
 import { mockSendEmail } from '../../actions/send-email/mock';
 import { mockSendSms } from '../../actions/send-sms/mock';
+import { mockAddProduct } from '../../actions/add-product/mock';
+import { mockEditProduct } from '../../actions/edit-product/mock';
+import { mockEditProductVariants } from '../../actions/edit-product-variants/mock';
+import { mockDeleteProduct } from '../../actions/delete-product/mock';
+import { mockGetProductVariants } from '../../actions/get-product-variants/mock';
+import { mockGetInventory } from '../../actions/get-inventory/mock';
+import { mockGetStockHistory } from '../../actions/get-stock-history/mock';
+import { mockGetProductVisibility } from '../../actions/get-product-visibility/mock';
+import { mockGetOutlets } from '../../actions/get-outlets/mock';
+import { mockAddCategory } from '../../actions/add-category/mock';
+import { mockEditCategory } from '../../actions/edit-category/mock';
+import { mockDeleteCategory } from '../../actions/delete-category/mock';
+import { mockAddAttribute } from '../../actions/add-attribute/mock';
+import { mockGetAttributes } from '../../actions/get-attributes/mock';
+import { mockEditAttribute } from '../../actions/edit-attribute/mock';
+import { mockDeleteAttribute } from '../../actions/delete-attribute/mock';
+import { mockPreviewVariants } from '../../actions/preview-variants/mock';
+import { mockComputeVariantChanges } from '../../actions/compute-variant-changes/mock';
+import { mockCreateProductWithVariants } from '../../actions/create-product-with-variants/mock';
+import { mockUpdateProductBundle } from '../../actions/update-product-bundle/mock';
+import { mockAdjustStock } from '../../actions/adjust-stock/mock';
+import { mockSetProductOutlets } from '../../actions/set-product-outlets/mock';
+// Image API (P4)
+import { mockUploadImage } from '../../actions/upload-image/mock';
+import { mockGetImages } from '../../actions/get-images/mock';
+import { mockDeleteImage } from '../../actions/delete-image/mock';
 import { RenderProviderActions } from './types';
 
 export const RENDER_MOCKS: RenderProviderActions = {
@@ -202,4 +228,33 @@ export const RENDER_MOCKS: RenderProviderActions = {
   saveSmartGridLayout: mockSaveSmartGridLayout,
   sendEmail: mockSendEmail,
   sendSms: mockSendSms,
+  addProduct: mockAddProduct,
+  editProduct: mockEditProduct,
+  editProductVariants: mockEditProductVariants,
+  deleteProduct: mockDeleteProduct,
+  // Product domain reads
+  getProductVariants: mockGetProductVariants,
+  getInventory: mockGetInventory,
+  getStockHistory: mockGetStockHistory,
+  getProductVisibility: mockGetProductVisibility,
+  getOutlets: mockGetOutlets,
+  // Category & attribute CRUD
+  addCategory: mockAddCategory,
+  editCategory: mockEditCategory,
+  deleteCategory: mockDeleteCategory,
+  addAttribute: mockAddAttribute,
+  getAttributes: mockGetAttributes,
+  editAttribute: mockEditAttribute,
+  deleteAttribute: mockDeleteAttribute,
+  // Product orchestrators (P3)
+  previewVariants: mockPreviewVariants,
+  computeVariantChanges: mockComputeVariantChanges,
+  createProductWithVariants: mockCreateProductWithVariants,
+  updateProductBundle: mockUpdateProductBundle,
+  adjustStock: mockAdjustStock,
+  setProductOutlets: mockSetProductOutlets,
+  // Image API (P4)
+  uploadImage: mockUploadImage,
+  getImages: mockGetImages,
+  deleteImage: mockDeleteImage,
 };

@@ -100,6 +100,32 @@ import type {
   SaveSmartGridLayout,
   SendEmail,
   SendSms,
+  AddProduct,
+  EditProduct,
+  EditProductVariants,
+  DeleteProduct,
+  GetProductVariants,
+  GetInventory,
+  GetStockHistory,
+  GetProductVisibility,
+  GetOutlets,
+  AddCategory,
+  EditCategory,
+  DeleteCategory,
+  AddAttribute,
+  GetAttributes,
+  EditAttribute,
+  DeleteAttribute,
+  PreviewVariants,
+  ComputeVariantChanges,
+  CreateProductWithVariants,
+  UpdateProductBundle,
+  AdjustStock,
+  SetProductOutlets,
+  // Image API (P4)
+  UploadImage,
+  GetImages,
+  DeleteImage,
 } from '../../index';
 
 export interface RenderProviderActions {
@@ -204,4 +230,33 @@ export interface RenderProviderActions {
   saveSmartGridLayout: SaveSmartGridLayout;
   sendEmail: SendEmail;
   sendSms: SendSms;
+  addProduct: AddProduct;
+  editProduct: EditProduct;
+  editProductVariants: EditProductVariants;
+  deleteProduct: DeleteProduct;
+  // Product domain reads
+  getProductVariants: GetProductVariants;
+  getInventory: GetInventory;
+  getStockHistory: GetStockHistory;
+  getProductVisibility: GetProductVisibility;
+  getOutlets: GetOutlets;
+  // Category & attribute CRUD
+  addCategory: AddCategory;
+  editCategory: EditCategory;
+  deleteCategory: DeleteCategory;
+  addAttribute: AddAttribute;
+  getAttributes: GetAttributes;
+  editAttribute: EditAttribute;
+  deleteAttribute: DeleteAttribute;
+  // Product orchestrators (P3)
+  previewVariants: PreviewVariants;
+  computeVariantChanges: ComputeVariantChanges;
+  createProductWithVariants: CreateProductWithVariants;
+  updateProductBundle: UpdateProductBundle;
+  adjustStock: AdjustStock;
+  setProductOutlets: SetProductOutlets;
+  // Image API (P4)
+  uploadImage: UploadImage;
+  getImages: GetImages;
+  deleteImage: DeleteImage;
 }

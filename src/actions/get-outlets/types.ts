@@ -1,8 +1,8 @@
-import { CFOutletInfo } from "../../CommonTypes";
+import { CFOutletInfo } from '../../CommonTypes';
 
 export interface GetOutletsResponse {
-    outlets: CFOutletInfo[];
-    timestamp: string;
+  outlets: CFOutletInfo[];
+  timestamp: string;
 }
 
 export type GetOutlets = () => Promise<GetOutletsResponse>;

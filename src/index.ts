@@ -119,6 +119,26 @@ import { addProduct } from './actions/add-product/action';
 import { editProduct } from './actions/edit-product/action';
 import { editProductVariants } from './actions/edit-product-variants/action';
 import { deleteProduct } from './actions/delete-product/action';
+// Product domain reads
+import { getProductVariants } from './actions/get-product-variants/action';
+import { getInventory } from './actions/get-inventory/action';
+import { getStockHistory } from './actions/get-stock-history/action';
+import { getProductVisibility } from './actions/get-product-visibility/action';
+// Category & attribute CRUD
+import { addCategory } from './actions/add-category/action';
+import { editCategory } from './actions/edit-category/action';
+import { deleteCategory } from './actions/delete-category/action';
+import { addAttribute } from './actions/add-attribute/action';
+import { getAttributes } from './actions/get-attributes/action';
+import { editAttribute } from './actions/edit-attribute/action';
+import { deleteAttribute } from './actions/delete-attribute/action';
+// Product orchestrators (P3)
+import { previewVariants } from './actions/preview-variants/action';
+import { computeVariantChanges } from './actions/compute-variant-changes/action';
+import { createProductWithVariants } from './actions/create-product-with-variants/action';
+import { updateProductBundle } from './actions/update-product-bundle/action';
+import { adjustStock } from './actions/adjust-stock/action';
+import { setProductOutlets } from './actions/set-product-outlets/action';
 // Entity Actions
 import { getOutlets } from './actions/get-outlets/action';
 import { getStations } from './actions/get-stations/action';
@@ -132,6 +152,10 @@ import { getMedia } from './actions/get-media/action';
 import { uploadMedia } from './actions/upload-media/action';
 import { getTaxTables } from './actions/get-tax-tables/action';
 import { getBranding } from './actions/get-branding/action';
+// Image API (P4)
+import { uploadImage } from './actions/upload-image/action';
+import { getImages } from './actions/get-images/action';
+import { deleteImage } from './actions/delete-image/action';
 
 // Export actions as command object
 export const command = {
@@ -231,6 +255,26 @@ export const command = {
   editProduct,
   editProductVariants,
   deleteProduct,
+  // Product domain reads
+  getProductVariants,
+  getInventory,
+  getStockHistory,
+  getProductVisibility,
+  // Category & attribute CRUD
+  addCategory,
+  editCategory,
+  deleteCategory,
+  addAttribute,
+  getAttributes,
+  editAttribute,
+  deleteAttribute,
+  // Product orchestrators (P3)
+  previewVariants,
+  computeVariantChanges,
+  createProductWithVariants,
+  updateProductBundle,
+  adjustStock,
+  setProductOutlets,
   // Entity Actions
   getOutlets,
   getStations,
@@ -265,6 +309,10 @@ export const command = {
   canTransition,
   getAvailableTransitions,
   applyTransition,
+  // Image API (P4)
+  uploadImage,
+  getImages,
+  deleteImage,
 } as const;
 
 // Export types from action folders (only Params, Response, and Function types)
@@ -304,6 +352,69 @@ export type {
 } from './actions/edit-product-variants/types';
 
 export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from './actions/delete-product/types';
+
+// Product domain reads
+export type {
+  GetProductVariants,
+  GetProductVariantsParams,
+  GetProductVariantsResponse,
+} from './actions/get-product-variants/types';
+export type {
+  GetInventory,
+  GetInventoryParams,
+  GetInventoryResponse,
+  CFInventoryRow,
+} from './actions/get-inventory/types';
+export type {
+  GetStockHistory,
+  GetStockHistoryParams,
+  GetStockHistoryResponse,
+  CFStockChange,
+} from './actions/get-stock-history/types';
+export type {
+  GetProductVisibility,
+  GetProductVisibilityParams,
+  GetProductVisibilityResponse,
+} from './actions/get-product-visibility/types';
+
+// Category & attribute CRUD
+export type { AddCategory, AddCategoryParams, AddCategoryResponse } from './actions/add-category/types';
+export type { EditCategory, EditCategoryParams, EditCategoryResponse } from './actions/edit-category/types';
+export type { DeleteCategory, DeleteCategoryParams, DeleteCategoryResponse } from './actions/delete-category/types';
+export type { AddAttribute, AddAttributeParams, AddAttributeResponse } from './actions/add-attribute/types';
+export type { GetAttributes, GetAttributesResponse } from './actions/get-attributes/types';
+export type { EditAttribute, EditAttributeParams, EditAttributeResponse } from './actions/edit-attribute/types';
+export type { DeleteAttribute, DeleteAttributeParams, DeleteAttributeResponse } from './actions/delete-attribute/types';
+
+// Product orchestrators (P3)
+export type { PreviewVariants, PreviewVariantsParams, PreviewVariantsResponse } from './actions/preview-variants/types';
+export type {
+  ComputeVariantChanges,
+  ComputeVariantChangesParams,
+  ComputeVariantChangesResponse,
+} from './actions/compute-variant-changes/types';
+export type {
+  CreateProductVariantInput,
+  CreateProductWithVariants,
+  CreateProductWithVariantsParams,
+  CreateProductWithVariantsResponse,
+} from './actions/create-product-with-variants/types';
+export type {
+  UpdateProductBundle,
+  UpdateProductBundleParams,
+  UpdateProductBundleResponse,
+} from './actions/update-product-bundle/types';
+export type {
+  AdjustStock,
+  AdjustStockParams,
+  AdjustStockResponse,
+  CFStockSpecificAction,
+} from './actions/adjust-stock/types';
+export type {
+  SetProductOutlets,
+  SetProductOutletsParams,
+  SetProductOutletsResponse,
+} from './actions/set-product-outlets/types';
 
 export type { GetOutlets, GetOutletsResponse } from './actions/get-outlets/types';
 
@@ -363,11 +474,7 @@ export type {
   GetRefundPlanResponse,
   RefundPlanSource,
 } from './actions/get-refund-plan/types';
-export type {
-  CheckPermission,
-  CheckPermissionParams,
-  CheckPermissionResponse,
-} from './actions/check-permission/types';
+export type { CheckPermission, CheckPermissionParams, CheckPermissionResponse } from './actions/check-permission/types';
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from './actions/initiate-refund/types';
 
@@ -569,6 +676,11 @@ export type {
 export type { SendEmail, SendEmailParams, SendEmailResponse, SendReceiptType } from './actions/send-email/types';
 export type { SendSms, SendSmsParams, SendSmsResponse } from './actions/send-sms/types';
 
+// Image API (P4)
+export type { UploadImage, UploadImageParams, UploadImageResponse } from './actions/upload-image/types';
+export type { GetImages, GetImagesResponse, CFImageAttachment } from './actions/get-images/types';
+export type { DeleteImage, DeleteImageParams, DeleteImageResponse } from './actions/delete-image/types';
+
 // Export Common Types
 export * from './CommonTypes';
 
@@ -687,10 +799,12 @@ export type {
   ProductUpdatedPayload,
   ProductSetActivePayload,
   ProductGetActivePayload,
+  ProductDeletedPayload,
   ProductCreatedEvent,
   ProductUpdatedEvent,
   ProductSetActiveEvent,
   ProductGetActiveEvent,
+  ProductDeletedEvent,
   ProductsEventType,
   ProductsEventPayload,
 } from './pubsub/topics/products/types';
@@ -737,6 +851,8 @@ export type {
   VariantCreatedEvent,
   VariantUpdatedPayload,
   VariantUpdatedEvent,
+  VariantDeletedPayload,
+  VariantDeletedEvent,
   VariantsEventType,
   VariantsEventPayload,
 } from './pubsub/topics/variants/types';
@@ -753,6 +869,8 @@ export type {
   CategoryCreatedEvent,
   CategoryUpdatedPayload,
   CategoryUpdatedEvent,
+  CategoryDeletedPayload,
+  CategoryDeletedEvent,
   CategoriesEventType,
   CategoriesEventPayload,
 } from './pubsub/topics/categories/types';
@@ -761,6 +879,8 @@ export type {
   AttributeCreatedEvent,
   AttributeUpdatedPayload,
   AttributeUpdatedEvent,
+  AttributeDeletedPayload,
+  AttributeDeletedEvent,
   AttributesEventType,
   AttributesEventPayload,
 } from './pubsub/topics/attributes/types';
@@ -770,7 +890,7 @@ export type {
   CartCreatedPayload,
   CartCustomerAssignedPayload,
   ProductAddedPayload,
-  ProductDeletedPayload,
+  CartProductDeletedPayload,
   CartDiscountAddedPayload,
   CartDiscountRemovedPayload,
   CartFeeAddedPayload,
@@ -784,7 +904,7 @@ export type {
   CartCreatedEvent,
   CartCustomerAssignedEvent,
   ProductAddedEvent,
-  ProductDeletedEvent,
+  CartProductDeletedEvent,
   CartDiscountAddedEvent,
   CartDiscountRemovedEvent,
   CartFeeAddedEvent,

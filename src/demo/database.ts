@@ -15,12 +15,15 @@ import {
   CFUserTypes,
   CFActiveCart,
   CFCategory,
+  CFAttribute,
   CurrencyCode,
   CFActiveProduct,
   CFSession,
   CFActiveRefundDetails,
   CFSmartGridLayout,
 } from '../CommonTypes';
+import { CFImageAttachment } from '../actions/get-images/types';
+import { CFStockChange } from '../actions/get-stock-history/types';
 
 export * from './mocks';
 
@@ -32,7 +35,9 @@ export interface MockDatabaseConfig {
   users?: CFActiveUser[];
   customers?: CFCustomer[];
   categories?: CFCategory[];
+  attributes?: CFAttribute[];
   products?: CFProduct[];
+  images?: CFImageAttachment[];
   orders?: CFActiveOrder[];
   parkedOrders?: CFActiveOrder[];
 }
@@ -262,6 +267,34 @@ export const MOCK_CATEGORY_SPICY: CFCategory = {
   name: 'Spicy',
   externalId: 'ext_cat_spicy',
   companyId: MOCK_COMPANY.id!,
+};
+
+// --- ATTRIBUTES ---
+export const MOCK_ATTRIBUTE_SIZE: CFAttribute = {
+  id: 'attr_size',
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+  companyId: MOCK_COMPANY.id!,
+  optionName: 'Size',
+  sortingOrder: 0,
+  options: [
+    { name: 'S', order: 0 },
+    { name: 'M', order: 1 },
+    { name: 'L', order: 2 },
+  ],
+};
+
+export const MOCK_ATTRIBUTE_COLOR: CFAttribute = {
+  id: 'attr_color',
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+  companyId: MOCK_COMPANY.id!,
+  optionName: 'Color',
+  sortingOrder: 1,
+  options: [
+    { name: 'Red', order: 0 },
+    { name: 'Blue', order: 1 },
+  ],
 };
 
 // --- PRODUCTS ---
@@ -831,6 +864,7 @@ export const MOCK_CATEGORIES = [
   MOCK_CATEGORY_VEGAN,
   MOCK_CATEGORY_SPICY,
 ];
+export const MOCK_ATTRIBUTES: CFAttribute[] = [MOCK_ATTRIBUTE_SIZE, MOCK_ATTRIBUTE_COLOR];
 export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_BASIL_ALMOND,
   MOCK_PRODUCT_BEER,
@@ -876,6 +910,19 @@ export const setMockActiveProduct = (activeProduct: CFActiveProduct) => {
 // mockSaveSmartGridLayout so the standalone builder (no command-frame host) can
 // round-trip layouts within a session.
 export const MOCK_SMART_GRID_LAYOUTS: Record<string, CFSmartGridLayout> = {};
+
+// Image API (P4): in-memory image attachments populated by mockUploadImage,
+// read by mockGetImages, pruned by mockDeleteImage.
+export const MOCK_IMAGES: CFImageAttachment[] = [];
+
+// Stock-changes audit trail (spec §6.5): appended by mockAdjustStock, read by
+// mockGetStockHistory so movements round-trip within a session.
+export const MOCK_STOCK_CHANGES: CFStockChange[] = [];
+
+// Catalog-visibility (CV) reconcile state keyed by productId (spec §6.4):
+// hidden outlet ids written by mockSetProductOutlets, read by
+// mockGetProductVisibility. Absence of a key = visible everywhere.
+export const MOCK_HIDDEN_OUTLETS: Record<string, string[]> = {};
 
 // Helper to reset cart
 export const resetMockCart = () => {
@@ -923,8 +970,14 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   if (config.categories !== undefined) {
     MOCK_CATEGORIES.splice(0, MOCK_CATEGORIES.length, ...config.categories);
   }
+  if (config.attributes !== undefined) {
+    MOCK_ATTRIBUTES.splice(0, MOCK_ATTRIBUTES.length, ...config.attributes);
+  }
   if (config.products !== undefined) {
     MOCK_PRODUCTS.splice(0, MOCK_PRODUCTS.length, ...config.products);
+  }
+  if (config.images !== undefined) {
+    MOCK_IMAGES.splice(0, MOCK_IMAGES.length, ...config.images);
   }
   if (config.orders !== undefined) {
     MOCK_ORDERS.splice(0, MOCK_ORDERS.length, ...config.orders);
@@ -957,11 +1010,10 @@ export const safeSerialize = <T>(data: T): T => {
 };
 
 // Mock Event Emitter for pub/sub simulation in mock mode
- 
+
 type MockEventCallback = (event: any) => void;
 const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
 
- 
 export const mockPublishEvent = (topic: string, eventType: string, data: any) => {
   const subscribers = mockTopicSubscribers[topic] || [];
   const event = {
