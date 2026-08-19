@@ -27,6 +27,7 @@ interface UploadImageParams {
 ```typescript
 interface UploadImageResponse {
   success: boolean;
+  attachmentId: string;
   url: string;
   originalUrl?: string;
   path?: string;
@@ -36,6 +37,7 @@ interface UploadImageResponse {
 }
 ```
 
+- `attachmentId`: the hub-api attachment row's `_id` — this is what [`deleteImage`](../delete-image/README.md) takes to remove the upload. Keep it if the image may need to be deleted later.
 - `url`: the **public, resized** image URL. Store **this** string in `product.images[]` / `variant.images[]` — those arrays hold plain URL strings, not attachment objects.
 - `originalUrl`: the pre-resize upload URL, when the host exposes one. Not what you store on products/variants.
 - `path`: host-side storage path/key for the file, when available.

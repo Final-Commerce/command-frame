@@ -2,29 +2,31 @@
 
 Records a stock movement for one variant at one outlet: an audited, atomic two-write (spec §3.3.3) — the inventory row's `quantity` and an append-only `stock-changes` history row are written together, or neither is written.
 
-> **Render-side command.** Handled by kaching's command-frame handler. This is the **only** way inventory `quantity` changes after creation — there is no direct inventory-update command.
+> **Render-side command.** Handled by kaching's command-frame handler. This is the only **audited, product-domain** way inventory `quantity` changes after creation — the older [`adjustInventory`](../adjust-inventory/README.md) command also writes stock levels, but without the stock-changes audit trail.
 
 ## Parameters
 
 ### `AdjustStockParams`
 
 ```typescript
+type CFStockSpecificAction =
+  | 'STOCK_RECEIVED'
+  | 'INVENTORY_RECOUNT'
+  | 'DAMAGE'
+  | 'THEFT'
+  | 'LOSS'
+  | 'RESTOCK_RETURN'
+  | 'REFUND_RESTOCK_RETURN'
+  | 'REFUND_DAMAGE'
+  | 'SALE'
+  | 'TRANSFER'
+  | 'BULK_RECOUNT';
+
 interface AdjustStockParams {
   productId: string;
   variantId: string;
   outletId: string;
-  specificAction:
-    | 'STOCK_RECEIVED'
-    | 'INVENTORY_RECOUNT'
-    | 'DAMAGE'
-    | 'THEFT'
-    | 'LOSS'
-    | 'RESTOCK_RETURN'
-    | 'REFUND_RESTOCK_RETURN'
-    | 'REFUND_DAMAGE'
-    | 'SALE'
-    | 'TRANSFER'
-    | 'BULK_RECOUNT';
+  specificAction: CFStockSpecificAction;
   baseAction?: 'ADD' | 'REMOVE' | 'RECOUNT' | 'SKIP';
   quantity: number;
   userId?: string;

@@ -12,8 +12,11 @@ export interface PreviewVariantsParams {
 
 export interface PreviewVariantsResponse {
   success: boolean;
-  /** New combos as ready-to-submit variant docs (client-generated _id, inventory seeds {outletId, stock: 0}). */
-  additions: (Omit<CFProductVariant, '_id'> & { _id: string })[];
+  /** New combos as ready-to-submit variant docs (client-generated _id, inventory seeds {outletId, stock: 0}). Attributes always carry concrete values (generated from selectedOptions), so they feed createProductWithVariants/updateProductBundle inputs without narrowing. */
+  additions: (Omit<CFProductVariant, '_id' | 'attributes'> & {
+    _id: string;
+    attributes: { name: string; value: string }[];
+  })[];
   /** Existing variants whose combos survive the new option set. */
   existing: CFProductVariant[];
   /** Ids of attribute-less placeholder variants that should be deleted when additions land. */

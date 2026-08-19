@@ -25,10 +25,12 @@ export const mockUploadImage: UploadImage = async (params: UploadImageParams): P
 
   const timestamp = new Date().toISOString();
 
-  MOCK_IMAGES.push({ _id: 'mock_image_' + Date.now(), name, url });
+  const attachmentId = 'mock_image_' + Date.now();
+  MOCK_IMAGES.push({ _id: attachmentId, name, url });
 
   return {
     success: true,
+    attachmentId,
     url,
     name,
     mimeType,

@@ -1,5 +1,5 @@
 import { AdjustStock, AdjustStockParams, AdjustStockResponse } from './types';
-import { MOCK_PRODUCTS } from '../../demo/database';
+import { MOCK_PRODUCTS, MOCK_STOCK_CHANGES } from '../../demo/database';
 
 // specificAction → baseAction (spec §6.5).
 const SPECIFIC_TO_BASE: Record<AdjustStockParams['specificAction'], NonNullable<AdjustStockParams['baseAction']>> = {
@@ -51,10 +51,28 @@ export const mockAdjustStock: AdjustStock = async (params: AdjustStockParams): P
     row.stock = updatedQuantity;
   }
 
+  const timestamp = new Date().toISOString();
+  const stockChangeId = `mock_stock_change_${Date.now()}`;
+
+  // Append the audit row (the second write of the atomic pair, §6.5) so
+  // getStockHistory sees the movement within the same session.
+  MOCK_STOCK_CHANGES.push({
+    _id: stockChangeId,
+    productId: params.productId,
+    variantId: params.variantId,
+    outletId: params.outletId,
+    userId: params.userId,
+    baseAction,
+    specificAction: params.specificAction,
+    quantity: params.quantity,
+    updatedQuantity,
+    createdAt: timestamp,
+  });
+
   return {
     success: true,
     updatedQuantity,
-    stockChangeId: `mock_stock_change_${Date.now()}`,
-    timestamp: new Date().toISOString(),
+    stockChangeId,
+    timestamp,
   };
 };

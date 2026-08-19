@@ -404,7 +404,12 @@ export type {
   UpdateProductBundleParams,
   UpdateProductBundleResponse,
 } from './actions/update-product-bundle/types';
-export type { AdjustStock, AdjustStockParams, AdjustStockResponse } from './actions/adjust-stock/types';
+export type {
+  AdjustStock,
+  AdjustStockParams,
+  AdjustStockResponse,
+  CFStockSpecificAction,
+} from './actions/adjust-stock/types';
 export type {
   SetProductOutlets,
   SetProductOutletsParams,

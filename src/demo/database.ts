@@ -22,6 +22,8 @@ import {
   CFActiveRefundDetails,
   CFSmartGridLayout,
 } from '../CommonTypes';
+import { CFImageAttachment } from '../actions/get-images/types';
+import { CFStockChange } from '../actions/get-stock-history/types';
 
 export * from './mocks';
 
@@ -33,7 +35,9 @@ export interface MockDatabaseConfig {
   users?: CFActiveUser[];
   customers?: CFCustomer[];
   categories?: CFCategory[];
+  attributes?: CFAttribute[];
   products?: CFProduct[];
+  images?: CFImageAttachment[];
   orders?: CFActiveOrder[];
   parkedOrders?: CFActiveOrder[];
 }
@@ -909,7 +913,16 @@ export const MOCK_SMART_GRID_LAYOUTS: Record<string, CFSmartGridLayout> = {};
 
 // Image API (P4): in-memory image attachments populated by mockUploadImage,
 // read by mockGetImages, pruned by mockDeleteImage.
-export const MOCK_IMAGES: { _id: string; name: string; url: string }[] = [];
+export const MOCK_IMAGES: CFImageAttachment[] = [];
+
+// Stock-changes audit trail (spec §6.5): appended by mockAdjustStock, read by
+// mockGetStockHistory so movements round-trip within a session.
+export const MOCK_STOCK_CHANGES: CFStockChange[] = [];
+
+// Catalog-visibility (CV) reconcile state keyed by productId (spec §6.4):
+// hidden outlet ids written by mockSetProductOutlets, read by
+// mockGetProductVisibility. Absence of a key = visible everywhere.
+export const MOCK_HIDDEN_OUTLETS: Record<string, string[]> = {};
 
 // Helper to reset cart
 export const resetMockCart = () => {
@@ -957,8 +970,14 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   if (config.categories !== undefined) {
     MOCK_CATEGORIES.splice(0, MOCK_CATEGORIES.length, ...config.categories);
   }
+  if (config.attributes !== undefined) {
+    MOCK_ATTRIBUTES.splice(0, MOCK_ATTRIBUTES.length, ...config.attributes);
+  }
   if (config.products !== undefined) {
     MOCK_PRODUCTS.splice(0, MOCK_PRODUCTS.length, ...config.products);
+  }
+  if (config.images !== undefined) {
+    MOCK_IMAGES.splice(0, MOCK_IMAGES.length, ...config.images);
   }
   if (config.orders !== undefined) {
     MOCK_ORDERS.splice(0, MOCK_ORDERS.length, ...config.orders);

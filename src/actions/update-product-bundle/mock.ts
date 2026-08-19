@@ -43,7 +43,13 @@ export const mockUpdateProductBundle: UpdateProductBundle = async (
 
   const variants = [...survivingVariants, ...newVariants];
   const added = newVariants.map((v) => v._id);
-  const changed = (params.variantChanges || []).map((c) => c._id);
+  // Echo only ids that actually exist on the product (when we have it) so the
+  // response references real variant docs, not whatever the caller passed.
+  const existingVariantIds = existing ? existing.variants.map((v) => v._id) : null;
+  const changed = (params.variantChanges || [])
+    .map((c) => c._id)
+    .filter((id) => existingVariantIds === null || existingVariantIds.includes(id));
+  const deletedIds = existingVariantIds === null ? deleted : deleted.filter((id) => existingVariantIds.includes(id));
 
   // undefined = leave taxTable alone; explicit null clears it (CFProduct.taxTable is non-nullable).
   const nextTaxTable = changes.taxTable !== undefined ? (changes.taxTable ?? '') : (existing?.taxTable ?? '');
@@ -84,12 +90,20 @@ export const mockUpdateProductBundle: UpdateProductBundle = async (
         variants,
       };
 
+  // Round-trip: write the merged product back so same-session reads see it.
+  const index = MOCK_PRODUCTS.findIndex((p) => p._id === params.productId);
+  if (index !== -1) {
+    MOCK_PRODUCTS[index] = product;
+  } else {
+    MOCK_PRODUCTS.push(product);
+  }
+
   return {
     success: true,
     product: safeSerialize(product),
     added,
     changed,
-    deleted,
+    deleted: deletedIds,
     timestamp: new Date().toISOString(),
   };
 };

@@ -29,14 +29,17 @@ interface PreviewVariantsParams {
 ```typescript
 interface PreviewVariantsResponse {
   success: boolean;
-  additions: (Omit<CFProductVariant, '_id'> & { _id: string })[];
+  additions: (Omit<CFProductVariant, '_id' | 'attributes'> & {
+    _id: string;
+    attributes: { name: string; value: string }[];
+  })[];
   existing: CFProductVariant[];
   autoDeleteIds: string[];
   timestamp: string;
 }
 ```
 
-- **`additions`** — every combo in the cartesian product of `selectedOptions` that doesn't already exist, as ready-to-submit variant docs: a client-generated `_id` (stable per call, not a real ObjectId), `price`/`salePrice`/`manageStock` seeded from `defaults`, and `inventory` pre-seeded `outletIds.map(outletId => ({ outletId, stock: 0 }))`. Feed these straight into `createProductWithVariants.variants` or `updateProductBundle.variantAdditions`.
+- **`additions`** — every combo in the cartesian product of `selectedOptions` that doesn't already exist, as ready-to-submit variant docs: a client-generated `_id` (stable per call, not a real ObjectId), `price`/`salePrice`/`manageStock` seeded from `defaults`, and `inventory` pre-seeded `outletIds.map(outletId => ({ outletId, stock: 0 }))`. `attributes` always carry concrete values (every combo is generated from `selectedOptions`), so the entries type-check directly against `CreateProductVariantInput.attributes`. Feed these straight into `createProductWithVariants.variants` or `updateProductBundle.variantAdditions`.
 - **`existing`** — entries from `existingVariants` whose attribute combo still exists in the new `selectedOptions` set (matched by a stable dedup key, e.g. `"Color:Red|Size:S"` — order-independent, so renaming an option's declared order doesn't false-positive a diff). These survive unchanged; don't resubmit them as additions.
 - **`autoDeleteIds`** — ids of attribute-less placeholder variants in `existingVariants` (the mandatory default variant on a still-simple product, §6.2) that become stale once `additions` lands — pass them as `variantDeletions` on the same save. Empty whenever `additions` is empty (nothing is replacing the placeholder yet).
 

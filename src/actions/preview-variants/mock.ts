@@ -1,6 +1,10 @@
 import { CFProductVariant } from '../../CommonTypes';
 import { PreviewVariants, PreviewVariantsParams, PreviewVariantsResponse } from './types';
 
+// Module-level counter so client-generated ids never collide across calls
+// (a per-call index would repeat `mock-variant-0` on every invocation).
+let variantIdCounter = 0;
+
 // Stable dedup key for an attribute set, e.g. "Color:Red|Size:S" (spec §3.2 serializeAttributes).
 const serializeAttributes = (attributes: { name: string; value?: string }[]): string =>
   attributes
@@ -33,24 +37,25 @@ export const mockPreviewVariants: PreviewVariants = async (
     }
   });
 
-  const additions: (Omit<CFProductVariant, '_id'> & { _id: string })[] = [];
+  const additions: PreviewVariantsResponse['additions'] = [];
   const existing: CFProductVariant[] = [];
 
-  combinations.forEach((attributes, i) => {
+  combinations.forEach((attributes) => {
     const match = existingByFingerprint.get(serializeAttributes(attributes));
     if (match) {
       existing.push(match);
       return;
     }
 
+    const variantId = `mock-variant-${++variantIdCounter}`;
     additions.push({
-      _id: `mock-variant-${i}`,
+      _id: variantId,
       sku: '',
       price: defaults.price,
       salePrice: 0,
       isOnSale: false,
       manageStock: false,
-      externalId: `mock-variant-${i}`,
+      externalId: variantId,
       attributes,
       images: [],
       metadata: [],

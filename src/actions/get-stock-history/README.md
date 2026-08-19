@@ -56,7 +56,7 @@ interface GetStockHistoryResponse {
 }
 ```
 
-`entries` is ordered newest first. `baseAction` is the coarse stock-enum bucket (spec §6.5); `specificAction` is the finer-grained reason string.
+`entries` is ordered newest first. `baseAction` is the coarse stock-enum bucket (spec §6.5); `specificAction` is the finer-grained reason string. `specificAction` (and the `actions` filter param) is deliberately typed `string` rather than [`CFStockSpecificAction`](../adjust-stock/README.md): the history legitimately carries server-only reasons that clients can't emit (e.g. `APPLIED_FROM_WOO`, written by third-party sync), so narrowing it to the client-facing enum would reject valid rows.
 
 ## Usage
 

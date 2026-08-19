@@ -1,5 +1,5 @@
 import { CFProduct, CFProductType, CFProductVariant, CurrencyCode } from '../../CommonTypes';
-import { MOCK_COMPANY, MOCK_OUTLETS, safeSerialize } from '../../demo/database';
+import { MOCK_COMPANY, MOCK_OUTLETS, MOCK_PRODUCTS, safeSerialize } from '../../demo/database';
 import {
   CreateProductVariantInput,
   CreateProductWithVariants,
@@ -82,6 +82,8 @@ export const mockCreateProductWithVariants: CreateProductWithVariants = async (
     maxPrice: Math.max(...prices),
     variants,
   };
+
+  MOCK_PRODUCTS.push(product);
 
   return {
     success: true,

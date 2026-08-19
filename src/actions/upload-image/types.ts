@@ -5,6 +5,8 @@ export interface UploadImageParams {
 
 export interface UploadImageResponse {
   success: boolean;
+  /** The hub-api attachment row's _id — what deleteImage takes to remove the upload. */
+  attachmentId: string;
   /** Public (resized) URL — store THIS in product.images[] / variant.images[]. */
   url: string;
   originalUrl?: string;
