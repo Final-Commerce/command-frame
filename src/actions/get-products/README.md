@@ -49,6 +49,7 @@ The maximum number of items to return. Defaults to 100.
 ```typescript
 interface GetProductsResponse {
     products: CFProduct[];
+    total?: number;
     timestamp: string;
 }
 ```
@@ -63,6 +64,10 @@ import { type CFProduct, type CFProductVariant } from '@final-commerce/command-f
 ```
 
 See the [Real Data Examples](#real-data-examples) section below for actual product and variant object structures.
+
+#### `total` (number, optional)
+
+Total number of products matching the query, ignoring `offset`/`limit`. Optional — hosts that cannot cheaply compute the total may omit it (the kaching host currently does not return it).
 
 #### `timestamp` (string)
 

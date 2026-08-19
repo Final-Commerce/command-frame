@@ -44,10 +44,10 @@ interface EditCustomSaleResponse {
 ## Example
 
 ```typescript
-const sale = await commandFrame.addCustomSale({ label: 'Setup fee', price: 2500, applyTaxes: true });
+const sale = await command.addCustomSale({ label: 'Setup fee', price: 2500, applyTaxes: true });
 
 // Customer wants three of them:
-await commandFrame.editCustomSale({ customSaleId: sale.customSaleId, quantity: 3 });
+await command.editCustomSale({ customSaleId: sale.customSaleId, quantity: 3 });
 ```
 
 ## Errors

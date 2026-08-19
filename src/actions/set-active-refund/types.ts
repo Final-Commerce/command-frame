@@ -10,4 +10,4 @@ export interface SetActiveRefundResponse {
     timestamp: string;
 }
 
-export type SetActiveRefund = (params?: SetActiveRefundParams) => Promise<SetActiveRefundResponse>;
+export type SetActiveRefund = (params: SetActiveRefundParams) => Promise<SetActiveRefundResponse>;

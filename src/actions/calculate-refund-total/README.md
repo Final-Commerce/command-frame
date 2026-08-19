@@ -25,6 +25,8 @@ Refund selections (which items/fees/tips to refund) always come from the current
 | `refundedCustomSales` | `any[]` | Array of refunded custom sales with calculated totals. |
 | `timestamp`        | `string` | ISO date string of when the action occurred. |
 
+> **⚠️ Encoding caveat**: unlike everywhere else on this API (integer minor units), the `summary.subtotal` / `summary.tax` / `summary.total` values are **decimal display strings** (e.g. `'22.60'`), while `refundedLineItems[].total` / `totalTax` in the *same response* remain integer minor-unit numbers. Never feed `summary` values into money params (`processPartialRefund`, `redeemRefund`, …) without converting. Aligning `summary` to minor units is planned as a future breaking change.
+
 ## Example Usage
 
 ```typescript

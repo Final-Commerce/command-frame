@@ -13,7 +13,7 @@ None
 | Field       | Type     | Description                               |
 | :---------- | :------- | :---------------------------------------- |
 | `success`   | `boolean` | `true` if the order was parked successfully. |
-| `order`     | `ActiveOrder` | The parked order object with all details. |
+| `order`     | `CFOrder` | The parked order object with all details. |
 | `timestamp` | `string` | ISO date string of when the action occurred. |
 
 ## Usage

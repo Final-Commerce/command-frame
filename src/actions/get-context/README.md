@@ -10,8 +10,11 @@ This action takes no parameters.
 
 ### `GetContextResponse`
 
+`GetContextResponse` is a union — `CFContextRender | CFContextManage` — depending on the host. In the kaching POS host the response is `CFContextRender`, documented below. In the Manage host the response is [`CFContextManage`](../../types/README.md#cfcontextmanage) instead: `{ user, company, menuItem?, extensionId, outlets?, timestamp }`.
+
 ```typescript
-interface GetContextResponse {
+// CFContextRender — the kaching POS host's shape
+interface CFContextRender {
     userId: string | null;
     companyId: string | null;
     companyName: string | null;

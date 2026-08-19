@@ -42,7 +42,7 @@ import { command } from '@final-commerce/command-frame';
 
 // Remove the note from a specific cart item
 await command.removeProductNote({
-    internalId: internalId
+    internalId: 'abc123'
 });
 
 // Remove the note from the current active product context

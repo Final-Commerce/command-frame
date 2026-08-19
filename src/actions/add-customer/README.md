@@ -98,7 +98,7 @@ const result = await command.addCustomer({
         firstName: 'John',
         lastName: 'Doe',
         phone: '1234567890',
-        companyId: 'company_123', // Required
+        companyId: '62c9d0e1f2a3b4c5d6e7f809', // Required
         // ... other fields
     }
 });
@@ -131,7 +131,7 @@ The handler only enforces the two checks above at runtime; everything else on `c
     "lastName": "Doe",
     "email": "newcustomer.test@example.com",
     "phone": "1234567890",
-    "companyId": "company_123",
+    "companyId": "62c9d0e1f2a3b4c5d6e7f809",
     "source": "in-store",
     "_id": "6931e04f53d9113bd5231dfd",
     "createdAt": "2025-12-04T19:26:07.316Z",
@@ -150,7 +150,7 @@ The handler only enforces the two checks above at runtime; everything else on `c
     "lastName": "Doe",
     "email": "newcustomer.test@example.com",
     "phone": "1234567890",
-    "companyId": "company_123"
+    "companyId": "62c9d0e1f2a3b4c5d6e7f809"
   }
 }
 ```

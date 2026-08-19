@@ -15,7 +15,7 @@ Sets the active customer on the POS by loading the customer document from local 
 ## Example Usage
 
 ```typescript
-await command.setActiveCustomer({ customerId: 'cust_123' });
+await command.setActiveCustomer({ customerId: '68a2b3c4d5e6f7a8b9c0d1e2' });
 ```
 
 ## Error Handling

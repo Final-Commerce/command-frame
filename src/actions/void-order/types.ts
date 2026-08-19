@@ -5,9 +5,10 @@ export interface VoidOrderParams {
   /** Order to void; defaults to the active order. */
   orderId?: string;
   /**
-   * Optional cashier-facing reason. On a pure void, recorded on the void audit
-   * row and carried on the `order-voided` event. On the refund branch it rides
-   * the event only — the refund dispatcher does not consume it.
+   * Optional cashier-facing reason. Recorded on both branches — the void audit
+   * trail on a pure void, and (verbatim) on the persisted refund plus its own
+   * audit trail on the refund branch — and always carried on the
+   * `order-voided` event either way.
    */
   reason?: string;
 }

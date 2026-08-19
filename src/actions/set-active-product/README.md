@@ -58,6 +58,7 @@ The returned `CFActiveProduct` object includes:
 | `isUnlimited` | `boolean` | No | Whether stock is unlimited |
 | `attributes` | `string` | No | Product attributes |
 | `localQuantity` | `number` | No | Locally tracked quantity |
+| `_id` | `string` | No | Mongo-style id when retained from the catalog |
 | `productType` | `CFProductType` | No | `"simple"` or `"variable"` (defaults to `"simple"`) |
 | `currency` | `CurrencyCode` | No | Currency code for `price`, when resolvable |
 | `minorUnits` | `number` | No | Minor-unit decimal precision for `currency` (e.g. `2` for USD cents) |
