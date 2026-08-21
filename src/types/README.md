@@ -342,6 +342,7 @@ A line item included in a refund. Same shape as [`CFLineItem`](#cflineitem) with
 | `unitAbbreviation`  | `string`                                    | No       | That unit's abbreviation then     |
 | `stockQuantity`     | `number`                                    | No       | Base units this refund put back   |
 | `unitRatioToBase`   | `number`                                    | No       | What one `unitId` was worth then  |
+| `stockVariantId`    | `string`                                    | No       | Variant whose pool the sale drew from |
 
 #### Units of measure on a refunded line
 
@@ -357,6 +358,10 @@ Two of them differ in meaning from the order line and are worth reading twice:
   what the already-refunded ledger subtracts, and it is subtracted as an integer on purpose:
   `3.502 − 2 − 1` in floats leaves `0.5019999999999998`, and that number would be shown to a
   customer.
+
+`stockVariantId` is frozen for the same reason as the rest: the restock has to put the goods back
+where they came from, and resolving the pool from the variant as it stands today credits the wrong
+shelf the moment a merchant re-points it.
 
 Absent on refunds that arrived from an external platform, and on everything sold by the piece.
 
