@@ -89,6 +89,47 @@ export interface ProcessPartialRefundParams {
             label?: string;
         };
     }[];
+    /**
+     * Route part (or all) of the refund onto ONE gift-card / store-credit tender
+     * and let the engine send whatever is left back to the original payments.
+     *
+     * This is the declarative alternative to hand-building `legs`: state the card
+     * and how much lands on it, and the engine does the allocation — it already
+     * owns that math for every other refund path. Prefer it over `legs` for a
+     * gift-card destination; a flow that computes its own split is duplicating
+     * engine arithmetic that will drift (see "Query, never recompute").
+     *
+     * - `amount` omitted → the WHOLE refund lands on the card (what an
+     *   all-`giftCard` `legs` staging does today).
+     * - `amount` set → that much lands on the card, in minor units; the
+     *   remainder returns to the original payments, allocated by the engine.
+     *
+     * DRAWING ORDER — the card is filled from the tenders that cannot be
+     * refunded to source first (a redeem tender has nowhere to return to), then
+     * proportionally from the rest. So `amount` can never be lower than what
+     * those tenders must contribute: below that the call throws
+     * `REFUND_GIFT_AMOUNT_BELOW_MINIMUM`, naming the minimum, and nothing is
+     * committed. Surface that message — it is the number to clamp the field to,
+     * so the flow never has to derive it.
+     *
+     * Exactly one destination card, therefore exactly ONE credit for the caller
+     * to place and one to reverse. **Credit-first:** credit `referenceId` for
+     * `amount` (or the full refund total when omitted) BEFORE calling; on any
+     * throw nothing was recorded — reverse it.
+     *
+     * Requires `openUI: false`. Mutually exclusive with `legs` — passing both
+     * throws, since they are two answers to the same question.
+     */
+    giftCard?: {
+        /** Card/account id the flow already credited (stored raw). */
+        referenceId: string;
+        /** Minor units landing on the card. Omit for the whole refund. */
+        amount?: number;
+        /** Provider/program name. Defaults to `giftCard`. */
+        processor?: string;
+        /** Human label for the destination tender. */
+        label?: string;
+    };
     /** Optional items to refund. */
     items?: {
         /** internalId or variantId or customSaleId. */
