@@ -31,6 +31,15 @@ export interface PrintOptions {
     };
     paperSize?: string;
     width?: string;
+    /**
+     * Routing tag for multi-printer stations (FI-7113): names the print CATEGORY
+     * (e.g. "receipt", "kitchen"), never a printer. The station maps tags to its
+     * connected printers; at print time the host resolves the tag and prints to
+     * every matched printer at that printer's own paper size/margins. Declare the
+     * flow's tag set in flow-settings (`print.tags`) so the station can offer them
+     * for mapping. Untagged prints keep the station's default behavior.
+     */
+    tag?: string;
 }
 
 // Print response
