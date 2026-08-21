@@ -13,6 +13,7 @@ Processes a partial refund based on the current refund selections in the refund 
 | `items`   | `array`   | `false`  | Optional items to select for refund before processing. A `product` entry may carry `stockAction` — see "Per-item stock actions" below.                                                                    |
 | `openUI`  | `boolean` | `false`  | Multi-tender only. Defaults to `true`. See "Multi-tender orders" below.                                                                                                                                   |
 | `legs`    | `array`   | `false`  | Explicit per-tender allocation (minor units); a leg may carry a `giftCard` destination for mixed returns. Requires `openUI: false`. See "Choosing which payments to refund to" and "Mixed returns" below. |
+| `giftCard` | `object`  | `false`  | Route part or all of the refund onto ONE card and let the engine allocate the rest. `{ referenceId, amount?, processor?, label? }`. Requires `openUI: false`; mutually exclusive with `legs`. See "Refunding onto a card without doing the math" below. |
 
 ## Response
 
@@ -144,6 +145,60 @@ sources.
 > validation above (negative amounts, unknown `transactionId`s and missing
 > `giftCard.referenceId` all "succeed" outside the iframe). Test the error
 > paths against the real runtime.
+
+## Refunding onto a card without doing the math
+
+`legs` makes you decide, tender by tender, where every cent goes. When the
+destination is a gift card you usually do not want that decision — you want to
+say *"put this much on the card, send the rest home"* and let the engine
+allocate, exactly as it does for every other refund path.
+
+That is `giftCard`:
+
+```typescript
+// Refund the selection. C$5.00 lands on card GC1; whatever is left goes back to
+// the original payments, allocated by the engine.
+await creditCard('GC1', 500);                    // credit-first, your ledger
+await command.processPartialRefund({
+  orderId: 'order-123',
+  items: [{ itemKey: 'line-1', quantity: 1, type: 'product' }],
+  openUI: false,
+  giftCard: { referenceId: 'GC1', amount: 500 },
+});
+```
+
+Omit `amount` and the whole refund lands on the card — the same end state as an
+all-`giftCard` `legs` staging, without building one.
+
+**Prefer this over `legs` for a card destination.** A flow that computes its own
+split is re-deriving engine arithmetic, and mirrored money math drifts: the
+allocation has to account for cash-rounding payouts, per-tender capacity and
+prior refunds, all of which the engine already knows and you do not.
+
+### Drawing order, and the one error to render
+
+The card is filled from the tenders that **cannot** be refunded to source first —
+a redeem tender has nowhere to return to — then proportionally from the rest.
+
+So `amount` has a floor: it can never be less than what those tenders must
+contribute. Below it, the call throws and nothing is committed:
+
+```
+REFUND_GIFT_AMOUNT_BELOW_MINIMUM: gift-card amount 200 is below the 989 that
+tenders which cannot be refunded to source must contribute
+```
+
+The message carries the minimum, so **that** is the number to clamp your field
+to — you never have to derive it. Surface the message verbatim, as with every
+other staging error.
+
+### Why exactly one card
+
+`giftCard` names a single destination, so there is exactly one credit for you to
+place and one to reverse. That is deliberate: draining the redeem tenders onto
+the new card first is what keeps the remainder returnable to ordinary tenders,
+which is what keeps the count at one. If you genuinely need two destination
+cards in one refund, that is what `legs` is still for.
 
 ## Mixed returns (some money back to source, some onto a gift card)
 
