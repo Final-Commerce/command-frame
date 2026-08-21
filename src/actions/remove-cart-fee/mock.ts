@@ -3,8 +3,11 @@ import type { CFCustomFee } from "../../CommonTypes";
 import { MOCK_CART, mockPublishEvent } from "../../demo/database";
 
 function feeContributionToTotal(fee: CFCustomFee, subtotal: number): number {
+    // A percent fee is STORED as a fraction (10% -> 0.1), so it scales the
+    // subtotal directly. Dividing by 100 again credited back a hundredth of the
+    // fee, leaving the total permanently inflated after a remove.
     if (fee.isPercent) {
-        return subtotal * (fee.amount / 100);
+        return subtotal * fee.amount;
     }
     return fee.amount;
 }
