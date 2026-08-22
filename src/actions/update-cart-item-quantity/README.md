@@ -21,6 +21,13 @@ The unique identifier for the specific cart item instance to update. This is the
 
 The new quantity for the cart item. If set to 0, the item will be removed from the cart (equivalent to calling `removeProductFromCart`).
 
+May be fractional when the variant is sold by measure — `variant.unit.precision` says how many
+decimals are allowed (`3` for a litre, `0` for anything sold by the piece). The engine refuses
+anything finer and names the unit in the error; surface that message rather than rounding the
+typed value, which would deduct a different amount than the cashier asked for.
+
+A stepper should move by `1 / 10 ** precision`, not by 1.
+
 ## Response
 
 ### `UpdateCartItemQuantityResponse`

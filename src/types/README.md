@@ -267,6 +267,35 @@ A product line item within an order.
 | `variantId`         | `string`                                    | Yes      | Variant identifier                              |
 | `images`            | `string[]`                                  | No       | Additional image URLs                           |
 | `attributes`        | `string`                                    | No       | Serialized variant attributes                   |
+| `unitId`            | `string`                                    | No       | Unit the line was sold in, frozen at sale time  |
+| `unitAbbreviation`  | `string`                                    | No       | That unit's abbreviation as it read that day    |
+| `stockQuantity`     | `number`                                    | No       | Whole base units taken off the shelf            |
+| `unitRatioToBase`   | `number`                                    | No       | What one `unitId` was worth in base units then  |
+| `stockVariantId`    | `string`                                    | No       | Sibling variant whose pool was decremented      |
+
+#### Units of measure on a line
+
+Absent on everything sold by the piece, which is most of a catalogue. Present when the variant is
+sold by weight, volume, length or area, or in a merchant-defined unit such as a 500 g pack.
+
+The five fields are a **snapshot, not references**, and that is the point of them:
+
+- `quantity` is denominated in `unitId` — `1.25` with `unitAbbreviation: "lb"` means a pound and a
+  quarter, and the line total is `price × quantity` as usual.
+- `stockQuantity` is what actually left the shelf, as a whole number of the unit family's base:
+  `1.589 kg` sold is `1589` where the family counts in grams. Stock is never held as a fraction.
+- `unitRatioToBase` is what one of `unitId` was worth in base units on the day — `1000` for a
+  kilogram counted in grams. It is named rather than left to be recovered: dividing `stockQuantity`
+  by `quantity` happens to give the same number, but a reader outside the till has no way to know
+  that, and the merchant may have re-rated the unit since.
+- `stockVariantId` names the variant whose stock moved, which is not always the one sold. One
+  product may sell in boxes and by the pound from a single pool; selling a box moves the pound
+  variant's stock and the line records that here.
+
+Read these back rather than re-deriving them. A merchant may rename a unit, change how much it is
+worth, delete it, or re-point a stock pool at any time; a receipt reprinted next year and a refund
+issued next month must still describe what was sold on the day. Recomputing from today's catalogue
+is how `5 bg` becomes `2.5 bg` after someone doubles a burger's weight.
 
 ### CFCustomSale
 
@@ -309,6 +338,32 @@ A line item included in a refund. Same shape as [`CFLineItem`](#cflineitem) with
 | `description`       | `string`                                    | No       | Product description               |
 | `images`            | `string[]`                                  | No       | Additional image URLs             |
 | `fee`               | [`CFFeeLineItem`](#cffeelineitem)           | Yes      | Fees that were applied            |
+| `unitId`            | `string`                                    | No       | Unit the line was sold in         |
+| `unitAbbreviation`  | `string`                                    | No       | That unit's abbreviation then     |
+| `stockQuantity`     | `number`                                    | No       | Base units this refund put back   |
+| `unitRatioToBase`   | `number`                                    | No       | What one `unitId` was worth then  |
+| `stockVariantId`    | `string`                                    | No       | Variant whose pool the sale drew from |
+
+#### Units of measure on a refunded line
+
+The same snapshot as [`CFLineItem`](#cflineitem), frozen again when the refund was written, so a
+refunds screen reads on its own without fetching the order behind it. Show the abbreviation next to
+`quantity`: `0.502 kg × Ground Turkey`, never a bare `0.502 ×`, which reads as half an item.
+
+Two of them differ in meaning from the order line and are worth reading twice:
+
+- `quantity` is what came back, in `unitId` — not what was sold. A 1 kg refund of a 3.502 kg line
+  carries `1`, and the line it refunds still says `3.502`.
+- `stockQuantity` is this refund's own share in base units — `1000`, not the sale's `3502`. It is
+  what the already-refunded ledger subtracts, and it is subtracted as an integer on purpose:
+  `3.502 − 2 − 1` in floats leaves `0.5019999999999998`, and that number would be shown to a
+  customer.
+
+`stockVariantId` is frozen for the same reason as the rest: the restock has to put the goods back
+where they came from, and resolving the pool from the variant as it stands today credits the wrong
+shelf the moment a merchant re-points it.
+
+Absent on refunds that arrived from an external platform, and on everything sold by the piece.
 
 ### CFRefundedCustomSale
 
@@ -636,6 +691,23 @@ A product in the active cart.
 | `productType`       | [`CFProductType`](#cfproducttype) | No       | `"simple"` or `"variable"`                    |
 | `currency`          | [`CurrencyCode`](#currencycode)   | No       | Currency code for the line price              |
 | `minorUnits`        | `number`                          | No       | Decimal places for the line currency          |
+| `unit`              | `MeasurementUnit`                 | No       | Unit this line is sold in, resolved in memory |
+| `unitId`            | `string`                          | No       | That unit's id, when only the id is at hand   |
+| `stockVariantId`    | `string`                          | No       | Sibling variant whose stock pool this draws on|
+
+#### Selling by measure
+
+`unit` is resolved once when the line is built and lives **in memory only** — the order line stores
+the frozen `unitId` and abbreviation instead, never this object. Absent means the line is sold by
+the piece, which is most of a catalogue.
+
+It is the whole unit rather than an id because the till needs two things from it before anything is
+stored: `precision`, to know how many decimals may be typed — an ounce takes two, a foot three, a
+bottle none — and `ratioToBase`, to work out what leaves the shelf. A quantity finer than
+`precision` allows is refused rather than rounded.
+
+`stockVariantId` marks a line that draws on a sibling's pool. Selling it moves the sibling's stock,
+not this variant's, and the resulting order line records which one moved.
 
 ### CFActiveCustomSales
 
