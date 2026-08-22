@@ -57,7 +57,7 @@
     "ignoreBranchesMissingTickets": true
   },
   "dependencies": {
-    "@final-commerce/common": "^2.2.0-beta.1"
+    "@final-commerce/common": "2.2.0-beta.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
