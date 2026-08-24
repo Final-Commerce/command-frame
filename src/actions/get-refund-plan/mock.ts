@@ -1,4 +1,4 @@
-import { GetRefundPlan, GetRefundPlanParams, GetRefundPlanResponse, RefundPlanSource } from './types';
+import { GetRefundPlan, GetRefundPlanParams, GetRefundPlanResponse, RefundPlanLeg, RefundPlanSource } from './types';
 import { MOCK_ORDERS } from '../../demo/database';
 
 /**
@@ -12,6 +12,11 @@ import { MOCK_ORDERS } from '../../demo/database';
  * `maxRefundable` as the full captured amount. Against real kaching those
  * numbers come from `order.refund[]` and the capture's `emv` JSON. Use this
  * only to shape UI in local/standalone mode — never to assert real capacity.
+ *
+ * `allocation` is likewise shape-only: the demo has no refund SELECTION state
+ * and no company cash-rounding setting, so it always describes a FULL refund
+ * with `rounding: 0` and no cash `payout`. Against real kaching the allocation
+ * tracks the live selection and carries the drawer snap.
  */
 export const mockGetRefundPlan: GetRefundPlan = async (
   params?: GetRefundPlanParams,
@@ -54,10 +59,29 @@ export const mockGetRefundPlan: GetRefundPlan = async (
   const totalCaptured = sources.reduce((sum, s) => sum + s.capturedAmount, 0);
   const nonRefundableLiability = order.summary?.nonRevenueTotal ?? 0;
 
+  // Full-refund legs: every source returns its whole capture (the demo's
+  // `maxRefundable`), which is exactly the shape a full selection produces.
+  const legs: RefundPlanLeg[] = sources
+    .filter((s) => s.maxRefundable > 0)
+    .map((s) => ({
+      transactionId: s.transactionId,
+      amount: s.maxRefundable,
+      paymentType: s.paymentType,
+      requiresGiftCardDestination: s.paymentType === 'redeem',
+    }));
+  const budget = legs.reduce((sum, l) => sum + l.amount, 0);
+
   return {
     success: true,
     orderId: order._id,
     sources,
+    allocation: {
+      budget,
+      // No cash rounding in the demo, so the goods value and the budget agree.
+      itemTotal: budget,
+      rounding: 0,
+      legs,
+    },
     // Demo: no prior refunds, so remaining = captured minus the non-revenue load.
     remainingRefundable: Math.max(0, totalCaptured - nonRefundableLiability),
     nonRefundableLiability,
