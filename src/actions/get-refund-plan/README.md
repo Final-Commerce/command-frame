@@ -93,6 +93,34 @@ const plan = await command.getRefundPlan();
 await command.processPartialRefund({ openUI: false, legs: plan.allocation!.legs });
 ```
 
+### With gift cards, each leg goes home to its own card
+
+`requiresGiftCardDestination` marks the legs that cannot return to their source.
+Each one needs `giftCard.referenceId`, and the right card is **that source's
+own** `cardNumber` — per leg, not one card for the whole refund:
+
+```typescript
+const bySource = new Map(plan.sources.map((s) => [s.transactionId, s]));
+
+const legs = plan.allocation!.legs.map((leg) => {
+  const card = bySource.get(leg.transactionId)?.cardNumber;
+  return leg.requiresGiftCardDestination && card ? { ...leg, giftCard: { referenceId: card } } : leg;
+});
+```
+
+An order paid with three gift cards therefore refunds three cards, each getting
+back exactly what it paid. Stamping one `referenceId` on every leg pushes the
+whole refund onto that single card — a real bug this field exists to prevent.
+Credit each card **before** submitting (credit-first), and if the submit throws,
+reverse only the credits that attempt actually wrote. The full recipe, including
+the no-gift-card case, is in `processPartialRefund`'s README under **Refund
+recipes**.
+
+`refundableToSource: false` on a redeem source is **not** a reason to hide
+"refund to original payments" — it only means that leg needs a destination,
+which `cardNumber` supplies. Falling back to one scanned card is for captures
+that carry no `cardNumber` (pre-1.9.2), not the default.
+
 Splitting `itemTotal` across the tenders yourself is the one thing this field
 exists to prevent. On a cash-rounded sale `budget` exceeds `itemTotal` — the
 till took the rounding, and it is owed back to the **cash** tender. A

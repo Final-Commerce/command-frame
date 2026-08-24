@@ -6,24 +6,24 @@ Processes a partial refund based on the current refund selections in the refund 
 
 `params?: ProcessPartialRefundParams`
 
-| Parameter | Type      | Required | Description                                                                                                                                                                                               |
-| :-------- | :-------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `reason`  | `string`  | `false`  | Optional reason for the refund.                                                                                                                                                                           |
-| `orderId` | `string`  | `false`  | Optional order to refund (sets it active first).                                                                                                                                                          |
-| `items`   | `array`   | `false`  | Optional items to select for refund before processing. A `product` entry may carry `stockAction` — see "Per-item stock actions" below.                                                                    |
-| `openUI`  | `boolean` | `false`  | Multi-tender only. Defaults to `true`. See "Multi-tender orders" below.                                                                                                                                   |
-| `legs`    | `array`   | `false`  | Explicit per-tender allocation (minor units); a leg may carry a `giftCard` destination for mixed returns. Requires `openUI: false`. See "Choosing which payments to refund to" and "Mixed returns" below. |
+| Parameter  | Type      | Required | Description                                                                                                                                                                                                                                             |
+| :--------- | :-------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `reason`   | `string`  | `false`  | Optional reason for the refund.                                                                                                                                                                                                                         |
+| `orderId`  | `string`  | `false`  | Optional order to refund (sets it active first).                                                                                                                                                                                                        |
+| `items`    | `array`   | `false`  | Optional items to select for refund before processing. A `product` entry may carry `stockAction` — see "Per-item stock actions" below.                                                                                                                  |
+| `openUI`   | `boolean` | `false`  | Multi-tender only. Defaults to `true`. See "Multi-tender orders" below.                                                                                                                                                                                 |
+| `legs`     | `array`   | `false`  | Explicit per-tender allocation (minor units); a leg may carry a `giftCard` destination for mixed returns. Requires `openUI: false`. See "Choosing which payments to refund to" and "Mixed returns" below.                                               |
 | `giftCard` | `object`  | `false`  | Route part or all of the refund onto ONE card and let the engine allocate the rest. `{ referenceId, amount?, processor?, label? }`. Requires `openUI: false`; mutually exclusive with `legs`. See "Refunding onto a card without doing the math" below. |
 
 ## Response
 
 `Promise<ProcessPartialRefundResponse>`
 
-| Field       | Type      | Description                                                 |
-| :---------- | :-------- | :---------------------------------------------------------- |
-| `success`   | `boolean` | `true` if the refund processing was initiated successfully. |
+| Field       | Type      | Description                                                                                                                                                                          |
+| :---------- | :-------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `success`   | `boolean` | `true` if the refund processing was initiated successfully.                                                                                                                          |
 | `refundId`  | `string`  | Always the literal string `'processed'`. A real refund ID is generated and persisted on the `Refund` doc internally, but this command does not currently surface it in the response. |
-| `timestamp` | `string`  | ISO date string of when the action occurred.                |
+| `timestamp` | `string`  | ISO date string of when the action occurred.                                                                                                                                         |
 
 ## Example Usage
 
@@ -67,6 +67,85 @@ try {
   console.error(error.message); // "No items selected for refund. Please select items to refund first."
 }
 ```
+
+## Refund recipes — with and without gift cards
+
+Two shapes cover almost every headless refund. Both start the same way: **ask
+`getRefundPlan` for the allocation and submit it unchanged.** Never split a
+refund total across tenders yourself — the engine allocates against its
+allocatable _budget_, not the goods value, and on a cash-rounded sale those
+differ by the rounding the till kept. A client-side split shaves cents off legs
+that must be exact and is rejected with `refund.legSumMismatch`.
+
+### A. No gift cards (cash / card / any refundable-to-source tender)
+
+Nothing to credit first — the money goes straight back to the tenders it came
+from.
+
+```typescript
+const items = [{ itemKey: 'line-1', quantity: 1, type: 'product' }];
+const plan = await command.getRefundPlan({ orderId, items });
+
+await command.processPartialRefund({
+  orderId,
+  items, // the SAME array the plan was built from
+  openUI: false,
+  legs: plan.allocation!.legs, // verbatim — no arithmetic
+});
+```
+
+You can also simply omit `legs`: with `openUI: false` the engine runs that same
+allocation itself. Pass them when you want to _show_ the split first, so what
+the cashier saw is exactly what commits.
+
+### B. Gift cards involved (`redeem` sources) — credit-first, per card
+
+A `redeem` leg can't return to itself: the POS cannot push money onto a card, so
+each one needs a `giftCard` destination and the flow must credit that card
+**before** calling. Two rules people get wrong:
+
+1. **Each leg names its OWN card.** `giftCard.referenceId` is per leg — an order
+   paid with three gift cards refunds three cards, each getting back what it
+   paid. `getRefundPlan` hands you each source's `cardNumber` for exactly this.
+   Stamping one card on every leg pushes the whole refund onto that card.
+2. **Reverse only what you actually credited.** If the refund throws, undo the
+   credits — but a credit your ledger skipped as a replay was never written by
+   this attempt, and reversing it debits a card for money it legitimately holds.
+
+```typescript
+const plan = await command.getRefundPlan({ orderId, items });
+const bySource = new Map(plan.sources.map((s) => [s.transactionId, s]));
+
+// Each redeem leg goes home to the card that paid it.
+const legs = plan.allocation!.legs.map((leg) => {
+  const card = bySource.get(leg.transactionId)?.cardNumber;
+  return leg.requiresGiftCardDestination && card ? { ...leg, giftCard: { referenceId: card } } : leg;
+});
+
+// CREDIT-FIRST: the card ledger moves before the POS records anything.
+const credited: { cardNumber: string; amountMinor: number }[] = [];
+try {
+  for (const leg of legs) {
+    if (!leg.giftCard) continue;
+    const res = await creditCard(leg.giftCard.referenceId, leg.amount);
+    if (!res.alreadyCredited) credited.push({ cardNumber: leg.giftCard.referenceId, amountMinor: leg.amount });
+  }
+  await command.processPartialRefund({ orderId, items, openUI: false, legs });
+} catch (err) {
+  for (const c of credited) await reverseCredit(c); // only this attempt's writes
+  throw err;
+}
+```
+
+A `redeem` source shows up as `refundableToSource: false` — that is **not** a
+reason to hide "refund to original payments". It only means the leg needs a
+destination, which the card number gives you. Sending everything to one card is
+a fallback for when a capture has no `cardNumber` (older orders), not the
+default.
+
+To put money on a card _instead of_ returning it to source — a store-credit
+return — see **Mixed returns** and **Refunding onto a card without doing the
+math** below.
 
 ## Multi-tender orders
 
@@ -150,7 +229,7 @@ sources.
 
 `legs` makes you decide, tender by tender, where every cent goes. When the
 destination is a gift card you usually do not want that decision — you want to
-say *"put this much on the card, send the rest home"* and let the engine
+say _"put this much on the card, send the rest home"_ and let the engine
 allocate, exactly as it does for every other refund path.
 
 That is `giftCard`:
@@ -158,7 +237,7 @@ That is `giftCard`:
 ```typescript
 // Refund the selection. C$5.00 lands on card GC1; whatever is left goes back to
 // the original payments, allocated by the engine.
-await creditCard('GC1', 500);                    // credit-first, your ledger
+await creditCard('GC1', 500); // credit-first, your ledger
 await command.processPartialRefund({
   orderId: 'order-123',
   items: [{ itemKey: 'line-1', quantity: 1, type: 'product' }],
