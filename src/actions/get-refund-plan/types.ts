@@ -4,6 +4,12 @@
 // order-level math so flows can PRESENT accurate refund options without
 // re-deriving the numbers client-side (the mutating commands —
 // `processPartialRefund` / `redeemRefund` — re-validate at submit time).
+//
+// `allocation` closes the last gap: capacities alone still left a flow to work
+// out WHICH tender gets WHAT, and a flow that split the goods value across the
+// tenders shaved the sale's cash rounding off gift-card legs and was rejected
+// at submit. The engine now returns the legs it would accept — render them,
+// submit them unchanged, compute nothing.
 
 export interface GetRefundPlanParams {
   /** Order to inspect; defaults to the active order. */
@@ -26,10 +32,69 @@ export interface RefundPlanSource {
   cardNumber?: string;
 }
 
+/**
+ * One ready-to-submit refund leg. Pass these straight to
+ * `processPartialRefund({ openUI: false, legs })` — the amounts are the
+ * engine's own allocation and already satisfy its Σ-contract.
+ */
+export interface RefundPlanLeg {
+  /** `transactionId` of the source payment this leg draws from — join key to `sources`. */
+  transactionId: string;
+  /** Amount to return to this source (minor units). Submit VERBATIM; do not re-derive. */
+  amount: number;
+  /** `cash` / `card` / `redeem` / etc., copied from the source. */
+  paymentType: string;
+  /** True when the leg must carry a `giftCard` destination (a `redeem` source). */
+  requiresGiftCardDestination: boolean;
+  /**
+   * Cash legs only: what the drawer actually pays after the company's
+   * cash-rounding snap, and the signed delta from `amount`. Display it
+   * ("drawer pays 6.50 (+0.01 rounding)") — never apply the snap yourself,
+   * and never stage `payout.amount` as the leg (`amount` is the leg).
+   */
+  payout?: {
+    amount: number;
+    rounding: number;
+  };
+}
+
+/**
+ * The engine's own allocation of the CURRENT refund selection across the
+ * order's captures — what a flow renders and submits instead of computing a
+ * split of its own.
+ *
+ * Present only when a refund selection exists on the ACTIVE order (i.e. after
+ * `selectAllRefundItems` / `setRefundItemQuantity`); omitted for a pure
+ * capacity read of some other order.
+ */
+export interface RefundPlanAllocation {
+  /**
+   * What Σ `legs.amount` MUST equal — `min(itemTotal, Σ maxRefundable)`, which
+   * on a FULL selection is the captured total, not the goods value. Staging the
+   * goods value instead is rejected with `refund.legSumMismatch`.
+   */
+  budget: number;
+  /** Goods value of the selection (minor units). DISPLAY ONLY — never allocate against it. */
+  itemTotal: number;
+  /**
+   * `budget − itemTotal` — the sale's cash rounding, returned to the tender that
+   * took it. Non-zero only on a cash-rounded capture; the engine stamps it as
+   * refund residue at commit.
+   */
+  rounding: number;
+  /** One leg per source that receives money. Submit as `legs`, unchanged. */
+  legs: RefundPlanLeg[];
+}
+
 export interface GetRefundPlanResponse {
   success: boolean;
   orderId: string;
   sources: RefundPlanSource[];
+  /**
+   * Ready-to-submit allocation of the current selection. Present only when a
+   * refund selection exists on the active order. See {@link RefundPlanAllocation}.
+   */
+  allocation?: RefundPlanAllocation;
   /** Order-level remaining refundable (minor units) — non-revenue liability already excluded. */
   remainingRefundable: number;
   /** Non-refundable liability (gift-card loads etc., minor units). */

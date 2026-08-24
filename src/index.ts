@@ -362,12 +362,10 @@ export type {
   GetRefundPlanParams,
   GetRefundPlanResponse,
   RefundPlanSource,
+  RefundPlanAllocation,
+  RefundPlanLeg,
 } from './actions/get-refund-plan/types';
-export type {
-  CheckPermission,
-  CheckPermissionParams,
-  CheckPermissionResponse,
-} from './actions/check-permission/types';
+export type { CheckPermission, CheckPermissionParams, CheckPermissionResponse } from './actions/check-permission/types';
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from './actions/initiate-refund/types';
 
