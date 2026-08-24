@@ -14,6 +14,29 @@
 export interface GetRefundPlanParams {
   /** Order to inspect; defaults to the active order. */
   orderId?: string;
+  /**
+   * The selection to allocate — the SAME array you will pass to
+   * `processPartialRefund({ items })`, so the plan you render and the refund
+   * you submit are computed from one input.
+   *
+   * A flow that owns its own refund UI holds the selection in its own state and
+   * never stages it on the POS, so without this there is nothing for the engine
+   * to allocate. Pass it here on every selection change to get the matching
+   * {@link RefundPlanAllocation} back. **Purely a read** — unlike
+   * `processPartialRefund`, this never stages the selection or touches POS
+   * state, so it is safe to call as the cashier ticks rows.
+   *
+   * Omit it to fall back to the selection already staged on the POS (what
+   * `selectAllRefundItems` sets) — the in-POS modal's path. Omitted with
+   * nothing staged, no `allocation` comes back.
+   */
+  items?: {
+    /** `internalId` / `variantId` for a product, `customSaleId`, cart-fee id, or tip `transactionId`. */
+    itemKey: string;
+    quantity: number;
+    /** Optional hint; inferred from the order when omitted. */
+    type?: 'product' | 'customSale' | 'fee' | 'tip';
+  }[];
 }
 
 export interface RefundPlanSource {
@@ -63,9 +86,10 @@ export interface RefundPlanLeg {
  * order's captures — what a flow renders and submits instead of computing a
  * split of its own.
  *
- * Present only when a refund selection exists on the ACTIVE order (i.e. after
- * `selectAllRefundItems` / `setRefundItemQuantity`); omitted for a pure
- * capacity read of some other order.
+ * Present when the call carries a selection: either `params.items` (a flow
+ * holding its own selection — the usual case) or a selection already staged on
+ * the POS for the active order (`selectAllRefundItems`). Omitted for a bare
+ * capacity read with neither.
  */
 export interface RefundPlanAllocation {
   /**

@@ -10,25 +10,26 @@ query this instead.
 
 `params?: GetRefundPlanParams`
 
-| Parameter | Type     | Required | Description                                     |
-| --------- | -------- | -------- | ----------------------------------------------- |
-| `orderId` | `string` | No       | Order to inspect; defaults to the active order. |
+| Parameter | Type                             | Required | Description                                                                                                                                                                                                                                    |
+| --------- | -------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `orderId` | `string`                         | No       | Order to inspect; defaults to the active order.                                                                                                                                                                                                |
+| `items`   | `{ itemKey, quantity, type? }[]` | No       | The selection to allocate — the same array you pass to `processPartialRefund({ items })`. **Purely a read**: never stages the selection, so it is safe to call as the cashier ticks rows. Omit to use the selection already staged on the POS. |
 
 ## Response
 
 `Promise<GetRefundPlanResponse>`
 
-| Field                    | Type                    | Description                                                                                                                             |
-| ------------------------ | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `success`                | `boolean`               | Always `true` on a resolved order (throws otherwise).                                                                                   |
-| `orderId`                | `string`                | The order the plan was computed for.                                                                                                    |
-| `sources`                | `RefundPlanSource[]`    | One row per original captured tender on the order (refund legs excluded).                                                               |
-| `allocation`             | `RefundPlanAllocation?` | The engine's own split of the CURRENT selection — submit-ready `legs`. Present only when a refund selection exists on the active order. |
-| `remainingRefundable`    | `number`                | Order-level remaining refundable (minor units), **non-revenue liability already excluded**.                                             |
-| `nonRefundableLiability` | `number`                | Non-refundable liability (gift-card loads etc., minor units).                                                                           |
-| `totalCaptured`          | `number`                | Total captured across the order (principal + tips, minor units).                                                                        |
-| `totalRefunded`          | `number`                | Total already refunded across the order (minor units).                                                                                  |
-| `timestamp`              | `string`                | ISO timestamp of the read.                                                                                                              |
+| Field                    | Type                    | Description                                                                                                                                            |
+| ------------------------ | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `success`                | `boolean`               | Always `true` on a resolved order (throws otherwise).                                                                                                  |
+| `orderId`                | `string`                | The order the plan was computed for.                                                                                                                   |
+| `sources`                | `RefundPlanSource[]`    | One row per original captured tender on the order (refund legs excluded).                                                                              |
+| `allocation`             | `RefundPlanAllocation?` | The engine's own split of the selection — submit-ready `legs`. Present when the call carries one, via `params.items` or a selection staged on the POS. |
+| `remainingRefundable`    | `number`                | Order-level remaining refundable (minor units), **non-revenue liability already excluded**.                                                            |
+| `nonRefundableLiability` | `number`                | Non-refundable liability (gift-card loads etc., minor units).                                                                                          |
+| `totalCaptured`          | `number`                | Total captured across the order (principal + tips, minor units).                                                                                       |
+| `totalRefunded`          | `number`                | Total already refunded across the order (minor units).                                                                                                 |
+| `timestamp`              | `string`                | ISO timestamp of the read.                                                                                                                             |
 
 ### `RefundPlanSource`
 
@@ -69,11 +70,26 @@ each tender _does_ take for the selection in play. A flow needs no arithmetic
 between the two:
 
 ```typescript
-await command.selectAllRefundItems();
-const plan = await command.getRefundPlan();
+// A flow that owns its refund UI holds the selection itself — pass it in.
+// Re-read on every selection change; it stages nothing.
+const items = [{ itemKey: 'cs-hh', quantity: 1 }];
+const plan = await command.getRefundPlan({ orderId, items });
 
 // UI: render plan.allocation.legs (amount, payout) — nothing derived.
-// Submit: the same array, unchanged.
+// Submit: the SAME items, and the legs unchanged.
+await command.processPartialRefund({
+  orderId,
+  items,
+  openUI: false,
+  legs: plan.allocation!.legs,
+});
+```
+
+Driving the in-POS selection instead (no `items`):
+
+```typescript
+await command.selectAllRefundItems();
+const plan = await command.getRefundPlan();
 await command.processPartialRefund({ openUI: false, legs: plan.allocation!.legs });
 ```
 
