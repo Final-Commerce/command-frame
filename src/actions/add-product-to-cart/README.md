@@ -1,6 +1,6 @@
 # addProductToCart
 
-Adds a product to the cart in the parent application. This atomic action handles product selection, application of options (discounts, fees, notes), and addition to the cart in a single step.
+Adds a product to the cart in the parent application. This atomic action handles product selection, application of options (discounts, fees, notes), and addition to the cart in a single step. `quantity` may be fractional when the variant carries a `unit` (1.509 kg is a sale) — build quantity inputs from `unit.precision`, never as a hardcoded integer stepper.
 
 ## Parameters
 
@@ -8,11 +8,11 @@ Adds a product to the cart in the parent application. This atomic action handles
 
 ```typescript
 interface AddProductToCartParams {
-    variantId: string;           // ID of variant to add.
-    quantity?: number;           // Optional, default: 1
-    discounts?: AddProductDiscountParams[]; // Optional array of discounts to apply immediately
-    fees?: AddProductFeeParams[];           // Optional array of fees to apply immediately
-    notes?: string | string[];              // Optional note or array of notes to add immediately
+  variantId: string; // ID of variant to add.
+  quantity?: number; // Optional, default: 1
+  discounts?: AddProductDiscountParams[]; // Optional array of discounts to apply immediately
+  fees?: AddProductFeeParams[]; // Optional array of fees to apply immediately
+  notes?: string | string[]; // Optional note or array of notes to add immediately
 }
 ```
 
@@ -56,8 +56,8 @@ variant.unit = {
 **Build the quantity field from `unit.precision`**, never from a constant:
 
 ```typescript
-const precision = variant.unit?.precision ?? 0;   // no unit → sold by the piece
-const step = 1 / 10 ** precision;                  // 0.001 for a litre, 1 for a piece
+const precision = variant.unit?.precision ?? 0; // no unit → sold by the piece
+const step = 1 / 10 ** precision; // 0.001 for a litre, 1 for a piece
 ```
 
 The engine refuses a quantity finer than the unit allows and names the unit in the error — surface
@@ -76,13 +76,13 @@ and coercing the quantity to an integer first is how `4.234 L` was once charged 
 
 ```typescript
 interface AddProductToCartResponse {
-    success: boolean;
-    productId: string;
-    variantId: string;
-    internalId: string; // The unique ID of the line item in the cart
-    name: string;
-    quantity: number;
-    timestamp: string;
+  success: boolean;
+  productId: string;
+  variantId: string;
+  internalId: string; // The unique ID of the line item in the cart
+  name: string;
+  quantity: number;
+  timestamp: string;
 }
 ```
 
@@ -100,7 +100,7 @@ Add a product with default quantity:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.addProductToCart({
-    variantId: 'variant-id-123'
+  variantId: 'variant-id-123',
 });
 
 console.log(`Added item with internal ID: ${result.internalId}`);
@@ -112,18 +112,22 @@ Add a product with quantity, discount, fee, and note all in one request:
 
 ```typescript
 const result = await command.addProductToCart({
-    variantId: 'variant-id-123',
-    quantity: 2,
-    discounts: [{
-        amount: 5,
-        isPercent: true,
-        label: 'Happy Hour 5%'
-    }],
-    fees: [{
-        amount: 1.50,
-        label: 'Service Charge'
-    }],
-    notes: 'No onions'
+  variantId: 'variant-id-123',
+  quantity: 2,
+  discounts: [
+    {
+      amount: 5,
+      isPercent: true,
+      label: 'Happy Hour 5%',
+    },
+  ],
+  fees: [
+    {
+      amount: 1.5,
+      label: 'Service Charge',
+    },
+  ],
+  notes: 'No onions',
 });
 ```
 
@@ -131,8 +135,8 @@ const result = await command.addProductToCart({
 
 ```typescript
 try {
-    await command.addProductToCart({ variantId: 'invalid-id' });
+  await command.addProductToCart({ variantId: 'invalid-id' });
 } catch (error) {
-    console.error('Product not found:', error.message);
+  console.error('Product not found:', error.message);
 }
 ```
