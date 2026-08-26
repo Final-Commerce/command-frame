@@ -256,15 +256,6 @@ export const MOCK_CATEGORY_VEGAN: CFCategory = {
   companyId: MOCK_COMPANY.id!,
 };
 
-export const MOCK_CATEGORY_MARKET: CFCategory = {
-  id: 'cat_market',
-  createdAt: '2024-01-01T00:00:00.000Z',
-  updatedAt: '2024-01-01T00:00:00.000Z',
-  name: 'Market',
-  externalId: 'ext_cat_market',
-  companyId: MOCK_COMPANY.id!,
-};
-
 export const MOCK_CATEGORY_SPICY: CFCategory = {
   id: 'cat_spicy',
   createdAt: '2024-01-01T00:00:00.000Z',
@@ -280,7 +271,6 @@ const createInventory = (stock: number) => [{ warehouse: 'main', outletId: MOCK_
 // The one weighed unit the demo sells in. A real seeded unit (1000 g to the kilogram,
 // 3 decimals), resolved from common's constants — not an invented lookalike.
 const KILOGRAM = resolveUnit('KGM');
-const LITRE = resolveUnit('LTR');
 
 // Helper for Simple Product
 // `unitId` marks the product as sold by measure (price per that unit). Most of the demo
@@ -521,69 +511,6 @@ export const MOCK_PRODUCT_BLACK_GARLIC = createSimpleProduct(
   garlicImg, // Reusing garlic image
   [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY, MOCK_CATEGORY_VEGAN],
   'Fermented black garlic paste, sweet and savory.',
-);
-
-// --- MARKET (mixed catalog: weighed, by volume, and by the piece side by side) ---
-const appleImg =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE0IiBmaWxsPSIjRkRGMUU3Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSI1OCIgcj0iMjYiIGZpbGw9IiNFMjQ1M0MiLz48Y2lyY2xlIGN4PSI0MiIgY3k9IjUwIiByPSI5IiBmaWxsPSIjRjI3MjZCIiBvcGFjaXR5PSIuNyIvPjxwYXRoIGQ9Ik01MCAzMmMwLTggNC0xMyAxMC0xNS0xIDctNCAxMi0xMCAxNXoiIGZpbGw9IiMzRThFNDEiLz48cmVjdCB4PSI0OC41IiB5PSIyNCIgd2lkdGg9IjMiIGhlaWdodD0iMTAiIHJ4PSIxLjUiIGZpbGw9IiM3QTRBMjEiLz48L3N2Zz4=';
-const grapesImg =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE0IiBmaWxsPSIjRjNFREY3Ii8+PGNpcmNsZSBjeD0iNDAiIGN5PSI0NiIgcj0iMTAiIGZpbGw9IiM3QjRCOUUiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjQ2IiByPSIxMCIgZmlsbD0iIzdCNEI5RSIvPjxjaXJjbGUgY3g9IjMwIiBjeT0iNjAiIHI9IjEwIiBmaWxsPSIjOEU1QkI1Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSI2MiIgcj0iMTAiIGZpbGw9IiM2QTNFOEMiLz48Y2lyY2xlIGN4PSI3MCIgY3k9IjYwIiByPSIxMCIgZmlsbD0iIzhFNUJCNSIvPjxjaXJjbGUgY3g9IjQwIiBjeT0iNzUiIHI9IjEwIiBmaWxsPSIjN0I0QjlFIi8+PGNpcmNsZSBjeD0iNjAiIGN5PSI3NSIgcj0iMTAiIGZpbGw9IiM2QTNFOEMiLz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijg4IiByPSI5IiBmaWxsPSIjOEU1QkI1Ii8+PHBhdGggZD0iTTUwIDM2YzAtOSA1LTE0IDEyLTE2LTEgOC01IDEzLTEyIDE2eiIgZmlsbD0iIzNFOEU0MSIvPjwvc3ZnPg==';
-const oliveOilImg =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE0IiBmaWxsPSIjRjVGMkU4Ii8+PHJlY3QgeD0iNDQiIHk9IjE0IiB3aWR0aD0iMTIiIGhlaWdodD0iMTQiIHJ4PSIyIiBmaWxsPSIjNUM0MzI2Ii8+PHBhdGggZD0iTTQwIDI4aDIwbDYgMTR2NDBhNiA2IDAgMCAxLTYgNkg0MGE2IDYgMCAwIDEtNi02VjQyeiIgZmlsbD0iI0M5QTIyNyIgb3BhY2l0eT0iLjg1Ii8+PHJlY3QgeD0iMzgiIHk9IjUyIiB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHJ4PSIzIiBmaWxsPSIjRkZGOUVDIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI2MSIgcj0iNSIgZmlsbD0iIzhBQTM0QSIvPjwvc3ZnPg==';
-const redWineImg =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE0IiBmaWxsPSIjRjdFQ0VDIi8+PHJlY3QgeD0iNDUiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTYiIHJ4PSIyIiBmaWxsPSIjNEEyNTMwIi8+PHBhdGggZD0iTTQxIDI2aDE4djEwYzQgMyA2IDcgNiAxMnYzNGE2IDYgMCAwIDEtNiA2SDQxYTYgNiAwIDAgMS02LTZWNDhjMC01IDItOSA2LTEyeiIgZmlsbD0iIzZFMkYzRiIvPjxyZWN0IHg9IjM5IiB5PSI1NiIgd2lkdGg9IjIyIiBoZWlnaHQ9IjE2IiByeD0iMiIgZmlsbD0iI0Y1RTlENiIvPjxwYXRoIGQ9Ik00MyA2MGgxNE00MyA2NGgxMCIgc3Ryb2tlPSIjOEE2RDRCIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==';
-const cheeseImg =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE0IiBmaWxsPSIjRkJGNEU0Ii8+PHBhdGggZD0iTTE0IDY0TDgyIDM2YzQgNiA2IDEyIDYgMTh2MTJIMTR6IiBmaWxsPSIjRjNCMzNEIi8+PHBhdGggZD0iTTE0IDY0TDgyIDM2YzEgMiAyIDQgMyA2TDE4IDY4eiIgZmlsbD0iI0Y4RDQ3NyIvPjxjaXJjbGUgY3g9IjQwIiBjeT0iNjAiIHI9IjQiIGZpbGw9IiNEOTlBMjYiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjU2IiByPSIzIiBmaWxsPSIjRDk5QTI2Ii8+PGNpcmNsZSBjeD0iNzIiIGN5PSI2MiIgcj0iMy41IiBmaWxsPSIjRDk5QTI2Ii8+PGNpcmNsZSBjeD0iMzAiIGN5PSI2NiIgcj0iMi41IiBmaWxsPSIjRDk5QTI2Ii8+PC9zdmc+';
-
-export const MOCK_PRODUCT_APPLES = createSimpleProduct(
-  'prod_apples',
-  'Apples (per kg)',
-  390,
-  appleImg,
-  [MOCK_CATEGORY_MARKET],
-  'Crisp orchard apples, sold by weight — $3.90 per kilogram.',
-  KILOGRAM.unitId,
-);
-
-export const MOCK_PRODUCT_GRAPES = createSimpleProduct(
-  'prod_grapes',
-  'Grapes (per kg)',
-  690,
-  grapesImg,
-  [MOCK_CATEGORY_MARKET],
-  'Seedless red grapes, sold by weight — $6.90 per kilogram.',
-  KILOGRAM.unitId,
-);
-
-export const MOCK_PRODUCT_CHEESE = createSimpleProduct(
-  'prod_cheddar',
-  'Aged Cheddar (per kg)',
-  2490,
-  cheeseImg,
-  [MOCK_CATEGORY_MARKET],
-  'Cut from the wheel and weighed — $24.90 per kilogram.',
-  KILOGRAM.unitId,
-);
-
-export const MOCK_PRODUCT_OLIVE_OIL = createSimpleProduct(
-  'prod_olive_oil',
-  'Olive Oil (per litre)',
-  1290,
-  oliveOilImg,
-  [MOCK_CATEGORY_MARKET],
-  'Cold-pressed, poured to order — $12.90 per litre.',
-  LITRE.unitId,
-);
-
-// By the piece on purpose: the market mixes weighed goods with counted ones, and a
-// wine bottle is a unit — the contrast is what a flow should handle.
-export const MOCK_PRODUCT_RED_WINE = createSimpleProduct(
-  'prod_red_wine',
-  'Red Wine (750 ml bottle)',
-  1590,
-  redWineImg,
-  [MOCK_CATEGORY_MARKET],
-  'House red, sold by the bottle.',
 );
 
 // --- ORDERS ---
@@ -877,7 +804,6 @@ export const MOCK_CATEGORIES = [
   MOCK_CATEGORY_BASIC,
   MOCK_CATEGORY_VEGAN,
   MOCK_CATEGORY_SPICY,
-  MOCK_CATEGORY_MARKET,
 ];
 export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_BASIL_ALMOND,
@@ -894,11 +820,6 @@ export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_CHILI_GARLIC,
   MOCK_PRODUCT_HABANERO,
   MOCK_PRODUCT_BLACK_GARLIC,
-  MOCK_PRODUCT_APPLES,
-  MOCK_PRODUCT_GRAPES,
-  MOCK_PRODUCT_CHEESE,
-  MOCK_PRODUCT_OLIVE_OIL,
-  MOCK_PRODUCT_RED_WINE,
 ];
 export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2, MOCK_ORDER_3];
 export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [MOCK_PARKED_ORDER_1, MOCK_PARKED_ORDER_2];
@@ -1010,11 +931,10 @@ export const safeSerialize = <T>(data: T): T => {
 };
 
 // Mock Event Emitter for pub/sub simulation in mock mode
- 
+
 type MockEventCallback = (event: any) => void;
 const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
 
- 
 export const mockPublishEvent = (topic: string, eventType: string, data: any) => {
   const subscribers = mockTopicSubscribers[topic] || [];
   const event = {
