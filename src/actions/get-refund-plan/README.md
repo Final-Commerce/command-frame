@@ -55,13 +55,14 @@ query this instead.
 
 ### `RefundPlanLeg`
 
-| Field                         | Type      | Description                                                                                         |
-| ----------------------------- | --------- | --------------------------------------------------------------------------------------------------- |
-| `transactionId`               | `string`  | Source payment this leg draws from — the join key back to `sources`.                                |
-| `amount`                      | `number`  | Amount to return to that source (minor units). **Submit verbatim.**                                 |
-| `paymentType`                 | `string`  | Copied from the source, for display grouping.                                                       |
-| `requiresGiftCardDestination` | `boolean` | `true` for a `redeem` source — the leg needs a `giftCard` destination, credited **first**.          |
-| `payout`                      | `object?` | Cash legs only: `{ amount, rounding }` — what the drawer pays after the snap, and the signed delta. |
+| Field                         | Type      | Description                                                                                                  |
+| ----------------------------- | --------- | ------------------------------------------------------------------------------------------------------------ |
+| `transactionId`               | `string`  | Source payment this leg draws from — the join key back to `sources`.                                         |
+| `amount`                      | `number`  | Amount to return to that source (minor units). **Submit verbatim.**                                          |
+| `paymentType`                 | `string`  | Copied from the source, for display grouping.                                                                |
+| `requiresDestination`         | `boolean` | `true` for a `redeem` source — the leg needs a destination tender (usually a gift card), credited **first**. |
+| `requiresGiftCardDestination` | `boolean` | **Deprecated** — same value as `requiresDestination` under the old, gift-card-specific name.                 |
+| `payout`                      | `object?` | Cash legs only: `{ amount, rounding }` — what the drawer pays after the snap, and the signed delta.          |
 
 ## Render the allocation — do not compute one
 
@@ -95,7 +96,7 @@ await command.processPartialRefund({ openUI: false, legs: plan.allocation!.legs 
 
 ### With gift cards, each leg goes home to its own card
 
-`requiresGiftCardDestination` marks the legs that cannot return to their source.
+`requiresDestination` marks the legs that cannot return to their source.
 Each one needs `giftCard.referenceId`, and the right card is **that source's
 own** `cardNumber` — per leg, not one card for the whole refund:
 
@@ -104,7 +105,7 @@ const bySource = new Map(plan.sources.map((s) => [s.transactionId, s]));
 
 const legs = plan.allocation!.legs.map((leg) => {
   const card = bySource.get(leg.transactionId)?.cardNumber;
-  return leg.requiresGiftCardDestination && card ? { ...leg, giftCard: { referenceId: card } } : leg;
+  return leg.requiresDestination && card ? { ...leg, giftCard: { referenceId: card } } : leg;
 });
 ```
 
