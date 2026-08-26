@@ -67,7 +67,18 @@ export interface RefundPlanLeg {
   amount: number;
   /** `cash` / `card` / `redeem` / etc., copied from the source. */
   paymentType: string;
-  /** True when the leg must carry a `giftCard` destination (a `redeem` source). */
+  /**
+   * True when the leg must carry a destination tender (a `redeem` source
+   * cannot be refunded to itself — the money needs somewhere to land, credited
+   * by the flow FIRST). The destination is usually a gift card but redeem is
+   * the general rail: loyalty and store-credit extensions ride it too.
+   */
+  requiresDestination: boolean;
+  /**
+   * @deprecated Same value as {@link RefundPlanLeg.requiresDestination} — the
+   * old name baked one extension (gift card) into a general redeem concept.
+   * Kept populated for existing callers; prefer `requiresDestination`.
+   */
   requiresGiftCardDestination: boolean;
   /**
    * Cash legs only: what the drawer actually pays after the company's

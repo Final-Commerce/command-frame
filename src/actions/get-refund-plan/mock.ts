@@ -67,6 +67,7 @@ export const mockGetRefundPlan: GetRefundPlan = async (
       transactionId: s.transactionId,
       amount: s.maxRefundable,
       paymentType: s.paymentType,
+      requiresDestination: s.paymentType === 'redeem',
       requiresGiftCardDestination: s.paymentType === 'redeem',
     }));
   const budget = legs.reduce((sum, l) => sum + l.amount, 0);

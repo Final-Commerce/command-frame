@@ -19,11 +19,12 @@ Processes a partial refund based on the current refund selections in the refund 
 
 `Promise<ProcessPartialRefundResponse>`
 
-| Field       | Type      | Description                                                                                                                                                                          |
-| :---------- | :-------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `success`   | `boolean` | `true` if the refund processing was initiated successfully.                                                                                                                          |
-| `refundId`  | `string`  | Always the literal string `'processed'`. A real refund ID is generated and persisted on the `Refund` doc internally, but this command does not currently surface it in the response. |
-| `timestamp` | `string`  | ISO date string of when the action occurred.                                                                                                                                         |
+| Field         | Type             | Description                                                                                                                                                                                                                                                                                                      |
+| :------------ | :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `success`     | `boolean`        | `true` — failures throw instead.                                                                                                                                                                                                                                                                                 |
+| `refundId`    | `string \| null` | The persisted `Refund` doc's REAL id. `null` only when the split-payment modal was raised (`modalRaised: true`) — nothing has committed yet and the modal owns the commit. (Before kaching 1.9.5-preprod.17 this was always the literal `'processed'`, which made silent no-ops indistinguishable from success.) |
+| `modalRaised` | `boolean`        | `true` when a multi-tender order raised the split-payment modal (`openUI` omitted/`true`); headless calls never raise it.                                                                                                                                                                                        |
+| `timestamp`   | `string`         | ISO date string of when the action occurred.                                                                                                                                                                                                                                                                     |
 
 ## Example Usage
 
@@ -119,7 +120,7 @@ const bySource = new Map(plan.sources.map((s) => [s.transactionId, s]));
 // Each redeem leg goes home to the card that paid it.
 const legs = plan.allocation!.legs.map((leg) => {
   const card = bySource.get(leg.transactionId)?.cardNumber;
-  return leg.requiresGiftCardDestination && card ? { ...leg, giftCard: { referenceId: card } } : leg;
+  return leg.requiresDestination && card ? { ...leg, giftCard: { referenceId: card } } : leg;
 });
 
 // CREDIT-FIRST: the card ledger moves before the POS records anything.
