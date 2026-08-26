@@ -1,6 +1,6 @@
 # getProducts
 
-Retrieves a list of products from the parent application's local database.
+Retrieves a list of products from the parent application's local database. A variant sold by measure carries `unitId` (and a resolved `unit`), and its `inventory[].stock` is ALREADY in that selling unit — the host converts its base-unit ledger before the variant reaches you. Show it as `${stock} ${unit.abbreviation}`; never divide or multiply it by `unit.ratioToBase`.
 
 ## Parameters
 
@@ -8,19 +8,19 @@ Retrieves a list of products from the parent application's local database.
 
 ```typescript
 interface GetProductsParams {
-    query?: {
-        name?: string | { $regex?: string; $options?: string };
-        sku?: string | { $regex?: string; $options?: string };
-        status?: string;
-        productType?: string;
-        categories?: string | { $in?: string[] };
-        tags?: string | { $in?: string[] };
-        supplier?: string;
-        externalId?: string;
-        [key: string]: any;
-    };
-    offset?: number;
-    limit?: number;
+  query?: {
+    name?: string | { $regex?: string; $options?: string };
+    sku?: string | { $regex?: string; $options?: string };
+    status?: string;
+    productType?: string;
+    categories?: string | { $in?: string[] };
+    tags?: string | { $in?: string[] };
+    supplier?: string;
+    externalId?: string;
+    [key: string]: any;
+  };
+  offset?: number;
+  limit?: number;
 }
 ```
 
@@ -44,8 +44,8 @@ The maximum number of items to return. Defaults to 100.
 
 ```typescript
 interface GetProductsResponse {
-    products: CFProduct[];
-    timestamp: string;
+  products: CFProduct[];
+  timestamp: string;
 }
 ```
 
@@ -54,6 +54,7 @@ interface GetProductsResponse {
 Array of product objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
 
 **Tip:** You can import [`CFProduct`](../../types/README.md#cfproduct) and [`CFProductVariant`](../../types/README.md#cfproductvariant) types directly from the library:
+
 ```typescript
 import { type CFProduct, type CFProductVariant } from '@final-commerce/command-frame';
 ```
@@ -89,8 +90,8 @@ Get 50 products starting from index 0:
 
 ```typescript
 const result = await command.getProducts({
-    limit: 50,
-    offset: 0
+  limit: 50,
+  offset: 0,
 });
 ```
 
@@ -100,9 +101,9 @@ Get products by name (case-insensitive regex):
 
 ```typescript
 const result = await command.getProducts({
-    query: {
-        name: { $regex: 'coffee', $options: 'i' }
-    }
+  query: {
+    name: { $regex: 'coffee', $options: 'i' },
+  },
 });
 ```
 
@@ -307,6 +308,23 @@ Key fields that may be present:
 - **Variants**: Product variants with their own pricing, inventory, and attributes.
 - **Inventory**: Variant inventory is tracked per outlet in the `inventory` array.
 - **ID fields**: The ID field structure depends on the database (may be `id`, `_id`, or other formats).
+
+### Stock on a measured variant is already in the selling unit
+
+A variant sold by measure carries `unitId` (and a resolved `unit` object — see the
+add-product-to-cart docs). Its `inventory[].stock` arrives ALREADY converted: the host's
+ledger counts base units (grams, millilitres), but its resolver turns that into whole
+servable selling units (`availableIn`) before the variant reaches an extension:
+
+```typescript
+// unit = { abbreviation: "kg", ratioToBase: 1000, precision: 3 }
+// inventory[0].stock = 100   ← kilograms, not grams
+const label = `${stock} ${unit.abbreviation}`; // "100 kg"
+```
+
+Never divide or multiply `stock` by `unit.ratioToBase` — the conversion already happened,
+and doing it again is a thousand-fold error. A variant with no `unitId` is sold by the
+piece and `stock` is the plain count.
 
 ## Error Handling
 
