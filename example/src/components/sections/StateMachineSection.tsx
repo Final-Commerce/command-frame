@@ -18,6 +18,7 @@ const FULFILLMENT_STATES = [
   'in_progress',
   'on_hold',
   'fulfilled',
+  'partially_fulfilled',
   'partially_returned',
   'returned',
   'cancelled',
