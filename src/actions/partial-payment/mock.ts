@@ -1,5 +1,6 @@
 import { PartialPayment, PartialPaymentParams, PartialPaymentResponse } from "./types";
 import { MOCK_CART, mockPublishEvent } from "../../demo/database";
+import { percentToFraction, requireMinorUnitsInteger } from "../../demo/units";
 
 export const mockPartialPayment: PartialPayment = async (params?: PartialPaymentParams): Promise<PartialPaymentResponse> => {
     console.log("[Mock] partialPayment called", params);
@@ -23,10 +24,11 @@ export const mockPartialPayment: PartialPayment = async (params?: PartialPayment
     // untouched until the payment is actually taken (see applyMockPayment).
     const remaining = MOCK_CART.remainingBalance ?? MOCK_CART.total;
     const raw = params?.amount ?? 0;
-    // Mirror render: fixed amount is raw dollars (render does toMinorUnits), so
-    // convert to minor units here; percent is a percentage of the remaining total.
-    const minorFactor = 10 ** (MOCK_CART.minorUnits ?? 2);
-    const charge = params?.isPercent ? Math.round((remaining * raw) / 100) : Math.round(raw * minorFactor);
+    // FI-6991: a fixed amount is already an INTEGER in MINOR units and is used
+    // directly; a percent is raw 0-100 against the remaining total.
+    const charge = params?.isPercent
+        ? Math.round(remaining * percentToFraction(raw))
+        : requireMinorUnitsInteger(raw, "Payment amount");
     MOCK_CART.amountToBeCharged = Math.min(Math.max(0, charge), remaining);
     mockPublishEvent("cart", "partial-payment-set", { amountToBeCharged: MOCK_CART.amountToBeCharged });
 
