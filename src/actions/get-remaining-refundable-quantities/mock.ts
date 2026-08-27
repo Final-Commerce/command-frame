@@ -13,6 +13,8 @@ export const mockGetRemainingRefundableQuantities: GetRemainingRefundableQuantit
         success: true,
         lineItems: {},
         customSales: {},
+        cartFees: {},
+        tips: {},
         timestamp: new Date().toISOString()
     };
 };

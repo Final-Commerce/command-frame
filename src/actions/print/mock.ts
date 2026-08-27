@@ -13,9 +13,11 @@ export const mockPrint: Print = (params?: PrintParams): Promise<PrintResponse> =
             console.log("[Mock] Would print image:", params.data.image?.substring(0, 50) + "...");
             break;
         case "html":
+            console.warn("[Mock] print type 'html' is DEPRECATED — rasterize and use type: 'image'.");
             console.log("[Mock] Would print HTML:", params.data.html?.substring(0, 100) + "...");
             break;
         case "receipt":
+            console.warn("[Mock] print type 'receipt' is DEPRECATED — rasterize and use type: 'image'.");
             console.log("[Mock] Would print receipt for order:", params.data.order);
             break;
     }

@@ -56,5 +56,6 @@ console.log(result.keys);
 
 ## Error Handling
 
+- Throws `Error('Company ID not found')` if there is no active company in the current session
 - Throws an error if the parent frame is unavailable or the command fails
 - May throw if the user/extension is not authorized to read secrets for the given scope

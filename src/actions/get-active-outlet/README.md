@@ -1,6 +1,6 @@
 # getActiveOutlet
 
-Returns the outlet currently active on the station (`activeEntities.outlet`), or `null`.
+Returns the outlet currently active on the station (`activeShell.outlet`), or `null`.
 
 ## Parameters
 
@@ -20,4 +20,4 @@ None.
 const { outlet } = await command.getActiveOutlet();
 ```
 
-See also [`setActiveOutlet`](../set-active-outlet/README.md).
+Outlet changes can be observed by subscribing to the `set-active-outlet` topic (a pub/sub event, not a command).

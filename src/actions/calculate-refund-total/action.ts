@@ -6,10 +6,13 @@
 import { commandFrameClient } from "../../client";
 import type {
     CalculateRefundTotal,
+    CalculateRefundTotalParams,
     CalculateRefundTotalResponse
 } from "./types";
 
-export const calculateRefundTotal: CalculateRefundTotal = async (): Promise<CalculateRefundTotalResponse> => {
-    return await commandFrameClient.call<undefined, CalculateRefundTotalResponse>("calculateRefundTotal");
+export const calculateRefundTotal: CalculateRefundTotal = async (
+    params?: CalculateRefundTotalParams
+): Promise<CalculateRefundTotalResponse> => {
+    return await commandFrameClient.call<CalculateRefundTotalParams | undefined, CalculateRefundTotalResponse>("calculateRefundTotal", params);
 };
 

@@ -3,7 +3,7 @@ import type { ExtensionPaymentResponse } from "../extension-payment/types";
 /**
  * Card display fields for an integration payment.
  *
- * Render JSON-serializes this object onto the order's `paymentMethod.emv` field;
+ * kaching JSON-serializes this object onto the order's `paymentMethod.emv` field;
  * the transactions list, split-payment refund modal, and receipt mapper parse it
  * back. Field names are translated to the platform's canonical EMV keys ("Brand",
  * "Cardholder Name", "Card Number", etc.) on the host before serialization — your
@@ -25,14 +25,14 @@ export interface IntegrationEmvData {
     expiryDate?: string;
     /** Issuer / bank name. → "Issuer" */
     issuer?: string;
-    /** Last 4 digits of the card. Render masks to "**** **** **** XXXX" before display. → "Card Number" */
+    /** Last 4 digits of the card. kaching masks to "**** **** **** XXXX" before display. → "Card Number" */
     cardNumberLast4?: string;
 }
 
 /**
  * Integration payment (e.g. Stripe-like) — always uses paymentType `"integration"` on the wire.
  * The extension processes the payment with its own provider, then reports the result here so
- * Render can record the transaction + order.
+ * kaching can record the transaction + order.
  *
  * Required fields (compile-time enforced by TS, runtime-enforced by the host handler):
  *   - `amount` — integer MINOR currency units of the captured amount (e.g. 1575 = $15.75)
@@ -53,6 +53,8 @@ export interface IntegrationPaymentParams {
     metadata?: Record<string, unknown>;
     /** Provider fee in integer MINOR currency units — stored on paymentMethod.processorFee. */
     processorFee?: number;
+    /** Override the fulfillment state the order lands in on full payment (validated against the fulfillment state machine; invalid values throw). Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+    checkoutFulfillmentTarget?: string;
 }
 
 export type IntegrationPaymentResponse = ExtensionPaymentResponse;

@@ -14,14 +14,13 @@ None.
 | :-------- | :----------- | :-------------------------------------------------------------------------------------------------------------------- |
 | `success` | `boolean`    | `true` if the cart was retrieved successfully.                                                                        |
 | `cart`    | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
+| `timestamp` | `string` | ISO date string of when the action occurred. |
 
 **Tip:** You can import [`CFActiveCart`](../../types/README.md#cfactivecart), [`CFActiveProduct`](../../types/README.md#cfactiveproduct), and [`CFActiveCustomSales`](../../types/README.md#cfactivecustomsales) types directly from the library:
 
 ```typescript
 import { type CFActiveCart, type CFActiveProduct } from "@final-commerce/command-frame";
 ```
-
-| `timestamp` | `string` | ISO date string of when the action occurred. |
 
 ## Cart Object Structure
 
@@ -65,9 +64,9 @@ try {
     //   cart: {
     //     products: [...],
     //     customSales: [...],
-    //     total: 25.50,
-    //     subtotal: 20.00,
-    //     tax: 5.50,
+    //     total: 2550, // $25.50 in minor units
+    //     subtotal: 2000, // $20.00 in minor units
+    //     tax: 550, // $5.50 in minor units
     //     discount: {...},
     //     customer: {...},
     //     ...

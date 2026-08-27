@@ -1,6 +1,6 @@
 # getContext
 
-Retrieves the current environment/context information from the parent application. This includes user, company, device, station, outlet, and build information.
+Retrieves the current environment/context information from the parent application. This includes user, company, device, station, outlet, build, currency/formatting, and connectivity information.
 
 ## Parameters
 
@@ -10,8 +10,11 @@ This action takes no parameters.
 
 ### `GetContextResponse`
 
+`GetContextResponse` is a union — `CFContextRender | CFContextManage` — depending on the host. In the kaching POS host the response is `CFContextRender`, documented below. In the Manage host the response is [`CFContextManage`](../../types/README.md#cfcontextmanage) instead: `{ user, company, menuItem?, extensionId, outlets?, timestamp }`.
+
 ```typescript
-interface GetContextResponse {
+// CFContextRender — the kaching POS host's shape
+interface CFContextRender {
     userId: string | null;
     companyId: string | null;
     companyName: string | null;
@@ -25,6 +28,14 @@ interface GetContextResponse {
     buildVersion: string | null;
     buildSourceId: string | null;
     buildIsPremium: boolean;
+    isOffline: boolean;
+    currency: string | null;
+    minorUnits: number | null;
+    currencySymbol: string | null;
+    currencyPrefix: string | null;
+    currencySuffix: string | null;
+    thousandSeparator: string | null;
+    decimalSeparator: string | null;
     timestamp: string;
     user: Record<string, any> | null;
     company: Omit<Record<string, any>, 'settings'> | null;
@@ -52,6 +63,14 @@ Here's an example of a complete `getContext` response:
   "buildVersion": "1.0.19",
   "buildSourceId": "6925a362399e8c44aab261d8",
   "buildIsPremium": false,
+  "isOffline": false,
+  "currency": "USD",
+  "minorUnits": 2,
+  "currencySymbol": "$",
+  "currencyPrefix": "$",
+  "currencySuffix": "",
+  "thousandSeparator": ",",
+  "decimalSeparator": ".",
   "timestamp": "2025-12-08T19:22:20.820Z",
   "user": {
     "id": "691df9c2047bfc55994d703f",
@@ -224,23 +243,55 @@ The name of the currently active outlet. Returns `null` if no outlet is active.
 
 #### `buildId` (string | null)
 
-The ID of the currently active build/checkout flow. Returns `null` if no build is active.
+The ID of the currently active build/checkout flow. **Sourced from the active Flow's `_id`** — kaching runs flows rather than the legacy build/checkout-flow entity, so this field is populated from the active flow. Returns `null` if no flow is active.
 
 #### `buildName` (string | null)
 
-The name of the currently active build. Returns `null` if no build is active.
+The name of the currently active build. **Sourced from the active Flow's `title`.** Returns `null` if no flow is active.
 
 #### `buildVersion` (string | null)
 
-The version of the currently active build. Returns `null` if no build is active.
+The version of the currently active build. **Sourced from the active Flow's `currentVersion`.** Returns `null` if no flow is active.
 
 #### `buildSourceId` (string | null)
 
-The source ID of the currently active build. This is used to identify the source/origin of the build. Returns `null` if no build is active.
+The source ID of the currently active build. This is used to identify the source/origin of the build. **Sourced from the active Flow's `webAppId`.** Returns `null` if no flow is active.
 
 #### `buildIsPremium` (boolean)
 
-Whether the currently active build is a premium build. Defaults to `false` if no build is active.
+Whether the currently active build is a premium build. **Always `false`** — flows have no premium tier, so this field is hardcoded and does not reflect the active flow's state.
+
+#### `isOffline` (boolean)
+
+Whether the app currently has no network connectivity (derived from `navigator.onLine`).
+
+#### `currency` (string | null)
+
+The ISO currency code of the active company (e.g. `"USD"`). Returns `null` if no company/currency is configured.
+
+#### `minorUnits` (number | null)
+
+The number of decimal places in the currency's minor unit (e.g. `2` for USD, `0` for JPY). **All money amounts elsewhere in this API are integers in minor units** (e.g. $15.75 is `1575`) — use this value to convert to/from user-facing decimal amounts. Returns `null` if no currency is configured.
+
+#### `currencySymbol` (string | null)
+
+The currency symbol (e.g. `"$"`). Returns `null` if no currency is configured.
+
+#### `currencyPrefix` (string | null)
+
+The string to prepend when formatting an amount (e.g. `"$"`). Returns `null` if not configured.
+
+#### `currencySuffix` (string | null)
+
+The string to append when formatting an amount (e.g. `""`). Returns `null` if not configured.
+
+#### `thousandSeparator` (string | null)
+
+The character used to separate thousands when formatting an amount (e.g. `","`). Returns `null` if not configured.
+
+#### `decimalSeparator` (string | null)
+
+The character used to separate the integer and fractional parts when formatting an amount (e.g. `"."`). Returns `null` if not configured.
 
 #### `timestamp` (string)
 
@@ -367,25 +418,30 @@ try {
 When `getContext` is called:
 
 1. The handler reads the current state from the Redux store
-2. It extracts user information from `activeEntities.user` (returns full user object)
+2. It extracts user information from `activeShell.user` (returns full user object)
 3. It extracts company information from `company.activeCompany` (returns full company object without `settings` field)
-4. It extracts outlet information from `activeEntities.outlet` (returns full outlet object)
-5. It extracts station information from `activeEntities.activeStation` (returns full station object)
-6. It extracts build information from `activeEntities.activeBuild`
-7. It reads device ID from localStorage (native app only)
-8. All fields are returned, with `null` values for unavailable information
+4. It extracts outlet information from `activeShell.outlet` (returns full outlet object)
+5. It extracts station information from `activeShell.activeStation` (returns full station object)
+6. It extracts build information from `activeShell.activeFlow` — kaching runs flows, not the legacy build/checkout-flow entity, so `buildId`/`buildName`/`buildVersion`/`buildSourceId` are populated from the active flow's `_id`/`title`/`currentVersion`/`webAppId`, and `buildIsPremium` is hardcoded to `false` (flows have no premium tier)
+7. It extracts currency/formatting information (`currency`, `minorUnits`, `currencySymbol`, `currencyPrefix`, `currencySuffix`, `thousandSeparator`, `decimalSeparator`) from the active company's settings
+8. It computes `isOffline` from the browser's `navigator.onLine` status
+9. It reads device ID from localStorage (native app only)
+10. All fields are returned, with `null` values for unavailable information
 
 ## Field Availability
 
 ### Always Available
 - `timestamp` - Always present
+- `isOffline` - Always present (network status)
+- `buildIsPremium` - Always present, but hardcoded to `false`
 
 ### Conditionally Available
-- `userId`, `userRoleId`, `user` - Available when a user is logged in
+- `userId`, `user` - Available when a user is logged in
 - `companyId`, `companyName`, `company` - Available when a company is selected (company object excludes `settings` field)
 - `outletId`, `outletName`, `outlet` - Available when an outlet is selected
 - `stationId`, `stationName`, `station` - Available when a station is active
-- `buildId`, `buildName`, `buildVersion`, `buildSourceId`, `buildIsPremium` - Available when a build is loaded
+- `buildId`, `buildName`, `buildVersion`, `buildSourceId` - Available when a flow is active (sourced from the active Flow, not a separate build entity)
+- `currency`, `minorUnits`, `currencySymbol`, `currencyPrefix`, `currencySuffix`, `thousandSeparator`, `decimalSeparator` - Available when the active company has currency/formatting settings configured
 - `deviceId` - Available in native apps, typically `null` in browser environments
 
 ## Notes

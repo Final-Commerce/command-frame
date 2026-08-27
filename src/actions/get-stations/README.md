@@ -2,6 +2,8 @@
 
 Retrieves POS stations for the current company. Optionally filter by outlet.
 
+> **Manage-scoped command.** This is a Manage administrative command (station/outlet admin), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
+
 ## Parameters
 
 ### `GetStationsParams` (optional)
@@ -33,8 +35,9 @@ Array of station objects. Each station contains:
 
 - `_id` -- Station ID
 - `name` -- Station name
-- `status` -- Station status (e.g. `'active'`)
+- `status` -- Station status (e.g. `'open'`)
 - `sequenceNumber` -- Sequence number for ordering
+- `stripeTerminalId` -- Stripe terminal identifier
 
 ## Usage
 

@@ -28,6 +28,10 @@ interface GetProductsParams {
 
 A query object to filter products. The actual supported query operators depend on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
 
+**Note:** The handler always restricts results to `status: 'active'` products, regardless of any `status` value passed here — draft and inactive products are never returned by this command.
+
+**Note:** When `query.sku` (or a `sku` field inside a `$or` branch) is supplied, the handler also matches it against variant SKUs and against the product's `barcode` field (case-insensitive) — not just the product-level `sku` field. This means a scanned barcode or a variant-level SKU will still return the parent product.
+
 #### `offset` (optional)
 
 The number of items to skip. Defaults to 0.
@@ -45,6 +49,7 @@ The maximum number of items to return. Defaults to 100.
 ```typescript
 interface GetProductsResponse {
     products: CFProduct[];
+    total?: number;
     timestamp: string;
 }
 ```
@@ -59,6 +64,10 @@ import { type CFProduct, type CFProductVariant } from '@final-commerce/command-f
 ```
 
 See the [Real Data Examples](#real-data-examples) section below for actual product and variant object structures.
+
+#### `total` (number, optional)
+
+Total number of products matching the query, ignoring `offset`/`limit`. Optional — hosts that cannot cheaply compute the total may omit it (the kaching host currently does not return it).
 
 #### `timestamp` (string)
 
@@ -121,13 +130,15 @@ const result = await command.getProducts({
       "productType": "variable",
       "source": "standalone",
       "companyId": "691df9c4c478bada1fb23bff",
-      "minPrice": "10.00",
-      "maxPrice": "10.00",
+      "minPrice": 1000,
+      "maxPrice": 1000,
       "taxTable": "tax_standard",
-      "categories": {
-        "name": "Beverages",
-        "externalId": "cat_beverages"
-      },
+      "categories": [
+        {
+          "name": "Beverages",
+          "externalId": "cat_beverages"
+        }
+      ],
       "attributes": [
         {
           "name": "Size",
@@ -141,8 +152,8 @@ const result = await command.getProducts({
         {
           "_id": "691df9c6c478bada1fb23d55",
           "productId": "691df9c6c478bada1fb23d31",
-          "price": "10.00",
-          "salePrice": "0",
+          "price": 1000,
+          "salePrice": 0,
           "isOnSale": false,
           "sku": "COFFEE-1",
           "manageStock": true,
@@ -173,13 +184,13 @@ const result = await command.getProducts({
       "productType": "variable",
       "source": "standalone",
       "companyId": "691df9c4c478bada1fb23bff",
-      "minPrice": "20.00",
-      "maxPrice": "20.00",
+      "minPrice": 2000,
+      "maxPrice": 2000,
       "variants": [
         {
           "_id": "691df9c6c478bada1fb23d56",
           "productId": "691df9c6c478bada1fb23d32",
-          "price": "20.00",
+          "price": 2000,
           "sku": "SHIRT-1",
           "isDeleted": false
         }
@@ -194,20 +205,20 @@ const result = await command.getProducts({
       "productType": "variable",
       "source": "standalone",
       "companyId": "691df9c4c478bada1fb23bff",
-      "minPrice": "23.00",
-      "maxPrice": "42.00",
+      "minPrice": 2300,
+      "maxPrice": 4200,
       "variants": [
         {
           "_id": "691df9c6c478bada1fb23d57",
           "productId": "691df9c6c478bada1fb23d33",
-          "price": "23.00",
+          "price": 2300,
           "sku": "JUICE-S",
           "isDeleted": false
         },
         {
           "_id": "691df9c6c478bada1fb23d58",
           "productId": "691df9c6c478bada1fb23d33",
-          "price": "42.00",
+          "price": 4200,
           "sku": "JUICE-L",
           "isDeleted": false
         }
@@ -232,16 +243,18 @@ const result = await command.getProducts({
   "productType": "variable",
   "source": "standalone",
   "companyId": "691df9c4c478bada1fb23bff",
-  "minPrice": "10.00",
-  "maxPrice": "10.00",
+  "minPrice": 1000,
+  "maxPrice": 1000,
   "taxTable": "tax_standard",
   "images": [
     "https://storage.googleapis.com/attachments-dev-1/67e3f8092d38e6eb3c4cbbc6/1759858638421_CoffeSwagShop-600x600.png"
   ],
-  "categories": {
-    "name": "Beverages",
-    "externalId": "cat_beverages"
-  },
+  "categories": [
+    {
+      "name": "Beverages",
+      "externalId": "cat_beverages"
+    }
+  ],
   "attributes": [
     {
       "name": "Size",
@@ -255,11 +268,11 @@ const result = await command.getProducts({
     {
       "_id": "691df9c6c478bada1fb23d55",
       "productId": "691df9c6c478bada1fb23d31",
-      "price": "10.00",
-      "salePrice": "0",
+      "price": 1000,
+      "salePrice": 0,
       "isOnSale": false,
       "barcode": "123456789",
-      "costPrice": "5.00",
+      "costPrice": 500,
       "manageStock": true,
       "externalId": "ext_coffee_1",
       "inventory": [
@@ -298,19 +311,20 @@ const result = await command.getProducts({
 
 ## Product Structure Reference
 
-The product structure may vary depending on the database implementation. The structure shown above is a reference based on MongoDB schemas. In practice, product objects are returned as `any` to allow flexibility between different database implementations (MongoDB/mongoose vs LokiJS/IndexedDB).
+The structure shown above matches the `CFProduct` type (an alias of `FullProduct` from `@final-commerce/common/pos-types`) that this command's contract returns — it is a fixed, typed shape, not `any`. The same canonical shape applies regardless of the underlying database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
 
-Key fields that may be present:
+Key fields:
 
 - **Attributes**: Product attributes with name and values array.
 - **Metadata**: Array of key-value pairs for custom data.
 - **Variants**: Product variants with their own pricing, inventory, and attributes.
 - **Inventory**: Variant inventory is tracked per outlet in the `inventory` array.
-- **ID fields**: The ID field structure depends on the database (may be `id`, `_id`, or other formats).
+- **ID fields**: Products and variants are keyed by `_id` (string).
+- **Pricing**: `price`, `salePrice`, `costPrice`, `minPrice`, and `maxPrice` are integers in minor currency units (e.g. cents for USD) — not decimal strings.
 
 ## Error Handling
 
-If the query fails or no products are found, the handler returns an empty array:
+If no products match the query, the handler returns an empty array — this is a normal empty result, not an error:
 
 ```typescript
 {
@@ -319,8 +333,12 @@ If the query fails or no products are found, the handler returns an empty array:
 }
 ```
 
+The handler does not catch or swallow errors. If the underlying query fails (e.g. a database or sync error), the returned promise rejects and the error propagates to the caller.
+
 ## Notes
 
 - Results are limited to 100 products per request by default
 - Deleted products (`isDeleted: true`) are automatically excluded
-- Variants are included in the response
+- Only products with `status: 'active'` are returned — draft and inactive products are excluded, even if requested via `query.status`
+- Results are scoped to the currently active outlet: products not assigned to that outlet, or explicitly hidden there via catalog visibility, are excluded
+- Variants are included in the response; soft-deleted variants (sync tombstones) are stripped out before the response is returned

@@ -1,6 +1,8 @@
 # print
 
-Prints content to a connected printer or opens the browser print dialog. Supports multiple print types: images, HTML content, and receipts.
+Prints a pre-rasterized **image** to the station's printer(s).
+
+> **Only `type: "image"` is supported.** `type: "html"` and `type: "receipt"` are **deprecated** — rasterize your receipt/label markup yourself and print it as an image. `image` is also the only path that carries multi-printer tag routing reliably.
 
 ## Parameters
 
@@ -27,9 +29,9 @@ Prints a base64-encoded image directly.
 }
 ```
 
-#### 2. HTML Print (`type: "html"`)
+#### 2. HTML Print (`type: "html"`) — **DEPRECATED**
 
-Prints HTML content by rendering it and converting to an image (native) or opening print dialog (web).
+> **Deprecated — use `type: "image"`.** The native path posts raw HTML to the shell (no html2canvas, no sanitization) and `PrintOptions` may be dropped. Rasterize your HTML to a base64 image and print that instead.
 
 ```typescript
 {
@@ -40,9 +42,9 @@ Prints HTML content by rendering it and converting to an image (native) or openi
 }
 ```
 
-#### 3. Receipt Print (`type: "receipt"`)
+#### 3. Receipt Print (`type: "receipt"`) — **DEPRECATED**
 
-Prints a receipt using the existing receipt printing system.
+> **Deprecated — use `type: "image"`.** If `order` is omitted, the station falls back to the current active order in the POS store — it throws only if there is no active order (or the active order has no `_id`). It **ignores** `globalBlockId` (no global-block templates) and **drops all `PrintOptions`** including tag routing. Compose + rasterize your receipt and print it as an image.
 
 ```typescript
 {
@@ -66,8 +68,11 @@ interface PrintOptions {
         bottom?: number;
         left?: number;
     };
+    /** @deprecated Not consumed by the runtime — paper size comes from the station's per-printer settings. */
     paperSize?: string;
     width?: string;
+    /** Routing tag for multi-printer stations (FI-7113): names the print category (e.g. "receipt", "kitchen"), never a printer. Untagged prints keep the station's default behavior. */
+    tag?: string;
 }
 ```
 
@@ -139,24 +144,16 @@ await command.print({
 ## Notes
 
 - **Image printing**: The image must be base64-encoded. For native apps, the image is sent directly to the printer. For web, a print dialog is opened.
-- **HTML printing**: HTML is rendered in a temporary container. For native apps, it's converted to an image via html2canvas. For web, a print window is opened.
-- **Receipt printing**: Uses the existing receipt printing system with global block templates.
+- **HTML printing** (deprecated): on web a print window opens; on native the raw HTML is posted to the shell — it is NOT converted via html2canvas and is not sanitized. Prefer `type: "image"`.
+- **Receipt printing** (deprecated): composes a minimal HTML receipt from the order and routes it through the same path as `type: "html"` — on web a print window opens; on native the raw HTML is posted to the shell (NOT converted via html2canvas). `globalBlockId` is ignored and all `PrintOptions` (margins/width/tag) are dropped. Prefer `type: "image"`.
 - **Error handling**: Invalid HTML may cause rendering issues.
-
-## Events
-
-This action publishes events on the `print` topic:
-
-- `print-started` - Published when a print action is initiated
-- `print-completed` - Published when a print action completes successfully
-- `print-error` - Published when a print action encounters an error
-
-For detailed information about print events, including payload structures and subscription examples, see the [print topic documentation](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/print/README.md).
 
 ## Error Handling
 
 The command will throw an error if:
 
-- Required parameters are missing
-- Image data is invalid (for image type)
-- HTML cannot be rendered (for html type)
+- No parameters are passed (`Print parameters are required`)
+- (`type: "image"`) `data.image` is missing (`Image data is required for image print type`)
+- (`type: "html"`, deprecated) `data.html` is missing (`HTML content is required for html print type`)
+- (`type: "receipt"`, deprecated) no `order` was provided **and** there is no active order in the store (`No active order found. Please provide an order or ensure there is an active order in the store.`)
+- `type` is not `"image"`, `"html"`, or `"receipt"` (`Unknown print type: <type>`)

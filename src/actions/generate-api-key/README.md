@@ -2,6 +2,8 @@
 
 Generates an API key for the specified company.
 
+**Manage-scoped command.** This is a Manage administrative command (company/API-key admin), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
+
 ## Parameters
 
 | Parameter     | Type       | Required | Description                                  |

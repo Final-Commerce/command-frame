@@ -48,8 +48,10 @@ await command.switchUser({
 
 ## Error Handling
 
-- Throws an error if mode is missing
-- Throws an error if roleIds is missing for 'role' mode
-- Throws an error if userId is missing for 'specific' mode
-- Throws an error if the switch operation fails
+- Throws an error if `mode` is missing
+- Throws an error if `mode` is not one of `'dialog' | 'role' | 'specific'`
+- Throws an error if `roleIds` is missing or empty for `'role'` mode
+- Throws an error if none of the provided `roleIds` resolve to a real role
+- Throws an error if `userId` is missing for `'specific'` mode
+- Throws an error if the specified user does not exist or has no access to the current outlet (`'specific'` mode)
 

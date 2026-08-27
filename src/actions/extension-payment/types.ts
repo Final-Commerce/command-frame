@@ -1,5 +1,4 @@
 import { CFOrder } from "../../CommonTypes";
-import type { CFTransitionResult } from "../../common-types/order-state";
 
 /** Params for extension-initiated payments; host routes by `paymentType`. */
 export interface ExtensionPaymentParams {
@@ -16,7 +15,7 @@ export interface ExtensionPaymentParams {
     referenceId?: string;
     extensionId?: string;
     metadata?: Record<string, unknown>;
-    /** Override the fulfillment state after full payment. Render resolves the cascade. */
+    /** Override the fulfillment state the order lands in on full payment (validated against the fulfillment state machine; invalid values throw). Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
     checkoutFulfillmentTarget?: string;
     /** EMV data when the underlying payment carries one (typed as `IntegrationEmvData` by the integration wrapper). */
     emvData?: unknown;
@@ -30,8 +29,14 @@ export interface ExtensionPaymentResponse {
     paymentType: string;
     order: CFOrder | null;
     timestamp: string;
-    /** Present when the state machine blocked or forced the transition. */
-    transitionResult?: CFTransitionResult;
+    /** Change due back to the customer in integer MINOR currency units (0 for non-cash tenders). */
+    change: number;
+    /** Signed cash-rounding delta applied to the charge, in integer MINOR currency units (positive = rounded up); 0 when the company has no cash-rounding setting. */
+    cashRounding: number;
+    /** True when this tender settled the cart's remaining balance (the sale completed). */
+    saleFinalized: boolean;
+    /** Balance still due after this tender, in integer MINOR currency units (0 once the sale is finalized). */
+    remainingBalance: number;
 }
 
 export type ExtensionPayment = (params?: ExtensionPaymentParams) => Promise<ExtensionPaymentResponse>;

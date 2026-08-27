@@ -70,5 +70,7 @@ const result = await command.setSecretVal({
 
 ## Error Handling
 
-- Throws an error if `key` or `value` is missing
-- Throws an error if the parent frame is unavailable or the user/extension is not authorized to write secrets for the given scope
+- Throws `key is required` if `key` is missing
+- Throws `value is required` if `value` is missing
+- Throws `Company ID not found` if there is no active company in the current session
+- Rethrows any error from the underlying secrets request, e.g. if the user/extension is not authorized to write secrets for the given scope

@@ -5,7 +5,7 @@ export interface GetRefundsParams {
     orderId?: string;
     sessionId?: string;
     outletId?: string;
-    /** Default: 50. */
+    /** No default — when omitted, all matching refunds are returned. */
     limit?: number;
     /** Default: 0. */
     offset?: number;

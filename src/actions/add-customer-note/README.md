@@ -4,8 +4,8 @@ Adds a note to a customer's record.
 
 ## Parameters
 
-- `customerId` (string, required): The ID of the customer
 - `note` (string, required): The note text to add
+- `customerId` (string, optional): The ID of the customer. If omitted, defaults to the active customer in the current session.
 
 ## Response
 
@@ -13,6 +13,7 @@ Adds a note to a customer's record.
 {
     success: boolean;
     customerId: string;
+    noteId: string;
     note: string;
     timestamp: string;
 }
@@ -30,10 +31,16 @@ await command.addCustomerNote({
 });
 ```
 
+## Pub/Sub
+
+After a successful add, kaching publishes **`customer-note-added`** on the **`customers`** topic. See [customer-note-added event](../../pubsub/topics/customers/customer-note-added/README.md).
+
 ## Error Handling
 
-- Throws an error if customerId or note is missing
-- Throws an error if the customer is not found
+- Throws an error if `note` is missing
+- Throws an error if no `customerId` is provided and there is no active customer to fall back to
+- Throws an error if the customer is not found in the local database
+- Throws an error if the note fails to save
 
 ## See also
 

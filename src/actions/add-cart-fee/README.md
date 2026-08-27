@@ -45,5 +45,12 @@ await command.addCartFee({
 
 ## Error Handling
 
-- Throws an error if parameters are missing
+- Throws `Parameters are required for addCartFee` if no params object is passed
+- Throws `Fee amount is required` if `amount` is `undefined` or `null`
+- Throws `Cart fee amount must be greater than 0` if `amount` is `0` or negative
+- Throws `Fee amount must be an integer in minor currency units (e.g. 1575 = $15.75)` if `isPercent` is `false` and `amount` is not an integer (e.g. `15.75`)
+
+## Events
+
+This action publishes a `cart-fee-added` event on the `cart` topic when a fee is successfully added.
 

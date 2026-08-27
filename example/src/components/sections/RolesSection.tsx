@@ -14,6 +14,11 @@ export function RolesSection({ isInIframe: _ }: RolesSectionProps) {
   const [rolesError, setRolesError] = useState<string>('');
   const [expandedRoleId, setExpandedRoleId] = useState<string | null>(null);
 
+  // Check Permission
+  const [permissionName, setPermissionName] = useState<string>('issue_refunds');
+  const [checkPermissionLoading, setCheckPermissionLoading] = useState(false);
+  const [checkPermissionResponse, setCheckPermissionResponse] = useState<string>('');
+
   const handleGetRoles = async () => {
     setRolesLoading(true);
     setRoles([]);
@@ -41,6 +46,53 @@ export function RolesSection({ isInIframe: _ }: RolesSectionProps) {
 
   return (
     <div className="section-content">
+      <CommandSection title="Check Permission">
+        <p className="section-description">
+          Read-only: does the ACTIVE user hold a named permission? Use it to pre-gate UI (e.g. hide the Refund button
+          when <code>issue_refunds</code> is missing) — the mutating refund commands enforce it runtime-side regardless
+          (<code>REFUND_PERMISSION_DENIED</code>). Mock: every permission is allowed except <code>mock_denied</code>.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Permission name:</label>
+            <input
+              type="text"
+              value={permissionName}
+              onChange={(e) => setPermissionName(e.target.value)}
+              placeholder="issue_refunds"
+            />
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            if (!permissionName.trim()) {
+              setCheckPermissionResponse('Error: Please enter a permission name');
+              return;
+            }
+            setCheckPermissionLoading(true);
+            setCheckPermissionResponse('');
+            try {
+              const result = await command.checkPermission({ permission: permissionName.trim() });
+              setCheckPermissionResponse(JSON.stringify(result, null, 2));
+            } catch (error) {
+              setCheckPermissionResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } finally {
+              setCheckPermissionLoading(false);
+            }
+          }}
+          disabled={checkPermissionLoading}
+          className="btn btn--primary"
+        >
+          {checkPermissionLoading ? 'Checking...' : 'Check Permission'}
+        </button>
+        {checkPermissionResponse && (
+          <JsonViewer
+            data={checkPermissionResponse}
+            title={checkPermissionResponse.startsWith('Error') ? 'Error' : 'Success'}
+          />
+        )}
+      </CommandSection>
+
       <CommandSection title="Get Roles">
         <p className="section-description">
           Fetches all roles for the current company, including their permissions.

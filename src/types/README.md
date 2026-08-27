@@ -992,6 +992,13 @@ Context information for the Render (POS terminal) environment.
 | `buildSourceId`  | `string \| null`                                | Yes      | Build source ID                        |
 | `buildIsPremium` | `boolean`                                       | Yes      | Whether the build is premium           |
 | `isOffline`      | `boolean`                                       | Yes      | Whether the device is offline          |
+| `currency`       | `string \| null`                                | Yes      | Company currency code (e.g. `"USD"`)  |
+| `minorUnits`     | `number \| null`                                | Yes      | Minor-unit decimals for the currency (e.g. `2` for USD — $15.75 = `1575`; `0` for JPY). All money on this API is integer minor units; use this to convert user input |
+| `currencySymbol` | `string \| null`                                | Yes      | Currency symbol (e.g. `"$"`)           |
+| `currencyPrefix` | `string \| null`                                | Yes      | Symbol/text rendered before amounts    |
+| `currencySuffix` | `string \| null`                                | Yes      | Symbol/text rendered after amounts     |
+| `thousandSeparator` | `string \| null`                             | Yes      | Thousands separator for display        |
+| `decimalSeparator`  | `string \| null`                             | Yes      | Decimal separator for display          |
 | `user`           | `Record<string, any> \| null`                   | Yes      | Full user object                       |
 | `company`        | `Omit<Record<string, any>, 'settings'> \| null` | Yes      | Full company object (without settings) |
 | `station`        | `Record<string, any> \| null`                   | Yes      | Full station object                    |
@@ -1027,7 +1034,7 @@ Simplified outlet information in the Manage context.
 
 ### CFProjectName
 
-Type alias: `"Render" | "Manage"` -- identifies which host environment is active.
+Type alias: `"kaching" | "Manage"` -- identifies which host environment is active.
 
 ### CFContext
 
