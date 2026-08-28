@@ -861,7 +861,6 @@ export type {
   UpsertCustomTableData,
   UpsertCustomTableDataParams,
   UpsertCustomTableDataResponse,
-  UpsertedCustomTableRow,
 } from './actions/upsert-custom-table-data/types';
 
 export type {

@@ -5,10 +5,8 @@ export interface GetCustomTableDataResponse<T = any> {
 }
 
 export interface GetCustomTableDataParams {
-  /** Table name (kebab-case). Required if tableId is not provided. */
-  tableName?: string;
-  /** Table ID. Required if tableName is not provided. */
-  tableId?: string;
+  /** Table name (kebab-case). Required — the handler throws if it is absent. */
+  tableName: string;
   /** Optional query filter */
   query?: any;
   /** Pagination offset */
