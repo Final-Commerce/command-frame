@@ -1,6 +1,6 @@
 # goToStationHome
 
-Navigates to the station home page.
+Navigates to the station home page. In hosted (ServiceChannel) mode this delegates to the shell via a host-navigate request; in standalone mode it triggers native navigation directly through the device bridge.
 
 ## Parameters
 
@@ -26,5 +26,6 @@ await command.goToStationHome();
 
 ## Error Handling
 
-None (always succeeds)
+Hosted (ServiceChannel) mode: none — navigation is delegated to the host and this call always resolves successfully.
 
+Standalone mode: throws `CommandFrameBridge not initialized. Ensure CommandFrameListener is mounted.` if the bridge hasn't been set up yet.

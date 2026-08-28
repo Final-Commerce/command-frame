@@ -10,13 +10,14 @@ None.
 
 `Promise<GetActiveOrderResponse>`
 
-| Field       | Type      | Description                               |
-| :---------- | :-------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the active order was retrieved successfully. |
+| Field       | Type                                                              | Description                                                  |
+| :---------- | :---------------------------------------------------------------- | :----------------------------------------------------------- |
+| `success`   | `boolean`                                                         | `true` if the active order was retrieved successfully.       |
 | `order`     | [`CFActiveOrder`](../../types/README.md#cfactiveorder) ` \| null` | The currently active order, or `null` if no order is active. |
-| `timestamp` | `string`  | ISO date string of when the action occurred. |
+| `timestamp` | `string`                                                          | ISO date string of when the action occurred.                 |
 
 **Tip:** You can import the [`CFActiveOrder`](../../types/README.md#cfactiveorder) type directly from the library:
+
 ```typescript
 import { type CFActiveOrder } from '@final-commerce/command-frame';
 ```
@@ -50,7 +51,6 @@ try {
   //   },
   //   timestamp: "2024-01-15T10:00:00.000Z"
   // }
-
 } catch (error) {
   console.error('Failed to get active order:', error);
 }
@@ -98,9 +98,17 @@ try {
 }
 ```
 
+## Events
+
+Publishes the active order snapshot on the `orders` channel:
+
+| Channel  | Event              | Payload                            |
+| :------- | :----------------- | :--------------------------------- |
+| `orders` | `get-active-order` | `{ order: CFActiveOrder \| null }` |
+
 ## Notes
 
 - Returns `null` for the `order` field when no order has been set as active.
 - The active order is typically set using [`setActiveOrder`](../set-active-order/README.md).
 - Useful for checking the current order context before performing order-specific operations (refunds, reprints, etc.).
-- The returned order includes all fields from [`CFActiveOrder`](../../types/README.md#cfactiveorder), which extends [`CFOrder`](../../types/README.md#cforder) with runtime POS session fields (`user`, `outlet`, `station`, etc.).
+- The returned order includes all fields from [`CFActiveOrder`](../../types/README.md#cfactiveorder), which is a direct alias of the same underlying type as [`CFOrder`](../../types/README.md#cforder) (both alias common's `ActiveOrder`) — runtime POS session fields (`user`, `outlet`, `station`, etc.) are present directly, not via an extends relationship.

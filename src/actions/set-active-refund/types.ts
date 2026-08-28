@@ -1,13 +1,13 @@
-import { CFActiveRefundDetails } from "../../CommonTypes";
+import { CFActiveRefundDetails } from '../../CommonTypes';
 
 export interface SetActiveRefundParams {
-    orderId: string;
+  orderId: string;
 }
 
 export interface SetActiveRefundResponse {
-    success: boolean;
-    refund: CFActiveRefundDetails;
-    timestamp: string;
+  success: boolean;
+  refund: CFActiveRefundDetails;
+  timestamp: string;
 }
 
-export type SetActiveRefund = (params?: SetActiveRefundParams) => Promise<SetActiveRefundResponse>;
+export type SetActiveRefund = (params: SetActiveRefundParams) => Promise<SetActiveRefundResponse>;

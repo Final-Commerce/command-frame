@@ -8,9 +8,11 @@ None.
 
 ## Response
 
-| Field       | Type     | Description |
-| :---------- | :------- | :---------- |
-| `station`   | [`CFActiveStation`](../../types/README.md#cfactivestation) ` \| null` | |
+| Field       | Type                                                                  | Description |
+| :---------- | :-------------------------------------------------------------------- | :---------- |
+| `success`   | `boolean`                                                             |             |
+| `station`   | [`CFActiveStation`](../../types/README.md#cfactivestation) ` \| null` |             |
+| `timestamp` | `string`                                                              |             |
 
 ## Example
 
@@ -18,4 +20,4 @@ None.
 const { station } = await command.getActiveStation();
 ```
 
-See [`setActiveStation`](../set-active-station/README.md).
+The active station is host-owned selection context, set by the host/shell during selection. There is no `setActiveStation` command.

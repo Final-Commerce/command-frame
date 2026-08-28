@@ -4,19 +4,17 @@ A TypeScript library for type-safe communication between iframes and their paren
 
 ## Overview
 
-Command Frame provides a structured way to build integrations that run inside Final Commerce applications (like Render POS or Manage Dashboard). It handles the underlying `postMessage` communication while enforcing strict type safety for both the host application (Provider) and the embedded app (Client).
+Command Frame provides a structured way to build integrations that run inside Final Commerce applications (the kaching POS runtime or the Manage Dashboard). It handles the underlying `postMessage` communication while enforcing strict type safety for both the host application (Provider) and the embedded app (Client).
 
 `RenderClient` and `ManageClient` extend `CommandFrameClient`: dynamic methods such as `getProducts()` map to `postMessage` actions named after the method (camelCase), with typed params and responses per project.
 
 The library provides three main capabilities:
 
-| Capability                | Purpose                                                                                         | Scope                                          |
-| ------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| **Commands**              | Call host functions from the iframe (e.g. get products, open cash drawer)                       | Request/response per call                      |
-| **Pub/Sub**               | Subscribe to real-time events from the host (e.g. cart changes, payments)                       | Page-scoped (while iframe is mounted)          |
-| **Hooks**                 | Register business-logic callbacks that persist across all pages                                 | Session-scoped (survives page navigation)      |
-| **Interceptors**          | Gate POS flows (approve / modify / block) at named points                                       | Blocking; host waits for your response         |
-| **Host → iframe refunds** | Render asks the extension to reverse redeem / gift-card payments before completing a POS refund | Parent `postMessage` + `requestId` (see below) |
+| Capability          | Purpose                                                                                                                                                                                                                                            | Scope                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| **Commands**        | Call host functions from the iframe (e.g. get products, open cash drawer)                                                                                                                                                                          | Request/response per call             |
+| **Pub/Sub**         | Subscribe to real-time events from the host (e.g. cart changes, payments)                                                                                                                                                                          | Page-scoped (while iframe is mounted) |
+| **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`, or mixed-destination legs on `processPartialRefund`; query engine capacity with `getRefundPlan`; pre-gate UI with `checkPermission` (`issue_refunds` is enforced runtime-side) | Request/response per call             |
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
 
@@ -65,13 +63,13 @@ true` → `amount` is `0–100`), and quantities.
 
 ### Render (POS System)
 
-For building applications that run inside the Render Point of Sale interface.
+For building applications that run inside the Final Commerce POS (the kaching runtime).
 
 - **[Render Documentation](./src/projects/render/README.md)**
 - **Features:** Order management, Product catalog, Customer management, Payments, Hardware integration (Cash drawer, Printer), Custom tables, Secrets storage.
 
 ```typescript
-import { RenderClient } from "@final-commerce/command-frame";
+import { RenderClient } from '@final-commerce/command-frame';
 
 const client = new RenderClient();
 const products = await client.getProducts();
@@ -85,7 +83,7 @@ For building applications that run inside the Final Commerce Management Dashboar
 - **Features:** Context, catalog, entities, custom tables, secrets, and optional host-specific commands (navigation, media, tax, branding, notifications) when the dashboard implements them.
 
 ```typescript
-import { ManageClient } from "@final-commerce/command-frame";
+import { ManageClient } from '@final-commerce/command-frame';
 
 const client = new ManageClient();
 const context = await client.getContext();
@@ -93,97 +91,45 @@ const context = await client.getContext();
 
 ## Pub/Sub
 
-The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the host (Render). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
+The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the POS host (kaching). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (16), Customers (8), Orders (4), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (2).
+- **Topics:** Cart (16), Customers (8), Orders (7), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (4), Variants (2), Transactions (2), Categories (2), Attributes (2), Split Payments (1).
 
 ```typescript
-import { topics } from "@final-commerce/command-frame";
+import { topics } from '@final-commerce/command-frame';
 
-const subscriptionId = topics.subscribe("cart", event => {
-    console.log("Cart event:", event.type, event.data);
+const subscriptionId = topics.subscribe('cart', (event) => {
+  console.log('Cart event:', event.type, event.data);
 });
 
 // Unsubscribe when done
-topics.unsubscribe("cart", subscriptionId);
+topics.unsubscribe('cart', subscriptionId);
 ```
 
-## Hooks
+## Refunding redeem / extension payments
 
-Hooks are **session-scoped** event callbacks that run in the host (Render) context and persist across all page navigations -- even when the extension iframe is no longer on the current page. Use hooks for business logic that must run on every event (e.g. logging to custom tables, triggering webhooks).
+When staff refund an order that was paid with `paymentType: "redeem"` (via `redeemPayment` or `extensionPayment`), use the **`redeemRefund`** command to refund the amount onto a gift card or redeem tender.
 
-- **[Hooks Documentation](./src/hooks/README.md)**
-- The callback is serialized and sent to the host; it must be **self-contained** (no closures, no imports).
-- A stable `hookId` is required for deduplication (safe on iframe reload).
+**Key point:** Plain refunds on redeem sources still fail by design (`REDEEM_REFUND_UNSUPPORTED`). Use `redeemRefund` to refund onto a gift card when your extension credits the card first.
 
 ```typescript
-import { hooks } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
-hooks.register(
-    "cart",
-    async (event, hostCommands) => {
-        await hostCommands.upsertCustomTableData({
-            tableName: "cart-events-log",
-            data: { eventType: event.type, payload: event.data, timestamp: event.timestamp }
-        });
-    },
-    { hookId: "my-extension:cart-log" }
-);
-
-// Unregister when no longer needed
-hooks.unregister("my-extension:cart-log");
-```
-
-## Interceptors
-
-Interceptors let an extension **gate a POS flow** (approve / modify / block) at a named point — the host waits for your interceptor and acts on what it returns. Unlike hooks, interceptors are **blocking**.
-
-- **[Interceptors Documentation](./src/interceptors/README.md)**
-- The callback is serialized and reconstructed on the host; it must be **self-contained** (no closures, no imports).
-- A stable `interceptorId` is required for deduplication (safe on iframe reload).
-
-```typescript
-import { interceptors } from '@final-commerce/command-frame';
-
-interceptors.register(
-    'refund_start',
-    async (payload, cmds) => {
-        if (payload.paymentTypes.includes('redeem')) {
-            return cmds.openExtensionOverlay({ point: 'refund_start', payload });
-        }
-        return true; // nothing for us to do
-    },
-    { interceptorId: 'my-extension:refund-guard' }
-);
-```
-
-## Host-initiated extension refunds (redeem / gift card)
-
-**Extensions that accept redeem / extension payments must implement a refund listener.** When staff refund an order paid with `paymentType: "redeem"`, Render (host) `postMessage`s into your iframe **before** it records the refund locally. If your app does not handle this message, redeem refunds will time out or fail.
-
-### What you should do
-
-1. **Recommended:** call **`installExtensionRefundListener`** once when your extension boots (e.g. next to your `RenderClient` setup). Pass an `async` handler that calls your provider (gift card API, wallet, etc.) and returns an **`ExtensionRefundResponse`** (`success`, optional `error`, optional `extensionTransactionId` for receipts / support).
-2. The helper validates `event.source === window.top`, parses params, and replies with the same **`PostMessageResponse`** envelope as the rest of Command Frame (`requestId`, `success`, `data` / `error`).
-3. **Alternative:** implement a `window` `message` listener yourself using the same contract (action name: **`extensionRefundRequest`**, or import **`EXTENSION_REFUND_REQUEST_ACTION`** from this package).
-
-Exported APIs: `installExtensionRefundListener`, `EXTENSION_REFUND_REQUEST_ACTION`, types **`ExtensionRefundParams`** / **`ExtensionRefundResponse`**.
-
-```typescript
-import { installExtensionRefundListener, type ExtensionRefundParams, type ExtensionRefundResponse } from "@final-commerce/command-frame";
-
-const unsubscribe = installExtensionRefundListener(async (params: ExtensionRefundParams): Promise<ExtensionRefundResponse> => {
-    // params.paymentType === "redeem", params.amount in major currency units, params.saleId, params.processor, etc.
-    const ok = await myGiftCardProvider.refund(params);
-    return ok ? { success: true, extensionTransactionId: ok.providerRefundId } : { success: false, error: "Refund declined" };
+// Refund a redeem order back onto a gift card
+const result = await command.redeemRefund({
+  orderId: 'order_123',
+  amount: 2500, // $25.00
+  referenceId: 'GIFTCARD-456', // destination card
+  processor: 'giftCard',
+  label: 'Gift Card Refund',
+  reason: 'Customer requested return',
 });
-
-// on teardown (optional)
-// unsubscribe();
 ```
 
-**Full protocol, edge cases, and manual handling:** **[Extension refund documentation](./src/actions/extension-refund/README.md)**.
+**Full documentation:** **[redeemRefund](./src/actions/redeem-refund/README.md)**.
+
+Before prompting the cashier for an amount, query **[getRefundPlan](./src/actions/get-refund-plan/README.md)** (read-only) for the order's own per-source caps (`maxRefundable`, `cardNumber` for same-card prefill) and order-level `remainingRefundable` — don't recompute this client-side, and always handle a `REFUND_AMOUNT_EXCEEDS_CAPACITY` rejection from the mutating call since the plan is only an advisory snapshot.
 
 ## Development & Testing
 

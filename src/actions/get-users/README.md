@@ -1,6 +1,6 @@
 # getUsers
 
-Retrieves a list of users (employees) for the current company from the parent application's backend.
+Retrieves a list of users (employees) for the current company from the parent application's local database.
 
 ## Parameters
 
@@ -8,7 +8,7 @@ Retrieves a list of users (employees) for the current company from the parent ap
 
 ```typescript
 interface GetUsersParams {
-    outlets?: string[];
+  outlets?: string[];
 }
 ```
 
@@ -22,17 +22,18 @@ An array of outlet IDs. If provided, the response will only include users who ha
 
 ```typescript
 interface GetUsersResponse {
-    users: CFActiveUser[];
-    success: boolean;
-    timestamp: string;
+  users: CFActiveUser[];
+  success: boolean;
+  timestamp: string;
 }
 ```
 
 #### `users` ([CFActiveUser](../../types/README.md#cfactiveuser)[])
 
-Array of user objects matching the query. Each user includes their full role object with permissions.
+Array of user objects matching the query. Users with a role-bearing type have their full role object with permissions in `role`; users whose type doesn't require a role (`owner`, `organization_owner`, `organization_user`, `final_owner`, `final_user`) have `role: null`.
 
 **Tip:** You can import the [`CFActiveUser`](../../types/README.md#cfactiveuser) type directly from the library:
+
 ```typescript
 import { type CFActiveUser } from '@final-commerce/command-frame';
 ```
@@ -75,7 +76,7 @@ Get only users who have access to a specific outlet:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getUsers({
-    outlets: ['outlet_id_1', 'outlet_id_2']
+  outlets: ['outlet_id_1', 'outlet_id_2'],
 });
 ```
 
@@ -86,8 +87,8 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getUsers();
 
-const admins = result.users.filter(
-    u => u.role?.permissions?.some(p => p.category === 'hub_access' && p.value === true)
+const admins = result.users.filter((u) =>
+  u.role?.permissions?.some((p) => p.category === 'hub_access' && p.value === true),
 );
 console.log('Users with hub access:', admins);
 ```
@@ -106,24 +107,24 @@ console.log('Users with hub access:', admins);
       "lastName": "Mitchell",
       "email": "sarah.mitchell@company.com",
       "phone": "+1-555-0101",
-      "type": "organization_owner",
+      "type": "admin",
       "role": {
         "id": "691df9c6c478bada1fb23d0b",
-        "_id": "691df9c6c478bada1fb23d0b",
         "name": "Owner",
-        "companyId": "691df9c4c478bada1fb23bff",
         "permissions": [
           {
             "category": "hub_access",
             "name": "general",
             "value": true,
-            "subCategory": "store_management"
+            "subCategory": "store_management",
+            "permissionId": "664759347eefffe8aba84476"
           },
           {
             "category": "station_access",
             "name": "give_discounts",
             "value": true,
-            "subCategory": "pos_actions"
+            "subCategory": "pos_actions",
+            "permissionId": "6645f719ee8498efff5c4ae4"
           }
         ]
       },
@@ -138,5 +139,5 @@ console.log('Users with hub access:', admins);
 
 ## Notes
 
-- The `role` property is fully populated with all permissions and categories
-- Each permission includes `category`, `name`, `value`, and `subCategory` fields
+- The `role` property is fully populated with all permissions and categories for role-bearing user types. For types that don't require a role — `owner`, `organization_owner`, `organization_user`, `final_owner`, `final_user` — `role` is `null`.
+- Each permission includes `category`, `subCategory`, `name`, `value`, and optionally `permissionId`

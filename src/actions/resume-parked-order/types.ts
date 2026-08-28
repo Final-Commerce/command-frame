@@ -1,18 +1,14 @@
-import { CFOrder } from "../../CommonTypes";
-import type { CFTransitionResult } from "../../common-types/order-state";
+import { CFOrder } from '../../CommonTypes';
 
 // Resume Parked Order Types
 export interface ResumeParkedOrderParams {
-    orderId: string;
+  orderId: string;
 }
 
 export interface ResumeParkedOrderResponse {
-    success: boolean;
-    order: CFOrder; // ActiveOrder
-    timestamp: string;
-    /** Present when the state machine blocked or forced the transition. */
-    transitionResult?: CFTransitionResult;
+  success: boolean;
+  order: CFOrder; // ActiveOrder
+  timestamp: string;
 }
 
 export type ResumeParkedOrder = (params?: ResumeParkedOrderParams) => Promise<ResumeParkedOrderResponse>;
-

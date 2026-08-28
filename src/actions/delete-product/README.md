@@ -1,6 +1,8 @@
 # deleteProduct
 
-Deletes a product from the catalog (soft delete).
+Deletes a product from the catalog.
+
+> **Manage-scoped command.** This is a Manage administrative command (product catalog management), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
 
 ## Parameters
 
@@ -8,7 +10,7 @@ Deletes a product from the catalog (soft delete).
 
 ```typescript
 interface DeleteProductParams {
-    productId: string;
+  productId: string;
 }
 ```
 
@@ -22,8 +24,8 @@ The ID of the product to delete.
 
 ```typescript
 interface DeleteProductResponse {
-    success: boolean;
-    timestamp: string;
+  success: boolean;
+  timestamp: string;
 }
 ```
 
@@ -33,7 +35,7 @@ interface DeleteProductResponse {
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.deleteProduct({
-    productId: '64abc123def456',
+  productId: '64abc123def456',
 });
 console.log(result.success); // true
 ```

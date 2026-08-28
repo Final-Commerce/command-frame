@@ -34,7 +34,7 @@ An array of fee objects to apply to this specific cart item upon addition. See `
 
 #### `notes` (optional)
 
-A string or array of strings containing notes to attach to this cart item.
+A string or array of strings containing notes to attach to this cart item. If an array is passed, only the last entry is kept — each note overwrites the previous one, since the cart item stores a single note string rather than a list.
 
 ### Quantities and units
 
@@ -90,6 +90,13 @@ interface AddProductToCartResponse {
 
 This is the unique identifier for the specific item instance added to the cart.
 
+## Errors
+
+- `"variantId is required"` — `variantId` was not provided.
+- `` `Variant with ID ${variantId} not found` `` — no product/variant matches the given `variantId`.
+- `"Product is out of stock"` — the variant is not unlimited-stock and has 0 or negative stock.
+- `"Variant not found in product"`, `"Failed to build active product"`, `"Product creation failed"`, `"Product lost during processing"` — internal state-consistency guards; should not occur under normal use.
+
 ## Usage Examples
 
 ### Simple Add
@@ -123,7 +130,7 @@ const result = await command.addProductToCart({
   ],
   fees: [
     {
-      amount: 1.5,
+      amount: 150, // $1.50 in integer minor units
       label: 'Service Charge',
     },
   ],
@@ -137,6 +144,11 @@ const result = await command.addProductToCart({
 try {
   await command.addProductToCart({ variantId: 'invalid-id' });
 } catch (error) {
-  console.error('Product not found:', error.message);
+  // error.message === "Variant with ID invalid-id not found"
+  console.error('Failed to add product:', error.message);
 }
 ```
+
+## Events
+
+Always publishes a `product-added` event on the `cart` topic with the newly added product. If the cart was empty before this call, also publishes a `cart-created` event on the `cart` topic with the updated cart.

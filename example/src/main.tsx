@@ -26,8 +26,8 @@ const AutoRouter = () => {
       try {
         // Try to get context from Render client
         const renderContext = await renderClient.getFinalContext();
-        if (renderContext?.projectName === 'Render') {
-          console.log('[Router] Detected Render environment');
+        if (renderContext?.projectName === 'kaching') {
+          console.log('[Router] Detected kaching environment');
           // Already at root, just stop detecting
           setIsDetecting(false);
           return;
@@ -44,7 +44,7 @@ const AutoRouter = () => {
       } catch (e) {
         console.log('[Router] Auto-detection failed, staying on default route', e);
       }
-      
+
       setIsDetecting(false);
     };
 
@@ -53,13 +53,15 @@ const AutoRouter = () => {
 
   if (isDetecting) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+        }}
+      >
         Detecting environment...
       </div>
     );

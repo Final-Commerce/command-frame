@@ -1,28 +1,30 @@
-import { Print, PrintParams, PrintResponse } from "./types";
+import { Print, PrintParams, PrintResponse } from './types';
 
 export const mockPrint: Print = (params?: PrintParams): Promise<PrintResponse> => {
-    console.log("[Mock] print called", params);
+  console.log('[Mock] print called', params);
 
-    if (!params) {
-        throw new Error("Print parameters are required");
-    }
+  if (!params) {
+    throw new Error('Print parameters are required');
+  }
 
-    // Mock implementation - just log what would be printed
-    switch (params.type) {
-        case "image":
-            console.log("[Mock] Would print image:", params.data.image?.substring(0, 50) + "...");
-            break;
-        case "html":
-            console.log("[Mock] Would print HTML:", params.data.html?.substring(0, 100) + "...");
-            break;
-        case "receipt":
-            console.log("[Mock] Would print receipt for order:", params.data.order);
-            break;
-    }
+  // Mock implementation - just log what would be printed
+  switch (params.type) {
+    case 'image':
+      console.log('[Mock] Would print image:', params.data.image?.substring(0, 50) + '...');
+      break;
+    case 'html':
+      console.warn("[Mock] print type 'html' is DEPRECATED — rasterize and use type: 'image'.");
+      console.log('[Mock] Would print HTML:', params.data.html?.substring(0, 100) + '...');
+      break;
+    case 'receipt':
+      console.warn("[Mock] print type 'receipt' is DEPRECATED — rasterize and use type: 'image'.");
+      console.log('[Mock] Would print receipt for order:', params.data.order);
+      break;
+  }
 
-    return Promise.resolve({
-        success: true,
-        timestamp: new Date().toISOString(),
-        type: params.type
-    });
+  return Promise.resolve({
+    success: true,
+    timestamp: new Date().toISOString(),
+    type: params.type,
+  });
 };

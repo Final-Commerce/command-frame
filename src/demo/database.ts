@@ -268,13 +268,7 @@ export const MOCK_CATEGORY_SPICY: CFCategory = {
 // --- PRODUCTS ---
 const createInventory = (stock: number) => [{ warehouse: 'main', outletId: MOCK_OUTLET_MAIN.id, stock }];
 
-// The one weighed unit the demo sells in. A real seeded unit (1000 g to the kilogram,
-// 3 decimals), resolved from common's constants — not an invented lookalike.
-const KILOGRAM = resolveUnit('KGM');
-
 // Helper for Simple Product
-// `unitId` marks the product as sold by measure (price per that unit). Most of the demo
-// catalog stays by the piece — mixed catalogs are the normal case, not the exception.
 const createSimpleProduct = (
   id: string,
   name: string,
@@ -282,7 +276,6 @@ const createSimpleProduct = (
   image: string,
   categories: CFCategory[],
   description: string,
-  unitId?: string,
 ): CFProduct => {
   const sku = `SKU-${id.toUpperCase()}`;
   return {
@@ -312,11 +305,6 @@ const createSimpleProduct = (
         manageStock: true,
         externalId: `ext_${id}_var`,
         attributes: [],
-        ...(unitId ? { unitId } : {}),
-        // `stock` here is in the SELLING unit — 100 means 100 kg. The real host stores
-        // base units (grams) in the inventory collection but its resolver converts with
-        // `availableIn` before a variant ever reaches an extension, so the mock mirrors
-        // the POST-conversion shape, not the database.
         inventory: createInventory(100),
       },
     ],
@@ -399,12 +387,11 @@ export const MOCK_PRODUCT_BEER = createVariableProduct(
 
 export const MOCK_PRODUCT_BEET = createSimpleProduct(
   'prod_beet',
-  'Beet Paste (per kg)',
+  'Beet Paste',
   1000,
   beetImg,
   [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
-  'Earthy and sweet beet paste, sold by weight — $10.00 per kilogram.',
-  KILOGRAM.unitId,
+  'Earthy and sweet beet paste, perfect for salads.',
 );
 
 export const MOCK_PRODUCT_CARAMELIZED = createVariableProduct(
@@ -429,12 +416,11 @@ export const MOCK_PRODUCT_GARLIC_ONION = createVariableProduct(
 
 export const MOCK_PRODUCT_GARLIC = createSimpleProduct(
   'prod_garlic',
-  'Garlic Paste (per kg)',
+  'Garlic Paste',
   900,
   garlicImg,
   [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_BASIC, MOCK_CATEGORY_VEGAN],
-  'Pure, intense garlic paste. Sold by weight — $9.00 per kilogram.',
-  KILOGRAM.unitId,
+  'Pure, intense garlic paste.',
 );
 
 export const MOCK_PRODUCT_GINGER_LIME = createVariableProduct(
@@ -706,6 +692,60 @@ export const MOCK_ORDER_3: CFActiveOrder = {
   createdAt: new Date(Date.now() - 7200000).toISOString(),
 };
 
+// Open order with one captured deposit leg — voidable via the refund branch
+// (demoes voidOrder's `refunded` outcome). Copied from MOCK_ORDER_1, id/state/
+// paymentMethods changed.
+export const MOCK_ORDER_4: CFActiveOrder = {
+  _id: 'order_1004',
+  currency: CurrencyCode.USD,
+  minorUnits: 2,
+  receiptId: '1001-0004',
+  companyId: MOCK_COMPANY.id!,
+  externalId: null,
+  status: 'in_progress',
+  paymentState: 'partially_paid',
+  fulfillmentState: 'pending',
+  displayState: 'Partially Paid',
+  customer: MOCK_CUSTOMER_5,
+  summary: {
+    total: 2500,
+    subtotalAfterFees: 2500,
+    discountTotal: 0,
+    shippingTotal: 0,
+    totalTaxes: 0,
+    taxes: [],
+    isTaxInclusive: false,
+  },
+  cartDiscount: null,
+  cartFees: [],
+  paymentMethods: [
+    {
+      transactionId: 'trans_cash_2',
+      paymentType: 'cash',
+      amount: 1000,
+      timestamp: new Date(Date.now() - 600000).toISOString(),
+      processor: 'cash',
+    },
+  ],
+  source: 'pos',
+  posData: {
+    outlet: MOCK_OUTLET_MAIN.id,
+    station: MOCK_STATION_2._id,
+    employee: MOCK_USER_MARIO.id,
+  },
+  sessionId: 'sess_4',
+  metadata: [],
+  billing: null,
+  shipping: null,
+  lineItems: [createLineItem(MOCK_PRODUCT_RED_PEPPER, 0, 1)],
+  customSales: [],
+  balance: 1500,
+  user: MOCK_USER_MARIO,
+  outlet: MOCK_OUTLET_MAIN,
+  station: MOCK_STATION_2,
+  createdAt: new Date(Date.now() - 600000).toISOString(),
+};
+
 export const MOCK_PARKED_ORDER_1: CFActiveOrder = {
   _id: 'parked_2001',
   currency: CurrencyCode.USD,
@@ -821,7 +861,7 @@ export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_HABANERO,
   MOCK_PRODUCT_BLACK_GARLIC,
 ];
-export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2, MOCK_ORDER_3];
+export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2, MOCK_ORDER_3, MOCK_ORDER_4];
 export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [MOCK_PARKED_ORDER_1, MOCK_PARKED_ORDER_2];
 
 // Compatibility Exports (reassigned by setMockDatabase)

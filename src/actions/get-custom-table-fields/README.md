@@ -8,7 +8,7 @@ Retrieves the field definitions (schema) for a specific custom table from the pa
 
 ```typescript
 interface GetCustomTableFieldsParams {
-    tableId: string;
+  tableId: string;
 }
 ```
 
@@ -22,9 +22,9 @@ The unique identifier (`_id`) of the custom table whose fields you want to retri
 
 ```typescript
 interface GetCustomTableFieldsResponse {
-    success: boolean;
-    fields: CFCustomTableField[];
-    timestamp: string;
+  success: boolean;
+  fields: CFCustomTableField[];
+  timestamp: string;
 }
 ```
 
@@ -38,21 +38,21 @@ An array of field definition objects. Each field has the following structure:
 
 ```typescript
 type CFCustomTableField = BaseEntity & {
-    tableId: string;
-    name: string;
-    type: AttributeType;
-    required?: boolean;
-    defaultValue?: any;
-    referenceLinkedCollection?: string;
-    referenceLinkedField?: string;
-}
+  tableId: string;
+  name: string;
+  type: AttributeType;
+  required?: boolean;
+  defaultValue?: any;
+  referenceLinkedCollection?: string;
+  referenceLinkedField?: string;
+};
 
 enum AttributeType {
-    STRING = 'string',
-    NUMBER = 'number',
-    BOOLEAN = 'boolean',
-    DATE = 'date',
-    JSON_STRING = 'json-string',
+  STRING = 'string',
+  NUMBER = 'number',
+  BOOLEAN = 'boolean',
+  DATE = 'date',
+  JSON_STRING = 'json-string',
 }
 ```
 
@@ -90,16 +90,16 @@ import { command } from '@final-commerce/command-frame';
 
 // First, get the table to find its ID
 const tablesResult = await command.getCustomTables();
-const table = tablesResult.customTables.find(t => t.name === 'customer_preferences');
+const table = tablesResult.customTables.find((t) => t.name === 'customer_preferences');
 
 // Then get the fields
 const result = await command.getCustomTableFields({
-    tableId: table._id
+  tableId: table._id,
 });
 
 console.log('Table Fields:', result.fields);
-result.fields.forEach(field => {
-    console.log(`Field: ${field.name} (Type: ${field.type}, Required: ${field.required || false})`);
+result.fields.forEach((field) => {
+  console.log(`Field: ${field.name} (Type: ${field.type}, Required: ${field.required || false})`);
 });
 ```
 
@@ -111,28 +111,26 @@ Use field definitions to validate data before upserting:
 import { command } from '@final-commerce/command-frame';
 
 const tablesResult = await command.getCustomTables();
-const table = tablesResult.customTables.find(t => t.name === 'loyalty_points');
+const table = tablesResult.customTables.find((t) => t.name === 'loyalty_points');
 
 const fieldsResult = await command.getCustomTableFields({
-    tableId: table._id
+  tableId: table._id,
 });
 
 // Check required fields
-const requiredFields = fieldsResult.fields
-    .filter(f => f.required)
-    .map(f => f.name);
+const requiredFields = fieldsResult.fields.filter((f) => f.required).map((f) => f.name);
 
 console.log('Required fields:', requiredFields);
 
 // Validate your data object has all required fields
 const dataToInsert = {
-    customerId: '691df9c6c478bada1fb23d55',
-    points: 150
+  customerId: '691df9c6c478bada1fb23d55',
+  points: 150,
 };
 
-const missingFields = requiredFields.filter(field => !(field in dataToInsert));
+const missingFields = requiredFields.filter((field) => !(field in dataToInsert));
 if (missingFields.length > 0) {
-    console.error('Missing required fields:', missingFields);
+  console.error('Missing required fields:', missingFields);
 }
 ```
 
@@ -144,46 +142,48 @@ Use field definitions to dynamically generate input forms:
 import { command } from '@final-commerce/command-frame';
 
 const tablesResult = await command.getCustomTables();
-const table = tablesResult.customTables.find(t => t.name === 'customer_preferences');
+const table = tablesResult.customTables.find((t) => t.name === 'customer_preferences');
 
 const fieldsResult = await command.getCustomTableFields({
-    tableId: table._id
+  tableId: table._id,
 });
 
 // Generate form inputs based on field types
-fieldsResult.fields.forEach(field => {
-    let inputType;
-    switch (field.type) {
-        case 'string':
-            inputType = 'text';
-            break;
-        case 'number':
-            inputType = 'number';
-            break;
-        case 'boolean':
-            inputType = 'checkbox';
-            break;
-        case 'date':
-            inputType = 'date';
-            break;
-        case 'json-string':
-            inputType = 'textarea';
-            break;
-    }
-    
-    console.log(`Create ${inputType} input for ${field.name}`);
+fieldsResult.fields.forEach((field) => {
+  let inputType;
+  switch (field.type) {
+    case 'string':
+      inputType = 'text';
+      break;
+    case 'number':
+      inputType = 'number';
+      break;
+    case 'boolean':
+      inputType = 'checkbox';
+      break;
+    case 'date':
+      inputType = 'date';
+      break;
+    case 'json-string':
+      inputType = 'textarea';
+      break;
+  }
+
+  console.log(`Create ${inputType} input for ${field.name}`);
 });
 ```
 
 ## Error Handling
 
-If the field retrieval fails, the handler will throw an error. Common error scenarios include:
-- Invalid `tableId` (table does not exist)
-- Database connection issues
+The handler throws an error if `tableId` is missing:
+
+- `tableId is required` — thrown when `tableId` is not provided (or falsy)
+
+If `tableId` does not match any existing custom table, the handler does **not** throw — it returns a success response with an empty `fields` array.
 
 ## Validation Rules
 
-- `tableId` is required and must reference an existing custom table
+- `tableId` is required (throws if missing); it is not validated against existing tables
 
 ## Real Data Examples
 
@@ -253,4 +253,3 @@ If the field retrieval fails, the handler will throw an error. Common error scen
 - Use `getCustomTables` to list all available tables and get their IDs
 - Field types determine how data should be validated and formatted
 - Reference fields (`referenceLinkedCollection` and `referenceLinkedField`) define foreign key relationships
-

@@ -31,12 +31,12 @@ import type {
   ParkOrder,
   ResumeParkedOrder,
   DeleteParkedOrder,
+  VoidOrder,
   InitiateRefund,
   CashPayment,
   GetCashRoundingAmount,
   TapToPayPayment,
   TerminalPayment,
-  VendaraPayment,
   ExtensionPayment,
   RedeemPayment,
   AddNonRevenueItem,
@@ -56,6 +56,9 @@ import type {
   CalculateRefundTotal,
   GetRemainingRefundableQuantities,
   ProcessPartialRefund,
+  RedeemRefund,
+  GetRefundPlan,
+  CheckPermission,
   GetCurrentCart,
   Print,
   SetActiveOrder,
@@ -91,14 +94,13 @@ import type {
   RemoveNonRevenueItem,
   CanTransition,
   GetAvailableTransitions,
+  ApplyTransition,
   IntegrationPayment,
   GetSmartGridLayout,
   SaveSmartGridLayout,
   SendEmail,
   SendSms,
 } from '../../index';
-import type { OpenExtensionOverlay } from '../../actions/open-extension-overlay/types';
-import type { ResolveExtensionOverlay } from '../../actions/resolve-extension-overlay/types';
 
 export interface RenderProviderActions {
   exampleFunction: ExampleFunction;
@@ -133,14 +135,12 @@ export interface RenderProviderActions {
   parkOrder: ParkOrder;
   resumeParkedOrder: ResumeParkedOrder;
   deleteParkedOrder: DeleteParkedOrder;
+  voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;
-  openExtensionOverlay: OpenExtensionOverlay;
-  resolveExtensionOverlay: ResolveExtensionOverlay;
   cashPayment: CashPayment;
   getCashRoundingAmount: GetCashRoundingAmount;
   tapToPayPayment: TapToPayPayment;
   terminalPayment: TerminalPayment;
-  vendaraPayment: VendaraPayment;
   extensionPayment: ExtensionPayment;
   redeemPayment: RedeemPayment;
   integrationPayment: IntegrationPayment;
@@ -162,6 +162,9 @@ export interface RenderProviderActions {
   calculateRefundTotal: CalculateRefundTotal;
   getRemainingRefundableQuantities: GetRemainingRefundableQuantities;
   processPartialRefund: ProcessPartialRefund;
+  redeemRefund: RedeemRefund;
+  getRefundPlan: GetRefundPlan;
+  checkPermission: CheckPermission;
   getCurrentCart: GetCurrentCart;
   print: Print;
   setActiveOrder: SetActiveOrder;
@@ -196,6 +199,7 @@ export interface RenderProviderActions {
   removeNonRevenueItem: RemoveNonRevenueItem;
   canTransition: CanTransition;
   getAvailableTransitions: GetAvailableTransitions;
+  applyTransition: ApplyTransition;
   getSmartGridLayout: GetSmartGridLayout;
   saveSmartGridLayout: SaveSmartGridLayout;
   sendEmail: SendEmail;
