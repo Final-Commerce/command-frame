@@ -9,7 +9,7 @@ Additional package exports (command params/responses, pub/sub event payloads, an
 The shared `command` object (`import { command } from '@final-commerce/command-frame'`) exposes the same actions as the host wire protocol: each key is a camelCase action name matching `RenderClient` / `ManageClient` method names.
 
 ```typescript
-import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from "@final-commerce/command-frame";
+import type { CFOrder, CFLineItem, CFDiscountDetail /* ... */ } from '@final-commerce/command-frame';
 ```
 
 ## Table of Contents
@@ -318,30 +318,30 @@ A non-product sale item (e.g. service charge, manual entry).
 
 A line item included in a refund. Same shape as [`CFLineItem`](#cflineitem) with `variantId` required and without `metadata` or `stock`.
 
-| Field               | Type                                        | Required | Description                       |
-| ------------------- | ------------------------------------------- | -------- | --------------------------------- |
-| `productId`         | `string`                                    | Yes      | Product identifier                |
-| `variantId`         | `string`                                    | Yes      | Variant identifier                |
-| `variantExternalId` | `string`                                    | No       | External ID of the variant        |
-| `productExternalId` | `string`                                    | No       | External ID of the product        |
-| `internalId`        | `string`                                    | No       | Internal runtime identifier       |
-| `name`              | `string`                                    | Yes      | Product display name              |
-| `quantity`          | `number`                                    | Yes      | Quantity refunded                 |
-| `price`             | `number`                                    | Yes      | Unit price                        |
-| `taxes`             | [`CFTax`](#cftax)`[]`                       | Yes      | Taxes on the refunded item        |
-| `discount`          | [`CFDiscountLineItem`](#cfdiscountlineitem) | Yes      | Discounts that were applied       |
-| `totalTax`          | `number`                                    | Yes      | Total tax amount                  |
-| `total`             | `number`                                    | Yes      | Total refund amount for this item |
-| `image`             | `string`                                    | Yes      | Primary image URL                 |
-| `sku`               | `string`                                    | Yes      | Stock keeping unit                |
-| `note`              | `string`                                    | No       | Note attached to this item        |
-| `description`       | `string`                                    | No       | Product description               |
-| `images`            | `string[]`                                  | No       | Additional image URLs             |
-| `fee`               | [`CFFeeLineItem`](#cffeelineitem)           | Yes      | Fees that were applied            |
-| `unitId`            | `string`                                    | No       | Unit the line was sold in         |
-| `unitAbbreviation`  | `string`                                    | No       | That unit's abbreviation then     |
-| `stockQuantity`     | `number`                                    | No       | Base units this refund put back   |
-| `unitRatioToBase`   | `number`                                    | No       | What one `unitId` was worth then  |
+| Field               | Type                                        | Required | Description                           |
+| ------------------- | ------------------------------------------- | -------- | ------------------------------------- |
+| `productId`         | `string`                                    | Yes      | Product identifier                    |
+| `variantId`         | `string`                                    | Yes      | Variant identifier                    |
+| `variantExternalId` | `string`                                    | No       | External ID of the variant            |
+| `productExternalId` | `string`                                    | No       | External ID of the product            |
+| `internalId`        | `string`                                    | No       | Internal runtime identifier           |
+| `name`              | `string`                                    | Yes      | Product display name                  |
+| `quantity`          | `number`                                    | Yes      | Quantity refunded                     |
+| `price`             | `number`                                    | Yes      | Unit price                            |
+| `taxes`             | [`CFTax`](#cftax)`[]`                       | Yes      | Taxes on the refunded item            |
+| `discount`          | [`CFDiscountLineItem`](#cfdiscountlineitem) | Yes      | Discounts that were applied           |
+| `totalTax`          | `number`                                    | Yes      | Total tax amount                      |
+| `total`             | `number`                                    | Yes      | Total refund amount for this item     |
+| `image`             | `string`                                    | Yes      | Primary image URL                     |
+| `sku`               | `string`                                    | Yes      | Stock keeping unit                    |
+| `note`              | `string`                                    | No       | Note attached to this item            |
+| `description`       | `string`                                    | No       | Product description                   |
+| `images`            | `string[]`                                  | No       | Additional image URLs                 |
+| `fee`               | [`CFFeeLineItem`](#cffeelineitem)           | Yes      | Fees that were applied                |
+| `unitId`            | `string`                                    | No       | Unit the line was sold in             |
+| `unitAbbreviation`  | `string`                                    | No       | That unit's abbreviation then         |
+| `stockQuantity`     | `number`                                    | No       | Base units this refund put back       |
+| `unitRatioToBase`   | `number`                                    | No       | What one `unitId` was worth then      |
 | `stockVariantId`    | `string`                                    | No       | Variant whose pool the sale drew from |
 
 #### Units of measure on a refunded line
@@ -501,7 +501,7 @@ Tip details within a payment transaction.
 Lifecycle status of an in-progress payment / split-payment session. Mirrors render's `PaymentStatus` enum.
 
 ```typescript
-type CFPaymentStatus = "failed" | "success" | "canceled" | "inProgress";
+type CFPaymentStatus = 'failed' | 'success' | 'canceled' | 'inProgress';
 ```
 
 ### CFSplitPayment
@@ -662,38 +662,38 @@ Non-revenue cart line (e.g. gift card load). Aligns with the host `NonRevenueIte
 
 A product in the active cart.
 
-| Field               | Type                              | Required | Description                                   |
-| ------------------- | --------------------------------- | -------- | --------------------------------------------- |
-| `id`                | `string`                          | Yes      | Product identifier                            |
-| `internalId`        | `string`                          | Yes      | Unique cart line-item identifier              |
-| `externalId`        | `string`                          | Yes      | External product identifier                   |
-| `productExternalId` | `string`                          | Yes      | External product-level identifier             |
-| `variantId`         | `string`                          | Yes      | Variant identifier                            |
-| `name`              | `string`                          | Yes      | Product display name                          |
-| `sku`               | `string`                          | Yes      | Stock keeping unit                            |
-| `price`             | `number`                          | Yes      | Unit price                                    |
-| `images`            | `string[]`                        | Yes      | Product image URLs                            |
-| `taxTableId`        | `string`                          | Yes      | Tax table identifier                          |
-| `quantity`          | `number`                          | Yes      | Quantity in the cart                          |
-| `note`              | `string`                          | No       | Note for this item                            |
-| `discount`          | [`CFDiscount`](#cfdiscount)       | No       | Discount applied to this item                 |
-| `description`       | `string`                          | No       | Product description                           |
-| `longDescription`   | `string`                          | No       | Long product description                      |
-| `shortDescription`  | `string`                          | No       | Short product description                     |
-| `barcodeId`         | `string`                          | No       | Barcode identifier                            |
-| `stock`             | `number`                          | Yes      | Current stock level                           |
-| `allowBackOrder`    | `boolean`                         | No       | Whether back-ordering is allowed              |
-| `fee`               | [`CFCustomFee`](#cfcustomfee)     | No       | Fee applied to this item                      |
-| `isUnlimited`       | `boolean`                         | No       | Whether stock is unlimited                    |
-| `attributes`        | `string`                          | No       | Serialized variant attributes                 |
-| `localQuantity`     | `number`                          | No       | Local quantity (offline sync)                 |
-| `_id`               | `string`                          | No       | Mongo-style id when retained from the catalog |
-| `productType`       | [`CFProductType`](#cfproducttype) | No       | `"simple"` or `"variable"`                    |
-| `currency`          | [`CurrencyCode`](#currencycode)   | No       | Currency code for the line price              |
-| `minorUnits`        | `number`                          | No       | Decimal places for the line currency          |
-| `unit`              | `MeasurementUnit`                 | No       | Unit this line is sold in, resolved in memory |
-| `unitId`            | `string`                          | No       | That unit's id, when only the id is at hand   |
-| `stockVariantId`    | `string`                          | No       | Sibling variant whose stock pool this draws on|
+| Field               | Type                              | Required | Description                                    |
+| ------------------- | --------------------------------- | -------- | ---------------------------------------------- |
+| `id`                | `string`                          | Yes      | Product identifier                             |
+| `internalId`        | `string`                          | Yes      | Unique cart line-item identifier               |
+| `externalId`        | `string`                          | Yes      | External product identifier                    |
+| `productExternalId` | `string`                          | Yes      | External product-level identifier              |
+| `variantId`         | `string`                          | Yes      | Variant identifier                             |
+| `name`              | `string`                          | Yes      | Product display name                           |
+| `sku`               | `string`                          | Yes      | Stock keeping unit                             |
+| `price`             | `number`                          | Yes      | Unit price                                     |
+| `images`            | `string[]`                        | Yes      | Product image URLs                             |
+| `taxTableId`        | `string`                          | Yes      | Tax table identifier                           |
+| `quantity`          | `number`                          | Yes      | Quantity in the cart                           |
+| `note`              | `string`                          | No       | Note for this item                             |
+| `discount`          | [`CFDiscount`](#cfdiscount)       | No       | Discount applied to this item                  |
+| `description`       | `string`                          | No       | Product description                            |
+| `longDescription`   | `string`                          | No       | Long product description                       |
+| `shortDescription`  | `string`                          | No       | Short product description                      |
+| `barcodeId`         | `string`                          | No       | Barcode identifier                             |
+| `stock`             | `number`                          | Yes      | Current stock level                            |
+| `allowBackOrder`    | `boolean`                         | No       | Whether back-ordering is allowed               |
+| `fee`               | [`CFCustomFee`](#cfcustomfee)     | No       | Fee applied to this item                       |
+| `isUnlimited`       | `boolean`                         | No       | Whether stock is unlimited                     |
+| `attributes`        | `string`                          | No       | Serialized variant attributes                  |
+| `localQuantity`     | `number`                          | No       | Local quantity (offline sync)                  |
+| `_id`               | `string`                          | No       | Mongo-style id when retained from the catalog  |
+| `productType`       | [`CFProductType`](#cfproducttype) | No       | `"simple"` or `"variable"`                     |
+| `currency`          | [`CurrencyCode`](#currencycode)   | No       | Currency code for the line price               |
+| `minorUnits`        | `number`                          | No       | Decimal places for the line currency           |
+| `unit`              | `MeasurementUnit`                 | No       | Unit this line is sold in, resolved in memory  |
+| `unitId`            | `string`                          | No       | That unit's id, when only the id is at hand    |
+| `stockVariantId`    | `string`                          | No       | Sibling variant whose stock pool this draws on |
 
 #### Selling by measure
 
@@ -1048,27 +1048,34 @@ A tax entry applied to an item or summary.
 
 Context information for the Render (POS terminal) environment.
 
-| Field            | Type                                            | Required | Description                            |
-| ---------------- | ----------------------------------------------- | -------- | -------------------------------------- |
-| `userId`         | `string \| null`                                | Yes      | Current user ID                        |
-| `companyId`      | `string \| null`                                | Yes      | Current company ID                     |
-| `companyName`    | `string \| null`                                | Yes      | Current company name                   |
-| `deviceId`       | `string \| null`                                | Yes      | Device identifier                      |
-| `stationId`      | `string \| null`                                | Yes      | Station ID                             |
-| `stationName`    | `string \| null`                                | Yes      | Station name                           |
-| `outletId`       | `string \| null`                                | Yes      | Outlet ID                              |
-| `outletName`     | `string \| null`                                | Yes      | Outlet name                            |
-| `buildId`        | `string \| null`                                | Yes      | Build ID                               |
-| `buildName`      | `string \| null`                                | Yes      | Build name                             |
-| `buildVersion`   | `string \| null`                                | Yes      | Build version                          |
-| `buildSourceId`  | `string \| null`                                | Yes      | Build source ID                        |
-| `buildIsPremium` | `boolean`                                       | Yes      | Whether the build is premium           |
-| `isOffline`      | `boolean`                                       | Yes      | Whether the device is offline          |
-| `user`           | `Record<string, any> \| null`                   | Yes      | Full user object                       |
-| `company`        | `Omit<Record<string, any>, 'settings'> \| null` | Yes      | Full company object (without settings) |
-| `station`        | `Record<string, any> \| null`                   | Yes      | Full station object                    |
-| `outlet`         | `Record<string, any> \| null`                   | Yes      | Full outlet object                     |
-| `timestamp`      | `string`                                        | Yes      | ISO timestamp                          |
+| Field               | Type                                            | Required | Description                                                                                                                                                          |
+| ------------------- | ----------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `userId`            | `string \| null`                                | Yes      | Current user ID                                                                                                                                                      |
+| `companyId`         | `string \| null`                                | Yes      | Current company ID                                                                                                                                                   |
+| `companyName`       | `string \| null`                                | Yes      | Current company name                                                                                                                                                 |
+| `deviceId`          | `string \| null`                                | Yes      | Device identifier                                                                                                                                                    |
+| `stationId`         | `string \| null`                                | Yes      | Station ID                                                                                                                                                           |
+| `stationName`       | `string \| null`                                | Yes      | Station name                                                                                                                                                         |
+| `outletId`          | `string \| null`                                | Yes      | Outlet ID                                                                                                                                                            |
+| `outletName`        | `string \| null`                                | Yes      | Outlet name                                                                                                                                                          |
+| `buildId`           | `string \| null`                                | Yes      | Build ID                                                                                                                                                             |
+| `buildName`         | `string \| null`                                | Yes      | Build name                                                                                                                                                           |
+| `buildVersion`      | `string \| null`                                | Yes      | Build version                                                                                                                                                        |
+| `buildSourceId`     | `string \| null`                                | Yes      | Build source ID                                                                                                                                                      |
+| `buildIsPremium`    | `boolean`                                       | Yes      | Whether the build is premium                                                                                                                                         |
+| `isOffline`         | `boolean`                                       | Yes      | Whether the device is offline                                                                                                                                        |
+| `currency`          | `string \| null`                                | Yes      | Company currency code (e.g. `"USD"`)                                                                                                                                 |
+| `minorUnits`        | `number \| null`                                | Yes      | Minor-unit decimals for the currency (e.g. `2` for USD — $15.75 = `1575`; `0` for JPY). All money on this API is integer minor units; use this to convert user input |
+| `currencySymbol`    | `string \| null`                                | Yes      | Currency symbol (e.g. `"$"`)                                                                                                                                         |
+| `currencyPrefix`    | `string \| null`                                | Yes      | Symbol/text rendered before amounts                                                                                                                                  |
+| `currencySuffix`    | `string \| null`                                | Yes      | Symbol/text rendered after amounts                                                                                                                                   |
+| `thousandSeparator` | `string \| null`                                | Yes      | Thousands separator for display                                                                                                                                      |
+| `decimalSeparator`  | `string \| null`                                | Yes      | Decimal separator for display                                                                                                                                        |
+| `user`              | `Record<string, any> \| null`                   | Yes      | Full user object                                                                                                                                                     |
+| `company`           | `Omit<Record<string, any>, 'settings'> \| null` | Yes      | Full company object (without settings)                                                                                                                               |
+| `station`           | `Record<string, any> \| null`                   | Yes      | Full station object                                                                                                                                                  |
+| `outlet`            | `Record<string, any> \| null`                   | Yes      | Full outlet object                                                                                                                                                   |
+| `timestamp`         | `string`                                        | Yes      | ISO timestamp                                                                                                                                                        |
 
 ### CFContextManage
 
@@ -1099,7 +1106,7 @@ Simplified outlet information in the Manage context.
 
 ### CFProjectName
 
-Type alias: `"Render" | "Manage"` -- identifies which host environment is active.
+Type alias: `"kaching" | "Manage"` -- identifies which host environment is active.
 
 ### CFContext
 

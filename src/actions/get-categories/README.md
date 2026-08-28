@@ -8,12 +8,12 @@ Retrieves a list of categories from the parent application's local database.
 
 ```typescript
 interface GetCategoriesParams {
-    query?: {
-        name?: string | { $regex?: string; $options?: string };
-        parentId?: string | null;
-        externalId?: string;
-        [key: string]: any;
-    };
+  query?: {
+    name?: string | { $regex?: string; $options?: string };
+    parentId?: string | null;
+    externalId?: string;
+    [key: string]: any;
+  };
 }
 ```
 
@@ -29,8 +29,8 @@ A query object to filter categories. The actual supported query operators depend
 
 ```typescript
 interface GetCategoriesResponse {
-    categories: CFCategory[];
-    timestamp: string;
+  categories: CFCategory[];
+  timestamp: string;
 }
 ```
 
@@ -69,19 +69,28 @@ console.log(result.categories);
 {
   "categories": [
     {
-      "_id": "693086eda7030296aecd3b9e",
+      "id": "693086eda7030296aecd3b9e",
+      "companyId": "691df9c6c478bada1fb23d10",
+      "createdAt": "2025-12-04T19:24:13.293Z",
+      "updatedAt": "2025-12-04T19:24:13.293Z",
       "name": "Test category",
       "parentId": null,
       "externalId": null
     },
     {
-      "_id": "691df9c6c478bada1fb23d29",
+      "id": "691df9c6c478bada1fb23d29",
+      "companyId": "691df9c6c478bada1fb23d10",
+      "createdAt": "2025-12-04T19:24:13.293Z",
+      "updatedAt": "2025-12-04T19:24:13.293Z",
       "name": "cool stuff",
       "parentId": null,
       "externalId": null
     },
     {
-      "_id": "693199552d793b4388bcfd90",
+      "id": "693199552d793b4388bcfd90",
+      "companyId": "691df9c6c478bada1fb23d10",
+      "createdAt": "2025-12-04T19:24:13.293Z",
+      "updatedAt": "2025-12-04T19:24:13.293Z",
       "name": "Coffee",
       "parentId": null,
       "externalId": null
@@ -95,7 +104,10 @@ console.log(result.categories);
 
 ```json
 {
-  "_id": "693199552d793b4388bcfd90",
+  "id": "693199552d793b4388bcfd90",
+  "companyId": "691df9c6c478bada1fb23d10",
+  "createdAt": "2025-12-04T19:24:13.293Z",
+  "updatedAt": "2025-12-04T19:24:13.293Z",
   "name": "Coffee",
   "parentId": null,
   "externalId": null
@@ -104,16 +116,20 @@ console.log(result.categories);
 
 ## Category Structure Reference
 
-The category structure may vary depending on the database implementation. The structure shown above is a reference based on MongoDB schemas. In practice, category objects are returned as `any` to allow flexibility between different database implementations (MongoDB/mongoose vs LokiJS/IndexedDB).
+The structure shown above matches the `CFCategory` type (an alias of `Category` from `@final-commerce/common/pos-types`) that this command's contract returns — it is a fixed, typed shape, not `any`. The same canonical shape applies regardless of the underlying database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
 
-Key fields that may be present:
+Key fields:
 
-- **Hierarchy**: Categories can have a parent-child relationship via `parentId`.
-- **ID fields**: The ID field structure depends on the database (may be `id`, `_id`, or other formats).
+- **Hierarchy**: Categories can have a parent-child relationship via the optional `parentId`.
+- **ID fields**: Categories are keyed by `id` (string), not `_id`.
+- **Always present**: `id`, `companyId`, `createdAt`, `updatedAt`, `name`.
+- **Optional**: `externalId`, `description`, `image`, `parentId`, `menuOrder`, `source`.
 
 ## Error Handling
 
-If the query fails or no categories are found, the handler returns an empty array:
+The handler does not catch errors: if the underlying database query fails, the promise rejects with that error rather than resolving to an empty response.
+
+If the query succeeds but simply matches no categories, the handler returns an empty array:
 
 ```typescript
 {
@@ -124,6 +140,6 @@ If the query fails or no categories are found, the handler returns an empty arra
 
 ## Notes
 
-- Deleted categories (`isDeleted: true`) are automatically excluded
+- Deleted categories (`isDeleted: true`) are automatically excluded, regardless of what is passed in `query`
 - Categories can be organized in a hierarchical structure using `parentId`
-
+- On first use after app startup, the handler waits for the categories collection's initial sync to finish (bounded by an internal timeout) before querying

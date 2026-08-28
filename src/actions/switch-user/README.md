@@ -30,26 +30,27 @@ import { command } from '@final-commerce/command-frame';
 
 // Show dialog to select user
 await command.switchUser({
-  mode: 'dialog'
+  mode: 'dialog',
 });
 
 // Switch to user with specific roles
 await command.switchUser({
   mode: 'role',
-  roleIds: ['role-123', 'role-456']
+  roleIds: ['role-123', 'role-456'],
 });
 
 // Switch to specific user
 await command.switchUser({
   mode: 'specific',
-  userId: 'user-123'
+  userId: 'user-123',
 });
 ```
 
 ## Error Handling
 
-- Throws an error if mode is missing
-- Throws an error if roleIds is missing for 'role' mode
-- Throws an error if userId is missing for 'specific' mode
-- Throws an error if the switch operation fails
-
+- Throws an error if `mode` is missing
+- Throws an error if `mode` is not one of `'dialog' | 'role' | 'specific'`
+- Throws an error if `roleIds` is missing or empty for `'role'` mode
+- Throws an error if none of the provided `roleIds` resolve to a real role
+- Throws an error if `userId` is missing for `'specific'` mode
+- Throws an error if the specified user does not exist or has no access to the current outlet (`'specific'` mode)

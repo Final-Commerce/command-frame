@@ -53,7 +53,7 @@ import { command } from '@final-commerce/command-frame';
 ```typescript
 const result = await command.setSecretVal({
   key: 'api-key',
-  value: 'sk_live_xxxx'
+  value: 'sk_live_xxxx',
 });
 console.log(result.success); // true
 ```
@@ -64,11 +64,13 @@ console.log(result.success); // true
 const result = await command.setSecretVal({
   key: 'webhook-url',
   value: 'https://example.com/webhook',
-  extensionId: 'your-extension-id'
+  extensionId: 'your-extension-id',
 });
 ```
 
 ## Error Handling
 
-- Throws an error if `key` or `value` is missing
-- Throws an error if the parent frame is unavailable or the user/extension is not authorized to write secrets for the given scope
+- Throws `key is required` if `key` is missing
+- Throws `value is required` if `value` is missing
+- Throws `Company ID not found` if there is no active company in the current session
+- Rethrows any error from the underlying secrets request, e.g. if the user/extension is not authorized to write secrets for the given scope

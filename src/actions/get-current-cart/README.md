@@ -10,18 +10,17 @@ None.
 
 `Promise<GetCurrentCartResponse>`
 
-| Field     | Type         | Description                                                                                                           |
-| :-------- | :----------- | :-------------------------------------------------------------------------------------------------------------------- |
-| `success` | `boolean`    | `true` if the cart was retrieved successfully.                                                                        |
-| `cart`    | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
+| Field       | Type         | Description                                                                                                           |
+| :---------- | :----------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `success`   | `boolean`    | `true` if the cart was retrieved successfully.                                                                        |
+| `cart`      | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
+| `timestamp` | `string`     | ISO date string of when the action occurred.                                                                          |
 
 **Tip:** You can import [`CFActiveCart`](../../types/README.md#cfactivecart), [`CFActiveProduct`](../../types/README.md#cfactiveproduct), and [`CFActiveCustomSales`](../../types/README.md#cfactivecustomsales) types directly from the library:
 
 ```typescript
-import { type CFActiveCart, type CFActiveProduct } from "@final-commerce/command-frame";
+import { type CFActiveCart, type CFActiveProduct } from '@final-commerce/command-frame';
 ```
-
-| `timestamp` | `string` | ISO date string of when the action occurred. |
 
 ## Cart Object Structure
 
@@ -49,33 +48,33 @@ The cart object (`ActiveCart`) includes:
 ## Example Usage
 
 ```typescript
-import { command } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
 try {
-    // Get the current cart
-    const result = await command.getCurrentCart();
-    console.log("Current cart:", result.cart);
-    console.log("Cart products:", result.cart.products);
-    console.log("Cart total:", result.cart.total);
-    console.log("Cart subtotal:", result.cart.subtotal);
+  // Get the current cart
+  const result = await command.getCurrentCart();
+  console.log('Current cart:', result.cart);
+  console.log('Cart products:', result.cart.products);
+  console.log('Cart total:', result.cart.total);
+  console.log('Cart subtotal:', result.cart.subtotal);
 
-    // Expected output:
-    // {
-    //   success: true,
-    //   cart: {
-    //     products: [...],
-    //     customSales: [...],
-    //     total: 25.50,
-    //     subtotal: 20.00,
-    //     tax: 5.50,
-    //     discount: {...},
-    //     customer: {...},
-    //     ...
-    //   },
-    //   timestamp: '2023-10-27T10:00:00.000Z'
-    // }
+  // Expected output:
+  // {
+  //   success: true,
+  //   cart: {
+  //     products: [...],
+  //     customSales: [...],
+  //     total: 2550, // $25.50 in minor units
+  //     subtotal: 2000, // $20.00 in minor units
+  //     tax: 550, // $5.50 in minor units
+  //     discount: {...},
+  //     customer: {...},
+  //     ...
+  //   },
+  //   timestamp: '2023-10-27T10:00:00.000Z'
+  // }
 } catch (error) {
-    console.error("Failed to get current cart:", error);
+  console.error('Failed to get current cart:', error);
 }
 ```
 

@@ -6,25 +6,26 @@ Sets a product as the active product in the POS interface by its variant ID. The
 
 ```typescript
 interface SetActiveProductParams {
-    variantId: string;
+  variantId: string;
 }
 ```
 
-| Field       | Type     | Required | Description                          |
-| :---------- | :------- | :------- | :----------------------------------- |
+| Field       | Type     | Required | Description                                             |
+| :---------- | :------- | :------- | :------------------------------------------------------ |
 | `variantId` | `string` | Yes      | The variant identifier of the product to set as active. |
 
 ## Response
 
 `Promise<SetActiveProductResponse>`
 
-| Field       | Type              | Description                                      |
-| :---------- | :---------------- | :----------------------------------------------- |
+| Field       | Type              | Description                                        |
+| :---------- | :---------------- | :------------------------------------------------- |
 | `success`   | `boolean`         | `true` if the active product was set successfully. |
-| `product`   | `CFActiveProduct` | The product that was set as active.               |
-| `timestamp` | `string`          | ISO date string of when the action occurred.      |
+| `product`   | `CFActiveProduct` | The product that was set as active.                |
+| `timestamp` | `string`          | ISO date string of when the action occurred.       |
 
 **Tip:** You can import [`CFActiveProduct`](../../types/README.md#cfactiveproduct) directly from the library:
+
 ```typescript
 import { type CFActiveProduct } from '@final-commerce/command-frame';
 ```
@@ -33,31 +34,35 @@ import { type CFActiveProduct } from '@final-commerce/command-frame';
 
 The returned `CFActiveProduct` object includes:
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | Yes | Product identifier |
-| `internalId` | `string` | Yes | Unique cart line-item identifier |
-| `externalId` | `string` | Yes | External product identifier |
-| `productExternalId` | `string` | Yes | External product-level identifier |
-| `variantId` | `string` | Yes | Variant identifier |
-| `name` | `string` | Yes | Product display name |
-| `sku` | `string` | Yes | Stock keeping unit |
-| `price` | `number` | Yes | Unit price |
-| `images` | `string[]` | Yes | Product image URLs |
-| `taxTableId` | `string` | Yes | Tax table identifier |
-| `quantity` | `number` | Yes | Quantity in the cart |
-| `stock` | `number` | Yes | Available stock count |
-| `note` | `string` | No | Product-level note |
-| `discount` | `CFDiscount` | No | Discount applied to the product |
-| `description` | `string` | No | Short product description |
-| `longDescription` | `string` | No | Full product description |
-| `shortDescription` | `string` | No | Brief product description |
-| `barcodeId` | `string` | No | Barcode identifier |
-| `allowBackOrder` | `boolean` | No | Whether back-ordering is allowed |
-| `fee` | `CFCustomFee` | No | Custom fee applied to the product |
-| `isUnlimited` | `boolean` | No | Whether stock is unlimited |
-| `attributes` | `string` | No | Product attributes |
-| `localQuantity` | `number` | No | Locally tracked quantity |
+| Field               | Type            | Required | Description                                                          |
+| ------------------- | --------------- | -------- | -------------------------------------------------------------------- |
+| `id`                | `string`        | Yes      | Product identifier                                                   |
+| `internalId`        | `string`        | Yes      | Unique cart line-item identifier                                     |
+| `externalId`        | `string`        | Yes      | External product identifier                                          |
+| `productExternalId` | `string`        | Yes      | External product-level identifier                                    |
+| `variantId`         | `string`        | Yes      | Variant identifier                                                   |
+| `name`              | `string`        | Yes      | Product display name                                                 |
+| `sku`               | `string`        | Yes      | Stock keeping unit                                                   |
+| `price`             | `number`        | Yes      | Unit price, in integer minor currency units (e.g. cents)             |
+| `images`            | `string[]`      | Yes      | Product image URLs                                                   |
+| `taxTableId`        | `string`        | Yes      | Tax table identifier                                                 |
+| `quantity`          | `number`        | Yes      | Quantity in the cart                                                 |
+| `stock`             | `number`        | Yes      | Available stock count                                                |
+| `note`              | `string`        | No       | Product-level note                                                   |
+| `discounts`         | `CFDiscount[]`  | No       | Discounts applied to the product                                     |
+| `description`       | `string`        | No       | Short product description                                            |
+| `longDescription`   | `string`        | No       | Full product description                                             |
+| `shortDescription`  | `string`        | No       | Brief product description                                            |
+| `barcodeId`         | `string`        | No       | Barcode identifier                                                   |
+| `allowBackOrder`    | `boolean`       | No       | Whether back-ordering is allowed                                     |
+| `fees`              | `CFCustomFee[]` | No       | Custom fees applied to the product                                   |
+| `isUnlimited`       | `boolean`       | No       | Whether stock is unlimited                                           |
+| `attributes`        | `string`        | No       | Product attributes                                                   |
+| `localQuantity`     | `number`        | No       | Locally tracked quantity                                             |
+| `_id`               | `string`        | No       | Mongo-style id when retained from the catalog                        |
+| `productType`       | `CFProductType` | No       | `"simple"` or `"variable"` (defaults to `"simple"`)                  |
+| `currency`          | `CurrencyCode`  | No       | Currency code for `price`, when resolvable                           |
+| `minorUnits`        | `number`        | No       | Minor-unit decimal precision for `currency` (e.g. `2` for USD cents) |
 
 ## Example Usage
 
@@ -65,7 +70,7 @@ The returned `CFActiveProduct` object includes:
 import { command } from '@final-commerce/command-frame';
 
 try {
-  const result = await command.setActiveProduct({ variantId: "variant-456" });
+  const result = await command.setActiveProduct({ variantId: 'variant-456' });
 
   console.log('Active product set:', result.product.name);
   console.log('Price:', result.product.price);
@@ -78,7 +83,7 @@ try {
   //     variantId: 'variant-456',
   //     name: 'Example Product',
   //     sku: 'EX-001',
-  //     price: 19.99,
+  //     price: 1999, // $19.99, in minor units (cents)
   //     quantity: 1,
   //     stock: 50,
   //     images: ['https://...'],
@@ -86,7 +91,6 @@ try {
   //   },
   //   timestamp: '2023-10-27T10:00:00.000Z'
   // }
-
 } catch (error) {
   console.error('Failed to set active product:', error);
 }
@@ -95,8 +99,10 @@ try {
 ## Error Handling
 
 The command will throw an error if:
-- `variantId` is not provided
-- The product with the given variant ID is not found
+
+- `variantId` is not provided (`"variantId is required"`)
+- No product/variant matches the given `variantId` (`"Product not found"`)
+- The matched product has no resolvable variant to activate (`"No active product set"`)
 
 ## Notes
 

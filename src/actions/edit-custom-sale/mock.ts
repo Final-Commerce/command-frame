@@ -1,5 +1,6 @@
 import { MOCK_CART, mockPublishEvent } from '../../demo/database';
 import { EditCustomSale, EditCustomSaleParams, EditCustomSaleResponse } from './types';
+import { requireMinorUnitsInteger } from '../../demo/units';
 
 export const mockEditCustomSale: EditCustomSale = async (
   params?: EditCustomSaleParams,
@@ -17,10 +18,9 @@ export const mockEditCustomSale: EditCustomSale = async (
 
   if (params.label !== undefined) sale.name = params.label;
   if (params.price !== undefined) {
-    // Mirror render: the flow sends raw dollars ($4); render does toMinorUnits.
-    // MOCK_CART tracks minor units, so convert here too.
-    const minorFactor = 10 ** (MOCK_CART.minorUnits ?? 2);
-    sale.price = Math.round(Number(params.price) * minorFactor);
+    // FI-6991: price arrives as an INTEGER in MINOR units and is stored
+    // directly — the engine throws on a fraction, so the mock does too.
+    sale.price = requireMinorUnitsInteger(params.price, 'price');
   }
   if (params.quantity !== undefined) sale.quantity = params.quantity;
   if (params.applyTaxes !== undefined) sale.applyTaxes = params.applyTaxes;

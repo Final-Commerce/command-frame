@@ -1,6 +1,6 @@
 # addCustomSale
 
-Adds a custom sale item to the cart in the parent window. This is useful for adding non-product items like service fees, discounts, or custom charges.
+Adds a custom sale item to the cart in the parent window. This is useful for adding non-product items like service fees, surcharges, or custom charges.
 
 ## Parameters
 
@@ -34,14 +34,22 @@ The price of the custom sale item, in integer minor currency units. Can be provi
 - A number (e.g., `1050` = $10.50)
 - A string (e.g., `"1050"`)
 
-The price will be converted to a number internally. Negative values can be used for discounts.
+The price will be converted to a number internally. It must be a positive integer in minor units — zero, negative, or non-integer values throw a validation error (see Error Handling).
+
+#### `quantity` (optional)
+
+The quantity of the custom sale item. Defaults to `1` if not provided. Must be a positive integer — non-integer or non-positive values throw a validation error.
 
 #### `applyTaxes` (optional)
 
 Whether to apply taxes to the custom sale item. Defaults to `false` if not provided.
 
-- `true`: Taxes will be calculated and applied to this item
+- `true`: Taxes will be calculated and applied to this item, provided a tax table can be resolved (an explicit `taxTableId` match, or the organization's standard tax table as fallback) — see `taxTableId` below
 - `false`: No taxes will be applied (default)
+
+#### `taxTableId` (optional)
+
+The ID of a tax table to apply when `applyTaxes` is `true`. If provided but not found among the organization's tax tables, the handler falls back to the organization's standard tax table instead of throwing. If `applyTaxes` is `true` and no tax table can be resolved (no matching `taxTableId` and no standard tax table configured), no tax is applied to the item.
 
 ## Response
 
@@ -63,6 +71,10 @@ interface AddCustomSaleResponse {
 
 Indicates whether the custom sale was successfully added to the cart.
 
+#### `customSaleId` (string)
+
+A newly generated unique ID for this custom sale line item.
+
 #### `label` (string)
 
 The label that was used for the custom sale (echoed back from the request).
@@ -71,9 +83,13 @@ The label that was used for the custom sale (echoed back from the request).
 
 The price of the custom sale as a number (converted from string if provided).
 
+#### `quantity` (number)
+
+The quantity applied to the custom sale (echoed back from the request, or `1` if omitted).
+
 #### `applyTaxes` (boolean)
 
-Whether taxes are applied to this custom sale item.
+The requested `applyTaxes` value (or `false` if omitted). This reflects what was requested — if no tax table could be resolved (see `taxTableId`), no tax is actually applied to the cart line even when this is `true`.
 
 #### `timestamp` (string)
 
@@ -114,17 +130,19 @@ const result = await command.addCustomSale({
 });
 ```
 
-### Discount (Negative Price)
+### Quantity
 
-Add a discount as a custom sale:
+Add a custom sale item with a quantity greater than 1:
 
 ```typescript
 const result = await command.addCustomSale({
-  label: 'Loyalty Discount',
-  price: -500, // Negative for discount, $5.00 in minor units
-  applyTaxes: false,
+  label: 'Extra Bag Fee',
+  price: 250, // $2.50 in minor units, per unit
+  quantity: 3,
 });
 ```
+
+> Note: `price` must be a positive integer. This command does not support negative prices for discounts — a `price` of `0` or less throws `"Price must be greater than 0"`.
 
 ### Price as String
 
@@ -190,10 +208,10 @@ await addServiceFee(550); // $5.50 in minor units
 
 When a custom sale is added:
 
-1. The item is validated (label and price must be provided)
+1. The item is validated (`label` and `price` are required; `price` must be a positive integer in minor units; `quantity`, if provided, must be a positive integer)
 2. The item is added to the current cart in the parent application
 3. The quantity is set from `quantity` (defaults to 1)
-4. Taxes are applied if `applyTaxes` is `true`
+4. Taxes are applied if `applyTaxes` is `true` and a tax table can be resolved (an explicit `taxTableId` match, or the organization's standard tax table as fallback)
 5. The item appears in the cart with the specified label and price
 
 ## Error Handling
@@ -217,6 +235,33 @@ await command.addCustomSale({
 });
 ```
 
+### Invalid Price
+
+```typescript
+// Throws: "Price must be greater than 0"
+await command.addCustomSale({
+  label: 'Fee',
+  price: 0, // or a negative value
+});
+
+// Throws: "price must be an integer amount in minor currency units (e.g. 1575 = $15.75)"
+await command.addCustomSale({
+  label: 'Fee',
+  price: 10.5, // non-integer
+});
+```
+
+### Invalid Quantity
+
+```typescript
+// Throws: "quantity must be a positive integer"
+await command.addCustomSale({
+  label: 'Fee',
+  price: 500,
+  quantity: 0, // or a non-integer / negative value
+});
+```
+
 ### Error Response Format
 
 ```typescript
@@ -235,8 +280,9 @@ try {
 
 - `label` must be a non-empty string
 - `price` must be provided and can be a number or string representation of a number
+- `price` must be a positive integer in minor currency units — zero, negative, or non-integer values throw a validation error
+- `quantity`, if provided, must be a positive integer
 - `applyTaxes` is optional and defaults to `false`
-- Price can be negative (for discounts)
 - Price will be converted to a number internally (strings are parsed)
 
 ## Real Data Examples
@@ -246,8 +292,10 @@ try {
 ```json
 {
   "success": true,
+  "customSaleId": "3f9c1e2a-6b7d-4c8e-9a1f-2d5e6b7c8d9e",
   "label": "Custom Item",
   "price": 1000,
+  "quantity": 1,
   "applyTaxes": false,
   "timestamp": "2025-12-04T19:24:13.293Z"
 }
@@ -269,4 +317,5 @@ try {
 - The quantity defaults to 1 when `quantity` is omitted
 - The item is immediately available in the cart after successful addition
 - Custom sales are treated as regular cart items and can be removed or modified like other items
-- If taxes are applied, they are calculated based on the current tax settings in the parent application
+- If `applyTaxes` is `true`, tax is applied using an explicit `taxTableId` match or, otherwise, the organization's standard tax table; if neither is available, no tax is applied even though `applyTaxes` was `true`
+- The addition is published internally as a `product-added` event on the `cart` channel (there is currently no dedicated custom-sale cart event)

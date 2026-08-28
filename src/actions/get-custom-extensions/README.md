@@ -12,9 +12,9 @@ This command does not accept any parameters.
 
 ```typescript
 interface GetCustomExtensionsResponse {
-    success: boolean;
-    customExtensions: CustomExtension[];
-    timestamp: string;
+  success: boolean;
+  customExtensions: CustomExtension[];
+  timestamp: string;
 }
 ```
 
@@ -28,22 +28,22 @@ An array of custom extension objects. Each custom extension has the following st
 
 ```typescript
 type CustomExtension = BaseEntity & {
-    _id: string;
-    label: string;
-    description?: string;
-    backgroundUrl?: string;
-    gallery?: string[];
-    category: string;
-    short_description?: string;
-    long_description?: string;
-    main_image?: string;
-    price: string;
-    isDeleted: boolean;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-    website?: string;
-}
+  _id: string;
+  label: string;
+  description?: string;
+  backgroundUrl?: string;
+  gallery?: string[];
+  category: string;
+  short_description?: string;
+  long_description?: string;
+  main_image?: string;
+  price: number;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  website?: string;
+};
 ```
 
 **Fields:**
@@ -57,7 +57,7 @@ type CustomExtension = BaseEntity & {
 - `main_image` (string, optional): URL to the main image/icon for the extension
 - `backgroundUrl` (string, optional): URL to a background image
 - `gallery` (string[], optional): Array of image URLs for the extension gallery
-- `price` (string): Price of the extension (formatted as string, e.g., "$10.00")
+- `price` (number): Price of the extension in integer minor currency units (e.g., cents) — e.g. `2999` represents $29.99
 - `website` (string, optional): Website URL for the extension
 - `isDeleted` (boolean): Whether the extension has been marked as deleted
 - `createdAt` (string): Creation timestamp
@@ -86,8 +86,8 @@ import { command } from '@final-commerce/command-frame';
 const result = await command.getCustomExtensions();
 
 console.log('Custom Extensions:', result.customExtensions);
-result.customExtensions.forEach(extension => {
-    console.log(`Extension: ${extension.label} - ${extension.category}`);
+result.customExtensions.forEach((extension) => {
+  console.log(`Extension: ${extension.label} - ${extension.category}`);
 });
 ```
 
@@ -100,7 +100,7 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensions();
 
-const activeExtensions = result.customExtensions.filter(ext => !ext.isDeleted);
+const activeExtensions = result.customExtensions.filter((ext) => !ext.isDeleted);
 
 console.log('Active Extensions:', activeExtensions);
 ```
@@ -114,13 +114,16 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensions();
 
-const extensionsByCategory = result.customExtensions.reduce((acc, ext) => {
+const extensionsByCategory = result.customExtensions.reduce(
+  (acc, ext) => {
     if (!acc[ext.category]) {
-        acc[ext.category] = [];
+      acc[ext.category] = [];
     }
     acc[ext.category].push(ext);
     return acc;
-}, {} as Record<string, typeof result.customExtensions>);
+  },
+  {} as Record<string, typeof result.customExtensions>,
+);
 
 console.log('Extensions by Category:', extensionsByCategory);
 ```
@@ -134,16 +137,16 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensions();
 
-result.customExtensions.forEach(extension => {
-    console.log(`Extension: ${extension.label}`);
-    
-    if (extension.main_image) {
-        console.log(`Main Image: ${extension.main_image}`);
-    }
-    
-    if (extension.gallery && extension.gallery.length > 0) {
-        console.log(`Gallery (${extension.gallery.length} images):`, extension.gallery);
-    }
+result.customExtensions.forEach((extension) => {
+  console.log(`Extension: ${extension.label}`);
+
+  if (extension.main_image) {
+    console.log(`Main Image: ${extension.main_image}`);
+  }
+
+  if (extension.gallery && extension.gallery.length > 0) {
+    console.log(`Gallery (${extension.gallery.length} images):`, extension.gallery);
+  }
 });
 ```
 
@@ -156,13 +159,11 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensions();
 
-const extension = result.customExtensions.find(
-    ext => ext.label === 'Loyalty Program Extension'
-);
+const extension = result.customExtensions.find((ext) => ext.label === 'Loyalty Program Extension');
 
 if (extension) {
-    console.log('Found extension:', extension);
-    console.log('Description:', extension.long_description || extension.short_description);
+  console.log('Found extension:', extension);
+  console.log('Description:', extension.long_description || extension.short_description);
 }
 ```
 
@@ -187,11 +188,8 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
       "long_description": "A comprehensive loyalty program that allows you to track customer points, offer rewards, and increase customer retention.",
       "main_image": "https://example.com/images/loyalty-extension.png",
       "backgroundUrl": "https://example.com/images/loyalty-bg.jpg",
-      "gallery": [
-        "https://example.com/images/loyalty-1.png",
-        "https://example.com/images/loyalty-2.png"
-      ],
-      "price": "$29.99",
+      "gallery": ["https://example.com/images/loyalty-1.png", "https://example.com/images/loyalty-2.png"],
+      "price": 2999,
       "website": "https://loyalty-extension.example.com",
       "isDeleted": false,
       "createdAt": "2024-01-01T10:00:00.000Z",
@@ -206,7 +204,7 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
       "short_description": "Real-time inventory insights",
       "long_description": "Get detailed insights into your inventory with real-time tracking, low stock alerts, and comprehensive reporting.",
       "main_image": "https://example.com/images/inventory-extension.png",
-      "price": "$49.99",
+      "price": 4999,
       "isDeleted": false,
       "createdAt": "2024-01-05T08:00:00.000Z",
       "updatedAt": "2024-01-05T08:00:00.000Z",
@@ -222,6 +220,5 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
 - Custom extensions are stored in the local IndexedDB database (LokiJS)
 - Custom extensions are synchronized with the central MongoDB database via station-sync
 - Each extension may have associated custom tables (use `getCustomExtensionCustomTables` to retrieve them)
-- Extensions marked with `isDeleted: true` are typically hidden from the user interface but remain in the database
-- The `price` field is a string representation and may need parsing for numerical operations
-
+- The handler queries for extensions where `isDeleted` is not `true`, so deleted extensions are excluded from `customExtensions` entirely — they remain in the local database but are never returned by this command
+- The `price` field is a number in integer minor currency units (e.g., cents), not a formatted string

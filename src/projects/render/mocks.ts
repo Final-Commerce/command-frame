@@ -31,6 +31,7 @@ import { mockCashPayment } from '../../actions/cash-payment/mock';
 import { mockGetCashRoundingAmount } from '../../actions/get-cash-rounding-amount/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
 import { mockDeleteParkedOrder } from '../../actions/delete-parked-order/mock';
+import { mockVoidOrder } from '../../actions/void-order/mock';
 import { mockExampleFunction } from '../../actions/example-function/mock';
 import { mockGetCategories } from '../../actions/get-categories/mock';
 import { mockGetContext } from '../../actions/get-context/mock';
@@ -43,12 +44,13 @@ import { mockGetTaxTables } from '../../actions/get-tax-tables/mock';
 import { mockGetRemainingRefundableQuantities } from '../../actions/get-remaining-refundable-quantities/mock';
 import { mockGoToStationHome } from '../../actions/go-to-station-home/mock';
 import { mockInitiateRefund } from '../../actions/initiate-refund/mock';
-import { mockOpenExtensionOverlay } from '../../actions/open-extension-overlay/mock';
-import { mockResolveExtensionOverlay } from '../../actions/resolve-extension-overlay/mock';
 import { mockOpenCashDrawer } from '../../actions/open-cash-drawer/mock';
 import { mockParkOrder } from '../../actions/park-order/mock';
 import { mockPartialPayment } from '../../actions/partial-payment/mock';
 import { mockProcessPartialRefund } from '../../actions/process-partial-refund/mock';
+import { mockRedeemRefund } from '../../actions/redeem-refund/mock';
+import { mockGetRefundPlan } from '../../actions/get-refund-plan/mock';
+import { mockCheckPermission } from '../../actions/check-permission/mock';
 import { mockRemoveCustomerFromCart } from '../../actions/remove-customer-from-cart/mock';
 import { mockResetRefundDetails } from '../../actions/reset-refund-details/mock';
 import { mockResumeParkedOrder } from '../../actions/resume-parked-order/mock';
@@ -59,7 +61,6 @@ import { mockShowNotification } from '../../actions/show-notification/mock';
 import { mockSwitchUser } from '../../actions/switch-user/mock';
 import { mockTapToPayPayment } from '../../actions/tap-to-pay-payment/mock';
 import { mockTerminalPayment } from '../../actions/terminal-payment/mock';
-import { mockVendaraPayment } from '../../actions/vendara-payment/mock';
 import { mockExtensionPayment } from '../../actions/extension-payment/mock';
 import { mockRedeemPayment } from '../../actions/redeem-payment/mock';
 import { mockIntegrationPayment } from '../../actions/integration-payment/mock';
@@ -91,6 +92,7 @@ import { mockSetActiveUser } from '../../actions/set-active-user/mock';
 import { mockSetActiveRefund } from '../../actions/set-active-refund/mock';
 import { canTransitionMock } from '../../actions/can-transition/mock';
 import { getAvailableTransitionsMock } from '../../actions/get-available-transitions/mock';
+import { applyTransitionMock } from '../../actions/apply-transition/mock';
 import { mockGetSmartGridLayout } from '../../actions/get-smart-grid-layout/mock';
 import { mockSaveSmartGridLayout } from '../../actions/save-smart-grid-layout/mock';
 import { mockSendEmail } from '../../actions/send-email/mock';
@@ -125,6 +127,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getCashRoundingAmount: mockGetCashRoundingAmount,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
+  voidOrder: mockVoidOrder,
   exampleFunction: mockExampleFunction,
   getCategories: mockGetCategories,
   getContext: mockGetContext,
@@ -137,12 +140,13 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getRemainingRefundableQuantities: mockGetRemainingRefundableQuantities,
   goToStationHome: mockGoToStationHome,
   initiateRefund: mockInitiateRefund,
-  openExtensionOverlay: mockOpenExtensionOverlay,
-  resolveExtensionOverlay: mockResolveExtensionOverlay,
   openCashDrawer: mockOpenCashDrawer,
   parkOrder: mockParkOrder,
   partialPayment: mockPartialPayment,
   processPartialRefund: mockProcessPartialRefund,
+  redeemRefund: mockRedeemRefund,
+  getRefundPlan: mockGetRefundPlan,
+  checkPermission: mockCheckPermission,
   removeCustomerFromCart: mockRemoveCustomerFromCart,
   removeCartDiscount: mockRemoveCartDiscount,
   resetRefundDetails: mockResetRefundDetails,
@@ -154,7 +158,6 @@ export const RENDER_MOCKS: RenderProviderActions = {
   switchUser: mockSwitchUser,
   tapToPayPayment: mockTapToPayPayment,
   terminalPayment: mockTerminalPayment,
-  vendaraPayment: mockVendaraPayment,
   extensionPayment: mockExtensionPayment,
   redeemPayment: mockRedeemPayment,
   integrationPayment: mockIntegrationPayment,
@@ -194,6 +197,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
     Promise.resolve({ success: true, externalId: params.externalId, timestamp: new Date().toISOString() }),
   canTransition: canTransitionMock,
   getAvailableTransitions: getAvailableTransitionsMock,
+  applyTransition: applyTransitionMock,
   getSmartGridLayout: mockGetSmartGridLayout,
   saveSmartGridLayout: mockSaveSmartGridLayout,
   sendEmail: mockSendEmail,

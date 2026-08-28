@@ -1,6 +1,6 @@
 # addOrderNote
 
-Adds a note to the current order/cart.
+Adds a note to the current order/cart. This replaces any existing order note — the cart holds a single note field, not an accumulating list.
 
 ## Parameters
 
@@ -23,11 +23,14 @@ import { command } from '@final-commerce/command-frame';
 
 // Add a note to the order
 await command.addOrderNote({
-  note: 'Customer requested delivery by 3pm'
+  note: 'Customer requested delivery by 3pm',
 });
 ```
 
+## Events
+
+- Publishes a `cart-created` event on the `cart` topic with the updated cart
+
 ## Error Handling
 
-- Throws an error if parameters are missing
-
+- Throws `Error('Note is required')` if `note` is missing or an empty string

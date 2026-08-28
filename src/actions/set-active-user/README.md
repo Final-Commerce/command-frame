@@ -4,13 +4,22 @@ Loads a user by `userId` and sets them as the active POS user (where the host su
 
 ## Parameters
 
-| Field     | Type     | Required |
-| :-------- | :------- | :------- |
-| `userId`  | `string` | Yes      |
+| Field    | Type     | Required |
+| :------- | :------- | :------- |
+| `userId` | `string` | Yes      |
 
 ## Response
 
-Returns `user` ([`CFActiveUser`](../../types/README.md#cfactiveuser)).
+| Field       | Type                                                 |
+| :---------- | :--------------------------------------------------- |
+| `success`   | `boolean`                                            |
+| `user`      | [`CFActiveUser`](../../types/README.md#cfactiveuser) |
+| `timestamp` | `string`                                             |
+
+## Errors
+
+- Throws `User ID is required` if `userId` is omitted.
+- Throws `User with ID ${userId} not found` if no matching user exists.
 
 ## Example
 

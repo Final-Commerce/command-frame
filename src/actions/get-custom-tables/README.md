@@ -12,9 +12,9 @@ This command does not accept any parameters.
 
 ```typescript
 interface GetCustomTablesResponse {
-    success: boolean;
-    customTables: CFCustomTable[];
-    timestamp: string;
+  success: boolean;
+  customTables: CFCustomTable[];
+  timestamp: string;
 }
 ```
 
@@ -28,13 +28,13 @@ An array of custom table objects. Each custom table has the following structure:
 
 ```typescript
 type CFCustomTable = BaseEntity & {
-    name: string;
-    description?: string;
-    metadata?: Array<{
-        key: string;
-        value: any;
-    }>;
-}
+  name: string;
+  description?: string;
+  metadata?: Array<{
+    key: string;
+    value: any;
+  }>;
+};
 ```
 
 **Fields:**
@@ -68,8 +68,8 @@ import { command } from '@final-commerce/command-frame';
 const result = await command.getCustomTables();
 
 console.log('Custom Tables:', result.customTables);
-result.customTables.forEach(table => {
-    console.log(`Table: ${table.name} (ID: ${table._id})`);
+result.customTables.forEach((table) => {
+  console.log(`Table: ${table.name} (ID: ${table._id})`);
 });
 ```
 
@@ -90,13 +90,7 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
       "name": "customer_preferences",
       "description": "Store customer preferences and settings",
       "createdAt": "2024-01-01T10:00:00.000Z",
-      "updatedAt": "2024-01-01T10:00:00.000Z",
-      "metadata": [
-        {
-          "key": "category",
-          "value": "customer_data"
-        }
-      ]
+      "updatedAt": "2024-01-01T10:00:00.000Z"
     },
     {
       "_id": "65a1b2c3d4e5f6g7h8i9j0k2",
@@ -116,4 +110,5 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
 - Custom tables are synchronized with the central MongoDB database via station-sync
 - Use `getCustomTableFields` to retrieve the field definitions for a specific table
 - Use `getCustomTableData` to retrieve the actual data stored in a custom table
-
+- On first use after app startup, the handler waits for the custom tables collection's initial sync to finish (bounded by an internal timeout) before querying
+- The underlying custom table record only carries `_id`, `name`, `description`, `createdAt`, and `updatedAt` — `metadata` is part of the published type but is not currently populated by this handler

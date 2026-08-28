@@ -2,16 +2,18 @@
 
 Performs batch variant operations on a product: add new variants, update existing ones, or delete variants.
 
+> **Manage-scoped command.** This is a Manage administrative command (product catalog management), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
+
 ## Parameters
 
 ### `EditProductVariantsParams`
 
 ```typescript
 interface EditProductVariantsParams {
-    productId: string;
-    additions?: Omit<CFProductVariant, '_id'>[];
-    changes?: Array<{ _id: string; changes: Partial<CFProductVariant> }>;
-    deletions?: string[];
+  productId: string;
+  additions?: Omit<CFProductVariant, '_id'>[];
+  changes?: Array<{ _id: string; changes: Partial<CFProductVariant> }>;
+  deletions?: string[];
 }
 ```
 
@@ -37,8 +39,8 @@ Array of variant IDs to delete.
 
 ```typescript
 interface EditProductVariantsResponse {
-    success: boolean;
-    timestamp: string;
+  success: boolean;
+  timestamp: string;
 }
 ```
 
@@ -48,14 +50,20 @@ interface EditProductVariantsResponse {
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.editProductVariants({
-    productId: '64abc123def456',
-    additions: [
-        { sku: 'NEW-VAR', price: '15.00', salePrice: '0', isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'XL' }] },
-    ],
-    changes: [
-        { _id: 'variant_001', changes: { price: '12.00' } },
-    ],
-    deletions: ['variant_old_001'],
+  productId: '64abc123def456',
+  additions: [
+    // price/salePrice are in integer minor units (cents)
+    {
+      sku: 'NEW-VAR',
+      price: 1500,
+      salePrice: 0,
+      isOnSale: false,
+      manageStock: true,
+      attributes: [{ name: 'Size', value: 'XL' }],
+    },
+  ],
+  changes: [{ _id: 'variant_001', changes: { price: 1200 } }],
+  deletions: ['variant_old_001'],
 });
 console.log(result.success); // true
 ```

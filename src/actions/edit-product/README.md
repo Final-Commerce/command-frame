@@ -2,21 +2,23 @@
 
 Updates product metadata (name, description, status, etc.) for an existing product. Does not modify variants -- use `editProductVariants` for that.
 
+> **Manage-only.** This is an administrative command scoped to the Manage app (product catalog admin). It has no kaching POS-runtime handler.
+
 ## Parameters
 
 ### `EditProductParams`
 
 ```typescript
 interface EditProductParams {
-    productId: string;
-    changes: {
-        name?: string;
-        description?: string;
-        categories?: string[];
-        taxTable?: string | null;
-        images?: string[];
-        status?: 'active' | 'inactive';
-    };
+  productId: string;
+  changes: {
+    name?: string;
+    description?: string;
+    categories?: string[];
+    taxTable?: string | null;
+    images?: string[];
+    status?: 'active' | 'inactive';
+  };
 }
 ```
 
@@ -34,8 +36,8 @@ Object containing the fields to update. Only provided fields are changed.
 
 ```typescript
 interface EditProductResponse {
-    product: CFProduct;
-    timestamp: string;
+  product: CFProduct;
+  timestamp: string;
 }
 ```
 
@@ -47,11 +49,11 @@ Returns the updated product with all current data.
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.editProduct({
-    productId: '64abc123def456',
-    changes: {
-        name: 'Updated Product Name',
-        status: 'inactive',
-    },
+  productId: '64abc123def456',
+  changes: {
+    name: 'Updated Product Name',
+    status: 'inactive',
+  },
 });
 console.log(result.product.name); // "Updated Product Name"
 ```
