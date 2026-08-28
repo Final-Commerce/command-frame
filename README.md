@@ -10,13 +10,15 @@ Command Frame provides a structured way to build integrations that run inside Fi
 
 The library provides three main capabilities:
 
-| Capability          | Purpose                                                                   | Scope                                     |
-| ------------------- | ------------------------------------------------------------------------- | ----------------------------------------- |
-| **Commands**        | Call host functions from the iframe (e.g. get products, open cash drawer) | Request/response per call                 |
-| **Pub/Sub**         | Subscribe to real-time events from the host (e.g. cart changes, payments) | Page-scoped (while iframe is mounted)     |
-| **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`, or mixed-destination legs on `processPartialRefund`; query engine capacity with `getRefundPlan`; pre-gate UI with `checkPermission` (`issue_refunds` is enforced runtime-side) | Request/response per call                 |
+| Capability          | Purpose                                                                                                                                                                                                                                            | Scope                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| **Commands**        | Call host functions from the iframe (e.g. get products, open cash drawer)                                                                                                                                                                          | Request/response per call             |
+| **Pub/Sub**         | Subscribe to real-time events from the host (e.g. cart changes, payments)                                                                                                                                                                          | Page-scoped (while iframe is mounted) |
+| **Refund commands** | Refund payments to gift cards or redeem tenders via `redeemRefund`, or mixed-destination legs on `processPartialRefund`; query engine capacity with `getRefundPlan`; pre-gate UI with `checkPermission` (`issue_refunds` is enforced runtime-side) | Request/response per call             |
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
+
+The order lifecycle — payment × fulfillment state pairs, display labels, the transition guard chain, and the financial invariants — is documented in **[Order state machine reference](./docs/order-state-machine.md)**. Read it before building anything that reads or moves order state (`canTransition`, `getAvailableTransitions`, `applyTransition`, park/void/resume, payments, refunds).
 
 ## Installation
 

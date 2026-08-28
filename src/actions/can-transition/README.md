@@ -2,14 +2,16 @@
 
 Read-only query: would the order-state-machine allow moving to a given `{ payment, fulfillment }` state pair? Runs the same guard chain the runtime uses to gate real transitions — financial invariants, then cross-axis rules, then path rules, then transition conditions — without mutating anything.
 
+> Full state model — every state, display label, guard layer, and invariant — in the [Order state machine reference](../../../docs/order-state-machine.md).
+
 ## Parameters
 
 `params: CanTransitionParams`
 
-| Parameter | Type          | Required | Description                                                                                                                                |
-| --------- | ------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Parameter | Type          | Required | Description                                                                                                                                     |
+| --------- | ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `orderId` | `string`      | No       | Order to evaluate. Defaults to the active order; if there is no active order (or none matches), evaluates as a brand-new order (`from = null`). |
-| `to`      | `CFStatePair` | Yes      | Target `{ payment, fulfillment }` pair to evaluate.                                                                                          |
+| `to`      | `CFStatePair` | Yes      | Target `{ payment, fulfillment }` pair to evaluate.                                                                                             |
 
 ## Response
 
@@ -29,12 +31,12 @@ Read-only query: would the order-state-machine allow moving to a given `{ paymen
 
 The engine runs these checks in order and returns on the first hit:
 
-| `blockedBy`            | Meaning                                                                                                | `guard`                                                             |
-| ----------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `financial_invariant`   | A hard-coded money-integrity rule was violated (e.g. un-refunding, payment regression, un-voiding).       | id of the violated invariant, e.g. `no-payment-regression`             |
-| `cross_axis_rule`       | A configured rule blocking this payment/fulfillment combination (e.g. fulfilling before payment).         | id of the rule, e.g. `require-payment-before-fulfillment-complete`    |
-| `path`                  | No `from` state and `to` isn't a valid initial pair, or a configured path rule blocks `from` → `to`.      | not set                                                                |
-| `condition`             | Transition conditions configured for this path aren't satisfied.                                          | not set — see `failedConditions` instead                              |
+| `blockedBy`           | Meaning                                                                                              | `guard`                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `financial_invariant` | A hard-coded money-integrity rule was violated (e.g. un-refunding, payment regression, un-voiding).  | id of the violated invariant, e.g. `no-payment-regression`         |
+| `cross_axis_rule`     | A configured rule blocking this payment/fulfillment combination (e.g. fulfilling before payment).    | id of the rule, e.g. `require-payment-before-fulfillment-complete` |
+| `path`                | No `from` state and `to` isn't a valid initial pair, or a configured path rule blocks `from` → `to`. | not set                                                            |
+| `condition`           | Transition conditions configured for this path aren't satisfied.                                     | not set — see `failedConditions` instead                           |
 
 `allowed: true` is the only shape with no other fields set.
 
