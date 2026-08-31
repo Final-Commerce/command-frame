@@ -1,6 +1,6 @@
 # addProductToCart
 
-Adds a product to the cart in the parent application. This atomic action handles product selection, application of options (discounts, fees, notes), and addition to the cart in a single step.
+Adds a product to the cart in the parent application. This atomic action handles product selection, application of options (discounts, fees, notes), and addition to the cart in a single step. `quantity` may be fractional when the variant carries a `unit` (1.509 kg is a sale) — build quantity inputs from `unit.precision`, never as a hardcoded integer stepper.
 
 ## Parameters
 
@@ -8,11 +8,11 @@ Adds a product to the cart in the parent application. This atomic action handles
 
 ```typescript
 interface AddProductToCartParams {
-    variantId: string;           // ID of variant to add.
-    quantity?: number;           // Optional, default: 1
-    discounts?: AddProductDiscountParams[]; // Optional array of discounts to apply immediately
-    fees?: AddProductFeeParams[];           // Optional array of fees to apply immediately
-    notes?: string | string[];              // Optional note or array of notes to add immediately
+  variantId: string; // ID of variant to add.
+  quantity?: number; // Optional, default: 1
+  discounts?: AddProductDiscountParams[]; // Optional array of discounts to apply immediately
+  fees?: AddProductFeeParams[]; // Optional array of fees to apply immediately
+  notes?: string | string[]; // Optional note or array of notes to add immediately
 }
 ```
 
@@ -36,19 +36,53 @@ An array of fee objects to apply to this specific cart item upon addition. See `
 
 A string or array of strings containing notes to attach to this cart item. If an array is passed, only the last entry is kept — each note overwrites the previous one, since the cart item stores a single note string rather than a list.
 
+### Quantities and units
+
+A variant may be sold by measure — per kilogram, per litre, per metre — rather than by the piece.
+Such a variant carries a resolved `unit` alongside its `unitId`:
+
+```typescript
+variant.unit = {
+    _id: string;
+    name: string;          // "Litre"
+    abbreviation: string;  // "l"
+    ratioToBase: number;   // 1000 — millilitres in a litre
+    precision: number;     // 3 — decimals a quantity may carry
+}
+```
+
+`price` is per that unit, and `quantity` is denominated in it. `0.456` is a real quantity.
+
+**Build the quantity field from `unit.precision`**, never from a constant:
+
+```typescript
+const precision = variant.unit?.precision ?? 0; // no unit → sold by the piece
+const step = 1 / 10 ** precision; // 0.001 for a litre, 1 for a piece
+```
+
+The engine refuses a quantity finer than the unit allows and names the unit in the error — surface
+that message; the cashier needs to know whether to drop a decimal or whether the item simply is not
+sold that way. Do not round, floor or clamp the typed value first: a quantity that is silently
+altered is charged and deducted differently from the one the cashier entered, and neither of them
+is the one on the scale.
+
+The line total is `price × quantity`, rounded to the currency's minor unit exactly once. Compute it
+with `extendPrice` from `@final-commerce/common` rather than multiplying — a float multiply drifts,
+and coercing the quantity to an integer first is how `4.234 L` was once charged as four.
+
 ## Response
 
 ### `AddProductToCartResponse`
 
 ```typescript
 interface AddProductToCartResponse {
-    success: boolean;
-    productId: string;
-    variantId: string;
-    internalId: string; // The unique ID of the line item in the cart
-    name: string;
-    quantity: number;
-    timestamp: string;
+  success: boolean;
+  productId: string;
+  variantId: string;
+  internalId: string; // The unique ID of the line item in the cart
+  name: string;
+  quantity: number;
+  timestamp: string;
 }
 ```
 
@@ -73,7 +107,7 @@ Add a product with default quantity:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.addProductToCart({
-    variantId: 'variant-id-123'
+  variantId: 'variant-id-123',
 });
 
 console.log(`Added item with internal ID: ${result.internalId}`);
@@ -85,18 +119,22 @@ Add a product with quantity, discount, fee, and note all in one request:
 
 ```typescript
 const result = await command.addProductToCart({
-    variantId: 'variant-id-123',
-    quantity: 2,
-    discounts: [{
-        amount: 5,
-        isPercent: true,
-        label: 'Happy Hour 5%'
-    }],
-    fees: [{
-        amount: 150, // $1.50 in integer minor units
-        label: 'Service Charge'
-    }],
-    notes: 'No onions'
+  variantId: 'variant-id-123',
+  quantity: 2,
+  discounts: [
+    {
+      amount: 5,
+      isPercent: true,
+      label: 'Happy Hour 5%',
+    },
+  ],
+  fees: [
+    {
+      amount: 150, // $1.50 in integer minor units
+      label: 'Service Charge',
+    },
+  ],
+  notes: 'No onions',
 });
 ```
 
@@ -104,10 +142,10 @@ const result = await command.addProductToCart({
 
 ```typescript
 try {
-    await command.addProductToCart({ variantId: 'invalid-id' });
+  await command.addProductToCart({ variantId: 'invalid-id' });
 } catch (error) {
-    // error.message === "Variant with ID invalid-id not found"
-    console.error('Failed to add product:', error.message);
+  // error.message === "Variant with ID invalid-id not found"
+  console.error('Failed to add product:', error.message);
 }
 ```
 

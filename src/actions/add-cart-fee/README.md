@@ -32,14 +32,14 @@ import { command } from '@final-commerce/command-frame';
 await command.addCartFee({
   amount: 500, // $5.00 in minor units
   label: 'Service Fee',
-  applyTaxes: true
+  applyTaxes: true,
 });
 
 // Add a percentage-based fee
 await command.addCartFee({
   amount: 10,
   isPercent: true,
-  label: 'Processing Fee'
+  label: 'Processing Fee',
 });
 ```
 
@@ -53,4 +53,3 @@ await command.addCartFee({
 ## Events
 
 This action publishes a `cart-fee-added` event on the `cart` topic when a fee is successfully added.
-

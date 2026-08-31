@@ -8,23 +8,23 @@ Saves a builder SmartGrid layout into the parent application's local smart grid 
 
 ```typescript
 interface SaveSmartGridLayoutParams {
-    layout: CFSmartGridLayout;
+  layout: CFSmartGridLayout;
 }
 ```
 
 ```typescript
 interface CFSmartGridLayout {
-    gridId: string;
-    cells: CFTileCell[];
-    name?: string;                          // Operator-editable display name for the grid.
-    folders?: Record<string, CFTileCell[]>; // Folder id -> its cells.
+  gridId: string;
+  cells: CFTileCell[];
+  name?: string; // Operator-editable display name for the grid.
+  folders?: Record<string, CFTileCell[]>; // Folder id -> its cells.
 }
 
 interface CFTileCell {
-    index: number;
-    type: "empty" | "product" | "action" | "category" | "folder" | "back";
-    entityId?: string;                      // Product/category/folder id, action key, etc.
-    entityData?: Record<string, unknown>;
+  index: number;
+  type: 'empty' | 'product' | 'action' | 'category' | 'folder' | 'back';
+  entityId?: string; // Product/category/folder id, action key, etc.
+  entityData?: Record<string, unknown>;
 }
 ```
 
@@ -43,9 +43,9 @@ The layout to save.
 
 ```typescript
 interface SaveSmartGridLayoutResponse {
-    success: boolean;
-    gridId: string;
-    timestamp: string;
+  success: boolean;
+  gridId: string;
+  timestamp: string;
 }
 ```
 
@@ -62,13 +62,13 @@ The returned promise rejects if:
 import { command } from '@final-commerce/command-frame';
 
 const { success, gridId } = await command.saveSmartGridLayout({
-    layout: {
-        gridId: 'main-grid',
-        cells: [
-            { index: 0, type: 'product', entityId: 'prod-123' },
-            { index: 1, type: 'empty' },
-        ],
-    },
+  layout: {
+    gridId: 'main-grid',
+    cells: [
+      { index: 0, type: 'product', entityId: 'prod-123' },
+      { index: 1, type: 'empty' },
+    ],
+  },
 });
 ```
 

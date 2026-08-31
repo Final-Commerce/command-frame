@@ -60,7 +60,7 @@ console.log(result.value); // use securely, do not log in production
 ```typescript
 const result = await command.getSecretVal({
   key: 'webhook-url',
-  extensionId: 'your-extension-id'
+  extensionId: 'your-extension-id',
 });
 ```
 

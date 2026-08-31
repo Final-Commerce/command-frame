@@ -4,8 +4,8 @@ Calculates and returns a preview of the refund total based on current refund sel
 
 ## Parameters
 
-| Field     | Type     | Required | Description                                                                                                    |
-| :-------- | :------- | :------- | :--------------------------------------------------------------------------------------------------------------- |
+| Field     | Type     | Required | Description                                                                                                                       |
+| :-------- | :------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------- |
 | `orderId` | `string` | No       | Order ID to load and set as the active order before calculating. When omitted, the currently active order in Redux state is used. |
 
 Refund selections (which items/fees/tips to refund) always come from the current `refundDetails` in Redux state — `orderId` only controls which order those selections are calculated against.
@@ -14,18 +14,18 @@ Refund selections (which items/fees/tips to refund) always come from the current
 
 `Promise<CalculateRefundTotalResponse>`
 
-| Field              | Type     | Description                               |
-| :----------------- | :------- | :---------------------------------------- |
-| `success`          | `boolean` | Always `true`; a failed calculation throws instead of resolving. |
-| `summary`          | `object` | Summary of refund totals.                |
-| `summary.subtotal` | `string` | Subtotal of refunded items.              |
-| `summary.tax`      | `string` | Total tax amount.                        |
-| `summary.total`    | `string` | Total refund amount.                     |
-| `refundedLineItems` | `any[]` | Array of refunded line items with calculated totals. |
-| `refundedCustomSales` | `any[]` | Array of refunded custom sales with calculated totals. |
-| `timestamp`        | `string` | ISO date string of when the action occurred. |
+| Field                 | Type      | Description                                                      |
+| :-------------------- | :-------- | :--------------------------------------------------------------- |
+| `success`             | `boolean` | Always `true`; a failed calculation throws instead of resolving. |
+| `summary`             | `object`  | Summary of refund totals.                                        |
+| `summary.subtotal`    | `string`  | Subtotal of refunded items.                                      |
+| `summary.tax`         | `string`  | Total tax amount.                                                |
+| `summary.total`       | `string`  | Total refund amount.                                             |
+| `refundedLineItems`   | `any[]`   | Array of refunded line items with calculated totals.             |
+| `refundedCustomSales` | `any[]`   | Array of refunded custom sales with calculated totals.           |
+| `timestamp`           | `string`  | ISO date string of when the action occurred.                     |
 
-> **⚠️ Encoding caveat**: unlike everywhere else on this API (integer minor units), the `summary.subtotal` / `summary.tax` / `summary.total` values are **decimal display strings** (e.g. `'22.60'`), while `refundedLineItems[].total` / `totalTax` in the *same response* remain integer minor-unit numbers. Never feed `summary` values into money params (`processPartialRefund`, `redeemRefund`, …) without converting. Aligning `summary` to minor units is planned as a future breaking change.
+> **⚠️ Encoding caveat**: unlike everywhere else on this API (integer minor units), the `summary.subtotal` / `summary.tax` / `summary.total` values are **decimal display strings** (e.g. `'22.60'`), while `refundedLineItems[].total` / `totalTax` in the _same response_ remain integer minor-unit numbers. Never feed `summary` values into money params (`processPartialRefund`, `redeemRefund`, …) without converting. Aligning `summary` to minor units is planned as a future breaking change.
 
 ## Example Usage
 
@@ -51,7 +51,6 @@ try {
   //   refundedCustomSales: [...],
   //   timestamp: '2023-10-27T10:00:00.000Z'
   // }
-
 } catch (error) {
   console.error('Failed to calculate refund total:', error);
 }
@@ -77,4 +76,3 @@ try {
 - This is a preview calculation and does not process the refund.
 - Calculations include taxes, discounts, fees, and tips proportionally.
 - Tax calculations respect tax-inclusive vs tax-exclusive settings.
-

@@ -8,26 +8,26 @@ Truth source is the runtime's hydrated active user — role and permissions come
 
 `params: CheckPermissionParams`
 
-| Parameter    | Type     | Required | Description                                  |
-| ------------ | -------- | -------- | -------------------------------------------- |
-| `permission` | `string` | Yes      | Permission name, e.g. `'issue_refunds'`.     |
+| Parameter    | Type     | Required | Description                              |
+| ------------ | -------- | -------- | ---------------------------------------- |
+| `permission` | `string` | Yes      | Permission name, e.g. `'issue_refunds'`. |
 
 ## Response
 
 `Promise<CheckPermissionResponse>`
 
-| Field        | Type      | Description                                                       |
-| ------------ | --------- | ----------------------------------------------------------------- |
-| `success`    | `boolean` | Whether the query succeeded.                                      |
-| `permission` | `string`  | Echo of the permission checked.                                   |
+| Field        | Type      | Description                                                                         |
+| ------------ | --------- | ----------------------------------------------------------------------------------- |
+| `success`    | `boolean` | Whether the query succeeded.                                                        |
+| `permission` | `string`  | Echo of the permission checked.                                                     |
 | `allowed`    | `boolean` | True when the active user holds the permission (or their user type bypasses roles). |
-| `timestamp`  | `string`  | ISO timestamp.                                                    |
+| `timestamp`  | `string`  | ISO timestamp.                                                                      |
 
 ## Known permissions
 
-| Permission       | Gates                                                                 |
-| ---------------- | --------------------------------------------------------------------- |
-| `issue_refunds`  | `processPartialRefund`, `redeemRefund` — enforced runtime-side with a `REFUND_PERMISSION_DENIED: `-prefixed throw. |
+| Permission      | Gates                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `issue_refunds` | `processPartialRefund`, `redeemRefund` — enforced runtime-side with a `REFUND_PERMISSION_DENIED: `-prefixed throw. |
 
 ## Example — pre-gating a refund dialog
 

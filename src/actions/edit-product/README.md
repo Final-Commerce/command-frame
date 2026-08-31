@@ -10,15 +10,15 @@ Updates product metadata (name, description, status, etc.) for an existing produ
 
 ```typescript
 interface EditProductParams {
-    productId: string;
-    changes: {
-        name?: string;
-        description?: string;
-        categories?: string[];
-        taxTable?: string | null;
-        images?: string[];
-        status?: 'active' | 'inactive';
-    };
+  productId: string;
+  changes: {
+    name?: string;
+    description?: string;
+    categories?: string[];
+    taxTable?: string | null;
+    images?: string[];
+    status?: 'active' | 'inactive';
+  };
 }
 ```
 
@@ -36,8 +36,8 @@ Object containing the fields to update. Only provided fields are changed.
 
 ```typescript
 interface EditProductResponse {
-    product: CFProduct;
-    timestamp: string;
+  product: CFProduct;
+  timestamp: string;
 }
 ```
 
@@ -49,11 +49,11 @@ Returns the updated product with all current data.
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.editProduct({
-    productId: '64abc123def456',
-    changes: {
-        name: 'Updated Product Name',
-        status: 'inactive',
-    },
+  productId: '64abc123def456',
+  changes: {
+    name: 'Updated Product Name',
+    status: 'inactive',
+  },
 });
 console.log(result.product.name); // "Updated Product Name"
 ```

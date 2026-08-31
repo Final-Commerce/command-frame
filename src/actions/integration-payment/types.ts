@@ -1,4 +1,4 @@
-import type { ExtensionPaymentResponse } from "../extension-payment/types";
+import type { ExtensionPaymentResponse } from '../extension-payment/types';
 
 /**
  * Card display fields for an integration payment.
@@ -15,18 +15,18 @@ import type { ExtensionPaymentResponse } from "../extension-payment/types";
  * produces the typical "Visa **** **** **** 4242" row.
  */
 export interface IntegrationEmvData {
-    /** Card brand, e.g. "Visa", "MasterCard". → "Brand" */
-    brand?: string;
-    /** Cardholder name as printed on the card. → "Cardholder Name" */
-    cardholderName?: string;
-    /** Issuing country (ISO 3166-1 alpha-2), e.g. "US". → "Country" */
-    country?: string;
-    /** Display expiry, e.g. "12/26". → "Expiry date" */
-    expiryDate?: string;
-    /** Issuer / bank name. → "Issuer" */
-    issuer?: string;
-    /** Last 4 digits of the card. kaching masks to "**** **** **** XXXX" before display. → "Card Number" */
-    cardNumberLast4?: string;
+  /** Card brand, e.g. "Visa", "MasterCard". → "Brand" */
+  brand?: string;
+  /** Cardholder name as printed on the card. → "Cardholder Name" */
+  cardholderName?: string;
+  /** Issuing country (ISO 3166-1 alpha-2), e.g. "US". → "Country" */
+  country?: string;
+  /** Display expiry, e.g. "12/26". → "Expiry date" */
+  expiryDate?: string;
+  /** Issuer / bank name. → "Issuer" */
+  issuer?: string;
+  /** Last 4 digits of the card. kaching masks to "**** **** **** XXXX" before display. → "Card Number" */
+  cardNumberLast4?: string;
 }
 
 /**
@@ -41,20 +41,20 @@ export interface IntegrationEmvData {
  *                 doesn't produce card data, use redeemPayment instead.
  */
 export interface IntegrationPaymentParams {
-    amount: number;
-    emvData: IntegrationEmvData;
-    /** Human-readable label (e.g. "Visa ****4242"); shown in the transaction list. */
-    label?: string;
-    /** Identifier of the extension making the call; audit/debug link. */
-    extensionId?: string;
-    /** Label/name of the integration (e.g. "Stripe", "AMP"). Stored on the order's paymentMethod.processor. */
-    processor?: string;
-    referenceId?: string;
-    metadata?: Record<string, unknown>;
-    /** Provider fee in integer MINOR currency units — stored on paymentMethod.processorFee. */
-    processorFee?: number;
-    /** Override the fulfillment state the order lands in on full payment (validated against the fulfillment state machine; invalid values throw). Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
-    checkoutFulfillmentTarget?: string;
+  amount: number;
+  emvData: IntegrationEmvData;
+  /** Human-readable label (e.g. "Visa ****4242"); shown in the transaction list. */
+  label?: string;
+  /** Identifier of the extension making the call; audit/debug link. */
+  extensionId?: string;
+  /** Label/name of the integration (e.g. "Stripe", "AMP"). Stored on the order's paymentMethod.processor. */
+  processor?: string;
+  referenceId?: string;
+  metadata?: Record<string, unknown>;
+  /** Provider fee in integer MINOR currency units — stored on paymentMethod.processorFee. */
+  processorFee?: number;
+  /** Override the fulfillment state the order lands in on full payment (validated against the fulfillment state machine; invalid values throw). Omitted: preserve advanced fulfillment, auto-fulfill from draft/pending/on_hold. */
+  checkoutFulfillmentTarget?: string;
 }
 
 export type IntegrationPaymentResponse = ExtensionPaymentResponse;

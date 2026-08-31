@@ -8,15 +8,16 @@ Sets the discount on the currently active product context (does not touch the ca
 
 ```typescript
 interface SetActiveProductDiscountParams {
-    amount: number;        // Required
-    isPercent?: boolean;   // Optional, default: false
-    label?: string;        // Optional, default: "Discount"
+  amount: number; // Required
+  isPercent?: boolean; // Optional, default: false
+  label?: string; // Optional, default: "Discount"
 }
 ```
 
 #### `amount` (required)
 
 The discount amount.
+
 - If `isPercent` is `false`: Fixed amount in integer minor currency units (e.g., `1000` = $10.00 off). Must be a positive integer.
 - If `isPercent` is `true`: Percentage amount, must be greater than 0 and at most 100 (e.g., `10` = 10% off).
 
@@ -34,11 +35,11 @@ Label for the discount (e.g., "Employee Discount"). Defaults to `"Discount"`.
 
 ```typescript
 interface SetActiveProductDiscountResponse {
-    success: boolean;
-    amount: number;
-    isPercent: boolean;
-    label: string;
-    timestamp: string;
+  success: boolean;
+  amount: number;
+  isPercent: boolean;
+  label: string;
+  timestamp: string;
 }
 ```
 
@@ -52,9 +53,9 @@ await command.setActiveProduct({ variantId: 'v123' });
 
 // 2. Apply a discount to it
 await command.setActiveProductDiscount({
-    amount: 20,
-    isPercent: true,
-    label: 'Flash Sale'
+  amount: 20,
+  isPercent: true,
+  label: 'Flash Sale',
 });
 ```
 
