@@ -8,11 +8,11 @@ None.
 
 ## Response
 
-| Field       | Type     | Description |
-| :---------- | :------- | :---------- |
-| `success`   | `boolean` | |
-| `station`   | [`CFActiveStation`](../../types/README.md#cfactivestation) ` \| null` | |
-| `timestamp` | `string` | |
+| Field       | Type                                                                  | Description |
+| :---------- | :-------------------------------------------------------------------- | :---------- |
+| `success`   | `boolean`                                                             |             |
+| `station`   | [`CFActiveStation`](../../types/README.md#cfactivestation) ` \| null` |             |
+| `timestamp` | `string`                                                              |             |
 
 ## Example
 

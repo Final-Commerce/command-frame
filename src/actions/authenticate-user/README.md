@@ -34,14 +34,14 @@ import { command } from '@final-commerce/command-frame';
 
 // Modal mode — kaching shows its PIN modal
 await command.authenticateUser({
-  roleIds: ['role-123', 'role-456']
+  roleIds: ['role-123', 'role-456'],
 });
 
 // Headless mode — flow owns the PIN UI, no modal shown
 await command.authenticateUser({
   roleIds: ['role-123', 'role-456'],
   userId: 'user-789',
-  pin: '4242'
+  pin: '4242',
 });
 ```
 

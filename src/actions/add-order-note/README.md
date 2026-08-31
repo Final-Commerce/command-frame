@@ -23,7 +23,7 @@ import { command } from '@final-commerce/command-frame';
 
 // Add a note to the order
 await command.addOrderNote({
-  note: 'Customer requested delivery by 3pm'
+  note: 'Customer requested delivery by 3pm',
 });
 ```
 
@@ -34,4 +34,3 @@ await command.addOrderNote({
 ## Error Handling
 
 - Throws `Error('Note is required')` if `note` is missing or an empty string
-

@@ -8,11 +8,11 @@ Sets the fee on the currently active product. This replaces any fee already set 
 
 ```typescript
 interface SetActiveProductFeeParams {
-    amount: number;         // Required
-    isPercent?: boolean;    // Optional, default: false
-    label?: string;         // Optional, default: "Fee"
-    applyTaxes?: boolean;   // Optional, default: false
-    taxTableId?: string;    // Optional: not currently applied (see below)
+  amount: number; // Required
+  isPercent?: boolean; // Optional, default: false
+  label?: string; // Optional, default: "Fee"
+  applyTaxes?: boolean; // Optional, default: false
+  taxTableId?: string; // Optional: not currently applied (see below)
 }
 ```
 
@@ -42,12 +42,12 @@ Part of the contract, but not currently applied: the handler always uses the act
 
 ```typescript
 interface SetActiveProductFeeResponse {
-    success: boolean;
-    amount: number;
-    isPercent: boolean;
-    label: string;
-    applyTaxes: boolean;
-    timestamp: string;
+  success: boolean;
+  amount: number;
+  isPercent: boolean;
+  label: string;
+  applyTaxes: boolean;
+  timestamp: string;
 }
 ```
 
@@ -61,8 +61,8 @@ await command.setActiveProduct({ variantId: 'v123' });
 
 // 2. Set a fee on it
 await command.setActiveProductFee({
-    amount: 500, // $5.00 in minor units
-    label: 'Recycling Fee'
+  amount: 500, // $5.00 in minor units
+  label: 'Recycling Fee',
 });
 ```
 

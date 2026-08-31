@@ -10,7 +10,7 @@ Deletes a product from the catalog.
 
 ```typescript
 interface DeleteProductParams {
-    productId: string;
+  productId: string;
 }
 ```
 
@@ -24,8 +24,8 @@ The ID of the product to delete.
 
 ```typescript
 interface DeleteProductResponse {
-    success: boolean;
-    timestamp: string;
+  success: boolean;
+  timestamp: string;
 }
 ```
 
@@ -35,7 +35,7 @@ interface DeleteProductResponse {
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.deleteProduct({
-    productId: '64abc123def456',
+  productId: '64abc123def456',
 });
 console.log(result.success); // true
 ```

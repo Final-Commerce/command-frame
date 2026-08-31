@@ -8,7 +8,7 @@ Assigns an existing customer to the current active session/cart in the parent ap
 
 ```typescript
 interface AssignCustomerParams {
-    customerId: string;  // Required
+  customerId: string; // Required
 }
 ```
 
@@ -22,9 +22,9 @@ The ID of the customer to assign to the current session.
 
 ```typescript
 interface AssignCustomerResponse {
-    success: boolean;
-    customer: CFCustomer;
-    timestamp: string;
+  success: boolean;
+  customer: CFCustomer;
+  timestamp: string;
 }
 ```
 
@@ -41,7 +41,7 @@ The returned promise rejects if:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.assignCustomer({
-    customerId: '65f4a2b91c3d8e07a6b5c4d3'
+  customerId: '65f4a2b91c3d8e07a6b5c4d3',
 });
 
 console.log('Assigned customer:', result.customer.firstName);
@@ -56,7 +56,7 @@ console.log('Assigned customer:', result.customer.firstName);
 
 ## Events
 
-| Channel | Event | Payload |
-| --- | --- | --- |
+| Channel     | Event               | Payload                    |
+| ----------- | ------------------- | -------------------------- |
 | `customers` | `customer-assigned` | `{ customer: CFCustomer }` |
-| `cart` | `customer-assigned` | `{ customer: CFCustomer }` |
+| `cart`      | `customer-assigned` | `{ customer: CFCustomer }` |

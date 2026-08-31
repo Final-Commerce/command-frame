@@ -8,11 +8,11 @@ None.
 
 ## Response
 
-| Field       | Type     | Description |
-| :---------- | :------- | :---------- |
-| `success`   | `boolean` | |
-| `outlet`    | [`CFActiveOutlet`](../../types/README.md#cfactiveoutlet) ` \| null` | |
-| `timestamp` | `string` | |
+| Field       | Type                                                                | Description |
+| :---------- | :------------------------------------------------------------------ | :---------- |
+| `success`   | `boolean`                                                           |             |
+| `outlet`    | [`CFActiveOutlet`](../../types/README.md#cfactiveoutlet) ` \| null` |             |
+| `timestamp` | `string`                                                            |             |
 
 ## Example
 

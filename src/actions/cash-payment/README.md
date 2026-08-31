@@ -12,12 +12,12 @@ cash from the customer, and pass it as `tenderedAmount` — the response's
 
 `params: CashPaymentParams`
 
-| Parameter              | Type      | Required | Description                                                              |
-| :--------------------- | :-------- | :------- | :----------------------------------------------------------------------- |
-| `amount`               | `number`  | `true`\*  | Amount to pay with this tender (minor units). Must be a positive integer. Less than the balance due → partial payment (fixed split leg). Equal → full payment. More → error. |
-| `tenderedAmount`       | `number`  | `false`  | Cash handed over by the customer (minor units). Must cover the (cash-rounded) charge; the POS computes `change` and skips its own modal. |
-| `openChangeCalculator` | `boolean` | `false`  | **@deprecated** — legacy POS-owned change calculator. Use `tenderedAmount` instead. |
-| `checkoutFulfillmentTarget` | `string` | `false` | Override the fulfillment state after full payment. Must be a valid fulfillment state — an invalid value throws before the payment is attempted. |
+| Parameter                   | Type      | Required | Description                                                                                                                                                                  |
+| :-------------------------- | :-------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `amount`                    | `number`  | `true`\* | Amount to pay with this tender (minor units). Must be a positive integer. Less than the balance due → partial payment (fixed split leg). Equal → full payment. More → error. |
+| `tenderedAmount`            | `number`  | `false`  | Cash handed over by the customer (minor units). Must cover the (cash-rounded) charge; the POS computes `change` and skips its own modal.                                     |
+| `openChangeCalculator`      | `boolean` | `false`  | **@deprecated** — legacy POS-owned change calculator. Use `tenderedAmount` instead.                                                                                          |
+| `checkoutFulfillmentTarget` | `string`  | `false`  | Override the fulfillment state after full payment. Must be a valid fulfillment state — an invalid value throws before the payment is attempted.                              |
 
 \* Optional (and may be `0`) when the cart already nets to a `$0` balance due
 (e.g. fully discounted) — a negative `amount` is still rejected in that case.
@@ -26,19 +26,19 @@ cash from the customer, and pass it as `tenderedAmount` — the response's
 
 `Promise<CashPaymentResponse>`
 
-| Field                | Type     | Description                               |
-| :------------------- | :------- | :---------------------------------------- |
-| `success`            | `boolean` | Always `true` — a failed payment rejects the promise instead of resolving `false` (see Error Handling). |
-| `amount`             | `number`  | The amount paid with this tender (minor units). |
-| `change`             | `number`  | Change due back (minor units). Display this — it accounts for cash rounding. |
-| `tenderedAmount`     | `number?` | Echo of the tendered cash when provided.  |
-| `cashRounding`       | `number`  | Signed rounding delta applied to the charge (minor units); `0` without a setting. |
-| `openChangeCalculator` | `boolean` | **@deprecated** mirror of the request flag. |
-| `paymentType`        | `string`  | `'cash'`.                                 |
-| `order`              | `ActiveOrder \| null` | The created/updated order. Null on a partial leg that didn't complete the sale. |
-| `saleFinalized`     | `boolean` | `true` only when this tender fully completed the sale (the only or final leg); `false` on a still-open split leg. |
-| `remainingBalance`  | `number`  | Balance still due after this tender (minor units); `0` once the sale is finalized. |
-| `timestamp`          | `string`  | ISO date string.                          |
+| Field                  | Type                  | Description                                                                                                       |
+| :--------------------- | :-------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `success`              | `boolean`             | Always `true` — a failed payment rejects the promise instead of resolving `false` (see Error Handling).           |
+| `amount`               | `number`              | The amount paid with this tender (minor units).                                                                   |
+| `change`               | `number`              | Change due back (minor units). Display this — it accounts for cash rounding.                                      |
+| `tenderedAmount`       | `number?`             | Echo of the tendered cash when provided.                                                                          |
+| `cashRounding`         | `number`              | Signed rounding delta applied to the charge (minor units); `0` without a setting.                                 |
+| `openChangeCalculator` | `boolean`             | **@deprecated** mirror of the request flag.                                                                       |
+| `paymentType`          | `string`              | `'cash'`.                                                                                                         |
+| `order`                | `ActiveOrder \| null` | The created/updated order. Null on a partial leg that didn't complete the sale.                                   |
+| `saleFinalized`        | `boolean`             | `true` only when this tender fully completed the sale (the only or final leg); `false` on a still-open split leg. |
+| `remainingBalance`     | `number`              | Balance still due after this tender (minor units); `0` once the sale is finalized.                                |
+| `timestamp`            | `string`              | ISO date string.                                                                                                  |
 
 ## Example Usage
 
@@ -51,7 +51,7 @@ const { roundedAmount } = await command.getCashRoundingAmount();
 // 2. Collect cash in YOUR UI, then pay:
 const result = await command.cashPayment({
   amount: roundedAmount, // minor units; or the cart balance — the POS rounds either way
-  tenderedAmount: 2000,  // $20.00 handed over
+  tenderedAmount: 2000, // $20.00 handed over
 });
 console.log(`Change due (minor units): ${result.change}`);
 

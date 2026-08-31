@@ -4,9 +4,9 @@ Void or cancel an open order. For orders with captured payment legs, refunds the
 
 ## Parameters
 
-| Name      | Type   | Required | Description                                                                                                                                                                                                       |
-| --------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `orderId` | string | No       | Order to void; defaults to the active order.                                                                                                                                                                      |
+| Name      | Type   | Required | Description                                                                                                                                                                                                                                        |
+| --------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `orderId` | string | No       | Order to void; defaults to the active order.                                                                                                                                                                                                       |
 | `reason`  | string | No       | Optional cashier-facing reason. Recorded on both branches — the void audit trail on a pure void, and (verbatim) on the persisted refund plus its own audit trail on the refund branch — and always carried on the `order-voided` event either way. |
 
 ## Response
@@ -15,7 +15,7 @@ Void or cancel an open order. For orders with captured payment legs, refunds the
 {
   success: boolean;
   orderId: string;
-  outcome: "voided" | "refunded";
+  outcome: 'voided' | 'refunded';
   timestamp: string;
 }
 ```

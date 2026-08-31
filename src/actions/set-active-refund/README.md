@@ -4,9 +4,9 @@ Loads the order for the given `orderId`, sets it as the active order, and resets
 
 ## Parameters
 
-| Field      | Type     | Required |
-| :--------- | :------- | :------- |
-| `orderId`  | `string` | Yes      |
+| Field     | Type     | Required |
+| :-------- | :------- | :------- |
+| `orderId` | `string` | Yes      |
 
 ## Response
 

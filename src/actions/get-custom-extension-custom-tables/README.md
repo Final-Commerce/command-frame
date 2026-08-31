@@ -8,7 +8,7 @@ Retrieves all custom tables associated with a specific custom extension from the
 
 ```typescript
 interface GetCustomExtensionCustomTablesParams {
-    extensionId: string;
+  extensionId: string;
 }
 ```
 
@@ -22,9 +22,9 @@ The unique identifier (`_id`) of the custom extension whose associated custom ta
 
 ```typescript
 interface GetCustomExtensionCustomTablesResponse {
-    success: boolean;
-    customTables: CFCustomTable[];
-    timestamp: string;
+  success: boolean;
+  customTables: CFCustomTable[];
+  timestamp: string;
 }
 ```
 
@@ -38,13 +38,13 @@ An array of custom table objects associated with the specified extension. Each c
 
 ```typescript
 type CFCustomTable = BaseEntity & {
-    name: string;
-    description?: string;
-    metadata?: Array<{
-        key: string;
-        value: any;
-    }>;
-}
+  name: string;
+  description?: string;
+  metadata?: Array<{
+    key: string;
+    value: any;
+  }>;
+};
 ```
 
 **Fields:**
@@ -76,12 +76,12 @@ Retrieve all custom tables for a specific extension:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensionCustomTables({
-    extensionId: '65a1b2c3d4e5f6g7h8i9j0k1'
+  extensionId: '65a1b2c3d4e5f6g7h8i9j0k1',
 });
 
 console.log('Extension Custom Tables:', result.customTables);
-result.customTables.forEach(table => {
-    console.log(`Table: ${table.name} (ID: ${table._id})`);
+result.customTables.forEach((table) => {
+  console.log(`Table: ${table.name} (ID: ${table._id})`);
 });
 ```
 
@@ -97,16 +97,16 @@ const extensionsResult = await command.getCustomExtensions();
 
 // For each extension, get its tables
 for (const extension of extensionsResult.customExtensions) {
-    const tablesResult = await command.getCustomExtensionCustomTables({
-        extensionId: extension._id
-    });
-    
-    console.log(`Extension: ${extension.label}`);
-    console.log(`Tables (${tablesResult.customTables.length}):`);
-    
-    tablesResult.customTables.forEach(table => {
-        console.log(`  - ${table.name}: ${table.description || 'No description'}`);
-    });
+  const tablesResult = await command.getCustomExtensionCustomTables({
+    extensionId: extension._id,
+  });
+
+  console.log(`Extension: ${extension.label}`);
+  console.log(`Tables (${tablesResult.customTables.length}):`);
+
+  tablesResult.customTables.forEach((table) => {
+    console.log(`  - ${table.name}: ${table.description || 'No description'}`);
+  });
 }
 ```
 
@@ -121,17 +121,17 @@ const extensionId = '65a1b2c3d4e5f6g7h8i9j0k1';
 
 // Get extension tables
 const tablesResult = await command.getCustomExtensionCustomTables({
-    extensionId
+  extensionId,
 });
 
 // Access data from each table
 for (const table of tablesResult.customTables) {
-    const dataResult = await command.getCustomTableData({
-        tableName: table.name
-    });
-    
-    console.log(`Table: ${table.name}`);
-    console.log(`Records: ${dataResult.data.length}`);
+  const dataResult = await command.getCustomTableData({
+    tableName: table.name,
+  });
+
+  console.log(`Table: ${table.name}`);
+  console.log(`Records: ${dataResult.data.length}`);
 }
 ```
 
@@ -143,37 +143,35 @@ Create a dashboard showing extension information and its data tables:
 import { command } from '@final-commerce/command-frame';
 
 async function buildExtensionDashboard(extensionId: string) {
-    // Get extension details
-    const extensionsResult = await command.getCustomExtensions();
-    const extension = extensionsResult.customExtensions.find(
-        ext => ext._id === extensionId
-    );
-    
-    if (!extension) {
-        console.error('Extension not found');
-        return;
-    }
-    
-    // Get extension's tables
-    const tablesResult = await command.getCustomExtensionCustomTables({
-        extensionId
+  // Get extension details
+  const extensionsResult = await command.getCustomExtensions();
+  const extension = extensionsResult.customExtensions.find((ext) => ext._id === extensionId);
+
+  if (!extension) {
+    console.error('Extension not found');
+    return;
+  }
+
+  // Get extension's tables
+  const tablesResult = await command.getCustomExtensionCustomTables({
+    extensionId,
+  });
+
+  // Build dashboard
+  console.log(`Dashboard for: ${extension.label}`);
+  console.log(`Description: ${extension.description}`);
+  console.log(`Category: ${extension.category}`);
+  console.log(`\nData Tables (${tablesResult.customTables.length}):`);
+
+  for (const table of tablesResult.customTables) {
+    // There is no count API — fetch a page of rows.
+    // (An omitted or falsy limit defaults to 100 host-side.)
+    const dataResult = await command.getCustomTableData({
+      tableName: table.name,
     });
-    
-    // Build dashboard
-    console.log(`Dashboard for: ${extension.label}`);
-    console.log(`Description: ${extension.description}`);
-    console.log(`Category: ${extension.category}`);
-    console.log(`\nData Tables (${tablesResult.customTables.length}):`);
-    
-    for (const table of tablesResult.customTables) {
-        // There is no count API — fetch a page of rows.
-        // (An omitted or falsy limit defaults to 100 host-side.)
-        const dataResult = await command.getCustomTableData({
-            tableName: table.name
-        });
-        
-        console.log(`  ${table.name}: ${dataResult.data.length} rows (first page, max 100)`);
-    }
+
+    console.log(`  ${table.name}: ${dataResult.data.length} rows (first page, max 100)`);
+  }
 }
 
 buildExtensionDashboard('65a1b2c3d4e5f6g7h8i9j0k1');
@@ -187,19 +185,20 @@ Verify if an extension has any associated tables:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensionCustomTables({
-    extensionId: '65a1b2c3d4e5f6g7h8i9j0k1'
+  extensionId: '65a1b2c3d4e5f6g7h8i9j0k1',
 });
 
 if (result.customTables.length === 0) {
-    console.log('This extension has no custom tables');
+  console.log('This extension has no custom tables');
 } else {
-    console.log(`This extension has ${result.customTables.length} custom table(s)`);
+  console.log(`This extension has ${result.customTables.length} custom table(s)`);
 }
 ```
 
 ## Error Handling
 
 The handler throws:
+
 - `Error('extensionId is required')` — when `extensionId` is missing or falsy
 
 An `extensionId` that doesn't match any existing custom extension does **not** throw — the call resolves normally with `customTables: []`.
@@ -259,4 +258,3 @@ An `extensionId` that doesn't match any existing custom extension does **not** t
 - Use `getCustomTableData` to retrieve the actual data stored in a table
 - An extension may have zero or multiple associated custom tables
 - Tables from different extensions are isolated and managed independently
-

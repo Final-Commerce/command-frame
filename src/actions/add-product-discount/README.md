@@ -8,10 +8,10 @@ Adds a discount to a product in the cart. Applies to a specific line item when `
 
 ```typescript
 interface AddProductDiscountParams {
-    amount: number;        // Required
-    internalId?: string;   // Optional: The internalId of the cart item to modify
-    isPercent?: boolean;   // Optional, default: false
-    label?: string;        // Optional, default: "Discount"
+  amount: number; // Required
+  internalId?: string; // Optional: The internalId of the cart item to modify
+  isPercent?: boolean; // Optional, default: false
+  label?: string; // Optional, default: "Discount"
 }
 ```
 
@@ -23,7 +23,8 @@ If omitted, the discount is applied to the current active product context instea
 
 #### `amount` (required)
 
-The discount amount. 
+The discount amount.
+
 - If `isPercent` is `false`: Fixed amount in integer minor currency units (e.g., `1000` = $10.00 off). Must be a positive integer.
 - If `isPercent` is `true`: Percentage amount, must be greater than 0 and at most 100 (e.g., `10` = 10% off).
 
@@ -41,12 +42,12 @@ Label for the discount (e.g., "Employee Discount"). Defaults to `"Discount"`.
 
 ```typescript
 interface AddProductDiscountResponse {
-    success: boolean;
-    amount: number;
-    isPercent: boolean;
-    label: string;
-    internalId?: string;  // Present only when internalId was passed in
-    timestamp: string;
+  success: boolean;
+  amount: number;
+  isPercent: boolean;
+  label: string;
+  internalId?: string; // Present only when internalId was passed in
+  timestamp: string;
 }
 ```
 
@@ -60,10 +61,10 @@ const { internalId } = await command.addProductToCart({ variantId: 'v123' });
 
 // 2. Add discount to that specific item
 await command.addProductDiscount({
-    internalId: internalId,
-    amount: 20,
-    isPercent: true,
-    label: 'Flash Sale'
+  internalId: internalId,
+  amount: 20,
+  isPercent: true,
+  label: 'Flash Sale',
 });
 ```
 
