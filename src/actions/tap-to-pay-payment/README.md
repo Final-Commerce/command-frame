@@ -6,10 +6,10 @@ Initiates a tap-to-pay payment for the current cart.
 
 `params?: TapToPayPaymentParams`
 
-| Parameter | Type     | Required | Description                                                              |
-| :-------- | :------- | :------- | :----------------------------------------------------------------------- |
-| `amount`  | `number` | `true`\* | Integer minor units; below the balance due → partial payment (fixed split leg); equal → full payment; above → error. |
-| `checkoutFulfillmentTarget` | `string` | `false` | Override the fulfillment state after full payment. Must be a valid fulfillment state — an invalid value throws before the payment is attempted. |
+| Parameter                   | Type     | Required | Description                                                                                                                                     |
+| :-------------------------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `amount`                    | `number` | `true`\* | Integer minor units; below the balance due → partial payment (fixed split leg); equal → full payment; above → error.                            |
+| `checkoutFulfillmentTarget` | `string` | `false`  | Override the fulfillment state after full payment. Must be a valid fulfillment state — an invalid value throws before the payment is attempted. |
 
 \* Optional (and may be `0`) when the cart already nets to a `$0` balance due (e.g. fully discounted) — a negative `amount` is still rejected in that case.
 
@@ -17,17 +17,17 @@ Initiates a tap-to-pay payment for the current cart.
 
 `Promise<TapToPayPaymentResponse>`
 
-| Field       | Type     | Description                               |
-| :---------- | :------- | :---------------------------------------- |
-| `success`   | `boolean` | Always `true` — a failed payment rejects the promise instead of resolving `false` (see Error Handling). |
-| `amount`    | `number` | The amount charged for this tender, in integer minor currency units. |
-| `paymentType` | `string` | The payment type ('tapToPay').            |
-| `order`     | `ActiveOrder \| null` | The created/updated order. `null` on a partial leg that didn't complete the sale. |
-| `change`  | `number` | Always `0` for tap-to-pay (change/cash-rounding only apply to cash tenders). |
-| `cashRounding` | `number` | Always `0` for tap-to-pay (cash-only). |
-| `saleFinalized` | `boolean` | `true` only when this tender fully completed the sale (the only or final leg); `false` on a still-open split leg. |
-| `remainingBalance` | `number` | Balance still due after this tender (minor units); `0` once the sale is finalized. |
-| `timestamp` | `string` | ISO date string of when the action occurred. |
+| Field              | Type                  | Description                                                                                                       |
+| :----------------- | :-------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `success`          | `boolean`             | Always `true` — a failed payment rejects the promise instead of resolving `false` (see Error Handling).           |
+| `amount`           | `number`              | The amount charged for this tender, in integer minor currency units.                                              |
+| `paymentType`      | `string`              | The payment type ('tapToPay').                                                                                    |
+| `order`            | `ActiveOrder \| null` | The created/updated order. `null` on a partial leg that didn't complete the sale.                                 |
+| `change`           | `number`              | Always `0` for tap-to-pay (change/cash-rounding only apply to cash tenders).                                      |
+| `cashRounding`     | `number`              | Always `0` for tap-to-pay (cash-only).                                                                            |
+| `saleFinalized`    | `boolean`             | `true` only when this tender fully completed the sale (the only or final leg); `false` on a still-open split leg. |
+| `remainingBalance` | `number`              | Balance still due after this tender (minor units); `0` once the sale is finalized.                                |
+| `timestamp`        | `string`              | ISO date string of when the action occurred.                                                                      |
 
 ## Example Usage
 
@@ -37,7 +37,7 @@ import { command } from '@final-commerce/command-frame';
 try {
   // Pay with tap to pay for the cart's balance due
   const result = await command.tapToPayPayment({
-    amount: 2550 // $25.50 in minor units
+    amount: 2550, // $25.50 in minor units
   });
   console.log('Payment processed:', result);
   console.log('Order:', result.order);
@@ -61,9 +61,8 @@ try {
 
   // Pay with tap to pay for a specific amount (partial payment if below the balance due)
   await command.tapToPayPayment({
-    amount: 5000 // $50.00 in minor units
+    amount: 5000, // $50.00 in minor units
   });
-
 } catch (error) {
   console.error('Failed to process tap to pay payment:', error);
 }

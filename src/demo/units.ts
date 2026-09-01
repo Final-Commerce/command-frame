@@ -15,17 +15,17 @@
 
 /** A fixed money amount must be an integer count of minor units. */
 export function requireMinorUnitsInteger(amount: number | string, what: string): number {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) {
-        throw new Error(`${what} must be a valid number`);
-    }
-    if (!Number.isInteger(n)) {
-        throw new Error(`${what} must be an integer amount in minor currency units (e.g. 1575 = $15.75)`);
-    }
-    return n;
+  const n = Number(amount);
+  if (!Number.isFinite(n)) {
+    throw new Error(`${what} must be a valid number`);
+  }
+  if (!Number.isInteger(n)) {
+    throw new Error(`${what} must be an integer amount in minor currency units (e.g. 1575 = $15.75)`);
+  }
+  return n;
 }
 
 /** A percent arrives raw 0-100 on the wire and is STORED as a fraction. */
 export function percentToFraction(amount: number): number {
-    return Number(amount) / 100;
+  return Number(amount) / 100;
 }

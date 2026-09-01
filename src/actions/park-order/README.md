@@ -10,11 +10,11 @@ None
 
 `Promise<ParkOrderResponse>`
 
-| Field       | Type     | Description                               |
-| :---------- | :------- | :---------------------------------------- |
+| Field       | Type      | Description                                  |
+| :---------- | :-------- | :------------------------------------------- |
 | `success`   | `boolean` | `true` if the order was parked successfully. |
-| `order`     | `CFOrder` | The parked order object with all details. |
-| `timestamp` | `string` | ISO date string of when the action occurred. |
+| `order`     | `CFOrder` | The parked order object with all details.    |
+| `timestamp` | `string`  | ISO date string of when the action occurred. |
 
 ## Usage
 

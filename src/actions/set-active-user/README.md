@@ -4,17 +4,17 @@ Loads a user by `userId` and sets them as the active POS user (where the host su
 
 ## Parameters
 
-| Field     | Type     | Required |
-| :-------- | :------- | :------- |
-| `userId`  | `string` | Yes      |
+| Field    | Type     | Required |
+| :------- | :------- | :------- |
+| `userId` | `string` | Yes      |
 
 ## Response
 
-| Field       | Type                                                    |
-| :---------- | :------------------------------------------------------- |
-| `success`   | `boolean`                                                 |
-| `user`      | [`CFActiveUser`](../../types/README.md#cfactiveuser)      |
-| `timestamp` | `string`                                                  |
+| Field       | Type                                                 |
+| :---------- | :--------------------------------------------------- |
+| `success`   | `boolean`                                            |
+| `user`      | [`CFActiveUser`](../../types/README.md#cfactiveuser) |
+| `timestamp` | `string`                                             |
 
 ## Errors
 

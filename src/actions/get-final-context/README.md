@@ -12,7 +12,7 @@ None
 
 ```typescript
 interface GetFinalContextResponse {
-    projectName: CFProjectName; // "kaching" | "Manage"
+  projectName: CFProjectName; // "kaching" | "Manage"
 }
 ```
 
@@ -27,11 +27,10 @@ import { command } from '@final-commerce/command-frame';
 
 const context = await command.getFinalContext();
 if (context) {
-    console.log('Project Name:', context.projectName);
+  console.log('Project Name:', context.projectName);
 }
 ```
 
 ## Error Handling
 
 - The return type allows for `null` if context cannot be retrieved. The kaching handler does not implement this case — it always resolves with a value and never throws.
-

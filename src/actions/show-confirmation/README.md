@@ -27,7 +27,7 @@ import { command } from '@final-commerce/command-frame';
 
 // Show a confirmation dialog
 await command.showConfirmation({
-  message: 'Are you sure you want to proceed?'
+  message: 'Are you sure you want to proceed?',
 });
 ```
 
@@ -41,4 +41,3 @@ await command.showConfirmation({
 ## Error Handling
 
 - Throws `Error('Message is required')` if `message` is missing or empty
-

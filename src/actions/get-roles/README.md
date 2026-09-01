@@ -8,7 +8,7 @@ Retrieves a list of all roles and their associated permissions for the current c
 
 ```typescript
 interface GetRolesParams {
-    // No parameters needed - roles are fetched for the current company automatically
+  // No parameters needed - roles are fetched for the current company automatically
 }
 ```
 
@@ -18,9 +18,9 @@ interface GetRolesParams {
 
 ```typescript
 interface GetRolesResponse {
-    roles: CFActiveUserRole[];
-    success: boolean;
-    timestamp: string;
+  roles: CFActiveUserRole[];
+  success: boolean;
+  timestamp: string;
 }
 ```
 
@@ -29,6 +29,7 @@ interface GetRolesResponse {
 Array of role objects. Each role includes its name, company ID, and a full list of granular permissions grouped by category and sub-category.
 
 **Tip:** You can import the [`CFActiveUserRole`](../../types/README.md#cfactiveuserrole) type directly from the library:
+
 ```typescript
 import { type CFActiveUserRole } from '@final-commerce/command-frame';
 ```
@@ -69,8 +70,8 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getRoles();
 
-const adminRole = result.roles.find(r => r.name.toLowerCase() === 'admin');
-const canIssueRefunds = adminRole?.permissions.find(p => p.name === 'issue_refunds')?.value;
+const adminRole = result.roles.find((r) => r.name.toLowerCase() === 'admin');
+const canIssueRefunds = adminRole?.permissions.find((p) => p.name === 'issue_refunds')?.value;
 console.log('Admin can issue refunds:', canIssueRefunds);
 ```
 
@@ -82,8 +83,8 @@ import { command } from '@final-commerce/command-frame';
 const result = await command.getRoles();
 
 for (const role of result.roles) {
-    const hubPerms = role.permissions.filter(p => p.category === 'hub_access' && p.value);
-    console.log(`${role.name}: ${hubPerms.map(p => p.name).join(', ')}`);
+  const hubPerms = role.permissions.filter((p) => p.category === 'hub_access' && p.value);
+  console.log(`${role.name}: ${hubPerms.map((p) => p.name).join(', ')}`);
 }
 ```
 

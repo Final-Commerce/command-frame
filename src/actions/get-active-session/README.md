@@ -8,11 +8,11 @@ None.
 
 ## Response
 
-| Field       | Type     | Description |
-| :---------- | :------- | :---------- |
-| `success`   | `boolean` | `true` on success. |
+| Field       | Type                                                      | Description                                        |
+| :---------- | :-------------------------------------------------------- | :------------------------------------------------- |
+| `success`   | `boolean`                                                 | `true` on success.                                 |
 | `session`   | [`CFSession`](../../types/README.md#cfsession) ` \| null` | The open cash-register session, or `null` if none. |
-| `timestamp` | `string` | ISO timestamp. |
+| `timestamp` | `string`                                                  | ISO timestamp.                                     |
 
 ## Example
 

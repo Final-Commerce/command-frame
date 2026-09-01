@@ -8,8 +8,8 @@ Removes ONE fee (by 0-based `index`, in the order fees were added) or — when `
 
 ```typescript
 interface RemoveProductFeeParams {
-    internalId?: string;
-    index?: number;
+  internalId?: string;
+  index?: number;
 }
 ```
 
@@ -27,10 +27,10 @@ The `internalId` of the cart line item to remove fee(s) from. This ID is returne
 
 ```typescript
 interface RemoveProductFeeResponse {
-    success: boolean;
-    internalId?: string;  // Only present when internalId was passed in the request
-    index?: number;  // Echoed when a single fee was targeted
-    timestamp: string;
+  success: boolean;
+  internalId?: string; // Only present when internalId was passed in the request
+  index?: number; // Echoed when a single fee was targeted
+  timestamp: string;
 }
 ```
 

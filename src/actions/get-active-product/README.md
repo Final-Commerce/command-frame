@@ -10,13 +10,14 @@ None.
 
 `Promise<GetActiveProductResponse>`
 
-| Field       | Type     | Description                               |
-| :---------- | :------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the active product was retrieved successfully. |
+| Field       | Type                      | Description                                                        |
+| :---------- | :------------------------ | :----------------------------------------------------------------- |
+| `success`   | `boolean`                 | `true` if the active product was retrieved successfully.           |
 | `product`   | `CFActiveProduct \| null` | The currently active product, or `null` if no product is selected. |
-| `timestamp` | `string` | ISO date string of when the action occurred. |
+| `timestamp` | `string`                  | ISO date string of when the action occurred.                       |
 
 **Tip:** You can import [`CFActiveProduct`](../../types/README.md#cfactiveproduct) directly from the library:
+
 ```typescript
 import { type CFActiveProduct } from '@final-commerce/command-frame';
 ```
@@ -25,35 +26,35 @@ import { type CFActiveProduct } from '@final-commerce/command-frame';
 
 When a product is active, the returned `CFActiveProduct` object includes:
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | Yes | Product identifier |
-| `internalId` | `string` | Yes | Unique cart line-item identifier |
-| `externalId` | `string` | Yes | External product identifier |
-| `productExternalId` | `string` | Yes | External product-level identifier |
-| `variantId` | `string` | Yes | Variant identifier |
-| `name` | `string` | Yes | Product display name |
-| `sku` | `string` | Yes | Stock keeping unit |
-| `price` | `number` | Yes | Unit price, in integer minor currency units (e.g. `1999` = $19.99) |
-| `images` | `string[]` | Yes | Product image URLs |
-| `taxTableId` | `string` | Yes | Tax table identifier |
-| `quantity` | `number` | Yes | Quantity in the cart |
-| `stock` | `number` | Yes | Available stock count |
-| `note` | `string` | No | Product-level note |
-| `discounts` | `CFDiscount[]` | No | Discounts applied to the product |
-| `description` | `string` | No | Short product description |
-| `longDescription` | `string` | No | Full product description |
-| `shortDescription` | `string` | No | Brief product description |
-| `barcodeId` | `string` | No | Barcode identifier |
-| `allowBackOrder` | `boolean` | No | Whether back-ordering is allowed |
-| `fees` | `CFCustomFee[]` | No | Custom fees applied to the product |
-| `isUnlimited` | `boolean` | No | Whether stock is unlimited |
-| `attributes` | `string` | No | Product attributes |
-| `localQuantity` | `number` | No | Locally tracked quantity |
-| `_id` | `string` | No | Mongo-style id when retained from the catalog |
-| `productType` | `CFProductType` | No | `"simple"` or `"variable"` |
-| `currency` | `CurrencyCode` | No | Currency code for the line price |
-| `minorUnits` | `number` | No | Decimal places for the line currency |
+| Field               | Type            | Required | Description                                                        |
+| ------------------- | --------------- | -------- | ------------------------------------------------------------------ |
+| `id`                | `string`        | Yes      | Product identifier                                                 |
+| `internalId`        | `string`        | Yes      | Unique cart line-item identifier                                   |
+| `externalId`        | `string`        | Yes      | External product identifier                                        |
+| `productExternalId` | `string`        | Yes      | External product-level identifier                                  |
+| `variantId`         | `string`        | Yes      | Variant identifier                                                 |
+| `name`              | `string`        | Yes      | Product display name                                               |
+| `sku`               | `string`        | Yes      | Stock keeping unit                                                 |
+| `price`             | `number`        | Yes      | Unit price, in integer minor currency units (e.g. `1999` = $19.99) |
+| `images`            | `string[]`      | Yes      | Product image URLs                                                 |
+| `taxTableId`        | `string`        | Yes      | Tax table identifier                                               |
+| `quantity`          | `number`        | Yes      | Quantity in the cart                                               |
+| `stock`             | `number`        | Yes      | Available stock count                                              |
+| `note`              | `string`        | No       | Product-level note                                                 |
+| `discounts`         | `CFDiscount[]`  | No       | Discounts applied to the product                                   |
+| `description`       | `string`        | No       | Short product description                                          |
+| `longDescription`   | `string`        | No       | Full product description                                           |
+| `shortDescription`  | `string`        | No       | Brief product description                                          |
+| `barcodeId`         | `string`        | No       | Barcode identifier                                                 |
+| `allowBackOrder`    | `boolean`       | No       | Whether back-ordering is allowed                                   |
+| `fees`              | `CFCustomFee[]` | No       | Custom fees applied to the product                                 |
+| `isUnlimited`       | `boolean`       | No       | Whether stock is unlimited                                         |
+| `attributes`        | `string`        | No       | Product attributes                                                 |
+| `localQuantity`     | `number`        | No       | Locally tracked quantity                                           |
+| `_id`               | `string`        | No       | Mongo-style id when retained from the catalog                      |
+| `productType`       | `CFProductType` | No       | `"simple"` or `"variable"`                                         |
+| `currency`          | `CurrencyCode`  | No       | Currency code for the line price                                   |
+| `minorUnits`        | `number`        | No       | Decimal places for the line currency                               |
 
 ## Example Usage
 
@@ -86,7 +87,6 @@ try {
   //   },
   //   timestamp: '2023-10-27T10:00:00.000Z'
   // }
-
 } catch (error) {
   console.error('Failed to get active product:', error);
 }
@@ -100,8 +100,8 @@ This action typically does not throw errors unless there's an underlying system 
 
 Publishes the active product snapshot on the `products` channel — unconditionally, including `null` when there is no active selection:
 
-| Channel    | Event               | Payload |
-| :--------- | :------------------- | :------ |
+| Channel    | Event                | Payload                                |
+| :--------- | :------------------- | :------------------------------------- |
 | `products` | `get-active-product` | `{ product: CFActiveProduct \| null }` |
 
 ## Notes

@@ -15,32 +15,32 @@ This action takes no parameters.
 ```typescript
 // CFContextRender — the kaching POS host's shape
 interface CFContextRender {
-    userId: string | null;
-    companyId: string | null;
-    companyName: string | null;
-    deviceId: string | null;
-    stationId: string | null;
-    stationName: string | null;
-    outletId: string | null;
-    outletName: string | null;
-    buildId: string | null;
-    buildName: string | null;
-    buildVersion: string | null;
-    buildSourceId: string | null;
-    buildIsPremium: boolean;
-    isOffline: boolean;
-    currency: string | null;
-    minorUnits: number | null;
-    currencySymbol: string | null;
-    currencyPrefix: string | null;
-    currencySuffix: string | null;
-    thousandSeparator: string | null;
-    decimalSeparator: string | null;
-    timestamp: string;
-    user: Record<string, any> | null;
-    company: Omit<Record<string, any>, 'settings'> | null;
-    station: Record<string, any> | null;
-    outlet: Record<string, any> | null;
+  userId: string | null;
+  companyId: string | null;
+  companyName: string | null;
+  deviceId: string | null;
+  stationId: string | null;
+  stationName: string | null;
+  outletId: string | null;
+  outletName: string | null;
+  buildId: string | null;
+  buildName: string | null;
+  buildVersion: string | null;
+  buildSourceId: string | null;
+  buildIsPremium: boolean;
+  isOffline: boolean;
+  currency: string | null;
+  minorUnits: number | null;
+  currencySymbol: string | null;
+  currencyPrefix: string | null;
+  currencySuffix: string | null;
+  thousandSeparator: string | null;
+  decimalSeparator: string | null;
+  timestamp: string;
+  user: Record<string, any> | null;
+  company: Omit<Record<string, any>, 'settings'> | null;
+  station: Record<string, any> | null;
+  outlet: Record<string, any> | null;
 }
 ```
 
@@ -189,11 +189,7 @@ Here's an example of a complete `getContext` response:
     "postCode": "A1C 1B1",
     "state": "NL",
     "sequenceNumber": 1,
-    "stations": [
-      "691df9c6c478bada1fb23c8e",
-      "691df9c6c478bada1fb23c8f",
-      "691df9c6c478bada1fb23c96"
-    ],
+    "stations": ["691df9c6c478bada1fb23c8e", "691df9c6c478bada1fb23c8f", "691df9c6c478bada1fb23c96"],
     "taxId": "GST",
     "__v": 0,
     "meta": {
@@ -307,11 +303,11 @@ The full company object containing all company information except the `settings`
 
 #### `station` (Record<string, any> | null)
 
-The full station object containing all station information (e.g., _id, name, status, sequenceNumber, buildSrcId, buildVersion, publishBuildId, createdAt, updatedAt, stripeTerminalId). Returns `null` if no station is active.
+The full station object containing all station information (e.g., \_id, name, status, sequenceNumber, buildSrcId, buildVersion, publishBuildId, createdAt, updatedAt, stripeTerminalId). Returns `null` if no station is active.
 
 #### `outlet` (Record<string, any> | null)
 
-The full outlet object containing all outlet information (e.g., id, _id, name, address, address2, city, state, country, taxId, postCode, stripe, sequenceNumber, stripeAccountId). Returns `null` if no outlet is active.
+The full outlet object containing all outlet information (e.g., id, \_id, name, address, address2, city, state, country, taxId, postCode, stripe, sequenceNumber, stripeAccountId). Returns `null` if no outlet is active.
 
 ## Usage
 
@@ -348,15 +344,15 @@ Use context information to make decisions:
 const context = await command.getContext();
 
 if (context.companyId === 'specific-company-id') {
-    // Do something specific for this company
+  // Do something specific for this company
 }
 
 if (context.buildIsPremium) {
-    // Enable premium features
+  // Enable premium features
 }
 
 if (context.outletId) {
-    // Filter data by outlet
+  // Filter data by outlet
 }
 ```
 
@@ -368,12 +364,12 @@ Log context information for debugging purposes:
 const context = await command.getContext();
 
 console.log('Current Environment:', {
-    user: context.userId,
-    company: context.companyName,
-    station: context.stationName,
-    outlet: context.outletName,
-    build: `${context.buildName} (v${context.buildVersion})`,
-    device: context.deviceId
+  user: context.userId,
+  company: context.companyName,
+  station: context.stationName,
+  outlet: context.outletName,
+  build: `${context.buildName} (v${context.buildVersion})`,
+  device: context.deviceId,
 });
 ```
 
@@ -385,15 +381,15 @@ Validate that required context is available before proceeding:
 const context = await command.getContext();
 
 if (!context.userId) {
-    throw new Error('User must be logged in');
+  throw new Error('User must be logged in');
 }
 
 if (!context.companyId) {
-    throw new Error('Company must be selected');
+  throw new Error('Company must be selected');
 }
 
 if (!context.outletId) {
-    throw new Error('Outlet must be selected');
+  throw new Error('Outlet must be selected');
 }
 
 // Proceed with operations that require context
@@ -405,11 +401,11 @@ Handle errors when getting context:
 
 ```typescript
 try {
-    const context = await command.getContext();
-    // Use context
+  const context = await command.getContext();
+  // Use context
 } catch (error) {
-    console.error('Failed to get context:', error);
-    // Fallback behavior
+  console.error('Failed to get context:', error);
+  // Fallback behavior
 }
 ```
 
@@ -431,11 +427,13 @@ When `getContext` is called:
 ## Field Availability
 
 ### Always Available
+
 - `timestamp` - Always present
 - `isOffline` - Always present (network status)
 - `buildIsPremium` - Always present, but hardcoded to `false`
 
 ### Conditionally Available
+
 - `userId`, `user` - Available when a user is logged in
 - `companyId`, `companyName`, `company` - Available when a company is selected (company object excludes `settings` field)
 - `outletId`, `outletName`, `outlet` - Available when an outlet is selected
@@ -457,4 +455,3 @@ When `getContext` is called:
   - Data filtering by company/outlet/station
   - Build version checking
   - User permission checking
-

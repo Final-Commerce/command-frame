@@ -10,17 +10,17 @@ Creates a new product in the parent application's product catalog.
 
 ```typescript
 interface AddProductParams {
-    name: string;
-    description?: string;
-    categories?: string[];
-    taxTable?: string;
-    images?: string[];
-    status?: 'active' | 'inactive';
-    price?: number;
-    sku?: string;
-    costPrice?: number;
-    manageStock?: boolean;
-    variants?: Omit<CFProductVariant, '_id'>[];
+  name: string;
+  description?: string;
+  categories?: string[];
+  taxTable?: string;
+  images?: string[];
+  status?: 'active' | 'inactive';
+  price?: number;
+  sku?: string;
+  costPrice?: number;
+  manageStock?: boolean;
+  variants?: Omit<CFProductVariant, '_id'>[];
 }
 ```
 
@@ -46,8 +46,8 @@ Array of variant objects for a variable product. Each variant includes SKU, pric
 
 ```typescript
 interface AddProductResponse {
-    product: CFProduct;
-    timestamp: string;
+  product: CFProduct;
+  timestamp: string;
 }
 ```
 
@@ -60,19 +60,35 @@ import { command } from '@final-commerce/command-frame';
 
 // Simple product (price is in integer minor units, e.g. cents)
 const result = await command.addProduct({
-    name: 'My Product',
-    price: 1999,
-    sku: 'PROD-001',
-    status: 'active',
+  name: 'My Product',
+  price: 1999,
+  sku: 'PROD-001',
+  status: 'active',
 });
 console.log(result.product._id);
 
 // Variable product with variants
 const result2 = await command.addProduct({
-    name: 'T-Shirt',
-    variants: [
-        { sku: 'SHIRT-S', externalId: 'ext-shirt-s', price: 2500, salePrice: 0, isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'S' }] },
-        { sku: 'SHIRT-M', externalId: 'ext-shirt-m', price: 2500, salePrice: 0, isOnSale: false, manageStock: true, attributes: [{ name: 'Size', value: 'M' }] },
-    ],
+  name: 'T-Shirt',
+  variants: [
+    {
+      sku: 'SHIRT-S',
+      externalId: 'ext-shirt-s',
+      price: 2500,
+      salePrice: 0,
+      isOnSale: false,
+      manageStock: true,
+      attributes: [{ name: 'Size', value: 'S' }],
+    },
+    {
+      sku: 'SHIRT-M',
+      externalId: 'ext-shirt-m',
+      price: 2500,
+      salePrice: 0,
+      isOnSale: false,
+      manageStock: true,
+      attributes: [{ name: 'Size', value: 'M' }],
+    },
+  ],
 });
 ```

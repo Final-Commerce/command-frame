@@ -25,7 +25,7 @@ import { command } from '@final-commerce/command-frame';
 
 // Initiate refund for a specific order
 await command.initiateRefund({
-  orderId: '691df9c6c478bada1fb23d31'
+  orderId: '691df9c6c478bada1fb23d31',
 });
 
 // Initiate refund for the active order
@@ -42,4 +42,3 @@ await command.initiateRefund();
 ## Error Handling
 
 - Throws an error if `orderId` is provided but the order is not found (`Order with ID {orderId} not found`)
-

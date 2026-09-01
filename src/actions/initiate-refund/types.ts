@@ -6,14 +6,14 @@
 // redeemRefund. Calling this still stages the active order and (with no
 // orderId) still arms barcode refund-scan routing — but no UI opens.
 export interface InitiateRefundParams {
-    /** The ID of the order to refund. If not provided, uses the currently active order. */
-    orderId?: string;
+  /** The ID of the order to refund. If not provided, uses the currently active order. */
+  orderId?: string;
 }
 
 export interface InitiateRefundResponse {
-    success: boolean;
-    orderId: string;
-    timestamp: string;
+  success: boolean;
+  orderId: string;
+  timestamp: string;
 }
 
 /**
@@ -23,4 +23,3 @@ export interface InitiateRefundResponse {
  * `getRemainingRefundableQuantities`, `processPartialRefund`, `redeemRefund`.
  */
 export type InitiateRefund = (params?: InitiateRefundParams) => Promise<InitiateRefundResponse>;
-

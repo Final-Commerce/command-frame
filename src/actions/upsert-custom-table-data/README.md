@@ -8,8 +8,8 @@ Inserts new data or updates existing data in a specific custom table in the pare
 
 ```typescript
 interface UpsertCustomTableDataParams<T = any> {
-    tableName: string;
-    data: T;
+  tableName: string;
+  data: T;
 }
 ```
 
@@ -22,17 +22,20 @@ The name of the custom table to insert or update data in.
 The data object to insert or update. The structure should match the field definitions of the custom table.
 
 **For Insert (Create):**
+
 - `_id` is optional - if omitted, one is generated automatically
 - If you do supply an `_id` and it doesn't match an existing row in this table, the handler still creates a new row and uses your `_id` as-is (it is not overwritten or regenerated, and this is not an error)
 - `createdAt`/`updatedAt` are set by the handler; any values you pass for them are ignored
 
 **For Update:**
+
 - Include the `_id` field of the existing record to update
 - Include any fields you want to update
 - The `updatedAt` field will be automatically updated
 - If the `_id` doesn't match an existing row in this table, this is NOT an error - see Insert above
 
 **Field handling (both insert and update):**
+
 - Only keys in `data` that match a field name defined on the table's schema are stored; unrecognized keys are silently dropped, not rejected
 - The handler does not enforce a field's `required` flag, default value, or declared type against `data` - whatever value you pass for a recognized field is accepted as-is
 
@@ -42,9 +45,9 @@ The data object to insert or update. The structure should match the field defini
 
 ```typescript
 interface UpsertCustomTableDataResponse<T = any> {
-    success: boolean;
-    data: UpsertedCustomTableRow<T>; // T & { _id: string; createdAt?: string; updatedAt?: string }
-    timestamp: string;
+  success: boolean;
+  data: UpsertedCustomTableRow<T>; // T & { _id: string; createdAt?: string; updatedAt?: string }
+  timestamp: string;
 }
 ```
 
@@ -55,6 +58,7 @@ Indicates whether the data was successfully inserted or updated.
 #### `data` (`UpsertedCustomTableRow<T>`)
 
 The PERSISTED row - not a bare echo of the input `data` you sent. Includes:
+
 - `_id` (string): Unique identifier (generated for new records, or your supplied `_id` when you provided one)
 - `createdAt` (string): Creation timestamp
 - `updatedAt` (string): Last update timestamp
@@ -82,13 +86,13 @@ Create a new record in a custom table:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.upsertCustomTableData({
-    tableName: 'customer_preferences',
-    data: {
-        customerId: '691df9c6c478bada1fb23d55',
-        theme: 'dark',
-        notifications: true,
-        language: 'en'
-    }
+  tableName: 'customer_preferences',
+  data: {
+    customerId: '691df9c6c478bada1fb23d55',
+    theme: 'dark',
+    notifications: true,
+    language: 'en',
+  },
 });
 
 console.log('Created record:', result.data);
@@ -103,12 +107,12 @@ Update an existing record by including its `_id`:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.upsertCustomTableData({
-    tableName: 'customer_preferences',
-    data: {
-        _id: '65a1b2c3d4e5f6g7h8i9j0k3',
-        theme: 'light',
-        notifications: false
-    }
+  tableName: 'customer_preferences',
+  data: {
+    _id: '65a1b2c3d4e5f6g7h8i9j0k3',
+    theme: 'light',
+    notifications: false,
+  },
 });
 
 console.log('Updated record:', result.data);
@@ -122,33 +126,33 @@ Use TypeScript generics for type-safe operations:
 import { command } from '@final-commerce/command-frame';
 
 interface CustomerPreference {
-    _id?: string;
-    customerId: string;
-    theme: 'light' | 'dark';
-    notifications: boolean;
-    language: string;
-    createdAt?: string;
-    updatedAt?: string;
+  _id?: string;
+  customerId: string;
+  theme: 'light' | 'dark';
+  notifications: boolean;
+  language: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Insert
 const insertResult = await command.upsertCustomTableData<CustomerPreference>({
-    tableName: 'customer_preferences',
-    data: {
-        customerId: '691df9c6c478bada1fb23d55',
-        theme: 'dark',
-        notifications: true,
-        language: 'en'
-    }
+  tableName: 'customer_preferences',
+  data: {
+    customerId: '691df9c6c478bada1fb23d55',
+    theme: 'dark',
+    notifications: true,
+    language: 'en',
+  },
 });
 
 // Update
 const updateResult = await command.upsertCustomTableData<CustomerPreference>({
-    tableName: 'customer_preferences',
-    data: {
-        _id: insertResult.data._id,
-        theme: 'light'
-    }
+  tableName: 'customer_preferences',
+  data: {
+    _id: insertResult.data._id,
+    theme: 'light',
+  },
 });
 
 // Result is typed as CustomerPreference
@@ -163,18 +167,18 @@ Insert or update multiple records (requires multiple calls):
 import { command } from '@final-commerce/command-frame';
 
 const preferencesToUpsert = [
-    { customerId: 'cust1', theme: 'dark', notifications: true },
-    { customerId: 'cust2', theme: 'light', notifications: false },
-    { customerId: 'cust3', theme: 'dark', notifications: true }
+  { customerId: 'cust1', theme: 'dark', notifications: true },
+  { customerId: 'cust2', theme: 'light', notifications: false },
+  { customerId: 'cust3', theme: 'dark', notifications: true },
 ];
 
 const results = await Promise.all(
-    preferencesToUpsert.map(pref =>
-        command.upsertCustomTableData({
-            tableName: 'customer_preferences',
-            data: pref
-        })
-    )
+  preferencesToUpsert.map((pref) =>
+    command.upsertCustomTableData({
+      tableName: 'customer_preferences',
+      data: pref,
+    }),
+  ),
 );
 
 console.log(`Upserted ${results.length} records`);
@@ -183,9 +187,10 @@ console.log(`Upserted ${results.length} records`);
 ## Error Handling
 
 The handler has two guarded checks, plus one undocumented crash path:
+
 - `tableName` is missing/empty - `Error: tableName is required`
 - `tableName` doesn't match an existing custom table - `Error: Table "<tableName>" not found`
-- `data` is `undefined` while `tableName` DOES match an existing table - not a guarded error: `data` is `required` in the type signature, but nothing at runtime checks for it, so a caller that omits it (e.g. a dynamic/JS invocation bypassing the TS contract) hits an uncaught `TypeError` ("Cannot destructure property '_id' of 'values' as it is undefined") when the handler tries to pull `_id` out of it
+- `data` is `undefined` while `tableName` DOES match an existing table - not a guarded error: `data` is `required` in the type signature, but nothing at runtime checks for it, so a caller that omits it (e.g. a dynamic/JS invocation bypassing the TS contract) hits an uncaught `TypeError` ("Cannot destructure property '\_id' of 'values' as it is undefined") when the handler tries to pull `_id` out of it
 
 There is no schema-level validation beyond that: missing required fields, field values that don't match the schema's declared type, and an `_id` that doesn't match an existing row are all NOT errors - see Parameters above for what happens in each case instead.
 
@@ -275,4 +280,3 @@ There is no schema-level validation beyond that: missing required fields, field 
 - Use `getCustomTableData` to retrieve existing data before updating
 - The `createdAt` field is set only on insert and never changes
 - The `updatedAt` field is automatically updated on every upsert operation
-
