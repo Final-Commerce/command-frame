@@ -72,6 +72,8 @@ The library provides a `command` namespace object containing all available comma
 - **[voidOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/void-order/README.md)** - Cancel an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of captured split legs when a deposit was taken; completed orders are rejected (`ORDER_NOT_VOIDABLE`) and go through the refund flow
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
+- **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
+- **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
 - **[partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)** - Initiate a partial/split payment
@@ -97,6 +99,10 @@ The library provides a `command` namespace object containing all available comma
 - **[switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)** - Switch the current user to a different user
 - **[setActiveUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-user/README.md)** - Set the active POS user by id (loads from local DB; respects outlet access when an outlet is active)
 - **[checkPermission](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/check-permission/README.md)** - Check whether the active user's role grants a permission (pure read, for UI pre-gating)
+
+#### Time Clock
+
+- **[getTimeClockStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-time-clock-status/README.md)** - Read-only: the active employee's current time-clock state (out, clocked in, or on break). No clock-in/out commands exist.
 
 #### Active outlet, station, and session
 
@@ -388,6 +394,14 @@ Pays (part of) the current cart with cash. `amount` (minor units) is required �
 
 Previews the company's cash-rounding setting for an amount (defaults to the cart's balance due). Returns the input unchanged when no setting is configured. Read-only — build flow-owned cash tender UIs on it.
 
+### [createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)
+
+Creates a hosted payment link for the current cart and texts or emails it to the customer. Exactly one of `email`/`phone` is required. The station creates the order (`unpaid × in_progress`) before the link is requested; the cart is cleared on success, and voided-but-kept on a failed send so the cashier can retry. Adyen-only.
+
+### [chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)
+
+Charges a keyed (card-not-present) MOTO sale for the current cart. Card fields are provider-encrypted (CSE) and opaque to the POS. Minimum charge is 50 minor units; `idempotencyKey` is held by the caller across retries, reuse it to replay, use a new one after changing the amount. Adyen-only.
+
 ### [tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)
 
 Initiates a tap-to-pay payment for the current cart. May request tip if tip functionality is enabled.
@@ -439,6 +453,12 @@ Triggers user authentication for specific roles. Shows an authentication dialog 
 ### [checkPermission](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/check-permission/README.md)
 
 Checks whether the ACTIVE user's role grants a permission (canonical keys such as `issue_refunds`). Pure read of `role.permissions` — intended for UI pre-gating only; command handlers still enforce their own guards.
+
+### Time Clock
+
+### [getTimeClockStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-time-clock-status/README.md)
+
+Read-only query of the active employee's time-clock state (`out`, `clocked-in`, or `on-break`). `workedMs` is a snapshot at call time; flows tick a running shift timer client-side from `entry.clockInTime` rather than re-polling. No clock-in/out commands exist in this library.
 
 ### [switchUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/switch-user/README.md)
 
@@ -742,6 +762,13 @@ import type {
   CashPaymentParams,
   CashPaymentResponse,
   CashPayment,
+  CreatePaymentLinkParams,
+  CreatePaymentLinkResponse,
+  CreatePaymentLink,
+  ChargeMotoParams,
+  ChargeMotoResponse,
+  ChargeMotoCardFields,
+  ChargeMoto,
   TapToPayPaymentParams,
   TapToPayPaymentResponse,
   TapToPayPayment,
@@ -780,6 +807,10 @@ import type {
   SwitchUserParams,
   SwitchUserResponse,
   SwitchUser,
+  // Time Clock
+  GetTimeClockStatusResponse,
+  GetTimeClockStatus,
+  TimeClockEntry,
   // Refund Actions
   InitiateRefundParams,
   InitiateRefundResponse,
