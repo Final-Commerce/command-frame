@@ -2,6 +2,8 @@
 
 Retrieves the list of outlets (store locations) for the current company.
 
+> **Manage-scoped command.** This is a Manage administrative command (outlet/station admin), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
+
 ## Parameters
 
 No parameters required.
@@ -12,8 +14,8 @@ No parameters required.
 
 ```typescript
 interface GetOutletsResponse {
-    outlets: CFOutletInfo[];
-    timestamp: string;
+  outlets: CFOutletInfo[];
+  timestamp: string;
 }
 ```
 
@@ -33,6 +35,6 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getOutlets();
 result.outlets.forEach((outlet) => {
-    console.log(outlet.name, outlet.city);
+  console.log(outlet.name, outlet.city);
 });
 ```

@@ -8,8 +8,8 @@ Deletes a specific record from a custom table in the parent application's local 
 
 ```typescript
 interface DeleteCustomTableDataParams {
-    tableName: string;
-    rowId: string;
+  tableName: string;
+  rowId: string;
 }
 ```
 
@@ -27,8 +27,8 @@ The unique identifier (`_id`) of the record to delete.
 
 ```typescript
 interface DeleteCustomTableDataResponse {
-    success: boolean;
-    timestamp: string;
+  success: boolean;
+  timestamp: string;
 }
 ```
 
@@ -56,12 +56,12 @@ Delete a specific record from a custom table:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.deleteCustomTableData({
-    tableName: 'customer_preferences',
-    rowId: '65a1b2c3d4e5f6g7h8i9j0k3'
+  tableName: 'customer_preferences',
+  rowId: '65a1b2c3d4e5f6g7h8i9j0k3',
 });
 
 if (result.success) {
-    console.log('Record deleted successfully');
+  console.log('Record deleted successfully');
 }
 ```
 
@@ -74,24 +74,24 @@ import { command } from '@final-commerce/command-frame';
 
 // First, show confirmation dialog
 const confirmed = await command.showConfirmation({
-    title: 'Delete Record',
-    message: 'Are you sure you want to delete this record?',
-    confirmText: 'Delete',
-    cancelText: 'Cancel'
+  title: 'Delete Record',
+  message: 'Are you sure you want to delete this record?',
+  confirmText: 'Delete',
+  cancelText: 'Cancel',
 });
 
 if (confirmed) {
-    const result = await command.deleteCustomTableData({
-        tableName: 'customer_preferences',
-        rowId: '65a1b2c3d4e5f6g7h8i9j0k3'
+  const result = await command.deleteCustomTableData({
+    tableName: 'customer_preferences',
+    rowId: '65a1b2c3d4e5f6g7h8i9j0k3',
+  });
+
+  if (result.success) {
+    await command.showNotification({
+      message: 'Record deleted successfully',
+      type: 'success',
     });
-    
-    if (result.success) {
-        await command.showNotification({
-            message: 'Record deleted successfully',
-            type: 'success'
-        });
-    }
+  }
 }
 ```
 
@@ -104,19 +104,19 @@ import { command } from '@final-commerce/command-frame';
 
 // First, find the records to delete
 const dataResult = await command.getCustomTableData({
-    tableName: 'customer_preferences',
-    query: {
-        customerId: '691df9c6c478bada1fb23d55',
-        theme: 'dark'
-    }
+  tableName: 'customer_preferences',
+  query: {
+    customerId: '691df9c6c478bada1fb23d55',
+    theme: 'dark',
+  },
 });
 
 // Delete each matching record
 for (const record of dataResult.data) {
-    await command.deleteCustomTableData({
-        tableName: 'customer_preferences',
-        rowId: record._id
-    });
+  await command.deleteCustomTableData({
+    tableName: 'customer_preferences',
+    rowId: record._id,
+  });
 }
 
 console.log(`Deleted ${dataResult.data.length} records`);
@@ -130,21 +130,21 @@ Delete a record with proper error handling:
 import { command } from '@final-commerce/command-frame';
 
 try {
-    const result = await command.deleteCustomTableData({
-        tableName: 'customer_preferences',
-        rowId: '65a1b2c3d4e5f6g7h8i9j0k3'
-    });
-    
-    if (result.success) {
-        console.log('Record deleted successfully');
-    }
+  const result = await command.deleteCustomTableData({
+    tableName: 'customer_preferences',
+    rowId: '65a1b2c3d4e5f6g7h8i9j0k3',
+  });
+
+  if (result.success) {
+    console.log('Record deleted successfully');
+  }
 } catch (error) {
-    console.error('Failed to delete record:', error);
-    
-    await command.showNotification({
-        message: 'Failed to delete record',
-        type: 'error'
-    });
+  console.error('Failed to delete record:', error);
+
+  await command.showNotification({
+    message: 'Failed to delete record',
+    type: 'error',
+  });
 }
 ```
 
@@ -155,32 +155,28 @@ Delete multiple records:
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
-const recordIdsToDelete = [
-    '65a1b2c3d4e5f6g7h8i9j0k3',
-    '65a1b2c3d4e5f6g7h8i9j0k4',
-    '65a1b2c3d4e5f6g7h8i9j0k5'
-];
+const recordIdsToDelete = ['65a1b2c3d4e5f6g7h8i9j0k3', '65a1b2c3d4e5f6g7h8i9j0k4', '65a1b2c3d4e5f6g7h8i9j0k5'];
 
 const results = await Promise.all(
-    recordIdsToDelete.map(rowId =>
-        command.deleteCustomTableData({
-            tableName: 'customer_preferences',
-            rowId
-        })
-    )
+  recordIdsToDelete.map((rowId) =>
+    command.deleteCustomTableData({
+      tableName: 'customer_preferences',
+      rowId,
+    }),
+  ),
 );
 
-const successCount = results.filter(r => r.success).length;
+const successCount = results.filter((r) => r.success).length;
 console.log(`Deleted ${successCount} of ${recordIdsToDelete.length} records`);
 ```
 
 ## Error Handling
 
-If the delete operation fails, the handler will throw an error. Common error scenarios include:
-- Invalid `tableName` (table does not exist)
-- Invalid `rowId` (record does not exist)
-- Database connection issues
-- Permission errors
+If the delete operation fails, the handler throws an error:
+
+- `tableName is required` — thrown when `tableName` is missing from the params
+- `Table "<tableName>" not found` — thrown when no custom table with that name exists
+- `Row "<rowId>" not found in table "<tableName>"` — thrown when the row does not exist in the specified table
 
 ## Validation Rules
 
@@ -209,10 +205,9 @@ If the delete operation fails, the handler will throw an error. Common error sce
 
 ## Notes
 
-- The deletion is permanent and cannot be undone
+- This is a soft delete: the row and its values are flagged `isDeleted: true` rather than being physically removed from the local database
 - The record is deleted from the local IndexedDB database (LokiJS)
 - The deletion is synchronized with the central MongoDB database via station-sync
-- Consider implementing a soft delete pattern (marking records as deleted) if you need the ability to restore deleted records
+- Publishes a `row-deleted` event on the `custom-tables` topic with `{ tableName, rowId }` after a successful delete
 - Use `getCustomTableData` to verify the record exists before attempting to delete it
 - Consider showing a confirmation dialog before deleting critical data
-

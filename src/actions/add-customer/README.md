@@ -8,7 +8,7 @@ Adds a new customer to the local database in the parent application.
 
 ```typescript
 interface AddCustomerParams {
-    customer: Omit<CFCustomer, '_id' | 'createdAt' | 'updatedAt'>;
+  customer: Omit<CFCustomer, '_id' | 'createdAt' | 'updatedAt'>;
 }
 ```
 
@@ -23,16 +23,16 @@ The customer object to create. It requires all standard customer fields except t
 - `email` (string): Customer email address. Must be unique and valid.
 - `firstName` (string): Customer's first name.
 - `lastName` (string): Customer's last name.
-- `companyId` (any): Company ID associated with the customer.
+- `companyId` (string): Company ID associated with the customer.
 
 **Optional fields:**
 
 - `phone` (string): Customer's phone number.
 - `tags` (string[]): Array of tags to associate with the customer.
-- `metadata` (Array<{ key: string; value: string }>): Custom metadata as key-value pairs.
-- `notes` (Array<{ createdAt: Date | string; message: string }>): Array of notes associated with the customer.
-- `billing` (object): Billing address information (see Address Structure below).
-- `shipping` (object): Shipping address information (see Address Structure below).
+- `metadata` (`Record<string, string>[]`): Array of plain key/value objects (e.g. `[{ "loyaltyTier": "gold" }]`) — not `{ key, value }` entry objects.
+- `notes` (`Array<{ _id: string; createdAt: string; message: string }>`): Array of notes associated with the customer. Each note needs its own `_id` supplied by the caller — it is not generated on create.
+- `billing` (`Address | null`): Billing address information (see Address Structure below). Typed as present-but-nullable rather than omittable — pass `null` if there's no billing address.
+- `shipping` (`Address | null`): Shipping address information (see Address Structure below). Same as `billing`: pass `null` rather than leaving the key out.
 - `externalId` (string): External system identifier.
 - `fromOliver` (boolean): Indicates if the customer originated from Oliver system.
 
@@ -54,9 +54,9 @@ Notes is an array of timestamped messages. See the [Real Data Examples](#real-da
 
 ```typescript
 interface AddCustomerResponse {
-    success: boolean;
-    customer: CFCustomer;
-    timestamp: string;
+  success: boolean;
+  customer: CFCustomer;
+  timestamp: string;
 }
 ```
 
@@ -71,6 +71,7 @@ The created customer object, including all fields from the request plus automati
 - `_id`: Unique identifier (MongoDB style).
 - `createdAt`: Creation timestamp.
 - `updatedAt`: Last update timestamp.
+- `source`: Not currently part of the published `CFCustomer` type, but the handler always stamps this on the created customer — defaults to `'in-store'` unless the request's `customer` object explicitly supplies a `source`.
 
 #### `timestamp` (string)
 
@@ -92,14 +93,14 @@ Create a customer with basic information:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.addCustomer({
-    customer: {
-        email: 'newcustomer.test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        phone: '1234567890',
-        companyId: 'company_123', // Required
-        // ... other fields
-    }
+  customer: {
+    email: 'newcustomer.test@example.com',
+    firstName: 'John',
+    lastName: 'Doe',
+    phone: '1234567890',
+    companyId: '62c9d0e1f2a3b4c5d6e7f809', // Required
+    // ... other fields
+  },
 });
 
 console.log(result.customer);
@@ -107,16 +108,16 @@ console.log(result.customer);
 
 ## Error Handling
 
-If the customer creation fails, the handler will throw an error. Common error scenarios include missing `customer` object, invalid email format, or duplicate email.
+The handler throws exactly two errors:
+
+- No `customer` object in the params → `Error: customer data is required`
+- `customer.email` is missing, not a string, or doesn't match a basic `local@domain.tld` pattern → `Error: A valid email address is required`
+
+There is no duplicate-email check — two customers can be created with the same email address.
 
 ## Validation Rules
 
-- `email` is required and must be a valid email format
-- `firstName`, `lastName` are required.
-- `billing.address1`, `billing.city`, `billing.state`, `billing.country`, and `billing.postCode` are required if `billing` is provided
-- `shipping.address1`, `shipping.city`, `shipping.state`, `shipping.country`, and `shipping.postCode` are required if `shipping` is provided
-- `metadata` items must have both `key` and `value` as strings
-- `notes` items must have both `createdAt` and `message` fields
+The handler only enforces the two checks above at runtime; everything else on `customer` is trusted and persisted as given. `firstName`, `lastName`, `billing`, `shipping`, `metadata`, and `notes` are typed on `CFCustomer`, but the handler does **not** validate their presence or shape — malformed or missing values are not rejected here.
 
 ## Real Data Examples
 
@@ -130,7 +131,8 @@ If the customer creation fails, the handler will throw an error. Common error sc
     "lastName": "Doe",
     "email": "newcustomer.test@example.com",
     "phone": "1234567890",
-    "companyId": "company_123",
+    "companyId": "62c9d0e1f2a3b4c5d6e7f809",
+    "source": "in-store",
     "_id": "6931e04f53d9113bd5231dfd",
     "createdAt": "2025-12-04T19:26:07.316Z",
     "updatedAt": "2025-12-04T19:26:07.316Z"
@@ -148,7 +150,7 @@ If the customer creation fails, the handler will throw an error. Common error sc
     "lastName": "Doe",
     "email": "newcustomer.test@example.com",
     "phone": "1234567890",
-    "companyId": "company_123"
+    "companyId": "62c9d0e1f2a3b4c5d6e7f809"
   }
 }
 ```
@@ -157,5 +159,6 @@ If the customer creation fails, the handler will throw an error. Common error sc
 
 - The customer is created in the local IndexedDB database (LokiJS)
 - Generated fields (ID field, `createdAt`, `updatedAt`) are automatically added
-- The `fromOliver` field defaults based on the system configuration
+- `fromOliver` is not set or defaulted by this handler — it's only present on the result if the caller supplies it in the request
+- The handler publishes a `customers` / `customer-created` event containing the created customer; this is fire-and-forget (publish failures are caught and logged) and does not affect the response
 - Customer data is synchronized with the central MongoDB database via station-sync

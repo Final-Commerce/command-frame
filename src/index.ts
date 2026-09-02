@@ -33,14 +33,16 @@ import { clearCart } from './actions/clear-cart/action';
 import { parkOrder } from './actions/park-order/action';
 import { resumeParkedOrder } from './actions/resume-parked-order/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
+import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
 import { terminalPayment } from './actions/terminal-payment/action';
-import { vendaraPayment } from './actions/vendara-payment/action';
 import { extensionPayment } from './actions/extension-payment/action';
 import { redeemPayment } from './actions/redeem-payment/action';
 import { integrationPayment } from './actions/integration-payment/action';
+import { createPaymentLink } from './actions/create-payment-link/action';
+import { chargeMoto } from './actions/charge-moto/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
 import { removeCustomerNote } from './actions/remove-customer-note/action';
@@ -88,6 +90,9 @@ import { resetRefundDetails } from './actions/reset-refund-details/action';
 import { calculateRefundTotal } from './actions/calculate-refund-total/action';
 import { getRemainingRefundableQuantities } from './actions/get-remaining-refundable-quantities/action';
 import { processPartialRefund } from './actions/process-partial-refund/action';
+import { redeemRefund } from './actions/redeem-refund/action';
+import { getRefundPlan } from './actions/get-refund-plan/action';
+import { checkPermission } from './actions/check-permission/action';
 // Custom Tables Actions
 import { getCustomTables } from './actions/get-custom-tables/action';
 import { getCustomTableFields } from './actions/get-custom-table-fields/action';
@@ -129,6 +134,8 @@ import { getMedia } from './actions/get-media/action';
 import { uploadMedia } from './actions/upload-media/action';
 import { getTaxTables } from './actions/get-tax-tables/action';
 import { getBranding } from './actions/get-branding/action';
+// Time Clock Actions
+import { getTimeClockStatus } from './actions/get-time-clock-status/action';
 
 // Export actions as command object
 export const command = {
@@ -168,14 +175,16 @@ export const command = {
   parkOrder,
   resumeParkedOrder,
   deleteParkedOrder,
+  voidOrder,
   cashPayment,
   getCashRoundingAmount,
   tapToPayPayment,
   terminalPayment,
-  vendaraPayment,
   extensionPayment,
   redeemPayment,
   integrationPayment,
+  createPaymentLink,
+  chargeMoto,
   // Customer Actions
   addCustomerNote,
   removeCustomerNote,
@@ -220,6 +229,9 @@ export const command = {
   calculateRefundTotal,
   getRemainingRefundableQuantities,
   processPartialRefund,
+  redeemRefund,
+  getRefundPlan,
+  checkPermission,
   // Product CRUD Actions
   addProduct,
   editProduct,
@@ -255,6 +267,8 @@ export const command = {
   uploadMedia,
   getTaxTables,
   getBranding,
+  // Time Clock Actions
+  getTimeClockStatus,
   // State Machine Queries
   canTransition,
   getAvailableTransitions,
@@ -350,18 +364,18 @@ export type {
   ProcessPartialRefundParams,
   ProcessPartialRefundResponse,
 } from './actions/process-partial-refund/types';
+export type { RedeemRefund, RedeemRefundParams, RedeemRefundResponse } from './actions/redeem-refund/types';
+export type {
+  GetRefundPlan,
+  GetRefundPlanParams,
+  GetRefundPlanResponse,
+  RefundPlanSource,
+  RefundPlanAllocation,
+  RefundPlanLeg,
+} from './actions/get-refund-plan/types';
+export type { CheckPermission, CheckPermissionParams, CheckPermissionResponse } from './actions/check-permission/types';
 // Refund Actions
 export type { InitiateRefund, InitiateRefundParams, InitiateRefundResponse } from './actions/initiate-refund/types';
-export type {
-  OpenExtensionOverlay,
-  OpenExtensionOverlayParams,
-  OpenExtensionOverlayResponse,
-} from './actions/open-extension-overlay/types';
-export type {
-  ResolveExtensionOverlay,
-  ResolveExtensionOverlayParams,
-  ResolveExtensionOverlayResponse,
-} from './actions/resolve-extension-overlay/types';
 
 export type { GetCurrentCart, GetCurrentCartResponse } from './actions/get-current-cart/types';
 
@@ -439,6 +453,7 @@ export type {
   DeleteParkedOrderParams,
   DeleteParkedOrderResponse,
 } from './actions/delete-parked-order/types';
+export type { VoidOrder, VoidOrderParams, VoidOrderResponse, VoidOrderOutcome } from './actions/void-order/types';
 export type { CashPayment, CashPaymentParams, CashPaymentResponse } from './actions/cash-payment/types';
 
 export type {
@@ -452,7 +467,6 @@ export type {
   TapToPayPaymentResponse,
 } from './actions/tap-to-pay-payment/types';
 export type { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } from './actions/terminal-payment/types';
-export type { VendaraPayment, VendaraPaymentParams, VendaraPaymentResponse } from './actions/vendara-payment/types';
 export type {
   ExtensionPayment,
   ExtensionPaymentParams,
@@ -465,6 +479,17 @@ export type {
   IntegrationPaymentResponse,
   IntegrationEmvData,
 } from './actions/integration-payment/types';
+export type {
+  CreatePaymentLink,
+  CreatePaymentLinkParams,
+  CreatePaymentLinkResponse,
+} from './actions/create-payment-link/types';
+export type {
+  ChargeMoto,
+  ChargeMotoParams,
+  ChargeMotoResponse,
+  ChargeMotoCardFields,
+} from './actions/charge-moto/types';
 // Customer Actions
 export type {
   AddCustomerNote,
@@ -497,6 +522,12 @@ export type {
   TaxTablePayload,
 } from './actions/get-tax-tables/types';
 export type { BorderRadiusPreset, GetBranding, GetBrandingResponse } from './actions/get-branding/types';
+// Time Clock Actions
+export type {
+  GetTimeClockStatus,
+  GetTimeClockStatusResponse,
+  TimeClockEntry,
+} from './actions/get-time-clock-status/types';
 export type {
   ShowConfirmation,
   ShowConfirmationParams,
@@ -596,21 +627,6 @@ export type {
 } from './pubsub/types';
 export type { TopicEventPayloadMap } from './pubsub/topics/types';
 
-// Export Hooks (extension iframe API for session-scoped event callbacks)
-export { hooks } from './hooks';
-export type { HookFunction, HookRegisterOptions } from './hooks';
-
-// Export Interceptors (extension iframe API for gating host flows)
-export { interceptors } from './interceptors';
-export type {
-  InterceptorFunction,
-  InterceptorPoint,
-  InterceptorRegisterOptions,
-  InterceptorReturn,
-  InterceptorOverlayContext,
-  InterceptorHostCommands,
-} from './interceptors';
-
 // Export Pub/Sub Topics
 export { customersTopic } from './pubsub/topics/customers';
 export { ordersTopic } from './pubsub/topics/orders';
@@ -658,10 +674,12 @@ export type {
 export type {
   OrderCreatedPayload,
   OrderUpdatedPayload,
+  OrderVoidedPayload,
   OrderActiveSetPayload,
   OrderActiveGetPayload,
   OrderCreatedEvent,
   OrderUpdatedEvent,
+  OrderVoidedEvent,
   OrderActiveSetEvent,
   OrderActiveGetEvent,
   OrderStateTransitionCompletedPayload,

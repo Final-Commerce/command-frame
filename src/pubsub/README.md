@@ -5,18 +5,18 @@ The pub/sub system allows iframe applications to subscribe to topics and receive
 ## Quick Start
 
 ```typescript
-import { topics } from "@final-commerce/command-frame";
+import { topics } from '@final-commerce/command-frame';
 
 // Request topics from host and read the current cached list
 const availableTopics = await topics.getTopics();
 
 // Subscribe to a topic with a callback
-const subscriptionId = topics.subscribe("customers", event => {
-    console.log("Received event:", event.type, event.data);
+const subscriptionId = topics.subscribe('customers', (event) => {
+  console.log('Received event:', event.type, event.data);
 });
 
 // Unsubscribe when done
-topics.unsubscribe("customers", subscriptionId);
+topics.unsubscribe('customers', subscriptionId);
 ```
 
 ## Available Topics
@@ -24,7 +24,7 @@ topics.unsubscribe("customers", subscriptionId);
 | Topic                                               | Description                                                            | Events    | Documentation                                     |
 | --------------------------------------------------- | ---------------------------------------------------------------------- | --------- | ------------------------------------------------- |
 | [customers](./topics/customers/README.md)           | Customer lifecycle events                                              | 8 events  | [View Details](./topics/customers/README.md)      |
-| [orders](./topics/orders/README.md)                 | Order lifecycle events                                                 | 4 events  | [View Details](./topics/orders/README.md)         |
+| [orders](./topics/orders/README.md)                 | Order lifecycle events                                                 | 5 events  | [View Details](./topics/orders/README.md)         |
 | [refunds](./topics/refunds/README.md)               | Refund lifecycle events                                                | 4 events  | [View Details](./topics/refunds/README.md)        |
 | [products](./topics/products/README.md)             | Product sync events                                                    | 4 events  | [View Details](./topics/products/README.md)       |
 | [cart](./topics/cart/README.md)                     | Cart operation events                                                  | 16 events | [View Details](./topics/cart/README.md)           |
@@ -51,9 +51,9 @@ Requests a fresh list of available topics from the host and returns the current 
 
 ```typescript
 const availableTopics = await topics.getTopics();
-availableTopics.forEach(topic => {
-    console.log(`Topic: ${topic.name} (${topic.id})`);
-    console.log(`Event types: ${topic.eventTypes.map(et => et.id).join(", ")}`);
+availableTopics.forEach((topic) => {
+  console.log(`Topic: ${topic.name} (${topic.id})`);
+  console.log(`Event types: ${topic.eventTypes.map((et) => et.id).join(', ')}`);
 });
 ```
 
@@ -71,10 +71,10 @@ Subscribes to a topic and receives events via the callback function.
 **Example:**
 
 ```typescript
-const subscriptionId = topics.subscribe("customers", event => {
-    console.log("Received event:", event.type);
-    console.log("Event data:", event.data);
-    console.log("Timestamp:", event.timestamp);
+const subscriptionId = topics.subscribe('customers', (event) => {
+  console.log('Received event:', event.type);
+  console.log('Event data:', event.data);
+  console.log('Timestamp:', event.timestamp);
 });
 ```
 
@@ -98,7 +98,7 @@ Unsubscribes from a topic using the subscription ID returned from `subscribe()`.
 **Example:**
 
 ```typescript
-const success = topics.unsubscribe("customers", subscriptionId);
+const success = topics.unsubscribe('customers', subscriptionId);
 ```
 
 ### `topics.unsubscribeAll(topic)`
@@ -114,7 +114,7 @@ Unsubscribes all callbacks for a specific topic.
 **Example:**
 
 ```typescript
-const removed = topics.unsubscribeAll("customers");
+const removed = topics.unsubscribeAll('customers');
 console.log(`Removed ${removed} subscriptions`);
 ```
 
@@ -124,25 +124,25 @@ All topics and events are fully typed. Import specific types for better type saf
 
 ```typescript
 import type {
-    TopicDefinition,
-    TopicEvent,
-    TopicEventType,
-    // Customer event types
-    CustomerCreatedPayload,
-    CustomerCreatedEvent,
-    CustomerUpdatedPayload,
-    CustomerUpdatedEvent,
-    CustomerNoteAddedPayload,
-    CustomerNoteAddedEvent,
-    CustomerNoteDeletedPayload,
-    CustomerNoteDeletedEvent,
-    CustomerAssignedPayload,
-    CustomerAssignedEvent,
-    CustomerUnassignedPayload,
-    CustomerUnassignedEvent,
-    CustomersEventType,
-    CustomersEventPayload
-} from "@final-commerce/command-frame";
+  TopicDefinition,
+  TopicEvent,
+  TopicEventType,
+  // Customer event types
+  CustomerCreatedPayload,
+  CustomerCreatedEvent,
+  CustomerUpdatedPayload,
+  CustomerUpdatedEvent,
+  CustomerNoteAddedPayload,
+  CustomerNoteAddedEvent,
+  CustomerNoteDeletedPayload,
+  CustomerNoteDeletedEvent,
+  CustomerAssignedPayload,
+  CustomerAssignedEvent,
+  CustomerUnassignedPayload,
+  CustomerUnassignedEvent,
+  CustomersEventType,
+  CustomersEventPayload,
+} from '@final-commerce/command-frame';
 ```
 
 ### Topic ID mapping note
@@ -150,9 +150,9 @@ import type {
 `topics.subscribe(...)` uses wire topic IDs (for example `'custom-tables'`), while `TopicEventPayloadMap` uses TypeScript keys (for example `customTables`).
 
 ```typescript
-import type { TopicEventPayloadMap } from "@final-commerce/command-frame";
+import type { TopicEventPayloadMap } from '@final-commerce/command-frame';
 
-type CustomTablesPayload = TopicEventPayloadMap["customTables"];
+type CustomTablesPayload = TopicEventPayloadMap['customTables'];
 ```
 
 ## Example: React Component with Pub/Sub
@@ -201,12 +201,12 @@ function CustomerEvents() {
 In the Render application, use the `topicPublisher` to publish events:
 
 ```typescript
-import { topicPublisher } from "@render/command-frame";
-import type { CustomerCreatedPayload } from "@final-commerce/command-frame";
+import { topicPublisher } from '@render/command-frame';
+import type { CustomerCreatedPayload } from '@final-commerce/command-frame';
 
 // When a customer is created
-topicPublisher.publish("customers", "customer-created", {
-    customer: newCustomer
+topicPublisher.publish('customers', 'customer-created', {
+  customer: newCustomer,
 } as CustomerCreatedPayload);
 ```
 
@@ -216,23 +216,23 @@ The host application must register topics before they can be used. Topics are re
 
 ```typescript
 interface TopicDefinition {
-    id: string;
-    name: string;
-    description?: string;
-    eventTypes: TopicEventType[];
+  id: string;
+  name: string;
+  description?: string;
+  eventTypes: TopicEventType[];
 }
 
 interface TopicEvent<T = any> {
-    topic: string;
-    type: string;
-    data: T;
-    timestamp: string;
+  topic: string;
+  type: string;
+  data: T;
+  timestamp: string;
 }
 
 interface TopicEventType {
-    id: string;
-    name: string;
-    description?: string;
+  id: string;
+  name: string;
+  description?: string;
 }
 ```
 

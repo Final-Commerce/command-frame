@@ -8,10 +8,10 @@ Retrieves data from a specific custom table in the parent application's local da
 
 ```typescript
 interface GetCustomTableDataParams {
-    tableName: string;
-    query?: any;
-    offset?: number;
-    limit?: number;
+  tableName: string;
+  query?: any;
+  offset?: number;
+  limit?: number;
 }
 ```
 
@@ -24,6 +24,7 @@ The name of the custom table to retrieve data from.
 MongoDB-style query object to filter the data. Supports standard MongoDB query operators like `$eq`, `$gt`, `$lt`, `$in`, `$regex`, etc.
 
 **Examples:**
+
 - `{ status: "active" }` - Find all records where status equals "active"
 - `{ age: { $gte: 18 } }` - Find all records where age is greater than or equal to 18
 - `{ email: { $regex: "@example.com" } }` - Find all records with email containing "@example.com"
@@ -34,7 +35,7 @@ The number of records to skip. Useful for pagination. Defaults to 0.
 
 #### `limit` (optional)
 
-The maximum number of records to return. Useful for pagination. If not specified, all matching records are returned.
+The maximum number of records to return. Useful for pagination. Defaults to 100 if not specified.
 
 ## Response
 
@@ -42,9 +43,9 @@ The maximum number of records to return. Useful for pagination. If not specified
 
 ```typescript
 interface GetCustomTableDataResponse<T = any> {
-    success: boolean;
-    data: T[];
-    timestamp: string;
+  success: boolean;
+  data: T[];
+  timestamp: string;
 }
 ```
 
@@ -55,6 +56,7 @@ Indicates whether the data was successfully retrieved.
 #### `data` (T[])
 
 An array of data records from the custom table. The structure of each record depends on the table's field definitions. Each record will include:
+
 - `_id` (string): Unique identifier for the record
 - Custom fields defined in the table schema
 - `createdAt` (string): Creation timestamp
@@ -80,7 +82,7 @@ Retrieve all records from a custom table:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomTableData({
-    tableName: 'customer_preferences'
+  tableName: 'customer_preferences',
 });
 
 console.log('All Records:', result.data);
@@ -94,11 +96,11 @@ Retrieve records that match specific criteria:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomTableData({
-    tableName: 'loyalty_points',
-    query: {
-        points: { $gte: 100 },
-        status: 'active'
-    }
+  tableName: 'loyalty_points',
+  query: {
+    points: { $gte: 100 },
+    status: 'active',
+  },
 });
 
 console.log('Active customers with 100+ points:', result.data);
@@ -115,9 +117,9 @@ const pageSize = 20;
 const page = 2;
 
 const result = await command.getCustomTableData({
-    tableName: 'customer_preferences',
-    offset: (page - 1) * pageSize,
-    limit: pageSize
+  tableName: 'customer_preferences',
+  offset: (page - 1) * pageSize,
+  limit: pageSize,
 });
 
 console.log(`Page ${page} results:`, result.data);
@@ -131,38 +133,37 @@ Use TypeScript generics for type-safe data:
 import { command } from '@final-commerce/command-frame';
 
 interface CustomerPreference {
-    _id: string;
-    customerId: string;
-    theme: 'light' | 'dark';
-    notifications: boolean;
-    createdAt: string;
-    updatedAt: string;
+  _id: string;
+  customerId: string;
+  theme: 'light' | 'dark';
+  notifications: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const result = await command.getCustomTableData<CustomerPreference>({
-    tableName: 'customer_preferences',
-    query: { theme: 'dark' }
+  tableName: 'customer_preferences',
+  query: { theme: 'dark' },
 });
 
 // result.data is now typed as CustomerPreference[]
-result.data.forEach(pref => {
-    console.log(`Customer ${pref.customerId} prefers ${pref.theme} theme`);
+result.data.forEach((pref) => {
+  console.log(`Customer ${pref.customerId} prefers ${pref.theme} theme`);
 });
 ```
 
 ## Error Handling
 
-If the data retrieval fails, the handler will throw an error. Common error scenarios include:
-- Invalid `tableName` (table does not exist)
-- Invalid query syntax
-- Database connection issues
+The handler throws if `tableName` is missing:
+
+- `tableName is required`
+
+A `tableName` that does not match any existing custom table is **not** an error — it returns a successful response with an empty `data` array.
 
 ## Validation Rules
 
-- `tableName` is required and must reference an existing custom table
-- `query` must be a valid MongoDB query object if provided
-- `offset` must be a non-negative number if provided
-- `limit` must be a positive number if provided
+- `tableName` is required (the handler throws `tableName is required` if it is missing); it does not need to reference an existing table
+- `query`, `offset`, and `limit` are not validated by the handler — malformed values are passed through to the underlying query engine as-is
 
 ## Real Data Examples
 
@@ -214,6 +215,6 @@ If the data retrieval fails, the handler will throw an error. Common error scena
 - Custom table data is stored in the local IndexedDB database (LokiJS)
 - Data is synchronized with the central MongoDB database via station-sync
 - Query syntax follows MongoDB query operators
+- Soft-deleted rows (`isDeleted: true`) are excluded by default via an internal `isDeleted: { $ne: true }` filter merged with `query`. An `isDeleted` key inside `query` overrides this default (the caller's query is merged in last), so `query: { isDeleted: true }` will return soft-deleted rows instead of excluding them
 - Use `getCustomTables` to list all available tables
 - Use `getCustomTableFields` to get the field definitions for a table
-

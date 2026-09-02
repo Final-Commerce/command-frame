@@ -8,23 +8,23 @@ Retrieves a list of customers from the parent application's local database.
 
 ```typescript
 interface GetCustomersParams {
-    query?: {
-        email?: string | { $regex?: string; $options?: string };
-        firstName?: string | { $regex?: string; $options?: string };
-        lastName?: string | { $regex?: string; $options?: string };
-        phone?: string | { $regex?: string; $options?: string };
-        tags?: string | { $in?: string[] };
-        outletId?: string;
-        [key: string]: any;
-    };
-    offset?: number;
-    limit?: number;
+  query?: {
+    email?: string | { $regex?: string; $options?: string };
+    firstName?: string | { $regex?: string; $options?: string };
+    lastName?: string | { $regex?: string; $options?: string };
+    phone?: string | { $regex?: string; $options?: string };
+    tags?: string | { $in?: string[] };
+    outletId?: string;
+    [key: string]: any;
+  };
+  offset?: number;
+  limit?: number;
 }
 ```
 
 #### `query` (optional)
 
-A query object to filter customers. The actual supported query operators depend on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
+A query object to filter customers. The handler runs this against the local LokiJS-backed database (via `dbManager.queryCustomers`); Mongo-style `{ $regex, $options }` pairs are automatically translated to LokiJS's expected `$regex` format before the query runs.
 
 #### `offset` (optional)
 
@@ -42,17 +42,18 @@ The maximum number of customers to return. Defaults to `100` if not provided.
 
 ```typescript
 interface GetCustomersResponse {
-    customers: CFCustomer[];
-    total?: number;
-    timestamp: string;
+  customers: CFCustomer[];
+  total?: number;
+  timestamp: string;
 }
 ```
 
 #### `customers` ([CFCustomer](../../types/README.md#cfcustomer)[])
 
-Array of customer objects matching the query. The actual structure may vary depending on the database implementation (MongoDB/mongoose vs LokiJS/IndexedDB).
+Array of customer objects matching the query, typed as `CFCustomer[]`. Not every optional field on the type is guaranteed to be present on every customer record.
 
 **Tip:** You can import the [`CFCustomer`](../../types/README.md#cfcustomer) type directly from the library:
+
 ```typescript
 import { type CFCustomer } from '@final-commerce/command-frame';
 ```
@@ -95,14 +96,14 @@ import { command } from '@final-commerce/command-frame';
 
 // Get first 50 customers
 const firstPage = await command.getCustomers({
-    offset: 0,
-    limit: 50
+  offset: 0,
+  limit: 50,
 });
 
 // Get next 50 customers
 const secondPage = await command.getCustomers({
-    offset: 50,
-    limit: 50
+  offset: 50,
+  limit: 50,
 });
 ```
 
@@ -114,11 +115,11 @@ Get customers matching a query with pagination:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomers({
-    query: {
-        email: { $regex: '@gmail.com', $options: 'i' }
-    },
-    offset: 0,
-    limit: 25
+  query: {
+    email: { $regex: '@gmail.com', $options: 'i' },
+  },
+  offset: 0,
+  limit: 25,
 });
 ```
 
@@ -216,18 +217,19 @@ const result = await command.getCustomers({
 
 ## Customer Structure Reference
 
-The customer structure may vary depending on the database implementation. The structure shown above is a reference based on the MongoDB schema. In practice, customer objects are returned as `any` to allow flexibility between different database implementations (MongoDB/mongoose vs LokiJS/IndexedDB).
+Each customer is typed as [`CFCustomer`](../../types/README.md#cfcustomer) (`ActiveCustomer`), backed by the local LokiJS database rather than a live MongoDB connection. The structure shown above reflects that shape; not every optional field is guaranteed to be present on every customer record.
 
 Key fields that may be present:
 
 - **Address fields**: `billing` and `shipping` typically contain address information with `address1`, `city`, `state`, `country`, `postCode`, etc.
 - **Metadata**: Array of key-value pairs for custom data.
-- **Notes**: Array of timestamped messages associated with the customer.
-- **ID fields**: The ID field structure depends on the database (may be `id`, `_id`, or other formats).
+- **Notes**: Array of timestamped messages associated with the customer. Legacy notes missing an `_id` are lazily stamped with one by the handler on read.
+- **`totalSpent`**: When present, an integer in minor currency units (e.g. cents), not a decimal.
+- **ID fields**: `_id` is the primary identifier (as shown above); an optional `id` alias may also be present.
 
 ## Error Handling
 
-If the query fails or no customers are found, the handler returns an empty array:
+If no customers match the query, the handler resolves normally with an empty array:
 
 ```typescript
 {
@@ -237,9 +239,10 @@ If the query fails or no customers are found, the handler returns an empty array
 }
 ```
 
+If the underlying query itself fails (e.g. a malformed query or a local-database error), the handler does not catch it — the returned promise rejects instead of resolving with an empty result.
+
 ## Notes
 
 - Results are limited by the `limit` parameter (defaults to 100 if not provided)
 - Use `offset` and `limit` for pagination
 - Deleted customers (`isDeleted: true`) are automatically excluded
-

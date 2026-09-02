@@ -8,8 +8,8 @@ Updates the quantity of a cart item by its unique `internalId`. If the quantity 
 
 ```typescript
 interface UpdateCartItemQuantityParams {
-    internalId: string;  // The unique identifier for the specific cart item to update
-    quantity: number;   // The new quantity. If set to 0, the item will be removed
+  internalId: string; // The unique identifier for the specific cart item to update
+  quantity: number; // The new quantity. If set to 0, the item will be removed
 }
 ```
 
@@ -19,7 +19,14 @@ The unique identifier for the specific cart item instance to update. This is the
 
 #### `quantity` (required)
 
-The new quantity for the cart item. If set to 0, the item will be removed from the cart (equivalent to calling `removeProductFromCart`).
+The new quantity for the cart item. If set to 0, the item will be removed from the cart (equivalent to calling `removeProductFromCart`). Must be a non-negative integer — a negative or non-integer value throws an error.
+
+May be fractional when the variant is sold by measure — `variant.unit.precision` says how many
+decimals are allowed (`3` for a litre, `0` for anything sold by the piece). The engine refuses
+anything finer and names the unit in the error; surface that message rather than rounding the
+typed value, which would deduct a different amount than the cashier asked for.
+
+A stepper should move by `1 / 10 ** precision`, not by 1.
 
 ## Response
 
@@ -27,10 +34,10 @@ The new quantity for the cart item. If set to 0, the item will be removed from t
 
 ```typescript
 interface UpdateCartItemQuantityResponse {
-    success: boolean;
-    internalId: string;  // The unique identifier of the updated cart item
-    quantity: number;   // The new quantity after the update
-    timestamp: string;
+  success: boolean;
+  internalId: string; // The unique identifier of the updated cart item
+  quantity: number; // The new quantity after the update
+  timestamp: string;
 }
 ```
 
@@ -44,8 +51,8 @@ Update a cart item's quantity:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.updateCartItemQuantity({
-    internalId: 'cart-item-internal-id-123',
-    quantity: 3
+  internalId: 'cart-item-internal-id-123',
+  quantity: 3,
 });
 
 console.log(`Updated quantity to ${result.quantity}`);
@@ -57,8 +64,8 @@ Remove an item by setting quantity to 0:
 
 ```typescript
 const result = await command.updateCartItemQuantity({
-    internalId: 'cart-item-internal-id-123',
-    quantity: 0
+  internalId: 'cart-item-internal-id-123',
+  quantity: 0,
 });
 
 console.log('Item removed from cart');
@@ -68,14 +75,22 @@ console.log('Item removed from cart');
 
 ```typescript
 try {
-    await command.updateCartItemQuantity({ 
-        internalId: 'invalid-id',
-        quantity: 2
-    });
+  await command.updateCartItemQuantity({
+    internalId: 'invalid-id',
+    quantity: 2,
+  });
 } catch (error) {
-    console.error('Cart item not found:', error.message);
+  console.error('Cart item not found:', error.message);
 }
 ```
+
+## Errors
+
+- `"internalId is required"` — missing or falsy `internalId`
+- `"quantity is required"` — `quantity` is `undefined` or `null`
+- `"quantity must be a non-negative integer"` — `quantity` is negative, fractional, or not parseable as an integer
+- `"Insufficient stock. Available: {stock}, Requested: {requested}"` — increasing quantity would push the combined quantity of that variant across all cart lines past available stock
+- `"Cart item with internalId {internalId} not found"` — no matching product or custom sale line exists in the cart
 
 ## Events
 
@@ -84,7 +99,12 @@ try {
 
 ## Stock Validation
 
-When increasing quantity, this action validates stock availability. If insufficient stock is available, an error will be thrown.
+When increasing quantity on a product line, this action validates stock availability for variants that have stock management enabled (unlimited-stock variants skip the check). The check sums the requested quantity together with the quantity of that same variant on any other cart lines — if the combined total exceeds available stock, an `Insufficient stock. Available: X, Requested: Y` error is thrown.
+
+## Notes
+
+- `internalId` may also refer to a custom sale line in the cart, not just a product line. Custom sale lines are updated or removed the same way, but stock validation does not apply to them.
+- For custom sale lines, the `product-updated` / `product-deleted` events are still published on the `cart` topic, but the event's `product` field carries the custom sale object rather than an `ActiveProduct` (there is currently no dedicated custom-sale cart event).
 
 ## Related Actions
 

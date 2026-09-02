@@ -1,15 +1,19 @@
+# Vendored from Final-Commerce/central-ops/.github/workflows/publish-package.yml.
+# This repo is PUBLIC and GitHub does not allow public repos to call reusable
+# workflows that live in private repos, so we carry a copy instead of `uses:`.
+# Trimmed to the public-npm path only (no Artifact Registry, no GCP WIF).
+# If central-ops changes its publish logic, re-sync this file by hand.
 name: Publish Package
 
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types: [published]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # version-bump commit push
       id-token: write # npm provenance
 
     steps:
@@ -63,8 +67,8 @@ jobs:
             }
 
             function cmpId(a, b) {
-              const aNum = /^\d+\$/.test(a);
-              const bNum = /^\d+\$/.test(b);
+              const aNum = /^\d+$/.test(a);
+              const bNum = /^\d+$/.test(b);
               if (aNum && bNum) return parseInt(a, 10) - parseInt(b, 10);
               if (aNum) return -1;
               if (bNum) return 1;
@@ -112,12 +116,18 @@ jobs:
               const isPrerelease = Boolean(parsed.pre);
 
               if (!currentIsPrerelease) {
+                // Stable releases should only compare against prior stable releases.
                 return !isPrerelease;
               }
 
+              // Prereleases compare only within the same channel AND same stable base version.
+              // This allows parallel beta lines (e.g. 1.0.x-beta and 1.1.x-beta) to coexist.
               if (!isPrerelease) return false;
               const channel = parsed.pre[0].toLowerCase();
-              return channel === currentChannel;
+              if (channel !== currentChannel) return false;
+              return parsed.major === currentParsed.major &&
+                parsed.minor === currentParsed.minor &&
+                parsed.patch === currentParsed.patch;
             });
 
             if (candidates.length === 0) {
@@ -170,15 +180,87 @@ jobs:
           "
           echo "✅ package.json version: $(node -p "require('./package.json').version")"
 
+      - name: Check npm version availability
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PKG_NAME=$(node -p "require('./package.json').name")
+          EXISTING=$(npm view "${PKG_NAME}@${VERSION}" version --registry=https://registry.npmjs.org 2>/dev/null || true)
+          if [ -n "$EXISTING" ]; then
+            echo "::error::${PKG_NAME}@${VERSION} already exists on npm. Resolve the partial publish manually before re-tagging."
+            exit 1
+          fi
+          echo "✅ ${PKG_NAME}@${VERSION} is available on npm"
+
+      - name: Build package
+        run: npm run build --if-present
+
+      - name: Verify dist integrity
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+
+            const DIST = 'dist';
+            if (!fs.existsSync(DIST)) {
+              console.log('No dist/ directory — skipping dist integrity check.');
+              process.exit(0);
+            }
+
+            function walk(dir, files) {
+              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                const full = path.join(dir, entry.name);
+                if (entry.isDirectory()) walk(full, files);
+                else if (/\.d\.(ts|mts|cts)\$/.test(entry.name)) files.push(full);
+              }
+              return files;
+            }
+
+            const dtsFiles = walk(DIST, []);
+            const specifierRegex = /(?:from|require\()\s*['\"](\.[^'\"]+\.(?:js|mjs|cjs))['\"]/g;
+            const missing = [];
+
+            for (const file of dtsFiles) {
+              const content = fs.readFileSync(file, 'utf8');
+              let match;
+              while ((match = specifierRegex.exec(content))) {
+                const resolved = path.resolve(path.dirname(file), match[1]);
+                if (!fs.existsSync(resolved)) {
+                  missing.push({ file, specifier: match[1], resolved });
+                }
+              }
+            }
+
+            if (missing.length > 0) {
+              console.error('::error::Declaration file(s) reference a runtime chunk that was not emitted:');
+              for (const m of missing) {
+                console.error('  ' + m.file + \" -> '\" + m.specifier + \"' (expected \" + m.resolved + ')');
+              }
+              console.error('This usually means the bundler split shared types into a .d.ts-only chunk (e.g. multiple tsup entries sharing types, with no matching .js/.mjs output). A consumer doing static type/enum introspection (e.g. the @nestjs/swagger CLI plugin) can bake a require() to this path and crash at runtime with MODULE_NOT_FOUND, even though a plain import of the package works fine.');
+              process.exit(1);
+            }
+
+            console.log('✅ Verified ' + dtsFiles.length + ' declaration file(s) in dist/ — no dangling chunk references.');
+          "
+
       - name: Publish to npm
         run: npm publish ${{ steps.dist_tag.outputs.flag }} --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Resolve target branch
+        id: target_branch
+        run: |
+          RELEASE_BRANCH="${{ github.event.release.target_commitish }}"
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+
+          BRANCH="${RELEASE_BRANCH:-$DEFAULT_BRANCH}"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "Target branch: $BRANCH"
+
       - name: Commit version bump
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          BRANCH="${{ github.event.repository.default_branch }}"
+          BRANCH="${{ steps.target_branch.outputs.branch }}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -192,13 +274,14 @@ jobs:
             pkg.version = '${VERSION}';
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
+          npm install --package-lock-only --ignore-scripts
 
-          if git diff --quiet package.json; then
+          if git diff --quiet package.json package-lock.json; then
             echo "ℹ️ package.json already at version $VERSION — nothing to commit"
             exit 0
           fi
 
-          git add package.json
+          git add package.json package-lock.json
           git commit -m "chore: bump version to $VERSION [skip ci]"
           git push origin "$BRANCH"
           echo "✅ Committed version $VERSION to $BRANCH"

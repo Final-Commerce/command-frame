@@ -1,6 +1,7 @@
 import { CFActiveCustomSales } from '../../CommonTypes';
 import { MOCK_CART, mockPublishEvent } from '../../demo/database';
 import { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from './types';
+import { requireMinorUnitsInteger } from '../../demo/units';
 
 export const mockAddCustomSale: AddCustomSale = async (
   params?: AddCustomSaleParams,
@@ -11,10 +12,9 @@ export const mockAddCustomSale: AddCustomSale = async (
 
   // Simple mock ID generation
   const mockId = 'sale_' + Math.random().toString(36).substr(2, 9);
-  // Mirror render: the flow sends raw dollars ($4); render does toMinorUnits.
-  // MOCK_CART tracks minor units, so convert here too.
-  const minorFactor = 10 ** (MOCK_CART.minorUnits ?? 2);
-  const price = Math.round(Number(params.price) * minorFactor);
+  // FI-6991: price arrives as an INTEGER in MINOR units (500 = $5.00) and is
+  // stored directly — the engine throws on a fraction, so the mock does too.
+  const price = requireMinorUnitsInteger(params.price, 'price');
   const quantity = params.quantity ?? 1;
 
   const customSale: CFActiveCustomSales = {

@@ -1,6 +1,6 @@
 {
   "name": "@final-commerce/command-frame",
-  "version": "0.3.1",
+  "version": "0.6.0-staging.5",
   "description": "Commands Frame library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -57,12 +57,13 @@
     "ignoreBranchesMissingTickets": true
   },
   "dependencies": {
-    "@final-commerce/common": "^2.0.2"
+    "@final-commerce/common": "2.2.0-staging.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
     "@eslint/js": "^9.0.0",
+    "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^9.0.0",
     "husky": "^9.1.7",
     "jira-prepare-commit-msg": "^1.7.2",

@@ -10,15 +10,15 @@ Removes a cart-level fee by its index in `cart.customFee`. Matches the order of 
 
 ```typescript
 {
-    success: boolean;
-    timestamp: string;
+  success: boolean;
+  timestamp: string;
 }
 ```
 
 ## Usage
 
 ```typescript
-import { command } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
 // Remove the first cart fee
 await command.removeCartFee({ index: 0 });
@@ -26,7 +26,7 @@ await command.removeCartFee({ index: 0 });
 
 ## Pub/Sub
 
-On success, the Render host publishes **`cart` / `cart-fee-removed`** with payload `{ feeIndex: number }` (same index you passed in). See [cart-fee-removed event](../../pubsub/topics/cart/cart-fee-removed/README.md).
+On success, kaching publishes **`cart` / `cart-fee-removed`** with payload `{ feeIndex: number }` (same index you passed in). See [cart-fee-removed event](../../pubsub/topics/cart/cart-fee-removed/README.md).
 
 ## Error handling
 
