@@ -12,6 +12,8 @@ import { mockAddOrderNote } from '../../actions/add-order-note/mock';
 import { mockRemoveOrderNote } from '../../actions/remove-order-note/mock';
 import { mockAddProductDiscount } from '../../actions/add-product-discount/mock';
 import { mockAddProductFee } from '../../actions/add-product-fee/mock';
+import { mockGetProductModifierSelections } from '../../actions/get-product-modifier-selections/mock';
+import { mockSetProductModifierSelections } from '../../actions/set-product-modifier-selections/mock';
 import { mockRemoveProductDiscount } from '../../actions/remove-product-discount/mock';
 import { mockRemoveProductFee } from '../../actions/remove-product-fee/mock';
 import { mockSetActiveProductFee } from '../../actions/set-active-product-fee/mock';
@@ -111,6 +113,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   addOrderNote: mockAddOrderNote,
   addProductDiscount: mockAddProductDiscount,
   addProductFee: mockAddProductFee,
+  getProductModifierSelections: mockGetProductModifierSelections,
+  setProductModifierSelections: mockSetProductModifierSelections,
   setActiveProductFee: mockSetActiveProductFee,
   setActiveProductDiscount: mockSetActiveProductDiscount,
   getActiveProduct: mockGetActiveProduct,

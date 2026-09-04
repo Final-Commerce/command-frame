@@ -12,9 +12,23 @@ interface AddProductToCartParams {
     quantity?: number;           // Optional, default: 1
     discounts?: AddProductDiscountParams[]; // Optional array of discounts to apply immediately
     fees?: AddProductFeeParams[];           // Optional array of fees to apply immediately
+    modifiers?: ModifierSelection[];        // Optional modifier selections, validated by the host before the line is added
     notes?: string | string[];              // Optional note or array of notes to add immediately
 }
 ```
+
+#### `modifiers` (optional)
+
+The cashier's answers to the product's modifiers, one `ModifierSelection` per modifier
+(`{ modifierId, choices: [{ choiceId, quantity }] }` — quantity is units per line-item
+unit). The host validates against the product's resolved modifiers (required / min / max
+counted in UNITS, per-outlet availability) BEFORE the line is added; a rejected add
+returns `success: false` with a human-readable `reason`. Each selected choice becomes a
+`modifiers[]` entry on the order line item, included in line and order totals and carried
+through refunds. Money-wise a modifier sits at the product-fee level: never part of
+grossSales, never reduced by a product discount — it joins the line after the discount,
+alongside `fees`, and inherits the product's tax table by default. Selections apply to
+every unit of the line — ring differing configurations as separate lines.
 
 #### `variantId` (required)
 

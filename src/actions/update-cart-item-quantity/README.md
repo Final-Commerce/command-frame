@@ -104,3 +104,10 @@ When increasing quantity on a product line, this action validates stock availabi
 - `addProductToCart` - Add a product to the cart (returns `internalId`)
 - `removeProductFromCart` - Remove a product from the cart
 - `getCurrentCart` - Get all cart items with their `internalId` values
+
+## Modifiers
+
+A line's modifier selections apply to every unit, so changing the quantity
+rescales each selection's extended total automatically (`unitPrice × choice
+quantity × new line quantity`) — the caller never re-sends selections.
+Setting quantity to 0 removes the line and its selections together.

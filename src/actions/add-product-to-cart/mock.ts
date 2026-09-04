@@ -50,6 +50,13 @@ export const mockAddProductToCart: AddProductToCart = async (params?: AddProduct
         // discount/fee could be added here to mock object if CFActiveProduct supports it
     } as unknown as CFActiveProduct;
 
+    // Mock modifier handling: echo selections onto the line; a real host resolves the
+    // product's modifiers, validates required/min/max in units, and prices each choice
+    // (fee-level money: not in grossSales, not reduced by the product discount).
+    if (params?.modifiers?.length) {
+        activeProduct.modifierSelections = params.modifiers;
+    }
+
     MOCK_CART.products.push(activeProduct);
     
     // Recalculate totals

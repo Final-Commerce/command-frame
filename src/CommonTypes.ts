@@ -47,6 +47,12 @@ import type {
     FullProduct,
     ProductVariant,
     Inventory,
+    ResolvedModifier,
+    ResolvedModifierChoice,
+    ModifierSelectionType,
+    ModifierSelection,
+    ModifierChoiceSelection,
+    OrderLineItemModifier,
     CustomerNote,
     Attribute,
     AttributeOption,
@@ -83,6 +89,15 @@ export type CFTransaction = Transaction;
 export type CFCategory = Category;
 export type CFProductVariant = ProductVariant;
 export type CFProduct = FullProduct;
+/** Modifier (the till question) resolved onto a product — `CFProduct.modifiers`. */
+export type CFResolvedModifier = ResolvedModifier;
+export type CFResolvedModifierChoice = ResolvedModifierChoice;
+export type CFModifierSelectionType = ModifierSelectionType;
+/** One selected modifier choice on an order line item (wire shape). */
+export type CFOrderLineItemModifier = OrderLineItemModifier;
+/** Cart-line modifier answer (pre-pricing) — `CFActiveProduct.modifierSelections`. */
+export type CFModifierSelection = ModifierSelection;
+export type CFModifierChoiceSelection = ModifierChoiceSelection;
 export type CFActiveProduct = ActiveProduct;
 export type CFCustomer = ActiveCustomer;
 export type CFActiveCustomer = ActiveCustomer;

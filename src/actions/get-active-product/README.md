@@ -109,3 +109,10 @@ Publishes the active product snapshot on the `products` channel — unconditiona
 - Returns `null` for the `product` field when no product is currently selected or being viewed.
 - The active product reflects the product the user is interacting with in the POS interface (e.g. tapped on in the cart or product list).
 - Useful for building context-aware extensions that need to react to the currently focused product.
+
+## Modifiers
+
+The active product's resolved modifiers (what the till should ask) come from
+the catalog product (`FullProduct.modifiers`, direct + category-inherited).
+Once the line is in the cart, its answers live on the cart line as
+`modifierSelections` — see `getCurrentCart` and `getProductModifierSelections`.
