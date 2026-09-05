@@ -53,6 +53,11 @@ import type {
   Category,
   Transaction,
   ActiveSplitPayment,
+  BookingAvailability,
+  BookingSlot,
+  BookingSlotResource,
+  BookingResource,
+  Booking,
 } from '@final-commerce/common/pos-types';
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
@@ -83,6 +88,11 @@ export type CFTransaction = Transaction;
 export type CFCategory = Category;
 export type CFProductVariant = ProductVariant;
 export type CFProduct = FullProduct;
+export type CFBookingAvailability = BookingAvailability;
+export type CFBookingSlot = BookingSlot;
+export type CFBookingSlotResource = BookingSlotResource;
+export type CFBookingResource = BookingResource;
+export type CFBooking = Booking;
 export type CFActiveProduct = ActiveProduct;
 export type CFCustomer = ActiveCustomer;
 export type CFActiveCustomer = ActiveCustomer;

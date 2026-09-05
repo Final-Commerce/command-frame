@@ -1,6 +1,12 @@
 // Import actions from new folder structure
 import { exampleFunction } from './actions/example-function/action';
 import { getProducts } from './actions/get-products/action';
+import { getBookingResources } from './actions/get-booking-resources/action';
+import { getBookingAvailability } from './actions/get-booking-availability/action';
+import { getBookings } from './actions/get-bookings/action';
+import { holdBooking } from './actions/hold-booking/action';
+import { addBookingToCart } from './actions/add-booking-to-cart/action';
+import { cancelBooking } from './actions/cancel-booking/action';
 import { addCustomSale } from './actions/add-custom-sale/action';
 import { editCustomSale } from './actions/edit-custom-sale/action';
 import { addNonRevenueItem } from './actions/add-non-revenue-item/action';
@@ -138,6 +144,12 @@ export const command = {
   exampleFunction,
   generateAPIKey,
   getProducts,
+  getBookingResources,
+  getBookingAvailability,
+  getBookings,
+  holdBooking,
+  addBookingToCart,
+  cancelBooking,
   addCustomSale,
   editCustomSale,
   addNonRevenueItem,
@@ -273,6 +285,24 @@ export type { ExampleFunction, ExampleFunctionParams, ExampleFunctionResponse } 
 export type { GenerateAPIKey, GenerateAPIKeyParams, GenerateAPIKeyResponse } from './actions/generate-api-key/types';
 
 export type { GetProducts, GetProductsParams, GetProductsResponse } from './actions/get-products/types';
+export type {
+  GetBookingResources,
+  GetBookingResourcesParams,
+  GetBookingResourcesResponse,
+} from './actions/get-booking-resources/types';
+export type {
+  GetBookingAvailability,
+  GetBookingAvailabilityParams,
+  GetBookingAvailabilityResponse,
+} from './actions/get-booking-availability/types';
+export type { GetBookings, GetBookingsParams, GetBookingsResponse } from './actions/get-bookings/types';
+export type { HoldBooking, HoldBookingParams, HoldBookingResponse } from './actions/hold-booking/types';
+export type {
+  AddBookingToCart,
+  AddBookingToCartParams,
+  AddBookingToCartResponse,
+} from './actions/add-booking-to-cart/types';
+export type { CancelBooking, CancelBookingParams, CancelBookingResponse } from './actions/cancel-booking/types';
 
 export type { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from './actions/add-custom-sale/types';
 export type { EditCustomSale, EditCustomSaleParams, EditCustomSaleResponse } from './actions/edit-custom-sale/types';

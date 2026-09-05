@@ -39,6 +39,12 @@ import { mockGetCurrentCart } from '../../actions/get-current-cart/mock';
 import { mockGetCustomers } from '../../actions/get-customers/mock';
 import { mockGetOrders } from '../../actions/get-orders/mock';
 import { mockGetProducts } from '../../actions/get-products/mock';
+import { mockGetBookingResources } from '../../actions/get-booking-resources/mock';
+import { mockGetBookingAvailability } from '../../actions/get-booking-availability/mock';
+import { mockGetBookings } from '../../actions/get-bookings/mock';
+import { mockHoldBooking } from '../../actions/hold-booking/mock';
+import { mockAddBookingToCart } from '../../actions/add-booking-to-cart/mock';
+import { mockCancelBooking } from '../../actions/cancel-booking/mock';
 import { mockGetRefunds } from '../../actions/get-refunds/mock';
 import { mockGetTaxTables } from '../../actions/get-tax-tables/mock';
 import { mockGetRemainingRefundableQuantities } from '../../actions/get-remaining-refundable-quantities/mock';
@@ -135,6 +141,12 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getCustomers: mockGetCustomers,
   getOrders: mockGetOrders,
   getProducts: mockGetProducts,
+  getBookingResources: mockGetBookingResources,
+  getBookingAvailability: mockGetBookingAvailability,
+  getBookings: mockGetBookings,
+  holdBooking: mockHoldBooking,
+  addBookingToCart: mockAddBookingToCart,
+  cancelBooking: mockCancelBooking,
   getRefunds: mockGetRefunds,
   getTaxTables: mockGetTaxTables,
   getRemainingRefundableQuantities: mockGetRemainingRefundableQuantities,
