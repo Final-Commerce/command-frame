@@ -44,6 +44,7 @@ import { mockGetBookingAvailability } from '../../actions/get-booking-availabili
 import { mockGetBookings } from '../../actions/get-bookings/mock';
 import { mockHoldBooking } from '../../actions/hold-booking/mock';
 import { mockAddBookingToCart } from '../../actions/add-booking-to-cart/mock';
+import { mockRemoveBookingFromCart } from '../../actions/remove-booking-from-cart/mock';
 import { mockCancelBooking } from '../../actions/cancel-booking/mock';
 import { mockGetRefunds } from '../../actions/get-refunds/mock';
 import { mockGetTaxTables } from '../../actions/get-tax-tables/mock';
@@ -146,6 +147,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getBookings: mockGetBookings,
   holdBooking: mockHoldBooking,
   addBookingToCart: mockAddBookingToCart,
+  removeBookingFromCart: mockRemoveBookingFromCart,
   cancelBooking: mockCancelBooking,
   getRefunds: mockGetRefunds,
   getTaxTables: mockGetTaxTables,

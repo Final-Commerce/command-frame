@@ -6,6 +6,7 @@ import { getBookingAvailability } from './actions/get-booking-availability/actio
 import { getBookings } from './actions/get-bookings/action';
 import { holdBooking } from './actions/hold-booking/action';
 import { addBookingToCart } from './actions/add-booking-to-cart/action';
+import { removeBookingFromCart } from './actions/remove-booking-from-cart/action';
 import { cancelBooking } from './actions/cancel-booking/action';
 import { addCustomSale } from './actions/add-custom-sale/action';
 import { editCustomSale } from './actions/edit-custom-sale/action';
@@ -149,6 +150,7 @@ export const command = {
   getBookings,
   holdBooking,
   addBookingToCart,
+  removeBookingFromCart,
   cancelBooking,
   addCustomSale,
   editCustomSale,
@@ -302,6 +304,11 @@ export type {
   AddBookingToCartParams,
   AddBookingToCartResponse,
 } from './actions/add-booking-to-cart/types';
+export type {
+  RemoveBookingFromCart,
+  RemoveBookingFromCartParams,
+  RemoveBookingFromCartResponse,
+} from './actions/remove-booking-from-cart/types';
 export type { CancelBooking, CancelBookingParams, CancelBookingResponse } from './actions/cancel-booking/types';
 
 export type { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from './actions/add-custom-sale/types';
@@ -650,6 +657,7 @@ export { variantsTopic } from './pubsub/topics/variants';
 export { transactionsTopic } from './pubsub/topics/transactions';
 export { categoriesTopic } from './pubsub/topics/categories';
 export { attributesTopic } from './pubsub/topics/attributes';
+export { bookingsTopic } from './pubsub/topics/bookings';
 // Export Pub/Sub Event Types
 export type {
   // Customer event payloads

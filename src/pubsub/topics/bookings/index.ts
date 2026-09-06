@@ -18,6 +18,14 @@ export const bookingsTopic: TopicDefinition = {
       name: 'Booking Updated',
       description: 'Published when a synced booking changes: confirmed after payment, cancelled, or expired',
     },
+    {
+      id: 'booking-setup-changed',
+      name: 'Booking Setup Changed',
+      description:
+        'Published when what a booking can be MADE of changes: a rule set, a resource, who serves ' +
+        'a product, or where a resource works. Occupancy is untouched — re-ask getBookingResources ' +
+        'and getBookingAvailability, because both answers were computed from the old setup.',
+    },
   ],
 };
 

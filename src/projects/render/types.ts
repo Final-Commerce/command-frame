@@ -105,6 +105,7 @@ import type {
   GetBookings,
   HoldBooking,
   AddBookingToCart,
+  RemoveBookingFromCart,
   CancelBooking,
 } from '../../index';
 
@@ -119,6 +120,7 @@ export interface RenderProviderActions {
   getBookings: GetBookings;
   holdBooking: HoldBooking;
   addBookingToCart: AddBookingToCart;
+  removeBookingFromCart: RemoveBookingFromCart;
   cancelBooking: CancelBooking;
   addCustomSale: AddCustomSale;
   editCustomSale: EditCustomSale;
