@@ -94,14 +94,8 @@ export function RolesSection({ isInIframe: _ }: RolesSectionProps) {
       </CommandSection>
 
       <CommandSection title="Get Roles">
-        <p className="section-description">
-          Fetches all roles for the current company, including their permissions.
-        </p>
-        <button
-          onClick={handleGetRoles}
-          disabled={rolesLoading}
-          className="btn btn--primary"
-        >
+        <p className="section-description">Fetches all roles for the current company, including their permissions.</p>
+        <button onClick={handleGetRoles} disabled={rolesLoading} className="btn btn--primary">
           {rolesLoading ? 'Loading...' : 'Get Roles'}
         </button>
 
@@ -128,10 +122,7 @@ export function RolesSection({ isInIframe: _ }: RolesSectionProps) {
                         <td>{role.name}</td>
                         <td>{role.permissions?.filter((p: any) => p.value === true).length ?? 0}</td>
                         <td className="text-right">
-                          <button
-                            onClick={() => toggleExpand(roleId)}
-                            className="btn btn--small"
-                          >
+                          <button onClick={() => toggleExpand(roleId)} className="btn btn--small">
                             {isExpanded ? 'Hide' : 'Show'}
                           </button>
                         </td>

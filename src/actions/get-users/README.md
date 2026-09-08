@@ -8,7 +8,7 @@ Retrieves a list of users (employees) for the current company from the parent ap
 
 ```typescript
 interface GetUsersParams {
-    outlets?: string[];
+  outlets?: string[];
 }
 ```
 
@@ -22,9 +22,9 @@ An array of outlet IDs. If provided, the response will only include users who ha
 
 ```typescript
 interface GetUsersResponse {
-    users: CFActiveUser[];
-    success: boolean;
-    timestamp: string;
+  users: CFActiveUser[];
+  success: boolean;
+  timestamp: string;
 }
 ```
 
@@ -33,6 +33,7 @@ interface GetUsersResponse {
 Array of user objects matching the query. Users with a role-bearing type have their full role object with permissions in `role`; users whose type doesn't require a role (`owner`, `organization_owner`, `organization_user`, `final_owner`, `final_user`) have `role: null`.
 
 **Tip:** You can import the [`CFActiveUser`](../../types/README.md#cfactiveuser) type directly from the library:
+
 ```typescript
 import { type CFActiveUser } from '@final-commerce/command-frame';
 ```
@@ -75,7 +76,7 @@ Get only users who have access to a specific outlet:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getUsers({
-    outlets: ['outlet_id_1', 'outlet_id_2']
+  outlets: ['outlet_id_1', 'outlet_id_2'],
 });
 ```
 
@@ -86,8 +87,8 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getUsers();
 
-const admins = result.users.filter(
-    u => u.role?.permissions?.some(p => p.category === 'hub_access' && p.value === true)
+const admins = result.users.filter((u) =>
+  u.role?.permissions?.some((p) => p.category === 'hub_access' && p.value === true),
 );
 console.log('Users with hub access:', admins);
 ```

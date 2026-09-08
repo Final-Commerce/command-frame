@@ -34,21 +34,21 @@ import { command } from '@final-commerce/command-frame';
 await command.adjustInventory({
   amount: '10',
   stockType: 'add',
-  variantId: 'variant-123'
+  variantId: 'variant-123',
 });
 
 // Subtract 5 units from inventory
 await command.adjustInventory({
   amount: '5',
   stockType: 'subtract',
-  variantId: 'variant-123'
+  variantId: 'variant-123',
 });
 
 // Set inventory to 50 units
 await command.adjustInventory({
   amount: '50',
   stockType: 'set',
-  variantId: 'variant-123'
+  variantId: 'variant-123',
 });
 ```
 

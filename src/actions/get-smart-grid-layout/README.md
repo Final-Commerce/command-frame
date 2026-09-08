@@ -8,7 +8,7 @@ Fetches a builder SmartGrid layout by `gridId` from the parent application's loc
 
 ```typescript
 interface GetSmartGridLayoutParams {
-    gridId: string;
+  gridId: string;
 }
 ```
 
@@ -22,25 +22,25 @@ The id of the builder grid to fetch, matching the `gridId` a layout was previous
 
 ```typescript
 interface GetSmartGridLayoutResponse {
-    success: boolean;
-    layout: CFSmartGridLayout | null;
-    timestamp: string;
+  success: boolean;
+  layout: CFSmartGridLayout | null;
+  timestamp: string;
 }
 ```
 
 ```typescript
 interface CFSmartGridLayout {
-    gridId: string;
-    cells: CFTileCell[];
-    name?: string;                          // Operator-editable display name for the grid.
-    folders?: Record<string, CFTileCell[]>; // Folder id -> its cells.
+  gridId: string;
+  cells: CFTileCell[];
+  name?: string; // Operator-editable display name for the grid.
+  folders?: Record<string, CFTileCell[]>; // Folder id -> its cells.
 }
 
 interface CFTileCell {
-    index: number;
-    type: "empty" | "product" | "action" | "category" | "folder" | "back";
-    entityId?: string;                      // Product/category/folder id, action key, etc.
-    entityData?: Record<string, unknown>;
+  index: number;
+  type: 'empty' | 'product' | 'action' | 'category' | 'folder' | 'back';
+  entityId?: string; // Product/category/folder id, action key, etc.
+  entityData?: Record<string, unknown>;
 }
 ```
 
@@ -60,7 +60,7 @@ import { command } from '@final-commerce/command-frame';
 const { layout } = await command.getSmartGridLayout({ gridId: 'main-grid' });
 
 if (layout) {
-    console.log(layout.cells);
+  console.log(layout.cells);
 }
 ```
 

@@ -4,9 +4,9 @@ Sets the active customer on the POS by loading the customer document from local 
 
 ## Parameters
 
-| Field         | Type     | Required | Description        |
-| :------------ | :------- | :------- | :----------------- |
-| `customerId`  | `string` | Yes      | Customer `_id`.    |
+| Field        | Type     | Required | Description     |
+| :----------- | :------- | :------- | :-------------- |
+| `customerId` | `string` | Yes      | Customer `_id`. |
 
 ## Response
 

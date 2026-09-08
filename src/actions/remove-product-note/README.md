@@ -8,7 +8,7 @@ Removes the note from a specific product line item in the cart, or from the curr
 
 ```typescript
 interface RemoveProductNoteParams {
-    internalId?: string;    // Optional: The internalId of the cart item to modify
+  internalId?: string; // Optional: The internalId of the cart item to modify
 }
 ```
 
@@ -24,9 +24,9 @@ If omitted, the note is removed from the current active product context instead 
 
 ```typescript
 interface RemoveProductNoteResponse {
-    success: boolean;
-    internalId?: string;   // Only present when internalId was provided
-    timestamp: string;
+  success: boolean;
+  internalId?: string; // Only present when internalId was provided
+  timestamp: string;
 }
 ```
 
@@ -42,7 +42,7 @@ import { command } from '@final-commerce/command-frame';
 
 // Remove the note from a specific cart item
 await command.removeProductNote({
-    internalId: 'abc123'
+  internalId: 'abc123',
 });
 
 // Remove the note from the current active product context

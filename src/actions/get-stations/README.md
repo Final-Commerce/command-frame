@@ -10,7 +10,7 @@ Retrieves POS stations for the current company. Optionally filter by outlet.
 
 ```typescript
 interface GetStationsParams {
-    outletId?: string;
+  outletId?: string;
 }
 ```
 
@@ -24,8 +24,8 @@ Filter stations by outlet ID. If omitted, returns all stations for the company.
 
 ```typescript
 interface GetStationsResponse {
-    stations: CFActiveStation[];
-    timestamp: string;
+  stations: CFActiveStation[];
+  timestamp: string;
 }
 ```
 
@@ -50,6 +50,6 @@ const result = await command.getStations();
 // Stations for a specific outlet
 const filtered = await command.getStations({ outletId: 'outlet_123' });
 filtered.stations.forEach((s) => {
-    console.log(s.name, s.status);
+  console.log(s.name, s.status);
 });
 ```

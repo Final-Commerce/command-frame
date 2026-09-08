@@ -6,26 +6,26 @@ Retrieves a list of refunds from the system with optional filtering, sorting, an
 
 `params?: GetRefundsParams`
 
-| Parameter       | Type     | Required | Description                                                              |
-| :-------------- | :------- | :------- | :----------------------------------------------------------------------- |
-| `orderId`       | `string` | `false`  | Filter refunds by order ID.                                              |
-| `sessionId`     | `string` | `false`  | Filter refunds by session ID.                                            |
-| `outletId`      | `string` | `false`  | Filter refunds by outlet ID.                                             |
-| `limit`         | `number` | `false`  | Maximum number of refunds to return. If omitted, all refunds matching the query are returned (no default limit). |
-| `offset`        | `number` | `false`  | Number of refunds to skip for pagination (default: 0).                   |
-| `sortBy`        | `string` | `false`  | Field to sort by (e.g., 'createdAt'). Default: 'createdAt'.             |
-| `sortDirection` | `'asc' \| 'desc'` | `false`  | Sort direction. Default: 'desc'.                                |
+| Parameter       | Type              | Required | Description                                                                                                      |
+| :-------------- | :---------------- | :------- | :--------------------------------------------------------------------------------------------------------------- |
+| `orderId`       | `string`          | `false`  | Filter refunds by order ID.                                                                                      |
+| `sessionId`     | `string`          | `false`  | Filter refunds by session ID.                                                                                    |
+| `outletId`      | `string`          | `false`  | Filter refunds by outlet ID.                                                                                     |
+| `limit`         | `number`          | `false`  | Maximum number of refunds to return. If omitted, all refunds matching the query are returned (no default limit). |
+| `offset`        | `number`          | `false`  | Number of refunds to skip for pagination (default: 0).                                                           |
+| `sortBy`        | `string`          | `false`  | Field to sort by (e.g., 'createdAt'). Default: 'createdAt'.                                                      |
+| `sortDirection` | `'asc' \| 'desc'` | `false`  | Sort direction. Default: 'desc'.                                                                                 |
 
 ## Response
 
 `Promise<GetRefundsResponse>`
 
-| Field       | Type      | Description                               |
-| :---------- | :-------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the refunds were retrieved successfully. |
-| `refunds`   | [`CFRefundItem`](../../types/README.md#cfrefunditem)`[]`   | Array of refund objects.                  |
-| `total`     | `number`  | Total number of refunds matching the query. |
-| `timestamp` | `string`  | ISO date string of when the action occurred. |
+| Field       | Type                                                     | Description                                        |
+| :---------- | :------------------------------------------------------- | :------------------------------------------------- |
+| `success`   | `boolean`                                                | `true` if the refunds were retrieved successfully. |
+| `refunds`   | [`CFRefundItem`](../../types/README.md#cfrefunditem)`[]` | Array of refund objects.                           |
+| `total`     | `number`                                                 | Total number of refunds matching the query.        |
+| `timestamp` | `string`                                                 | ISO date string of when the action occurred.       |
 
 ## Example Usage
 
@@ -36,7 +36,7 @@ try {
   // Get all refunds
   const allRefunds = await command.getRefunds({
     limit: 20,
-    offset: 0
+    offset: 0,
   });
   console.log('All refunds:', allRefunds);
   // Expected output:
@@ -49,7 +49,7 @@ try {
 
   // Get refunds for a specific order
   const orderRefunds = await command.getRefunds({
-    orderId: 'order-123'
+    orderId: 'order-123',
   });
   console.log('Order refunds:', orderRefunds);
 
@@ -57,17 +57,16 @@ try {
   const sessionRefunds = await command.getRefunds({
     sessionId: 'session-456',
     sortBy: 'createdAt',
-    sortDirection: 'desc'
+    sortDirection: 'desc',
   });
   console.log('Session refunds:', sessionRefunds);
 
   // Get refunds for a specific outlet
   const outletRefunds = await command.getRefunds({
     outletId: 'outlet-789',
-    limit: 10
+    limit: 10,
   });
   console.log('Outlet refunds:', outletRefunds);
-
 } catch (error) {
   console.error('Failed to get refunds:', error);
 }
@@ -90,6 +89,7 @@ try {
 ## Refund Object Structure
 
 Each refund in the `refunds` array contains:
+
 - `lineItems`: Array of refunded line items
 - `customSales`: Array of refunded custom sales
 - `cartFees`: Array of refunded cart fees
@@ -102,4 +102,3 @@ Each refund in the `refunds` array contains:
 - `receiptId`: Receipt identifier (optional)
 - `currency`: Currency code for the refund (optional)
 - `minorUnits`: Minor unit precision for the currency (optional)
-

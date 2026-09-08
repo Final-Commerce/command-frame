@@ -10,11 +10,11 @@ None.
 
 `Promise<GetActiveCustomerResponse>`
 
-| Field       | Type     | Description |
-| :---------- | :------- | :---------- |
-| `success`   | `boolean` | `true` on success. |
+| Field       | Type                                                                    | Description                |
+| :---------- | :---------------------------------------------------------------------- | :------------------------- |
+| `success`   | `boolean`                                                               | `true` on success.         |
 | `customer`  | [`CFActiveCustomer`](../../types/README.md#cfactivecustomer) ` \| null` | Active customer or `null`. |
-| `timestamp` | `string` | ISO timestamp. |
+| `timestamp` | `string`                                                                | ISO timestamp.             |
 
 ## Example Usage
 
@@ -28,9 +28,9 @@ const { customer } = await command.getActiveCustomer();
 
 Publishes the active customer snapshot on the `customers` channel:
 
-| Channel     | Event                  | Payload |
-| :---------- | :---------------------- | :------ |
-| `customers` | `get-active-customer`   | `{ customer: CFActiveCustomer \| null }` |
+| Channel     | Event                 | Payload                                  |
+| :---------- | :-------------------- | :--------------------------------------- |
+| `customers` | `get-active-customer` | `{ customer: CFActiveCustomer \| null }` |
 
 ## Notes
 

@@ -8,7 +8,7 @@ Adds a new customer to the local database in the parent application.
 
 ```typescript
 interface AddCustomerParams {
-    customer: Omit<CFCustomer, '_id' | 'createdAt' | 'updatedAt'>;
+  customer: Omit<CFCustomer, '_id' | 'createdAt' | 'updatedAt'>;
 }
 ```
 
@@ -54,9 +54,9 @@ Notes is an array of timestamped messages. See the [Real Data Examples](#real-da
 
 ```typescript
 interface AddCustomerResponse {
-    success: boolean;
-    customer: CFCustomer;
-    timestamp: string;
+  success: boolean;
+  customer: CFCustomer;
+  timestamp: string;
 }
 ```
 
@@ -93,14 +93,14 @@ Create a customer with basic information:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.addCustomer({
-    customer: {
-        email: 'newcustomer.test@example.com',
-        firstName: 'John',
-        lastName: 'Doe',
-        phone: '1234567890',
-        companyId: '62c9d0e1f2a3b4c5d6e7f809', // Required
-        // ... other fields
-    }
+  customer: {
+    email: 'newcustomer.test@example.com',
+    firstName: 'John',
+    lastName: 'Doe',
+    phone: '1234567890',
+    companyId: '62c9d0e1f2a3b4c5d6e7f809', // Required
+    // ... other fields
+  },
 });
 
 console.log(result.customer);

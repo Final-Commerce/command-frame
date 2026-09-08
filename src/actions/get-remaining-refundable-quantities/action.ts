@@ -3,16 +3,18 @@
  * Calls the getRemainingRefundableQuantities action on the parent window
  */
 
-import { commandFrameClient } from "../../client";
+import { commandFrameClient } from '../../client';
 import type {
-    GetRemainingRefundableQuantities,
-    GetRemainingRefundableQuantitiesParams,
-    GetRemainingRefundableQuantitiesResponse
-} from "./types";
+  GetRemainingRefundableQuantities,
+  GetRemainingRefundableQuantitiesParams,
+  GetRemainingRefundableQuantitiesResponse,
+} from './types';
 
 export const getRemainingRefundableQuantities: GetRemainingRefundableQuantities = async (
-    params?: GetRemainingRefundableQuantitiesParams
+  params?: GetRemainingRefundableQuantitiesParams,
 ): Promise<GetRemainingRefundableQuantitiesResponse> => {
-    return await commandFrameClient.call<GetRemainingRefundableQuantitiesParams | undefined, GetRemainingRefundableQuantitiesResponse>("getRemainingRefundableQuantities", params);
+  return await commandFrameClient.call<
+    GetRemainingRefundableQuantitiesParams | undefined,
+    GetRemainingRefundableQuantitiesResponse
+  >('getRemainingRefundableQuantities', params);
 };
-

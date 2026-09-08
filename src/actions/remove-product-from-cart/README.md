@@ -10,7 +10,7 @@ Removes a product from the cart by its unique `internalId`. This action is usefu
 
 ```typescript
 interface RemoveProductFromCartParams {
-    internalId: string;  // The unique identifier for the specific cart item to remove
+  internalId: string; // The unique identifier for the specific cart item to remove
 }
 ```
 
@@ -24,9 +24,9 @@ The unique identifier for the specific cart item instance to remove. This is the
 
 ```typescript
 interface RemoveProductFromCartResponse {
-    success: boolean;
-    internalId: string;  // The unique identifier of the removed cart item
-    timestamp: string;
+  success: boolean;
+  internalId: string; // The unique identifier of the removed cart item
+  timestamp: string;
 }
 ```
 
@@ -40,7 +40,7 @@ Remove a product using its internal ID:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.removeProductFromCart({
-    internalId: 'cart-item-internal-id-123'
+  internalId: 'cart-item-internal-id-123',
 });
 
 console.log(`Removed item with internal ID: ${result.internalId}`);
@@ -50,9 +50,9 @@ console.log(`Removed item with internal ID: ${result.internalId}`);
 
 ```typescript
 try {
-    await command.removeProductFromCart({ internalId: 'invalid-id' });
+  await command.removeProductFromCart({ internalId: 'invalid-id' });
 } catch (error) {
-    console.error('Cart item not found:', error.message);
+  console.error('Cart item not found:', error.message);
 }
 ```
 

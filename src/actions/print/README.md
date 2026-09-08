@@ -8,9 +8,9 @@ Prints a pre-rasterized **image** to the station's printer(s).
 
 ```typescript
 interface PrintParams {
-    type: "image" | "html" | "receipt";
-    data: PrintData;
-    options?: PrintOptions;
+  type: 'image' | 'html' | 'receipt';
+  data: PrintData;
+  options?: PrintOptions;
 }
 ```
 
@@ -62,17 +62,17 @@ Optional print settings:
 
 ```typescript
 interface PrintOptions {
-    margins?: {
-        top?: number;
-        right?: number;
-        bottom?: number;
-        left?: number;
-    };
-    /** @deprecated Not consumed by the runtime — paper size comes from the station's per-printer settings. */
-    paperSize?: string;
-    width?: string;
-    /** Routing tag for multi-printer stations (FI-7113): names the print category (e.g. "receipt", "kitchen"), never a printer. Untagged prints keep the station's default behavior. */
-    tag?: string;
+  margins?: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  };
+  /** @deprecated Not consumed by the runtime — paper size comes from the station's per-printer settings. */
+  paperSize?: string;
+  width?: string;
+  /** Routing tag for multi-printer stations (FI-7113): names the print category (e.g. "receipt", "kitchen"), never a printer. Untagged prints keep the station's default behavior. */
+  tag?: string;
 }
 ```
 
@@ -80,9 +80,9 @@ interface PrintOptions {
 
 ```typescript
 {
-    success: boolean;
-    timestamp: string;
-    type: "image" | "html" | "receipt";
+  success: boolean;
+  timestamp: string;
+  type: 'image' | 'html' | 'receipt';
 }
 ```
 
@@ -91,53 +91,53 @@ interface PrintOptions {
 ### Print an Image
 
 ```typescript
-import { command } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
 // Convert image to base64 first
-const imageBase64 = "data:image/png;base64,iVBORw0KGgoAAAANS...";
+const imageBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANS...';
 
 await command.print({
-    type: "image",
-    data: { image: imageBase64 }
+  type: 'image',
+  data: { image: imageBase64 },
 });
 ```
 
 ### Print HTML Content
 
 ```typescript
-import { command } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
 await command.print({
-    type: "html",
-    data: {
-        html: `
+  type: 'html',
+  data: {
+    html: `
             <div>
                 <h1>Invoice</h1>
                 <p>Order #12345</p>
                 <p>Total: $99.99</p>
             </div>
-        `
-    },
-    options: {
-        margins: { top: 10, right: 10, bottom: 10, left: 10 }
-    }
+        `,
+  },
+  options: {
+    margins: { top: 10, right: 10, bottom: 10, left: 10 },
+  },
 });
 ```
 
 ### Print Receipt
 
 ```typescript
-import { command } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
 const currentCart = await command.getCurrentCart();
 // Convert cart to order format...
 
 await command.print({
-    type: "receipt",
-    data: {
-        order: orderData,
-        globalBlockId: "optional-receipt-template-id"
-    }
+  type: 'receipt',
+  data: {
+    order: orderData,
+    globalBlockId: 'optional-receipt-template-id',
+  },
 });
 ```
 

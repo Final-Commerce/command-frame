@@ -1,20 +1,20 @@
-import { ExtensionPayment, ExtensionPaymentParams, ExtensionPaymentResponse } from "./types";
-import { MOCK_ORDERS } from "../../demo/database";
+import { ExtensionPayment, ExtensionPaymentParams, ExtensionPaymentResponse } from './types';
+import { MOCK_ORDERS } from '../../demo/database';
 
 export const mockExtensionPayment: ExtensionPayment = async (
-    params?: ExtensionPaymentParams
+  params?: ExtensionPaymentParams,
 ): Promise<ExtensionPaymentResponse> => {
-    const paymentType = params?.paymentType ?? "redeem";
+  const paymentType = params?.paymentType ?? 'redeem';
 
-    return {
-        success: true,
-        amount: params?.amount ?? null,
-        paymentType,
-        order: MOCK_ORDERS[0],
-        timestamp: new Date().toISOString(),
-        change: 0,
-        cashRounding: 0,
-        saleFinalized: true,
-        remainingBalance: 0
-    };
+  return {
+    success: true,
+    amount: params?.amount ?? null,
+    paymentType,
+    order: MOCK_ORDERS[0],
+    timestamp: new Date().toISOString(),
+    change: 0,
+    cashRounding: 0,
+    saleFinalized: true,
+    remainingBalance: 0,
+  };
 };

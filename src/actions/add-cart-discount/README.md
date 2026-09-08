@@ -8,9 +8,9 @@ Adds a discount to the entire cart in the parent application. Cart discounts app
 
 ```typescript
 interface AddCartDiscountParams {
-    amount: number;        // Required
-    isPercent?: boolean;   // Optional, default: false
-    label?: string;        // Optional, default: "Discount"
+  amount: number; // Required
+  isPercent?: boolean; // Optional, default: false
+  label?: string; // Optional, default: "Discount"
 }
 ```
 
@@ -22,10 +22,12 @@ The discount amount. The interpretation depends on the `isPercent` flag:
 - If `isPercent` is `true`: The amount is a percentage value (e.g., `10` = 10% discount)
 
 **Examples:**
+
 - Fixed amount: `amount: 550` with `isPercent: false` → $5.50 discount
 - Percentage: `amount: 15` with `isPercent: true` → 15% discount
 
 The handler validates `amount` before applying it:
+
 - It must be a finite number greater than `0` (zero and negative values are rejected).
 - If `isPercent` is `true`, it must also be `100` or less.
 - If `isPercent` is `false`, it must be an integer (a fractional minor-unit amount is rejected).
@@ -42,6 +44,7 @@ Whether the discount amount is a percentage or a fixed amount. Defaults to `fals
 A label for the discount that will be displayed in the cart and on receipts. Defaults to `"Discount"` if not provided.
 
 **Examples:**
+
 - "Holiday Sale"
 - "Bulk Discount"
 - "Loyalty Discount"
@@ -53,11 +56,11 @@ A label for the discount that will be displayed in the cart and on receipts. Def
 
 ```typescript
 interface AddCartDiscountResponse {
-    success: boolean;
-    amount: number;
-    isPercent: boolean;
-    label: string;
-    timestamp: string;
+  success: boolean;
+  amount: number;
+  isPercent: boolean;
+  label: string;
+  timestamp: string;
 }
 ```
 
@@ -97,9 +100,9 @@ Add a fixed $10 discount to the entire cart:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.addCartDiscount({
-    amount: 1000, // $10.00 in minor units
-    isPercent: false,
-    label: 'Holiday Sale'
+  amount: 1000, // $10.00 in minor units
+  isPercent: false,
+  label: 'Holiday Sale',
 });
 
 console.log(`Added ${result.amount} cart discount`);
@@ -111,9 +114,9 @@ Add a 15% discount to the entire cart:
 
 ```typescript
 const result = await command.addCartDiscount({
-    amount: 15,
-    isPercent: true,
-    label: 'Bulk Discount'
+  amount: 15,
+  isPercent: true,
+  label: 'Bulk Discount',
 });
 
 console.log(`Added ${result.amount}% cart discount`);
@@ -125,9 +128,9 @@ Add a discount with a descriptive label:
 
 ```typescript
 const result = await command.addCartDiscount({
-    amount: 550, // $5.50 in minor units
-    isPercent: false,
-    label: 'Loyalty Customer Discount'
+  amount: 550, // $5.50 in minor units
+  isPercent: false,
+  label: 'Loyalty Customer Discount',
 });
 ```
 
@@ -138,29 +141,29 @@ Typical workflow: Add products to cart, then apply cart discount:
 ```typescript
 // 1. Set product as active and add to cart
 await command.setActiveProduct({
-    variantId: '64a1f2c3b4d5e6f708192a3b'
+  variantId: '64a1f2c3b4d5e6f708192a3b',
 });
 
 await command.addProductToCart({
-    variantId: '64a1f2c3b4d5e6f708192a3b',
-    quantity: 2
+  variantId: '64a1f2c3b4d5e6f708192a3b',
+  quantity: 2,
 });
 
 // 2. Add another product
 await command.setActiveProduct({
-    variantId: '64a1f2c3b4d5e6f708192a3c'
+  variantId: '64a1f2c3b4d5e6f708192a3c',
 });
 
 await command.addProductToCart({
-    variantId: '64a1f2c3b4d5e6f708192a3c',
-    quantity: 1
+  variantId: '64a1f2c3b4d5e6f708192a3c',
+  quantity: 1,
 });
 
 // 3. Apply cart discount
 await command.addCartDiscount({
-    amount: 1000, // $10.00 in minor units
-    isPercent: false,
-    label: 'Promotion Discount'
+  amount: 1000, // $10.00 in minor units
+  isPercent: false,
+  label: 'Promotion Discount',
 });
 ```
 
@@ -170,18 +173,18 @@ Handle validation errors:
 
 ```typescript
 try {
-    const result = await command.addCartDiscount({
-        amount: 1000, // $10.00 in minor units
-        isPercent: false
-    });
+  const result = await command.addCartDiscount({
+    amount: 1000, // $10.00 in minor units
+    isPercent: false,
+  });
 } catch (error) {
-    if (error.message === 'Discount amount is required') {
-        console.error('Please provide a discount amount');
-    } else if (error.message === 'Parameters are required for addCartDiscount') {
-        console.error('Please provide parameters');
-    } else {
-        console.error('Failed to add cart discount:', error.message);
-    }
+  if (error.message === 'Discount amount is required') {
+    console.error('Please provide a discount amount');
+  } else if (error.message === 'Parameters are required for addCartDiscount') {
+    console.error('Please provide parameters');
+  } else {
+    console.error('Failed to add cart discount:', error.message);
+  }
 }
 ```
 
@@ -212,6 +215,7 @@ Adding a cart discount publishes a `cart-discount-added` event on the `cart` cha
 ```
 
 `discount.value` reflects the internal storage format, not the raw `amount` you passed in:
+
 - Fixed discounts: the integer minor-units amount (unchanged from `amount`).
 - Percentage discounts: the percentage stored as a fraction (e.g., `amount: 15` becomes `value: 0.15`).
 
@@ -222,24 +226,28 @@ Adding a cart discount publishes a `cart-discount-added` event on the `cart` cha
 ### Fixed Amount Discount
 
 When `isPercent: false`:
+
 - The discount amount is subtracted directly from the cart subtotal
 - Example: Cart subtotal $100.00, discount $10.00 → Final subtotal $90.00
 
 ### Percentage Discount
 
 When `isPercent: true`:
+
 - The discount percentage is calculated from the cart subtotal
 - Example: Cart subtotal $100.00, discount 10% → Discount amount $10.00, Final subtotal $90.00
 
 ## Cart Discount vs Product Discount
 
 **Cart Discount:**
+
 - Applies to the entire cart subtotal
 - Affects all items in the cart
 - Applied after all product-level discounts
 - One cart discount can be active at a time
 
 **Product Discount:**
+
 - Applies to individual products
 - Must be set on active product before adding to cart
 - Each product can have its own discount
@@ -261,7 +269,7 @@ await command.addCartDiscount();
 ```typescript
 // Throws: "Discount amount is required"
 await command.addCartDiscount({
-    isPercent: false
+  isPercent: false,
 });
 ```
 
@@ -270,25 +278,25 @@ await command.addCartDiscount({
 ```typescript
 // Throws: "Discount amount must be a valid number"
 await command.addCartDiscount({
-    amount: NaN
+  amount: NaN,
 });
 
 // Throws: "Discount amount must be greater than 0"
 await command.addCartDiscount({
-    amount: 0,
-    isPercent: false
+  amount: 0,
+  isPercent: false,
 });
 
 // Throws: "Discount percentage must be between 0 and 100"
 await command.addCartDiscount({
-    amount: 150,
-    isPercent: true
+  amount: 150,
+  isPercent: true,
 });
 
 // Throws: "Discount amount must be an integer in minor currency units (e.g. 1575 = $15.75)"
 await command.addCartDiscount({
-    amount: 10.5,
-    isPercent: false
+  amount: 10.5,
+  isPercent: false,
 });
 ```
 
@@ -338,4 +346,3 @@ await command.addCartDiscount({
   - A new cart discount is added (replaces the old one)
   - The cart discount is explicitly removed
   - The cart is cleared
-

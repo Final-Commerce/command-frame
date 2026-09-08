@@ -8,8 +8,8 @@ Adds a note to a specific product line item in the cart, or to the current activ
 
 ```typescript
 interface AddProductNoteParams {
-    note: string;           // Required
-    internalId?: string;    // Optional: The internalId of the cart item to modify
+  note: string; // Required
+  internalId?: string; // Optional: The internalId of the cart item to modify
 }
 ```
 
@@ -29,10 +29,10 @@ If omitted, the note is applied to the current active product context instead of
 
 ```typescript
 interface AddProductNoteResponse {
-    success: boolean;
-    note: string;
-    internalId?: string;   // Only present when internalId was provided
-    timestamp: string;
+  success: boolean;
+  note: string;
+  internalId?: string; // Only present when internalId was provided
+  timestamp: string;
 }
 ```
 
@@ -53,8 +53,8 @@ const { internalId } = await command.addProductToCart({ variantId: 'v123' });
 
 // 2. Add note to that specific item
 await command.addProductNote({
-    internalId: internalId,
-    note: 'Extra spicy'
+  internalId: internalId,
+  note: 'Extra spicy',
 });
 ```
 

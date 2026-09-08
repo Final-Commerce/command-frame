@@ -10,13 +10,14 @@ None.
 
 `Promise<GetActiveOrderResponse>`
 
-| Field       | Type      | Description                               |
-| :---------- | :-------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the active order was retrieved successfully. |
+| Field       | Type                                                              | Description                                                  |
+| :---------- | :---------------------------------------------------------------- | :----------------------------------------------------------- |
+| `success`   | `boolean`                                                         | `true` if the active order was retrieved successfully.       |
 | `order`     | [`CFActiveOrder`](../../types/README.md#cfactiveorder) ` \| null` | The currently active order, or `null` if no order is active. |
-| `timestamp` | `string`  | ISO date string of when the action occurred. |
+| `timestamp` | `string`                                                          | ISO date string of when the action occurred.                 |
 
 **Tip:** You can import the [`CFActiveOrder`](../../types/README.md#cfactiveorder) type directly from the library:
+
 ```typescript
 import { type CFActiveOrder } from '@final-commerce/command-frame';
 ```
@@ -50,7 +51,6 @@ try {
   //   },
   //   timestamp: "2024-01-15T10:00:00.000Z"
   // }
-
 } catch (error) {
   console.error('Failed to get active order:', error);
 }
@@ -102,9 +102,9 @@ try {
 
 Publishes the active order snapshot on the `orders` channel:
 
-| Channel  | Event              | Payload |
-| :------- | :------------------ | :------ |
-| `orders` | `get-active-order`  | `{ order: CFActiveOrder \| null }` |
+| Channel  | Event              | Payload                            |
+| :------- | :----------------- | :--------------------------------- |
+| `orders` | `get-active-order` | `{ order: CFActiveOrder \| null }` |
 
 ## Notes
 

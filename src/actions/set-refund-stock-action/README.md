@@ -6,23 +6,23 @@ Sets the stock handling option for a refunded line item (restock or mark as dama
 
 `params: SetRefundStockActionParams`
 
-| Parameter | Type                      | Required | Description                                                              |
-| :-------- | :------------------------ | :------- | :----------------------------------------------------------------------- |
-| `orderId` | `string`                  | `false`  | Order to target; sets it active first. Defaults to the currently active order. |
-| `itemKey` | `string`                  | `true`   | Matched against the order line item's `internalId` (falling back to `variantId`). Obtainable from the order's `lineItems` (e.g. via `getActiveOrder`). |
+| Parameter | Type                           | Required | Description                                                                                                                                                                                                                                           |
+| :-------- | :----------------------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `orderId` | `string`                       | `false`  | Order to target; sets it active first. Defaults to the currently active order.                                                                                                                                                                        |
+| `itemKey` | `string`                       | `true`   | Matched against the order line item's `internalId` (falling back to `variantId`). Obtainable from the order's `lineItems` (e.g. via `getActiveOrder`).                                                                                                |
 | `action`  | `'RESTOCK' \| 'REFUND_DAMAGE'` | `true`   | The stock handling action: 'RESTOCK' to return to stock, 'REFUND_DAMAGE' to mark as damaged. **Not validated** — any other string is silently treated as 'REFUND_DAMAGE' internally, though the response still echoes back whatever value was passed. |
 
 ## Response
 
 `Promise<SetRefundStockActionResponse>`
 
-| Field       | Type     | Description                               |
-| :---------- | :------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the stock action was set successfully. |
-| `orderId`   | `string` | The `orderId` that was passed, if any (`undefined` otherwise). |
-| `itemKey`   | `string` | The item key that was updated.           |
-| `action`    | `string` | The action that was set.                 |
-| `timestamp` | `string` | ISO date string of when the action occurred. |
+| Field       | Type      | Description                                                    |
+| :---------- | :-------- | :------------------------------------------------------------- |
+| `success`   | `boolean` | `true` if the stock action was set successfully.               |
+| `orderId`   | `string`  | The `orderId` that was passed, if any (`undefined` otherwise). |
+| `itemKey`   | `string`  | The item key that was updated.                                 |
+| `action`    | `string`  | The action that was set.                                       |
+| `timestamp` | `string`  | ISO date string of when the action occurred.                   |
 
 ## Example Usage
 
@@ -38,7 +38,7 @@ try {
   // Set stock action to restock
   const result = await command.setRefundStockAction({
     itemKey: itemKey,
-    action: 'RESTOCK'
+    action: 'RESTOCK',
   });
   console.log('Stock action set:', result);
   // Expected output:
@@ -52,9 +52,8 @@ try {
   // Set stock action to mark as damaged
   await command.setRefundStockAction({
     itemKey: itemKey,
-    action: 'REFUND_DAMAGE'
+    action: 'REFUND_DAMAGE',
   });
-
 } catch (error) {
   console.error('Failed to set stock action:', error);
 }
@@ -73,10 +72,9 @@ try {
 try {
   await command.setRefundStockAction({
     itemKey: 'variant-id-123',
-    action: 'RESTOCK'
+    action: 'RESTOCK',
   });
 } catch (error) {
   console.error(error.message); // "No order selected. Please provide orderId."
 }
 ```
-

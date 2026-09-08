@@ -8,7 +8,7 @@ Removes a custom sale line item from the cart by its `id`. To add a custom sale 
 
 ```typescript
 interface RemoveCustomSaleParams {
-    id: string;  // The id of the custom sale to remove
+  id: string; // The id of the custom sale to remove
 }
 ```
 
@@ -22,9 +22,9 @@ The id of the custom sale line item to remove from the cart (the `customSaleId` 
 
 ```typescript
 interface RemoveCustomSaleResponse {
-    success: boolean;
-    id: string;  // Echoes the removed custom sale id
-    timestamp: string;
+  success: boolean;
+  id: string; // Echoes the removed custom sale id
+  timestamp: string;
 }
 ```
 
@@ -36,7 +36,7 @@ interface RemoveCustomSaleResponse {
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.removeCustomSale({
-    id: 'custom-sale-id-123'
+  id: 'custom-sale-id-123',
 });
 
 console.log(`Removed custom sale: ${result.id}`);
@@ -46,9 +46,9 @@ console.log(`Removed custom sale: ${result.id}`);
 
 ```typescript
 try {
-    await command.removeCustomSale({ id: 'invalid-id' });
+  await command.removeCustomSale({ id: 'invalid-id' });
 } catch (error) {
-    console.error('Custom sale not found:', error.message);
+  console.error('Custom sale not found:', error.message);
 }
 ```
 

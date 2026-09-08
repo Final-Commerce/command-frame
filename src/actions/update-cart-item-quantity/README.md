@@ -8,8 +8,8 @@ Updates the quantity of a cart item by its unique `internalId`. If the quantity 
 
 ```typescript
 interface UpdateCartItemQuantityParams {
-    internalId: string;  // The unique identifier for the specific cart item to update
-    quantity: number;   // The new quantity. If set to 0, the item will be removed
+  internalId: string; // The unique identifier for the specific cart item to update
+  quantity: number; // The new quantity. If set to 0, the item will be removed
 }
 ```
 
@@ -21,16 +21,23 @@ The unique identifier for the specific cart item instance to update. This is the
 
 The new quantity for the cart item. If set to 0, the item will be removed from the cart (equivalent to calling `removeProductFromCart`). Must be a non-negative integer — a negative or non-integer value throws an error.
 
+May be fractional when the variant is sold by measure — `variant.unit.precision` says how many
+decimals are allowed (`3` for a litre, `0` for anything sold by the piece). The engine refuses
+anything finer and names the unit in the error; surface that message rather than rounding the
+typed value, which would deduct a different amount than the cashier asked for.
+
+A stepper should move by `1 / 10 ** precision`, not by 1.
+
 ## Response
 
 ### `UpdateCartItemQuantityResponse`
 
 ```typescript
 interface UpdateCartItemQuantityResponse {
-    success: boolean;
-    internalId: string;  // The unique identifier of the updated cart item
-    quantity: number;   // The new quantity after the update
-    timestamp: string;
+  success: boolean;
+  internalId: string; // The unique identifier of the updated cart item
+  quantity: number; // The new quantity after the update
+  timestamp: string;
 }
 ```
 
@@ -44,8 +51,8 @@ Update a cart item's quantity:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.updateCartItemQuantity({
-    internalId: 'cart-item-internal-id-123',
-    quantity: 3
+  internalId: 'cart-item-internal-id-123',
+  quantity: 3,
 });
 
 console.log(`Updated quantity to ${result.quantity}`);
@@ -57,8 +64,8 @@ Remove an item by setting quantity to 0:
 
 ```typescript
 const result = await command.updateCartItemQuantity({
-    internalId: 'cart-item-internal-id-123',
-    quantity: 0
+  internalId: 'cart-item-internal-id-123',
+  quantity: 0,
 });
 
 console.log('Item removed from cart');
@@ -68,12 +75,12 @@ console.log('Item removed from cart');
 
 ```typescript
 try {
-    await command.updateCartItemQuantity({ 
-        internalId: 'invalid-id',
-        quantity: 2
-    });
+  await command.updateCartItemQuantity({
+    internalId: 'invalid-id',
+    quantity: 2,
+  });
 } catch (error) {
-    console.error('Cart item not found:', error.message);
+  console.error('Cart item not found:', error.message);
 }
 ```
 

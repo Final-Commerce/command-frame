@@ -28,42 +28,42 @@ camelCase on the wire; the host translates to the platform's canonical persisted
 
 `Promise<IntegrationPaymentResponse>` (alias of `ExtensionPaymentResponse`):
 
-| Field              | Type              | Description                                                                                     |
-| :----------------- | :---------------- | :------------------------------------------------------------------------------------------------ |
-| `success`          | `boolean`         | `true` when host payment handling completed successfully.                                       |
-| `amount`           | `number \| null`  | Processed amount reported by host, in integer minor currency units.                              |
-| `paymentType`      | `string`          | Always `"integration"`.                                                                          |
-| `order`            | `CFOrder \| null` | Order snapshot after payment processing. `null` for a non-final split-payment leg.                |
-| `change`           | `number`          | Always `0` — no cash tender on an integration payment.                                           |
-| `cashRounding`     | `number`          | Always `0` — rounding only applies to cash legs.                                                 |
-| `saleFinalized`    | `boolean`         | `true` only when this leg finalized the sale (the last, or only, leg captured).                  |
-| `remainingBalance` | `number`          | Balance still due after this leg, integer minor units; `0` when finalized.                       |
-| `timestamp`        | `string`          | ISO timestamp produced by the host action handler.                                               |
+| Field              | Type              | Description                                                                        |
+| :----------------- | :---------------- | :--------------------------------------------------------------------------------- |
+| `success`          | `boolean`         | `true` when host payment handling completed successfully.                          |
+| `amount`           | `number \| null`  | Processed amount reported by host, in integer minor currency units.                |
+| `paymentType`      | `string`          | Always `"integration"`.                                                            |
+| `order`            | `CFOrder \| null` | Order snapshot after payment processing. `null` for a non-final split-payment leg. |
+| `change`           | `number`          | Always `0` — no cash tender on an integration payment.                             |
+| `cashRounding`     | `number`          | Always `0` — rounding only applies to cash legs.                                   |
+| `saleFinalized`    | `boolean`         | `true` only when this leg finalized the sale (the last, or only, leg captured).    |
+| `remainingBalance` | `number`          | Balance still due after this leg, integer minor units; `0` when finalized.         |
+| `timestamp`        | `string`          | ISO timestamp produced by the host action handler.                                 |
 
 A payment failure (including a cancelled modal) rejects the promise rather than resolving with `success: false` — the host never returns `success: true` with a failed charge.
 
 ## Usage
 
 ```ts
-import { integrationPayment } from "@final-commerce/command-frame";
+import { integrationPayment } from '@final-commerce/command-frame';
 
 await integrationPayment({
-    amount: 4250, // required (minor units)
-    emvData: {
-        // required (object)
-        brand: "Visa",
-        cardholderName: "Jane Doe",
-        cardNumberLast4: "4242",
-        expiryDate: "12/26",
-        country: "US",
-        issuer: "Chase"
-    },
-    label: "Visa ****4242", // optional
-    extensionId: "stripe-ext", // optional
-    processor: "Stripe", // optional — shown as the processor on the order's paymentMethod
-    referenceId: "pi_3Nz...", // optional — provider's payment intent / charge id (audit link)
-    processorFee: 125, // optional — minor units
-    metadata: { brand: "visa", last4: "4242" }
+  amount: 4250, // required (minor units)
+  emvData: {
+    // required (object)
+    brand: 'Visa',
+    cardholderName: 'Jane Doe',
+    cardNumberLast4: '4242',
+    expiryDate: '12/26',
+    country: 'US',
+    issuer: 'Chase',
+  },
+  label: 'Visa ****4242', // optional
+  extensionId: 'stripe-ext', // optional
+  processor: 'Stripe', // optional — shown as the processor on the order's paymentMethod
+  referenceId: 'pi_3Nz...', // optional — provider's payment intent / charge id (audit link)
+  processorFee: 125, // optional — minor units
+  metadata: { brand: 'visa', last4: '4242' },
 });
 ```
 

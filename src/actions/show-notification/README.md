@@ -9,7 +9,7 @@ Shows a notification message to the user.
 ```typescript
 interface ShowNotificationParams {
   message: string;
-  type?: "success" | "error" | "info" | "warning";
+  type?: 'success' | 'error' | 'info' | 'warning';
 }
 ```
 

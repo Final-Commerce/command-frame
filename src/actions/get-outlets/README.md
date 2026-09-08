@@ -14,8 +14,8 @@ No parameters required.
 
 ```typescript
 interface GetOutletsResponse {
-    outlets: CFOutletInfo[];
-    timestamp: string;
+  outlets: CFOutletInfo[];
+  timestamp: string;
 }
 ```
 
@@ -35,6 +35,6 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getOutlets();
 result.outlets.forEach((outlet) => {
-    console.log(outlet.name, outlet.city);
+  console.log(outlet.name, outlet.city);
 });
 ```

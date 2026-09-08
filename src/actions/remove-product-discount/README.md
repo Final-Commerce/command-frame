@@ -8,7 +8,7 @@ Removes the discount(s) from a product in the cart. Applies to a specific line i
 
 ```typescript
 interface RemoveProductDiscountParams {
-    internalId?: string;   // Optional: The internalId of the cart item to modify
+  internalId?: string; // Optional: The internalId of the cart item to modify
 }
 ```
 
@@ -24,9 +24,9 @@ If provided, the discounts are cleared from that cart line item and the updated 
 
 ```typescript
 interface RemoveProductDiscountResponse {
-    success: boolean;
-    internalId?: string;  // Present only when internalId was passed in
-    timestamp: string;
+  success: boolean;
+  internalId?: string; // Present only when internalId was passed in
+  timestamp: string;
 }
 ```
 

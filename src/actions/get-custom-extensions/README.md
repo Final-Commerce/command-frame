@@ -12,9 +12,9 @@ This command does not accept any parameters.
 
 ```typescript
 interface GetCustomExtensionsResponse {
-    success: boolean;
-    customExtensions: CustomExtension[];
-    timestamp: string;
+  success: boolean;
+  customExtensions: CustomExtension[];
+  timestamp: string;
 }
 ```
 
@@ -28,22 +28,22 @@ An array of custom extension objects. Each custom extension has the following st
 
 ```typescript
 type CustomExtension = BaseEntity & {
-    _id: string;
-    label: string;
-    description?: string;
-    backgroundUrl?: string;
-    gallery?: string[];
-    category: string;
-    short_description?: string;
-    long_description?: string;
-    main_image?: string;
-    price: number;
-    isDeleted: boolean;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-    website?: string;
-}
+  _id: string;
+  label: string;
+  description?: string;
+  backgroundUrl?: string;
+  gallery?: string[];
+  category: string;
+  short_description?: string;
+  long_description?: string;
+  main_image?: string;
+  price: number;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  website?: string;
+};
 ```
 
 **Fields:**
@@ -86,8 +86,8 @@ import { command } from '@final-commerce/command-frame';
 const result = await command.getCustomExtensions();
 
 console.log('Custom Extensions:', result.customExtensions);
-result.customExtensions.forEach(extension => {
-    console.log(`Extension: ${extension.label} - ${extension.category}`);
+result.customExtensions.forEach((extension) => {
+  console.log(`Extension: ${extension.label} - ${extension.category}`);
 });
 ```
 
@@ -100,7 +100,7 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensions();
 
-const activeExtensions = result.customExtensions.filter(ext => !ext.isDeleted);
+const activeExtensions = result.customExtensions.filter((ext) => !ext.isDeleted);
 
 console.log('Active Extensions:', activeExtensions);
 ```
@@ -114,13 +114,16 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensions();
 
-const extensionsByCategory = result.customExtensions.reduce((acc, ext) => {
+const extensionsByCategory = result.customExtensions.reduce(
+  (acc, ext) => {
     if (!acc[ext.category]) {
-        acc[ext.category] = [];
+      acc[ext.category] = [];
     }
     acc[ext.category].push(ext);
     return acc;
-}, {} as Record<string, typeof result.customExtensions>);
+  },
+  {} as Record<string, typeof result.customExtensions>,
+);
 
 console.log('Extensions by Category:', extensionsByCategory);
 ```
@@ -134,16 +137,16 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensions();
 
-result.customExtensions.forEach(extension => {
-    console.log(`Extension: ${extension.label}`);
-    
-    if (extension.main_image) {
-        console.log(`Main Image: ${extension.main_image}`);
-    }
-    
-    if (extension.gallery && extension.gallery.length > 0) {
-        console.log(`Gallery (${extension.gallery.length} images):`, extension.gallery);
-    }
+result.customExtensions.forEach((extension) => {
+  console.log(`Extension: ${extension.label}`);
+
+  if (extension.main_image) {
+    console.log(`Main Image: ${extension.main_image}`);
+  }
+
+  if (extension.gallery && extension.gallery.length > 0) {
+    console.log(`Gallery (${extension.gallery.length} images):`, extension.gallery);
+  }
 });
 ```
 
@@ -156,13 +159,11 @@ import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomExtensions();
 
-const extension = result.customExtensions.find(
-    ext => ext.label === 'Loyalty Program Extension'
-);
+const extension = result.customExtensions.find((ext) => ext.label === 'Loyalty Program Extension');
 
 if (extension) {
-    console.log('Found extension:', extension);
-    console.log('Description:', extension.long_description || extension.short_description);
+  console.log('Found extension:', extension);
+  console.log('Description:', extension.long_description || extension.short_description);
 }
 ```
 
@@ -187,10 +188,7 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
       "long_description": "A comprehensive loyalty program that allows you to track customer points, offer rewards, and increase customer retention.",
       "main_image": "https://example.com/images/loyalty-extension.png",
       "backgroundUrl": "https://example.com/images/loyalty-bg.jpg",
-      "gallery": [
-        "https://example.com/images/loyalty-1.png",
-        "https://example.com/images/loyalty-2.png"
-      ],
+      "gallery": ["https://example.com/images/loyalty-1.png", "https://example.com/images/loyalty-2.png"],
       "price": 2999,
       "website": "https://loyalty-extension.example.com",
       "isDeleted": false,
@@ -224,4 +222,3 @@ If the retrieval fails, the handler will throw an error. This is rare and typica
 - Each extension may have associated custom tables (use `getCustomExtensionCustomTables` to retrieve them)
 - The handler queries for extensions where `isDeleted` is not `true`, so deleted extensions are excluded from `customExtensions` entirely — they remain in the local database but are never returned by this command
 - The `price` field is a number in integer minor currency units (e.g., cents), not a formatted string
-

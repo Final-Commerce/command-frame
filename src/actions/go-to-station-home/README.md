@@ -29,4 +29,3 @@ await command.goToStationHome();
 Hosted (ServiceChannel) mode: none — navigation is delegated to the host and this call always resolves successfully.
 
 Standalone mode: throws `CommandFrameBridge not initialized. Ensure CommandFrameListener is mounted.` if the bridge hasn't been set up yet.
-

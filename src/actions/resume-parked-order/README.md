@@ -6,19 +6,19 @@ Resumes a parked order by loading it back into the cart. The order status is upd
 
 `params: ResumeParkedOrderParams`
 
-| Parameter | Type     | Required | Description                                                              |
-| :-------- | :------- | :------- | :----------------------------------------------------------------------- |
-| `orderId` | `string` | `true`   | The ID of the parked order to resume.                                   |
+| Parameter | Type     | Required | Description                           |
+| :-------- | :------- | :------- | :------------------------------------ |
+| `orderId` | `string` | `true`   | The ID of the parked order to resume. |
 
 ## Response
 
 `Promise<ResumeParkedOrderResponse>`
 
-| Field       | Type     | Description                               |
-| :---------- | :------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the order was resumed successfully. |
+| Field       | Type      | Description                                                   |
+| :---------- | :-------- | :------------------------------------------------------------ |
+| `success`   | `boolean` | `true` if the order was resumed successfully.                 |
 | `order`     | `CFOrder` | The resumed order object with updated status and all details. |
-| `timestamp` | `string` | ISO date string of when the action occurred. |
+| `timestamp` | `string`  | ISO date string of when the action occurred.                  |
 
 ## Example Usage
 
@@ -28,7 +28,7 @@ import { command } from '@final-commerce/command-frame';
 try {
   // Resume a parked order
   const result = await command.resumeParkedOrder({
-    orderId: 'order-id-123'
+    orderId: 'order-id-123',
   });
   console.log('Resumed order:', result.order);
   // Expected output:
@@ -45,7 +45,6 @@ try {
   //   },
   //   timestamp: '2023-10-27T10:00:00.000Z'
   // }
-
 } catch (error) {
   console.error('Failed to resume parked order:', error);
 }
@@ -61,7 +60,7 @@ try {
 // Example of error when order not found
 try {
   await command.resumeParkedOrder({
-    orderId: 'invalid-order-id'
+    orderId: 'invalid-order-id',
   });
 } catch (error) {
   console.error(error.message); // "Order with ID invalid-order-id not found"

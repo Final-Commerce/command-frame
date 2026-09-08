@@ -10,11 +10,11 @@ Adds a fee to a specific product line item in the cart, or to the current active
 
 ```typescript
 interface AddProductFeeParams {
-    amount: number;         // Required
-    internalId?: string;    // Optional: The internalId of the cart item to modify
-    isPercent?: boolean;    // Optional, default: false
-    label?: string;         // Optional, default: "Fee"
-    applyTaxes?: boolean;   // Optional, default: false
+  amount: number; // Required
+  internalId?: string; // Optional: The internalId of the cart item to modify
+  isPercent?: boolean; // Optional, default: false
+  label?: string; // Optional, default: "Fee"
+  applyTaxes?: boolean; // Optional, default: false
 }
 ```
 
@@ -44,13 +44,13 @@ Whether taxes should be calculated on this fee. When `true`, the fee is taxed us
 
 ```typescript
 interface AddProductFeeResponse {
-    success: boolean;
-    amount: number;
-    isPercent: boolean;
-    label: string;
-    applyTaxes: boolean;
-    internalId?: string;  // Only present when internalId was passed in the request
-    timestamp: string;
+  success: boolean;
+  amount: number;
+  isPercent: boolean;
+  label: string;
+  applyTaxes: boolean;
+  internalId?: string; // Only present when internalId was passed in the request
+  timestamp: string;
 }
 ```
 
@@ -64,9 +64,9 @@ const { internalId } = await command.addProductToCart({ variantId: 'v123' });
 
 // 2. Add fee to that specific item
 await command.addProductFee({
-    internalId: internalId,
-    amount: 200, // $2.00 in minor units
-    label: 'Recycling Fee'
+  internalId: internalId,
+  amount: 200, // $2.00 in minor units
+  label: 'Recycling Fee',
 });
 ```
 

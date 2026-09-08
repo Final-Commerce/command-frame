@@ -53,7 +53,7 @@ import { command } from '@final-commerce/command-frame';
 ```typescript
 const result = await command.setSecretVal({
   key: 'api-key',
-  value: 'sk_live_xxxx'
+  value: 'sk_live_xxxx',
 });
 console.log(result.success); // true
 ```
@@ -64,7 +64,7 @@ console.log(result.success); // true
 const result = await command.setSecretVal({
   key: 'webhook-url',
   value: 'https://example.com/webhook',
-  extensionId: 'your-extension-id'
+  extensionId: 'your-extension-id',
 });
 ```
 

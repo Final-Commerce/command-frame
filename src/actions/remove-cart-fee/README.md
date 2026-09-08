@@ -10,15 +10,15 @@ Removes a cart-level fee by its index in `cart.customFee`. Matches the order of 
 
 ```typescript
 {
-    success: boolean;
-    timestamp: string;
+  success: boolean;
+  timestamp: string;
 }
 ```
 
 ## Usage
 
 ```typescript
-import { command } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
 // Remove the first cart fee
 await command.removeCartFee({ index: 0 });

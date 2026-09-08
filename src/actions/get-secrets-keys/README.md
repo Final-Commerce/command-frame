@@ -49,7 +49,7 @@ console.log(result.keys); // e.g. ['api-key', 'webhook-url']
 
 ```typescript
 const result = await command.getSecretsKeys({
-  extensionId: 'your-extension-id'
+  extensionId: 'your-extension-id',
 });
 console.log(result.keys);
 ```

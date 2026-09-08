@@ -1,22 +1,22 @@
-import { CFOrder } from "../../CommonTypes";
+import { CFOrder } from '../../CommonTypes';
 
 // Partial Payment Types
 export interface PartialPaymentParams {
-    /** The payment amount in integer MINOR currency units (required if openUI is false). If isPercent is true, this is a percentage (0-100) instead. */
-    amount?: number;
-    /** Defaults to false. */
-    isPercent?: boolean;
-    /** If true, opens the split payment UI. */
-    openUI?: boolean;
+  /** The payment amount in integer MINOR currency units (required if openUI is false). If isPercent is true, this is a percentage (0-100) instead. */
+  amount?: number;
+  /** Defaults to false. */
+  isPercent?: boolean;
+  /** If true, opens the split payment UI. */
+  openUI?: boolean;
 }
 
 export interface PartialPaymentResponse {
-    success: boolean;
-    amount?: number;
-    isPercent?: boolean;
-    openUI: boolean;
-    order: CFOrder | null; // ActiveOrder | null (null for split payments until final payment)
-    timestamp: string;
+  success: boolean;
+  amount?: number;
+  isPercent?: boolean;
+  openUI: boolean;
+  order: CFOrder | null; // ActiveOrder | null (null for split payments until final payment)
+  timestamp: string;
 }
 
 export type PartialPayment = (params?: PartialPaymentParams) => Promise<PartialPaymentResponse>;

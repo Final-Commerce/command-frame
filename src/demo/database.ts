@@ -21,6 +21,7 @@ import {
   CFActiveRefundDetails,
   CFSmartGridLayout,
 } from '../CommonTypes';
+import { extendPrice, resolveUnit, toBase } from '@final-commerce/common';
 
 export * from './mocks';
 
@@ -502,12 +503,25 @@ export const MOCK_PRODUCT_BLACK_GARLIC = createSimpleProduct(
 // Helper to create line item
 const createLineItem = (product: CFProduct, variantIndex: number = 0, quantity: number = 1) => {
   const variant = product.variants[variantIndex];
+  // Same contract as a real order line: the unit is FROZEN on the line (a re-rated unit must
+  // not restate old orders), and the money is extendPrice — price × quantity may carry a
+  // fractional quantity, and the raw multiply would put fractional cents on the order.
+  const unit = variant.unitId ? resolveUnit(variant.unitId) : undefined;
+  const total = extendPrice(variant.price, quantity);
   return {
     productId: product._id,
     variantId: variant._id,
     name: product.name,
     quantity,
     price: variant.price,
+    ...(unit
+      ? {
+          unitId: unit.unitId,
+          unitAbbreviation: unit.abbreviation,
+          unitRatioToBase: unit.ratioToBase,
+          stockQuantity: toBase(quantity, unit),
+        }
+      : {}),
     taxes: [],
     discount: {
       itemDiscounts: [],
@@ -515,8 +529,8 @@ const createLineItem = (product: CFProduct, variantIndex: number = 0, quantity: 
     },
     fee: { itemFees: [] },
     totalTax: 0,
-    total: variant.price * quantity,
-    lineNetWithFees: variant.price * quantity,
+    total,
+    lineNetWithFees: total,
     metadata: [],
     image: product.images?.[0] || '',
     sku: variant.sku,
@@ -957,11 +971,10 @@ export const safeSerialize = <T>(data: T): T => {
 };
 
 // Mock Event Emitter for pub/sub simulation in mock mode
- 
+
 type MockEventCallback = (event: any) => void;
 const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
 
- 
 export const mockPublishEvent = (topic: string, eventType: string, data: any) => {
   const subscribers = mockTopicSubscribers[topic] || [];
   const event = {
@@ -1000,12 +1013,24 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
 
   // Map cart products to line items
   const lineItems = MOCK_CART.products.map((p) => {
+    // The cart line resolved its unit when it was added; the ORDER line freezes it, exactly
+    // as production does. extendPrice for the same reason as everywhere: fractional
+    // quantities must not leave fractional cents on an order.
+    const lineTotal = extendPrice(p.price, p.quantity);
     return {
       productId: p.id,
       variantId: p.variantId,
       name: p.name,
       quantity: p.quantity,
       price: p.price,
+      ...(p.unit
+        ? {
+            unitId: p.unit.unitId,
+            unitAbbreviation: p.unit.abbreviation,
+            unitRatioToBase: p.unit.ratioToBase,
+            stockQuantity: toBase(p.quantity, p.unit),
+          }
+        : {}),
       taxes: [],
       discount: {
         itemDiscounts: [],
@@ -1013,8 +1038,8 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
       },
       fee: { itemFees: [] },
       totalTax: 0,
-      total: p.price * p.quantity,
-      lineNetWithFees: p.price * p.quantity,
+      total: lineTotal,
+      lineNetWithFees: lineTotal,
       metadata: [],
       image: p.images?.[0] || '',
       sku: p.sku || '',

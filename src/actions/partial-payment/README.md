@@ -8,24 +8,24 @@ Initiates a partial/split payment for the current cart.
 
 Although the parameter is typed optional, the handler throws if no `params` object is passed at all — pass at minimum `{ openUI: true }` or `{ amount, isPercent }`.
 
-| Parameter  | Type      | Required | Description                                                              |
-| :--------- | :-------- | :------- | :----------------------------------------------------------------------- |
-| `openUI`   | `boolean` | `false`  | If true, opens the split payment UI. If false, processes the payment with the specified amount. |
-| `amount`   | `number`  | `false`  | The payment amount, in integer minor currency units (required if openUI is false). Percentages (`isPercent: true`) are unaffected and remain 0-100. |
-| `isPercent` | `boolean` | `false`  | Whether the amount is a percentage (default: false).                      |
+| Parameter   | Type      | Required | Description                                                                                                                                         |
+| :---------- | :-------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `openUI`    | `boolean` | `false`  | If true, opens the split payment UI. If false, processes the payment with the specified amount.                                                     |
+| `amount`    | `number`  | `false`  | The payment amount, in integer minor currency units (required if openUI is false). Percentages (`isPercent: true`) are unaffected and remain 0-100. |
+| `isPercent` | `boolean` | `false`  | Whether the amount is a percentage (default: false).                                                                                                |
 
 ## Response
 
 `Promise<PartialPaymentResponse>`
 
-| Field       | Type     | Description                               |
-| :---------- | :------- | :---------------------------------------- |
-| `success`   | `boolean` | `true` if the payment was processed successfully. |
-| `amount`    | `number \| undefined` | The payment amount (undefined if openUI is true). Integer minor currency units when `isPercent` is false; a 0-100 percentage when `isPercent` is true. |
-| `isPercent` | `boolean \| undefined` | Whether the amount is a percentage (undefined if openUI is true). |
-| `openUI`    | `boolean` | Whether the split payment UI was opened. |
-| `order`     | `ActiveOrder \| null` | Always `null`. This action only queues the split amount (or opens the split UI) — the order is created/completed by whichever payment/tender action runs next, not by `partialPayment` itself. |
-| `timestamp` | `string` | ISO date string of when the action occurred. |
+| Field       | Type                   | Description                                                                                                                                                                                    |
+| :---------- | :--------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `success`   | `boolean`              | `true` if the payment was processed successfully.                                                                                                                                              |
+| `amount`    | `number \| undefined`  | The payment amount (undefined if openUI is true). Integer minor currency units when `isPercent` is false; a 0-100 percentage when `isPercent` is true.                                         |
+| `isPercent` | `boolean \| undefined` | Whether the amount is a percentage (undefined if openUI is true).                                                                                                                              |
+| `openUI`    | `boolean`              | Whether the split payment UI was opened.                                                                                                                                                       |
+| `order`     | `ActiveOrder \| null`  | Always `null`. This action only queues the split amount (or opens the split UI) — the order is created/completed by whichever payment/tender action runs next, not by `partialPayment` itself. |
+| `timestamp` | `string`               | ISO date string of when the action occurred.                                                                                                                                                   |
 
 ## Example Usage
 
@@ -35,7 +35,7 @@ import { command } from '@final-commerce/command-frame';
 try {
   // Open the split payment UI
   const result1 = await command.partialPayment({
-    openUI: true
+    openUI: true,
   });
   console.log('Split payment UI opened:', result1);
   // order will be null until final payment completes
@@ -43,7 +43,7 @@ try {
   // Process a partial payment with a fixed amount
   const result2 = await command.partialPayment({
     amount: 2500, // $25.00 in minor units
-    isPercent: false
+    isPercent: false,
   });
   console.log('Partial payment processed:', result2);
   console.log('Order:', result2.order); // always null here
@@ -62,9 +62,8 @@ try {
   // Process a partial payment with a percentage
   await command.partialPayment({
     amount: 50,
-    isPercent: true
+    isPercent: true,
   });
-
 } catch (error) {
   console.error('Failed to process partial payment:', error);
 }

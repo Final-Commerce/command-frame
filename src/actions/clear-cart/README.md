@@ -32,4 +32,3 @@ await command.clearCart();
 ## Error Handling
 
 None (always succeeds)
-

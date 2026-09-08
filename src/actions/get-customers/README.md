@@ -8,17 +8,17 @@ Retrieves a list of customers from the parent application's local database.
 
 ```typescript
 interface GetCustomersParams {
-    query?: {
-        email?: string | { $regex?: string; $options?: string };
-        firstName?: string | { $regex?: string; $options?: string };
-        lastName?: string | { $regex?: string; $options?: string };
-        phone?: string | { $regex?: string; $options?: string };
-        tags?: string | { $in?: string[] };
-        outletId?: string;
-        [key: string]: any;
-    };
-    offset?: number;
-    limit?: number;
+  query?: {
+    email?: string | { $regex?: string; $options?: string };
+    firstName?: string | { $regex?: string; $options?: string };
+    lastName?: string | { $regex?: string; $options?: string };
+    phone?: string | { $regex?: string; $options?: string };
+    tags?: string | { $in?: string[] };
+    outletId?: string;
+    [key: string]: any;
+  };
+  offset?: number;
+  limit?: number;
 }
 ```
 
@@ -42,9 +42,9 @@ The maximum number of customers to return. Defaults to `100` if not provided.
 
 ```typescript
 interface GetCustomersResponse {
-    customers: CFCustomer[];
-    total?: number;
-    timestamp: string;
+  customers: CFCustomer[];
+  total?: number;
+  timestamp: string;
 }
 ```
 
@@ -53,6 +53,7 @@ interface GetCustomersResponse {
 Array of customer objects matching the query, typed as `CFCustomer[]`. Not every optional field on the type is guaranteed to be present on every customer record.
 
 **Tip:** You can import the [`CFCustomer`](../../types/README.md#cfcustomer) type directly from the library:
+
 ```typescript
 import { type CFCustomer } from '@final-commerce/command-frame';
 ```
@@ -95,14 +96,14 @@ import { command } from '@final-commerce/command-frame';
 
 // Get first 50 customers
 const firstPage = await command.getCustomers({
-    offset: 0,
-    limit: 50
+  offset: 0,
+  limit: 50,
 });
 
 // Get next 50 customers
 const secondPage = await command.getCustomers({
-    offset: 50,
-    limit: 50
+  offset: 50,
+  limit: 50,
 });
 ```
 
@@ -114,11 +115,11 @@ Get customers matching a query with pagination:
 import { command } from '@final-commerce/command-frame';
 
 const result = await command.getCustomers({
-    query: {
-        email: { $regex: '@gmail.com', $options: 'i' }
-    },
-    offset: 0,
-    limit: 25
+  query: {
+    email: { $regex: '@gmail.com', $options: 'i' },
+  },
+  offset: 0,
+  limit: 25,
 });
 ```
 
@@ -245,4 +246,3 @@ If the underlying query itself fails (e.g. a malformed query or a local-database
 - Results are limited by the `limit` parameter (defaults to 100 if not provided)
 - Use `offset` and `limit` for pagination
 - Deleted customers (`isDeleted: true`) are automatically excluded
-

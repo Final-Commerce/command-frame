@@ -6,19 +6,19 @@ Removes a non-revenue line from the cart (for example a gift-card load / liabili
 
 `RemoveNonRevenueItemParams`
 
-| Field | Type | Required | Description |
-| :---- | :--- | :------- | :---------- |
-| `externalId` | `string` | Yes | Cart line id of the non-revenue item to remove (matches `cart.nonRevenueItems[].externalId` from [`getCurrentCart`](../get-current-cart/README.md), and the `externalId` returned by `addNonRevenueItem`). |
+| Field        | Type     | Required | Description                                                                                                                                                                                                |
+| :----------- | :------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `externalId` | `string` | Yes      | Cart line id of the non-revenue item to remove (matches `cart.nonRevenueItems[].externalId` from [`getCurrentCart`](../get-current-cart/README.md), and the `externalId` returned by `addNonRevenueItem`). |
 
 ## Response
 
 `Promise<RemoveNonRevenueItemResponse>`
 
-| Field | Type | Description |
-| :---- | :--- | :---------- |
-| `success` | `boolean` | |
-| `externalId` | `string` | The `externalId` that was removed (echoes the request). |
-| `timestamp` | `string` | ISO time of the action. |
+| Field        | Type      | Description                                             |
+| :----------- | :-------- | :------------------------------------------------------ |
+| `success`    | `boolean` |                                                         |
+| `externalId` | `string`  | The `externalId` that was removed (echoes the request). |
+| `timestamp`  | `string`  | ISO time of the action.                                 |
 
 ## Example
 

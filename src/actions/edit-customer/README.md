@@ -10,8 +10,8 @@ Updates an existing customer's information. Only the provided fields in `changes
 
 ```typescript
 interface EditCustomerParams {
-    customerId: string;
-    changes: Partial<Omit<CFCustomer, "_id" | "createdAt" | "updatedAt" | "companyId">>;
+  customerId: string;
+  changes: Partial<Omit<CFCustomer, '_id' | 'createdAt' | 'updatedAt' | 'companyId'>>;
 }
 ```
 
@@ -36,7 +36,7 @@ At least one of these four fields must be provided in `changes`, or the call thr
 
 - `tags` (string[]): Array of tags to associate with the customer.
 - `metadata` (Record<string, string>[]): Custom metadata as key-value records.
-- `notes` (Array<{ _id: string; createdAt: string; message: string }>): Array of notes associated with the customer.
+- `notes` (Array<{ \_id: string; createdAt: string; message: string }>): Array of notes associated with the customer.
 - `billing` (CFAddress | null): Billing address information.
 - `shipping` (CFAddress | null): Shipping address information.
 - `externalId` (string): External system identifier.
@@ -53,9 +53,9 @@ At least one of these four fields must be provided in `changes`, or the call thr
 
 ```typescript
 interface EditCustomerResponse {
-    success: boolean;
-    customer: CFCustomer;
-    timestamp: string;
+  success: boolean;
+  customer: CFCustomer;
+  timestamp: string;
 }
 ```
 
@@ -64,14 +64,14 @@ Returns the updated customer with all current data.
 ## Usage
 
 ```typescript
-import { command } from "@final-commerce/command-frame";
+import { command } from '@final-commerce/command-frame';
 
 const result = await command.editCustomer({
-    customerId: "6931e04f53d9113bd5231dfd",
-    changes: {
-        firstName: "Jane",
-        phone: "9876543210"
-    }
+  customerId: '6931e04f53d9113bd5231dfd',
+  changes: {
+    firstName: 'Jane',
+    phone: '9876543210',
+  },
 });
 console.log(result.customer.firstName); // "Jane"
 ```
@@ -83,4 +83,4 @@ The handler throws in these cases:
 - `customerId` missing: `"customerId is required"`
 - `changes` missing: `"changes object is required"`
 - none of `firstName`, `lastName`, `email`, `phone` provided in `changes`: `"At least one of firstName, lastName, email, or phone must be provided in changes"`
-- no customer found for `customerId`: `` "Customer with ID ${customerId} not found" ``
+- no customer found for `customerId`: `"Customer with ID ${customerId} not found"`

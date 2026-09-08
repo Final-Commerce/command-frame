@@ -8,11 +8,11 @@ None.
 
 ## Response
 
-| Field       | Type     | Description |
-| :---------- | :------- | :---------- |
-| `success`   | `boolean` | |
-| `user`      | [`CFActiveUser`](../../types/README.md#cfactiveuser) ` \| null` | |
-| `timestamp` | `string` | |
+| Field       | Type                                                            | Description |
+| :---------- | :-------------------------------------------------------------- | :---------- |
+| `success`   | `boolean`                                                       |             |
+| `user`      | [`CFActiveUser`](../../types/README.md#cfactiveuser) ` \| null` |             |
+| `timestamp` | `string`                                                        |             |
 
 ## Example
 
@@ -24,8 +24,8 @@ const { user } = await command.getActiveUser();
 
 Publishes the active user snapshot on the `users` channel:
 
-| Channel  | Event             | Payload                          |
-| :------- | :---------------- | :-------------------------------- |
-| `users`  | `get-active-user` | `{ user: CFActiveUser \| null }` |
+| Channel | Event             | Payload                          |
+| :------ | :---------------- | :------------------------------- |
+| `users` | `get-active-user` | `{ user: CFActiveUser \| null }` |
 
 See [`setActiveUser`](../set-active-user/README.md).
