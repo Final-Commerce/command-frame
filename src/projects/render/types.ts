@@ -20,6 +20,8 @@ import type {
   GetFinalContext,
   AddProductNote,
   AddProductFee,
+  GetProductModifierSelections,
+  SetProductModifierSelections,
   SetActiveProductFee,
   SetActiveProductDiscount,
   GetActiveProduct,
@@ -124,6 +126,8 @@ export interface RenderProviderActions {
   getFinalContext: GetFinalContext;
   addProductNote: AddProductNote;
   addProductFee: AddProductFee;
+  getProductModifierSelections: GetProductModifierSelections;
+  setProductModifierSelections: SetProductModifierSelections;
   setActiveProductFee: SetActiveProductFee;
   setActiveProductDiscount: SetActiveProductDiscount;
   getActiveProduct: GetActiveProduct;

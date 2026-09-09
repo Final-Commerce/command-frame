@@ -20,6 +20,8 @@ import { updateCartItemQuantity } from './actions/update-cart-item-quantity/acti
 // Product Actions
 import { addProductNote } from './actions/add-product-note/action';
 import { addProductFee } from './actions/add-product-fee/action';
+import { getProductModifierSelections } from './actions/get-product-modifier-selections/action';
+import { setProductModifierSelections } from './actions/set-product-modifier-selections/action';
 import { setActiveProductFee } from './actions/set-active-product-fee/action';
 import { setActiveProductDiscount } from './actions/set-active-product-discount/action';
 import { getActiveProduct } from './actions/get-active-product/action';
@@ -158,6 +160,8 @@ export const command = {
   // Product Actions
   addProductNote,
   addProductFee,
+  getProductModifierSelections,
+  setProductModifierSelections,
   setActiveProductFee,
   setActiveProductDiscount,
   getActiveProduct,
@@ -380,6 +384,7 @@ export type {
 export type {
   AddProductToCart,
   AddProductToCartParams,
+  AddProductToCartModifierParams,
   AddProductToCartResponse,
 } from './actions/add-product-to-cart/types';
 
@@ -413,6 +418,18 @@ export type { GetFinalContext, GetFinalContextResponse } from './actions/get-fin
 // Product Actions
 export type { AddProductNote, AddProductNoteParams, AddProductNoteResponse } from './actions/add-product-note/types';
 export type { AddProductFee, AddProductFeeParams, AddProductFeeResponse } from './actions/add-product-fee/types';
+export type {
+  GetProductModifierSelections,
+  GetProductModifierSelectionsParams,
+  GetProductModifierSelectionsResponse,
+  ModifierSelection,
+  ModifierChoiceSelection,
+} from './actions/get-product-modifier-selections/types';
+export type {
+  SetProductModifierSelections,
+  SetProductModifierSelectionsParams,
+  SetProductModifierSelectionsResponse,
+} from './actions/set-product-modifier-selections/types';
 export type {
   SetActiveProductFee,
   SetActiveProductFeeParams,
