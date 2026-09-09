@@ -29,6 +29,9 @@ import { mockAuthenticateUser } from '../../actions/authenticate-user/mock';
 import { mockCalculateRefundTotal } from '../../actions/calculate-refund-total/mock';
 import { mockCashPayment } from '../../actions/cash-payment/mock';
 import { mockGetCashRoundingAmount } from '../../actions/get-cash-rounding-amount/mock';
+import { mockCreatePaymentLink } from '../../actions/create-payment-link/mock';
+import { mockChargeMoto } from '../../actions/charge-moto/mock';
+import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
 import { mockDeleteParkedOrder } from '../../actions/delete-parked-order/mock';
 import { mockVoidOrder } from '../../actions/void-order/mock';
@@ -125,6 +128,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   calculateRefundTotal: mockCalculateRefundTotal,
   cashPayment: mockCashPayment,
   getCashRoundingAmount: mockGetCashRoundingAmount,
+  createPaymentLink: mockCreatePaymentLink,
+  chargeMoto: mockChargeMoto,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
   voidOrder: mockVoidOrder,
@@ -202,4 +207,5 @@ export const RENDER_MOCKS: RenderProviderActions = {
   saveSmartGridLayout: mockSaveSmartGridLayout,
   sendEmail: mockSendEmail,
   sendSms: mockSendSms,
+  getTimeClockStatus: mockGetTimeClockStatus,
 };

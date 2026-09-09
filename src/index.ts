@@ -41,6 +41,8 @@ import { terminalPayment } from './actions/terminal-payment/action';
 import { extensionPayment } from './actions/extension-payment/action';
 import { redeemPayment } from './actions/redeem-payment/action';
 import { integrationPayment } from './actions/integration-payment/action';
+import { createPaymentLink } from './actions/create-payment-link/action';
+import { chargeMoto } from './actions/charge-moto/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
 import { removeCustomerNote } from './actions/remove-customer-note/action';
@@ -132,6 +134,8 @@ import { getMedia } from './actions/get-media/action';
 import { uploadMedia } from './actions/upload-media/action';
 import { getTaxTables } from './actions/get-tax-tables/action';
 import { getBranding } from './actions/get-branding/action';
+// Time Clock Actions
+import { getTimeClockStatus } from './actions/get-time-clock-status/action';
 
 // Export actions as command object
 export const command = {
@@ -179,6 +183,8 @@ export const command = {
   extensionPayment,
   redeemPayment,
   integrationPayment,
+  createPaymentLink,
+  chargeMoto,
   // Customer Actions
   addCustomerNote,
   removeCustomerNote,
@@ -261,6 +267,8 @@ export const command = {
   uploadMedia,
   getTaxTables,
   getBranding,
+  // Time Clock Actions
+  getTimeClockStatus,
   // State Machine Queries
   canTransition,
   getAvailableTransitions,
@@ -471,6 +479,17 @@ export type {
   IntegrationPaymentResponse,
   IntegrationEmvData,
 } from './actions/integration-payment/types';
+export type {
+  CreatePaymentLink,
+  CreatePaymentLinkParams,
+  CreatePaymentLinkResponse,
+} from './actions/create-payment-link/types';
+export type {
+  ChargeMoto,
+  ChargeMotoParams,
+  ChargeMotoResponse,
+  ChargeMotoCardFields,
+} from './actions/charge-moto/types';
 // Customer Actions
 export type {
   AddCustomerNote,
@@ -503,6 +522,12 @@ export type {
   TaxTablePayload,
 } from './actions/get-tax-tables/types';
 export type { BorderRadiusPreset, GetBranding, GetBrandingResponse } from './actions/get-branding/types';
+// Time Clock Actions
+export type {
+  GetTimeClockStatus,
+  GetTimeClockStatusResponse,
+  TimeClockEntry,
+} from './actions/get-time-clock-status/types';
 export type {
   ShowConfirmation,
   ShowConfirmationParams,
