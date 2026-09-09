@@ -30,6 +30,7 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
     startAt: startAt.toISOString(),
     endAt: endAt.toISOString(),
     bufferEndAt: bufferEndAt.toISOString(),
+    customerId: params.customerId,
     status: ReservationStatus.HELD,
     expiresAt: new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString(),
     resourceName: MOCK_BOOKING_RESOURCES.find(({ id }) => id === params.resourceId)?.name,

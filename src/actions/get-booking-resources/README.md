@@ -17,7 +17,9 @@ interface GetBookingResourcesParams {
 }
 ```
 
-A resource with no `outletId` serves every outlet.
+`outletId` narrows the list to the resources that work at that shop. A resource with no shops
+listed at all works everywhere — which is the state every resource starts in, so a one-shop
+merchant never has to fill it in.
 
 ## Response
 
@@ -32,9 +34,14 @@ interface CFBookingResource {
   name: string; // "Marco", "Room 4", "Scooter 1"
   kind: BookingResourceKind; // staff | room | property | space | asset | table
   tag?: string; // QR, room number, plate — what a merchant scans or reads out
-  outletId?: string;
-  timeZone?: string;
 }
+```
+
+A resource carries no outlet and no timezone of its own: it is a company-wide entry, like a rule
+set, and WHERE it works is a separate list the host filters by. Local time comes from the outlet
+being sold from, then the company — never from the resource.
+
+```
 ```
 
 ## Example

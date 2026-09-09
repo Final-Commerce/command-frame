@@ -58,6 +58,8 @@ import type {
   BookingSlotResource,
   BookingResource,
   Booking,
+  CartReservation,
+  OrderReservation,
 } from '@final-commerce/common/pos-types';
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
@@ -93,6 +95,11 @@ export type CFBookingSlot = BookingSlot;
 export type CFBookingSlotResource = BookingSlotResource;
 export type CFBookingResource = BookingResource;
 export type CFBooking = Booking;
+/** A service sitting in the cart, and the same sale once it is on an order. A flow that draws a
+ *  cart or a receipt needs both by name — reaching into the package's dist for them is not an
+ *  interface. */
+export type CFCartReservation = CartReservation;
+export type CFOrderReservation = OrderReservation;
 export type CFActiveProduct = ActiveProduct;
 export type CFCustomer = ActiveCustomer;
 export type CFActiveCustomer = ActiveCustomer;

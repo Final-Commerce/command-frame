@@ -785,6 +785,16 @@ export type {
   TransactionsEventPayload,
 } from './pubsub/topics/transactions/types';
 export type {
+  BookingCreatedPayload,
+  BookingCreatedEvent,
+  BookingUpdatedPayload,
+  BookingUpdatedEvent,
+  BookingSetupChangedPayload,
+  BookingSetupChangedEvent,
+  BookingsEventType,
+  BookingsEventPayload,
+} from './pubsub/topics/bookings/types';
+export type {
   CategoryCreatedPayload,
   CategoryCreatedEvent,
   CategoryUpdatedPayload,

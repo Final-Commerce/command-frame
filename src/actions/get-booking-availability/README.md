@@ -37,6 +37,12 @@ interface CFBookingAvailability {
   minimumToRun?: number; // label only — a group slot below this MAY be cancelled
   minStay?: number;
   maxStay?: number;
+  /** Last instant this product can be booked into; absent when nothing bounds it. */
+  bookableUntil?: string;
+  /** The range you asked for starts past `bookableUntil`. Say "bookings open only up to …"
+   *  instead of "nothing free" — an empty grid otherwise reads as fully booked. Decided here,
+   *  not in the UI: comparing a day against the window is a rule. */
+  beyondWindow?: boolean;
   slots: CFBookingSlot[];
 }
 

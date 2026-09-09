@@ -43,18 +43,19 @@ const { booking } = await renderClient.holdBooking({
   endAt: slot.endAt,
 });
 
-await renderClient.addProductToCart({
-  variantId: product.variants[0]._id,
-  booking: { bookingId: booking.id },
-});
 ```
+
+To SELL that window, use [`addBookingToCart`](../add-booking-to-cart/README.md) instead of this
+action: it claims the window and puts the service in the cart in ONE call. `addProductToCart` has
+no `booking` parameter — holding and adding as two steps leaves a claimed window behind whenever
+the second step fails, and that window is invisible to the person who lost it.
 
 ## Notes
 
 - **Handle the refusal.** A rejected hold is the normal outcome of two people booking at once, not
   an exceptional error: re-ask availability and let the customer pick again.
-- Pass `booking.bookingId` to `addProductToCart`, or the customer pays for a service with no time
-  attached and the window silently expires.
+- A hold on its own is NOT a sale. Nothing in the cart points at it, so it expires on its own —
+  reach for `addBookingToCart` unless you specifically want a window held outside a cart.
 - Do not invent `startAt`. See the anchoring note in `getBookingAvailability`.
 - There is no `confirmBooking` for a flow to call: the host confirms the booking when the order is
   paid, because only the host can know that it was.
