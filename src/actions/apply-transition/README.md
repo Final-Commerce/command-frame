@@ -2,6 +2,8 @@
 
 Move an order's fulfillment axis to a target state via the state-machine orchestrator. This is the low-level transition primitive — `parkOrder`, `voidOrder`, and `resumeParkedOrder` are built on top of it with additional business-flow guarantees (refund-vs-void branching, cart rehydration, etc.); prefer those actions when their behavior fits, and reach for `applyTransition` for moves not covered by a dedicated action.
 
+> Full state model — every state, display label, guard layer, and invariant — in the [Order state machine reference](../../../docs/order-state-machine.md).
+
 ## Parameters
 
 | Name                     | Type    | Required | Description                                                                                                                                                                                                          |
