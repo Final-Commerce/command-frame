@@ -107,6 +107,9 @@ import type {
   AddBookingToCart,
   RemoveBookingFromCart,
   CancelBooking,
+  CreatePaymentLink,
+  ChargeMoto,
+  GetTimeClockStatus,
 } from '../../index';
 
 export interface RenderProviderActions {
@@ -161,6 +164,8 @@ export interface RenderProviderActions {
   extensionPayment: ExtensionPayment;
   redeemPayment: RedeemPayment;
   integrationPayment: IntegrationPayment;
+  createPaymentLink: CreatePaymentLink;
+  chargeMoto: ChargeMoto;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;
   removeCustomerNote: RemoveCustomerNote;
@@ -221,4 +226,5 @@ export interface RenderProviderActions {
   saveSmartGridLayout: SaveSmartGridLayout;
   sendEmail: SendEmail;
   sendSms: SendSms;
+  getTimeClockStatus: GetTimeClockStatus;
 }
