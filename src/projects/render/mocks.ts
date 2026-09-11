@@ -57,6 +57,7 @@ import { mockCheckPermission } from '../../actions/check-permission/mock';
 import { mockRemoveCustomerFromCart } from '../../actions/remove-customer-from-cart/mock';
 import { mockResetRefundDetails } from '../../actions/reset-refund-details/mock';
 import { mockResumeParkedOrder } from '../../actions/resume-parked-order/mock';
+import { mockLoadOrderIntoCart } from '../../actions/load-order-into-cart/mock';
 import { mockSelectAllRefundItems } from '../../actions/select-all-refund-items/mock';
 import { mockSetRefundStockAction } from '../../actions/set-refund-stock-action/mock';
 import { mockShowConfirmation } from '../../actions/show-confirmation/mock';
@@ -156,6 +157,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   removeCartDiscount: mockRemoveCartDiscount,
   resetRefundDetails: mockResetRefundDetails,
   resumeParkedOrder: mockResumeParkedOrder,
+  loadOrderIntoCart: mockLoadOrderIntoCart,
   selectAllRefundItems: mockSelectAllRefundItems,
   setRefundStockAction: mockSetRefundStockAction,
   showConfirmation: mockShowConfirmation,
