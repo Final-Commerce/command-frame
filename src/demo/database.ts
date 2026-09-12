@@ -41,6 +41,10 @@ export interface MockDatabaseConfig {
   products?: CFProduct[];
   orders?: CFActiveOrder[];
   parkedOrders?: CFActiveOrder[];
+  /** Who is scarce: the staff, rooms or machines the dataset's services are booked against. */
+  bookingResources?: CFBookingResource[];
+  /** Windows already taken when the dataset loads, so a calendar does not open empty. */
+  bookings?: CFBooking[];
 }
 
 // Asset Imports - Using Remote URLs to avoid build complexity with asset copying
@@ -891,6 +895,7 @@ export let MOCK_CART: CFActiveCart = {
   remainingBalance: 0,
   products: [],
   customSales: [],
+  reservations: [],
   nonRevenueItems: [],
   customer: null,
 };
@@ -915,6 +920,7 @@ export const resetMockCart = () => {
     remainingBalance: 0,
     products: [],
     customSales: [],
+    reservations: [],
     nonRevenueItems: [],
     customer: null,
   };
@@ -960,6 +966,12 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   }
   if (config.parkedOrders !== undefined) {
     MOCK_PARKED_ORDERS.splice(0, MOCK_PARKED_ORDERS.length, ...config.parkedOrders);
+  }
+  if (config.bookingResources !== undefined) {
+    MOCK_BOOKING_RESOURCES.splice(0, MOCK_BOOKING_RESOURCES.length, ...config.bookingResources);
+  }
+  if (config.bookings !== undefined) {
+    MOCK_BOOKINGS.splice(0, MOCK_BOOKINGS.length, ...config.bookings);
   }
 
   if (MOCK_OUTLETS.length > 0) {
@@ -1110,6 +1122,30 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
     billing: MOCK_CART.customer?.billing || null,
     shipping: MOCK_CART.customer?.shipping || null,
     lineItems,
+    // A paid booking is a sale: it belongs on the order (and thus the receipt),
+    // in its own array rather than among the line items, and CONFIRMED — payment
+    // is what turns a held window into a kept appointment.
+    reservations: (MOCK_CART.reservations ?? []).map((reservation) => ({
+      internalId: reservation.internalId,
+      bookingId: reservation.bookingId,
+      productId: reservation.productId,
+      variantId: reservation.variantId,
+      resourceId: reservation.resourceId,
+      name: reservation.name,
+      resourceName: reservation.resourceName,
+      price: reservation.price,
+      quantity: reservation.quantity,
+      total: reservation.total,
+      taxTableId: reservation.taxTableId,
+      startAt: reservation.startAt,
+      endAt: reservation.endAt,
+      bufferEndAt: reservation.bufferEndAt,
+      // The mock computes no tax anywhere — line items ship `taxes: []` too.
+      taxes: [],
+      // `expiresAt` deliberately does not come along: a paid booking has no
+      // clock left to run out, which is what CONFIRMED means.
+      status: ReservationStatus.CONFIRMED,
+    })),
     customSales: [],
     balance: 0,
     user: employeeUser,
@@ -1170,9 +1206,11 @@ const BUFFER_MINUTES = 5;
 const OPEN_HOUR = 9;
 const CLOSE_HOUR = 18;
 
+// Rooms, not people: a resource is whatever is scarce, and a room is the case that
+// reads the same in every vertical a dataset might describe.
 export const MOCK_BOOKING_RESOURCES: CFBookingResource[] = [
-  { id: 'res_marco', name: 'Marco', kind: BookingResourceKind.STAFF },
-  { id: 'res_jessica', name: 'Jessica', kind: BookingResourceKind.STAFF },
+  { id: 'res_room_1', name: 'Room 1', kind: BookingResourceKind.ROOM },
+  { id: 'res_room_2', name: 'Room 2', kind: BookingResourceKind.ROOM },
 ];
 
 const at = (dayOffset: number, hour: number, minute = 0): Date => {
@@ -1202,9 +1240,9 @@ const booking = (
 });
 
 export const MOCK_BOOKINGS: CFBooking[] = [
-  booking('bk_1', 'res_marco', at(0, 10), ReservationStatus.CONFIRMED, 'Alex Green'),
-  booking('bk_2', 'res_jessica', at(0, 11, 30), ReservationStatus.CONFIRMED, 'Dana White'),
-  booking('bk_3', 'res_marco', at(1, 9, 30), ReservationStatus.CONFIRMED, 'Sam Blue'),
+  booking('bk_1', 'res_room_1', at(0, 10), ReservationStatus.CONFIRMED, 'Alex Green'),
+  booking('bk_2', 'res_room_2', at(0, 11, 30), ReservationStatus.CONFIRMED, 'Dana White'),
+  booking('bk_3', 'res_room_1', at(1, 9, 30), ReservationStatus.CONFIRMED, 'Sam Blue'),
 ];
 
 /** Live = confirmed, or held and not yet expired. An expired hold occupies nothing. */
