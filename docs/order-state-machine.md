@@ -18,7 +18,10 @@ Why two axes? Because money and goods move independently: an order can be fully 
 | Ask "would this move be allowed?" (read-only)             | [`canTransition`](../src/actions/can-transition/README.md)                                                                                                                                                                                                                                                                                                              |
 | List the moves currently offered for an order (read-only) | [`getAvailableTransitions`](../src/actions/get-available-transitions/README.md)                                                                                                                                                                                                                                                                                         |
 | Move the fulfillment axis                                 | [`applyTransition`](../src/actions/apply-transition/README.md) — takes `targetFulfillmentState` only; **the payment axis is never client-settable**                                                                                                                                                                                                                     |
-| Park / resume / delete a parked order                     | [`parkOrder`](../src/actions/park-order/README.md), [`resumeParkedOrder`](../src/actions/resume-parked-order/README.md), [`deleteParkedOrder`](../src/actions/delete-parked-order/README.md) — built on `applyTransition` with extra business-flow guarantees; prefer these when they fit                                                                               |
+| Park an order                                             | [`applyTransition`](../src/actions/apply-transition/README.md) with `targetFulfillmentState: 'on_hold'` — clears the till by default                                                                                                                                                                                                                                    |
+| Put an order on a till (resume, settle a balance)         | [`loadOrderIntoCart`](../src/actions/load-order-into-cart/README.md) — hydrates the full cart context, optionally moving state first                                                                                                                                                                                                                                    |
+| Point at an order without the till                        | [`setActiveOrder`](../src/actions/set-active-order/README.md) — receipts, refunds, voids, viewing. Never claims the till and cannot take payment                                                                                                                                                                                                                        |
+| Park / resume / delete a parked order (legacy)            | [`parkOrder`](../src/actions/park-order/README.md), [`resumeParkedOrder`](../src/actions/resume-parked-order/README.md), [`deleteParkedOrder`](../src/actions/delete-parked-order/README.md) — **being deprecated**; use the three rows above. See §10                                                                                                                  |
 | Void an order                                             | [`voidOrder`](../src/actions/void-order/README.md)                                                                                                                                                                                                                                                                                                                      |
 | Move the payment axis                                     | A **money operation**, never a state call: payments (`cashPayment`, `partialPayment`, `terminalPayment`, `tapToPayPayment`, `extensionPayment`, `integrationPayment`, `redeemPayment`) and refunds (`initiateRefund`, `processPartialRefund`, `redeemRefund`, planned via `getRefundPlan`). Each operation derives its landing pair from the money that actually moved. |
 
@@ -180,6 +183,61 @@ Notes on the diagram:
 - There is no arrow from _Partially Paid_ to a plain _Cancelled_: money must be refunded or voided first — invariant #6.
 - Nothing ever leaves _Refunded_ or the voided _Cancelled_ — invariants #1, #2, #8, #9.
 
+## 10a. The three primitives (rails recipes)
+
+An order's **state** and **whether a till is holding it** are two separate
+facts. Three commands, one job each:
+
+| Command             | Job                                                                                                     | Never does                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `applyTransition`   | Moves the fulfillment axis. Guarded, audited, clears the till when the ACTIVE order moves (park parity) | Hydrates a till; moves the payment axis; waits on a cart lease |
+| `loadOrderIntoCart` | Puts a till-eligible order on the till with its full cart context, optionally moving state first        | Loads an ineligible order; leaves a half-done pickup           |
+| `clearCart`         | Takes the order off the till and discards till state                                                    | Transitions the order                                          |
+
+**Till eligibility is derived, not enumerated:** an order belongs on a till iff
+`payment ∈ {unpaid, partially_paid}` and `fulfillment ≠ cancelled` — i.e. there
+is still a balance to take. Everything else is `setActiveOrder` territory.
+
+### Recipes
+
+| Intent                          | Call                                                                                   |
+| ------------------------------- | -------------------------------------------------------------------------------------- |
+| Park the active cart            | `applyTransition({ targetFulfillmentState: 'on_hold' })`                               |
+| Resume an unpaid parked order   | `loadOrderIntoCart({ orderId, targetFulfillmentState: 'draft' })`                      |
+| Resume a deposit-carrying order | `loadOrderIntoCart({ orderId, targetFulfillmentState: 'in_progress' })`                |
+| Park a deposit-carrying order   | `applyTransition({ targetFulfillmentState: 'on_hold' })` → _Parked - Deposit Received_ |
+| Load without changing state     | `loadOrderIntoCart({ orderId })`                                                       |
+| Put a resumed order back        | `applyTransition({ targetFulfillmentState: 'on_hold' })`                               |
+| Discard the cart                | `clearCart()`                                                                          |
+| Receipt / refund / void / view  | `setActiveOrder({ orderId })`                                                          |
+
+**Order of operations.** Putting an order on a till is _claim → move state →
+hydrate_: the edit-rights claim is the only step something outside this till can
+refuse, and a blocked state move aborts the load rather than stranding a
+hydrated cart against an order that never moved. Taking one off is _move state →
+release_: keep hold of the order until it has landed where it is going.
+
+`draft` remains a valid SAVED state — a discarded saved draft stays
+`unpaid × draft` off-till (`clearCart` never transitions). Put it back with
+`applyTransition({ targetFulfillmentState: 'on_hold' })` if you want it tidy in
+the parked list.
+
+### Cart leases — the till edit lock
+
+A lease records which till holds an order open for **editing**. It is an edit
+lock and nothing more:
+
+- It **never** gates `applyTransition`. An order stays parkable and voidable
+  from a flow or another till while someone has it open.
+- It **never** gates payment. The rule that any captured payment freezes cart
+  editing is what closes the pay-while-editing race.
+- A till without the lease can still **load, view and pay** the order — it
+  simply cannot change what is in it. `loadOrderIntoCart` returns `editable`
+  and, when someone else holds it, `lease` — so the UI can say _"In cart at
+  Station 3"_ rather than failing at the cashier.
+- Leases expire. A crashed till never strands an order: a stale lease is
+  claimable by anyone.
+
 ## 11. Legacy status mapping
 
 Orders predating the state machine (or arriving from old writers) are inferred from the legacy `order.status`:
@@ -215,7 +273,7 @@ Cancel is a fulfillment move, and fulfillment can't enter Cancelled while paymen
 That's a valid state — exchanges and store credit return the goods without returning the money. The refund flow, if and when it runs, moves the payment axis separately.
 
 **How do I move an order's state from a flow?**
-Fulfillment axis: `applyTransition` (or the dedicated `parkOrder` / `resumeParkedOrder` / `voidOrder` flows). Payment axis: run the actual money operation. There is no action that sets a payment state directly — by design.
+Fulfillment axis: `applyTransition` (or `voidOrder` for a void). Payment axis: run the actual money operation. There is no action that sets a payment state directly — by design. Moving state never requires holding the order on a till, and is never blocked by another till holding it.
 
 **Can a merchant relax the money rules?**
 No. Layers 2–4 (cross-axis rules, paths, conditions) are configurable; the nine financial invariants are not.
