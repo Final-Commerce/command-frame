@@ -1,5 +1,5 @@
 import { AddProductToCart, AddProductToCartParams, AddProductToCartResponse } from './types';
-import { MOCK_CART, MOCK_PRODUCTS, mockPublishEvent } from '../../demo/database';
+import { MOCK_CART, MOCK_PRODUCTS, buildCartLineModifiers, mockPublishEvent } from '../../demo/database';
 import { CFActiveProduct } from '../../CommonTypes';
 import { extendPrice, isValidQuantity, resolveUnit } from '@final-commerce/common';
 
@@ -68,11 +68,18 @@ export const mockAddProductToCart: AddProductToCart = async (
     // discount/fee could be added here to mock object if CFActiveProduct supports it
   } as unknown as CFActiveProduct;
 
-  // Mock modifier handling: echo selections onto the line; a real host resolves the
-  // product's modifiers, validates required/min/max in units, and prices each choice
-  // (fee-level money: not in grossSales, not reduced by the product discount).
+  // The spread above copied the PRODUCT's `modifiers` — a ResolvedModifier[] menu — into a
+  // field that means "the choices this line carries" (CartLineModifier[]). Two different
+  // shapes, one name. Drop it before anything reads the line, or every surface renders the
+  // whole catalogue as if the cashier had picked all of it.
+  delete (activeProduct as { modifiers?: unknown }).modifiers;
+
+  // Keep the raw answers AND the priced rows, the same pair the real host writes. The cart
+  // TOTAL is deliberately left alone: like a product fee (see add-product-fee), per-line
+  // money is not accumulated by this mock — `total` stays Σ extendPrice(price, quantity).
   if (params?.modifiers?.length) {
     activeProduct.modifierSelections = params.modifiers;
+    activeProduct.modifiers = buildCartLineModifiers(product.modifiers, params.modifiers, product.taxTable);
   }
 
   MOCK_CART.products.push(activeProduct);
