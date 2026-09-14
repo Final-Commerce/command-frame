@@ -52,6 +52,7 @@ import type {
   ModifierSelectionType,
   ModifierSelection,
   ModifierChoiceSelection,
+  CartLineModifier,
   OrderLineItemModifier,
   CustomerNote,
   Attribute,
@@ -98,6 +99,8 @@ export type CFOrderLineItemModifier = OrderLineItemModifier;
 /** Cart-line modifier answer (pre-pricing) — `CFActiveProduct.modifierSelections`. */
 export type CFModifierSelection = ModifierSelection;
 export type CFModifierChoiceSelection = ModifierChoiceSelection;
+/** One selected choice PRICED onto a cart line — `CFActiveProduct.modifiers` (not the resolved stack). */
+export type CFCartLineModifier = CartLineModifier;
 export type CFActiveProduct = ActiveProduct;
 export type CFCustomer = ActiveCustomer;
 export type CFActiveCustomer = ActiveCustomer;
