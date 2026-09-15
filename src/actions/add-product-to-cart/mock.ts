@@ -1,5 +1,11 @@
 import { AddProductToCart, AddProductToCartParams, AddProductToCartResponse } from './types';
-import { MOCK_CART, MOCK_PRODUCTS, mockPublishEvent } from '../../demo/database';
+import {
+  MOCK_CART,
+  MOCK_PRODUCTS,
+  buildCartLineModifiers,
+  buildModifierRows,
+  mockPublishEvent,
+} from '../../demo/database';
 import { CFActiveProduct } from '../../CommonTypes';
 import { extendPrice, isValidQuantity, resolveUnit } from '@final-commerce/common';
 
@@ -68,6 +74,20 @@ export const mockAddProductToCart: AddProductToCart = async (
     // discount/fee could be added here to mock object if CFActiveProduct supports it
   } as unknown as CFActiveProduct;
 
+  // The spread above copied the PRODUCT's `modifiers` — a ResolvedModifier[] menu — into a
+  // field that means "the choices this line carries" (CartLineModifier[]). Two different
+  // shapes, one name. Drop it before anything reads the line, or every surface renders the
+  // whole catalogue as if the cashier had picked all of it.
+  delete (activeProduct as { modifiers?: unknown }).modifiers;
+
+  // Keep the raw answers AND the priced rows, the same pair the real host writes. The cart
+  // TOTAL is deliberately left alone: like a product fee (see add-product-fee), per-line
+  // money is not accumulated by this mock — `total` stays Σ extendPrice(price, quantity).
+  if (params?.modifiers?.length) {
+    activeProduct.modifierSelections = params.modifiers;
+    activeProduct.modifiers = buildCartLineModifiers(product.modifiers, params.modifiers, product.taxTable);
+  }
+
   MOCK_CART.products.push(activeProduct);
 
   // Recalculate totals. extendPrice, not a raw multiply: a fractional quantity times an
@@ -82,6 +102,10 @@ export const mockAddProductToCart: AddProductToCart = async (
   // Publish cart event to simulate real behavior
   mockPublishEvent('cart', 'product-added', { product: activeProduct });
 
+  // Display-ready modifier rows for the line that was just created, so a flow can
+  // show what the modifiers added without re-reading the cart or multiplying.
+  const { rows, modifiersTotal } = buildModifierRows(activeProduct.modifiers, quantity);
+
   return {
     success: true,
     productId: activeProduct.id,
@@ -89,6 +113,8 @@ export const mockAddProductToCart: AddProductToCart = async (
     internalId: activeProduct.internalId,
     name: activeProduct.name,
     quantity: quantity,
+    rows,
+    modifiersTotal,
     timestamp: new Date().toISOString(),
   };
 };
