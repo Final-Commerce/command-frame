@@ -2,12 +2,7 @@
 import type { AddProductDiscountParams } from '../add-product-discount/types';
 import type { AddProductFeeParams } from '../add-product-fee/types';
 import type { ModifierSelection } from '../get-product-modifier-selections/types';
-
-/**
- * One modifier answer passed at ring-time. Same shape as the
- * get-product-modifier-selections `ModifierSelection` (single source of truth).
- */
-export type AddProductToCartModifierParams = ModifierSelection;
+import type { CFProdModifierBreakdown } from '../../CommonTypes';
 
 export interface AddProductToCartParams {
   /** ID of the variant to add. */
@@ -31,7 +26,7 @@ export interface AddProductToCartParams {
   /** Array of fees to apply immediately. */
   fees?: AddProductFeeParams[];
   /** Modifier selections to apply immediately. */
-  modifiers?: AddProductToCartModifierParams[];
+  modifiers?: ModifierSelection[];
   /** Note or array of notes to add immediately. */
   notes?: string | string[];
 }
@@ -46,6 +41,10 @@ export interface AddProductToCartResponse {
   internalId: string;
   name: string;
   quantity: number;
+  /** The modifiers the line was created with, display-ready. Empty when there are none. */
+  rows: CFProdModifierBreakdown[];
+  /** Sum of `rows[].amount` — what the modifiers added to this line, in minor units. */
+  modifiersTotal: number;
   timestamp: string;
 }
 

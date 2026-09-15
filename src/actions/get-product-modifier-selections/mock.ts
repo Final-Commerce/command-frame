@@ -3,7 +3,7 @@ import {
     GetProductModifierSelectionsParams,
     GetProductModifierSelectionsResponse
 } from "./types";
-import { MOCK_CART } from "../../demo/database";
+import { MOCK_CART, buildModifierRows } from "../../demo/database";
 
 export const mockGetProductModifierSelections: GetProductModifierSelections = async (
     params?: GetProductModifierSelectionsParams
@@ -21,14 +21,22 @@ export const mockGetProductModifierSelections: GetProductModifierSelections = as
             reason: "No matching cart line",
             internalId: params?.internalId,
             selections: [],
+            rows: [],
+            modifiersTotal: 0,
             timestamp: new Date().toISOString()
         };
     }
+
+    // The priced rows already sit on the line; extending them by the line quantity is
+    // the host's job, not the flow's.
+    const { rows, modifiersTotal } = buildModifierRows(line.modifiers, line.quantity);
 
     return {
         success: true,
         internalId: line.internalId,
         selections: line.modifierSelections ?? [],
+        rows,
+        modifiersTotal,
         timestamp: new Date().toISOString()
     };
 };

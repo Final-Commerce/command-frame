@@ -91,11 +91,14 @@ and coercing the quantity to an integer first is how `4.234 L` was once charged 
 ```typescript
 interface AddProductToCartResponse {
   success: boolean;
+  reason?: string; // set when the add was rejected (e.g. a required modifier is unanswered)
   productId: string;
   variantId: string;
   internalId: string; // The unique ID of the line item in the cart
   name: string;
   quantity: number;
+  rows: ProdModifierBreakdown[]; // the modifiers the line was created with, display-ready
+  modifiersTotal: number; // Σ rows[].amount — what the modifiers added to this line
   timestamp: string;
 }
 ```
@@ -103,6 +106,18 @@ interface AddProductToCartResponse {
 #### `internalId` (string)
 
 This is the unique identifier for the specific item instance added to the cart.
+
+#### `rows` / `modifiersTotal`
+
+What the modifiers added to the line, without a second call. `rows` is common's
+`ProdModifierBreakdown`: one row per chosen choice with `modifierName`, `choiceName`,
+`label`, `unitPrice` and the line-extended `amount`
+(`unitPrice x quantity x line.quantity`, minor units). `modifiersTotal` is their sum.
+Both are empty / `0` when the product has no modifiers or none were passed.
+
+A rule violation (a required modifier left unanswered, min/max broken, a choice not
+sold at this outlet) **resolves** with `success: false` and a `reason` — the line is
+not created.
 
 ## Errors
 

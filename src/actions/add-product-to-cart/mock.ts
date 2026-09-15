@@ -1,5 +1,11 @@
 import { AddProductToCart, AddProductToCartParams, AddProductToCartResponse } from './types';
-import { MOCK_CART, MOCK_PRODUCTS, buildCartLineModifiers, mockPublishEvent } from '../../demo/database';
+import {
+  MOCK_CART,
+  MOCK_PRODUCTS,
+  buildCartLineModifiers,
+  buildModifierRows,
+  mockPublishEvent,
+} from '../../demo/database';
 import { CFActiveProduct } from '../../CommonTypes';
 import { extendPrice, isValidQuantity, resolveUnit } from '@final-commerce/common';
 
@@ -96,6 +102,10 @@ export const mockAddProductToCart: AddProductToCart = async (
   // Publish cart event to simulate real behavior
   mockPublishEvent('cart', 'product-added', { product: activeProduct });
 
+  // Display-ready modifier rows for the line that was just created, so a flow can
+  // show what the modifiers added without re-reading the cart or multiplying.
+  const { rows, modifiersTotal } = buildModifierRows(activeProduct.modifiers, quantity);
+
   return {
     success: true,
     productId: activeProduct.id,
@@ -103,6 +113,8 @@ export const mockAddProductToCart: AddProductToCart = async (
     internalId: activeProduct.internalId,
     name: activeProduct.name,
     quantity: quantity,
+    rows,
+    modifiersTotal,
     timestamp: new Date().toISOString(),
   };
 };

@@ -23,9 +23,11 @@ interface SetProductModifierSelectionsParams {
 ```typescript
 interface SetProductModifierSelectionsResponse {
     success: boolean;
-    reason?: string;                   // set when the edit was rejected — the line is unchanged
-    internalId?: string;               // the line that was edited
-    selections: ModifierSelection[];   // now on the line (new on success, old on rejection)
+    reason?: string;                    // set when the edit was rejected — the line is unchanged
+    internalId?: string;                // the line that was edited
+    selections: ModifierSelection[];    // now on the line (new on success, old on rejection)
+    rows: ProdModifierBreakdown[];      // the same selections, display-ready
+    modifiersTotal: number;             // Σ rows[].amount for this line, minor units
     timestamp: string;
 }
 ```
@@ -33,6 +35,23 @@ interface SetProductModifierSelectionsResponse {
 `selections` is a full replacement, not a merge: send every modifier the line
 should keep. `quantity` on a choice is units per line-item unit (1 unless the
 modifier is a quantity/stepper type).
+
+`rows` is common's `ProdModifierBreakdown` — names, `label`, `unitPrice` and the
+line-extended `amount` (`unitPrice x quantity x line.quantity`, minor units). It
+reflects the line **after** the edit on success and **before** it on rejection, so a
+picker can repaint straight from the response instead of calling
+`getProductModifierSelections` again.
+
+## Failure behaviour
+
+A rule violation, a missing `selections`, an unknown `internalId` and "no product
+context" all **resolve** with `success: false` and a `reason`; the line is unchanged
+and `rows` / `modifiersTotal` describe the selections still on it. The promise is not
+rejected, so no `try`/`catch` is needed for any of them.
+
+The one case that **rejects** the promise is an internal data failure — the line
+exists but its variant cannot be read — which is not something a flow can provoke or
+recover from. The mock covers every resolving case and matches the host.
 
 ## Example Usage
 
@@ -44,6 +63,10 @@ const next = selections.map((s) =>
 );
 const result = await commandFrame.setProductModifierSelections({ internalId, selections: next });
 if (!result.success) showError(result.reason);
+
+// Repaint from the response — no second read, no arithmetic
+result.rows.forEach((row) => console.log(row.label, `x${row.quantity}`, formatMoney(row.amount)));
+console.log('Modifiers', formatMoney(result.modifiersTotal));
 ```
 
 ## Related

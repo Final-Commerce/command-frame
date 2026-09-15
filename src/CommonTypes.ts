@@ -53,6 +53,7 @@ import type {
   ModifierSelection,
   ModifierChoiceSelection,
   CartLineModifier,
+  ProdModifierBreakdown,
   OrderLineItemModifier,
   CustomerNote,
   Attribute,
@@ -101,6 +102,8 @@ export type CFModifierSelection = ModifierSelection;
 export type CFModifierChoiceSelection = ModifierChoiceSelection;
 /** One selected choice PRICED onto a cart line — `CFActiveProduct.modifiers` (not the resolved stack). */
 export type CFCartLineModifier = CartLineModifier;
+/** A priced, line-extended modifier row: "Toppings - Avocado" x2, `amount` 1000. */
+export type CFProdModifierBreakdown = ProdModifierBreakdown;
 export type CFActiveProduct = ActiveProduct;
 export type CFCustomer = ActiveCustomer;
 export type CFActiveCustomer = ActiveCustomer;

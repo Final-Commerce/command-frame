@@ -392,7 +392,6 @@ export type {
 export type {
   AddProductToCart,
   AddProductToCartParams,
-  AddProductToCartModifierParams,
   AddProductToCartResponse,
 } from './actions/add-product-to-cart/types';
 

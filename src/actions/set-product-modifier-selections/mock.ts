@@ -3,7 +3,7 @@ import {
     SetProductModifierSelectionsParams,
     SetProductModifierSelectionsResponse
 } from "./types";
-import { MOCK_CART, MOCK_PRODUCTS, buildCartLineModifiers } from "../../demo/database";
+import { MOCK_CART, MOCK_PRODUCTS, buildCartLineModifiers, buildModifierRows } from "../../demo/database";
 
 export const mockSetProductModifierSelections: SetProductModifierSelections = async (
     params?: SetProductModifierSelectionsParams
@@ -16,6 +16,8 @@ export const mockSetProductModifierSelections: SetProductModifierSelections = as
             reason: "selections is required (pass [] to clear)",
             internalId: params?.internalId,
             selections: [],
+            rows: [],
+            modifiersTotal: 0,
             timestamp: new Date().toISOString()
         };
     }
@@ -34,6 +36,8 @@ export const mockSetProductModifierSelections: SetProductModifierSelections = as
             reason: "No matching cart line",
             internalId: params.internalId,
             selections: [],
+            rows: [],
+            modifiersTotal: 0,
             timestamp: new Date().toISOString()
         };
     }
@@ -46,10 +50,14 @@ export const mockSetProductModifierSelections: SetProductModifierSelections = as
     line.modifierSelections = params.selections;
     line.modifiers = buildCartLineModifiers(source?.modifiers, params.selections, source?.taxTable);
 
+    const { rows, modifiersTotal } = buildModifierRows(line.modifiers, line.quantity);
+
     return {
         success: true,
         internalId: line.internalId,
         selections: params.selections,
+        rows,
+        modifiersTotal,
         timestamp: new Date().toISOString()
     };
 };

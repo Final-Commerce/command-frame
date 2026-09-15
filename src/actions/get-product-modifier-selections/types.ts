@@ -1,16 +1,15 @@
 // Get Product Modifier Selections Types
+import type {
+    CFModifierSelection,
+    CFModifierChoiceSelection,
+    CFProdModifierBreakdown
+} from "../../CommonTypes";
 
-/** One chosen choice: `quantity` is units PER LINE-ITEM UNIT (1 unless the control is a stepper). */
-export interface ModifierChoiceSelection {
-    choiceId: string;
-    quantity: number;
-}
+/** Alias of common's — `quantity` is units PER LINE-ITEM UNIT. */
+export type ModifierChoiceSelection = CFModifierChoiceSelection;
 
-/** The cashier's answer to one modifier. */
-export interface ModifierSelection {
-    modifierId: string;
-    choices: ModifierChoiceSelection[];
-}
+/** Alias of common's — the cashier's answer to one modifier. */
+export type ModifierSelection = CFModifierSelection;
 
 export interface GetProductModifierSelectionsParams {
     /** The cart line to read. Defaults to the active product's line. */
@@ -22,14 +21,12 @@ export interface GetProductModifierSelectionsResponse {
     /** Set when the read failed (e.g. no such line, no active product). */
     reason?: string;
     internalId?: string;
-    /**
-     * The line's current modifier selections. Supplied at creation via
-     * `addProductToCart({ modifiers })`; edit them with
-     * `setProductModifierSelections` (full replacement, re-validated).
-     * Modifier DEFINITIONS remain read-only — they flow one-way from
-     * station-sync into the till.
-     */
+    /** Raw ids — round-trips back into the setter. No names, no money: use `rows` to display. */
     selections: ModifierSelection[];
+    /** Display-ready: "Toppings - Avocado" x2, `amount` 1000. One row per chosen choice. */
+    rows: CFProdModifierBreakdown[];
+    /** Sum of `rows[].amount` for THIS line, in minor units. */
+    modifiersTotal: number;
     timestamp: string;
 }
 

@@ -1,5 +1,6 @@
 // Set Product Modifier Selections Types
 import type { ModifierSelection } from "../get-product-modifier-selections/types";
+import type { CFProdModifierBreakdown } from "../../CommonTypes";
 
 export interface SetProductModifierSelectionsParams {
     /** The cart line to edit. Defaults to the active product's line. */
@@ -20,6 +21,10 @@ export interface SetProductModifierSelectionsResponse {
     internalId?: string;
     /** The selections now on the line (the new ones on success, the old ones on rejection). */
     selections: ModifierSelection[];
+    /** Display-ready — repaint from this instead of re-reading after an edit. */
+    rows: CFProdModifierBreakdown[];
+    /** Sum of `rows[].amount` for THIS line, in minor units. */
+    modifiersTotal: number;
     timestamp: string;
 }
 

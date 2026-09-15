@@ -21,6 +21,7 @@ import {
   CFActiveRefundDetails,
   CFSmartGridLayout,
   CFCartLineModifier,
+  CFProdModifierBreakdown,
   CFModifierSelection,
   CFResolvedModifier,
 } from '../CommonTypes';
@@ -1162,6 +1163,30 @@ export const applyMockPayment = (
  * rewrites an open cart. No `total`: a cart row is per line UNIT, and the host extends it.
  * Rule validation (required/min/max) is deliberately not mocked; the real host owns it.
  */
+/** Extend a line's priced modifier rows by the line quantity. Mirrors kaching's `buildProdModifiers`. */
+export const buildModifierRows = (
+  modifiers: CFCartLineModifier[] | undefined,
+  lineQuantity: number | undefined
+): { rows: CFProdModifierBreakdown[]; modifiersTotal: number } => {
+  const quantity = lineQuantity ?? 1;
+  const rows: CFProdModifierBreakdown[] = (modifiers ?? []).map((modifier) => ({
+    modifierId: modifier.modifierId,
+    modifierName: modifier.modifierName,
+    choiceId: modifier.choiceId,
+    choiceName: modifier.choiceName,
+    label: modifier.label ?? `${modifier.modifierName} - ${modifier.choiceName}`,
+    unitPrice: modifier.unitPrice,
+    quantity: modifier.quantity,
+    // extendPrice, not a raw multiply: a fractional line quantity (1.5 kg) must not
+    // leave fractional minor units on the row.
+    amount: extendPrice(modifier.unitPrice * modifier.quantity, quantity),
+    tax: 0,
+    ...(modifier.taxTableId ? { taxTableId: modifier.taxTableId } : {}),
+    ...(modifier.taxRateId ? { taxRateId: modifier.taxRateId } : {})
+  }));
+  return { rows, modifiersTotal: rows.reduce((sum, row) => sum + row.amount, 0) };
+};
+
 export const buildCartLineModifiers = (
   menu: CFResolvedModifier[] | undefined,
   selections: CFModifierSelection[] | undefined,
