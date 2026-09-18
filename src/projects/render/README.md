@@ -74,6 +74,7 @@ The library provides a `command` namespace object containing all available comma
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
+- **[startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)** - Take an ONLINE payment on a published website: create the server-priced order and mount the provider's hosted card fields (the only tender available on a storefront)
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
 - **[partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)** - Initiate a partial/split payment
@@ -401,6 +402,10 @@ Creates a hosted payment link for the current cart and texts or emails it to the
 ### [chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)
 
 Charges a keyed (card-not-present) MOTO sale for the current cart. Card fields are provider-encrypted (CSE) and opaque to the POS. Minimum charge is 50 minor units; `idempotencyKey` is held by the caller across retries, reuse it to replay, use a new one after changing the amount. Adyen-only.
+
+### [startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)
+
+Takes an **online** payment on a published website. Creates a server-priced order from the current cart (the page never sends a price) and mounts the provider's hosted card fields into an element named by a **CSS selector** — not a DOM node, which cannot cross the `postMessage` boundary. It resolves when the shopper *can* pay, not when they have: the outcome arrives on the [`checkout`](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/checkout/README.md) topic, where `payment-completed` is an authorisation rather than a settlement. This is the only tender available on a storefront; the till tenders above are refused there.
 
 ### [tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)
 

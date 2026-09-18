@@ -31,6 +31,7 @@ import { mockCashPayment } from '../../actions/cash-payment/mock';
 import { mockGetCashRoundingAmount } from '../../actions/get-cash-rounding-amount/mock';
 import { mockCreatePaymentLink } from '../../actions/create-payment-link/mock';
 import { mockChargeMoto } from '../../actions/charge-moto/mock';
+import { mockStartCheckout } from '../../actions/start-checkout/mock';
 import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
 import { mockDeleteParkedOrder } from '../../actions/delete-parked-order/mock';
@@ -130,6 +131,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getCashRoundingAmount: mockGetCashRoundingAmount,
   createPaymentLink: mockCreatePaymentLink,
   chargeMoto: mockChargeMoto,
+  startCheckout: mockStartCheckout,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
   voidOrder: mockVoidOrder,

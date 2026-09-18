@@ -28,7 +28,8 @@ topics.unsubscribe('customers', subscriptionId);
 | [refunds](./topics/refunds/README.md)               | Refund lifecycle events                                                | 4 events  | [View Details](./topics/refunds/README.md)        |
 | [products](./topics/products/README.md)             | Product sync events                                                    | 4 events  | [View Details](./topics/products/README.md)       |
 | [cart](./topics/cart/README.md)                     | Cart operation events                                                  | 16 events | [View Details](./topics/cart/README.md)           |
-| [payments](./topics/payments/README.md)             | Payment processing events                                              | 2 events  | [View Details](./topics/payments/README.md)       |
+| [payments](./topics/payments/README.md)             | Payment processing events (till tenders)                               | 2 events  | [View Details](./topics/payments/README.md)       |
+| [checkout](./topics/checkout/README.md)             | Online (website) checkout events — the storefront counterpart of `payments` | 3 events  | [View Details](./topics/checkout/README.md)       |
 | [split-payments](./topics/split-payments/README.md) | In-progress split-payment session updates (mirror of the host's slice) | 1 event   | [View Details](./topics/split-payments/README.md) |
 | [custom-tables](./topics/custom-tables/README.md)   | Custom table row lifecycle events                                      | 3 events  | [View Details](./topics/custom-tables/README.md)  |
 | [print](./topics/print/README.md)                   | Print action events                                                    | 3 events  | [View Details](./topics/print/README.md)          |
@@ -246,6 +247,7 @@ For detailed documentation on each topic and its events, see:
 - [Products Topic](./topics/products/README.md)
 - [Cart Topic](./topics/cart/README.md)
 - [Payments Topic](./topics/payments/README.md)
+- [Checkout Topic](./topics/checkout/README.md)
 - [Custom Tables Topic](./topics/custom-tables/README.md)
 - [Print Topic](./topics/print/README.md)
 - [Outlet Topic](./topics/outlet/README.md)

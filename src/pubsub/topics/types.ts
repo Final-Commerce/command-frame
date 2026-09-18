@@ -4,6 +4,7 @@ import { RefundsEventType, RefundsEventPayload } from "./refunds/types";
 import { ProductsEventType, ProductsEventPayload } from "./products/types";
 import { CartEventType, CartEventPayload } from "./cart/types";
 import { PaymentsEventType, PaymentsEventPayload } from "./payments/types";
+import { CheckoutEventType, CheckoutEventPayload } from "./checkout/types";
 import { SplitPaymentsEventType, SplitPaymentsEventPayload } from "./split-payments/types";
 import { CustomTablesEventPayload, CustomTablesEventType } from "./custom-tables/types";
 import { PrintEventType, PrintEventPayload } from "./print/types";
@@ -23,6 +24,13 @@ export interface TopicEventPayloadMap {
     products: Record<ProductsEventType, ProductsEventPayload>;
     cart: Record<CartEventType, CartEventPayload>;
     payments: Record<PaymentsEventType, PaymentsEventPayload>;
+    /**
+     * ONLINE checkout only (a published website), where the POS `payments`
+     * topic never fires: `payments` reports a till tender settling in front of
+     * a cashier, while a web shopper's outcome arrives asynchronously and can
+     * only ever be an authorisation until the provider's webhook lands.
+     */
+    checkout: Record<CheckoutEventType, CheckoutEventPayload>;
     "split-payments": Record<SplitPaymentsEventType, SplitPaymentsEventPayload>;
     customTables: Record<CustomTablesEventType, CustomTablesEventPayload>;
     print: Record<PrintEventType, PrintEventPayload>;

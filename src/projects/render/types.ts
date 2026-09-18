@@ -102,6 +102,7 @@ import type {
   SendSms,
   CreatePaymentLink,
   ChargeMoto,
+  StartCheckout,
   GetTimeClockStatus,
 } from '../../index';
 
@@ -149,6 +150,12 @@ export interface RenderProviderActions {
   integrationPayment: IntegrationPayment;
   createPaymentLink: CreatePaymentLink;
   chargeMoto: ChargeMoto;
+  /**
+   * ONLINE checkout — served only by the storefront runtime (a published
+   * website). The till tenders above are refused there, and this is refused on
+   * a register, because the two declare different things to the card networks.
+   */
+  startCheckout: StartCheckout;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;
   removeCustomerNote: RemoveCustomerNote;
