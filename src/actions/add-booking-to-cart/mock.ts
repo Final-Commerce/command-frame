@@ -1,4 +1,3 @@
-import { ReservationStatus } from '@final-commerce/common';
 import { CFCartReservation } from '../../CommonTypes';
 import { MOCK_CART, MOCK_PRODUCTS, mockPublishEvent } from '../../demo/database';
 import { AddBookingToCart, AddBookingToCartParams, AddBookingToCartResponse } from './types';
@@ -35,7 +34,6 @@ export const mockAddBookingToCart: AddBookingToCart = async (
     startAt: booking.startAt,
     endAt: booking.endAt,
     bufferEndAt: booking.bufferEndAt,
-    status: ReservationStatus.HELD,
     expiresAt: booking.expiresAt,
   };
 
