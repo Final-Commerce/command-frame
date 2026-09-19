@@ -1142,9 +1142,9 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
       bufferEndAt: reservation.bufferEndAt,
       // The mock computes no tax anywhere — line items ship `taxes: []` too.
       taxes: [],
-      // `expiresAt` deliberately does not come along: a paid booking has no
-      // clock left to run out, which is what CONFIRMED means.
-      status: ReservationStatus.CONFIRMED,
+      // Neither `expiresAt` nor a status comes along: a booking's state lives on its own
+      // row — which is what `getBookings` reads — and a copy frozen on the order would be
+      // wrong from the next moment on.
     })),
     customSales: [],
     balance: 0,
