@@ -201,6 +201,21 @@ export interface CFContextRender {
   stationName: string | null;
   outletId: string | null;
   outletName: string | null;
+  /**
+   * IANA zone the SHOP keeps, resolved as the outlet's own zone, else the
+   * company's — never the device's. A booking is stored as an instant, so which
+   * hour and which DAY it reads as is decided entirely by the zone it is printed
+   * in, and the screen's own machine is the one zone that is certainly wrong: a
+   * 17:00 Monday appointment in Vancouver is 21:30 for a till in St John's, and
+   * for some viewers it lands on Tuesday. Without this an app cannot label a
+   * slot or an appointment honestly — it can only guess, and it guesses wrong
+   * for every business that does not sit in the same zone as its screen.
+   *
+   * `null` when neither the outlet nor the company has one configured. Say so
+   * rather than falling back to the device: a missing timezone is a setup
+   * problem, and printing the machine's clock hides it.
+   */
+  timeZone: string | null;
   buildId: string | null;
   buildName: string | null;
   buildVersion: string | null;
