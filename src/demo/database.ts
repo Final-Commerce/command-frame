@@ -1166,7 +1166,7 @@ export const applyMockPayment = (
 /** Extend a line's priced modifier rows by the line quantity. Mirrors kaching's `buildProdModifiers`. */
 export const buildModifierRows = (
   modifiers: CFCartLineModifier[] | undefined,
-  lineQuantity: number | undefined
+  lineQuantity: number | undefined,
 ): { rows: CFProdModifierBreakdown[]; modifiersTotal: number } => {
   const quantity = lineQuantity ?? 1;
   const rows: CFProdModifierBreakdown[] = (modifiers ?? []).map((modifier) => ({
@@ -1182,7 +1182,6 @@ export const buildModifierRows = (
     amount: extendPrice(modifier.unitPrice * modifier.quantity, quantity),
     tax: 0,
     ...(modifier.taxTableId ? { taxTableId: modifier.taxTableId } : {}),
-    ...(modifier.taxRateId ? { taxRateId: modifier.taxRateId } : {})
   }));
   return { rows, modifiersTotal: rows.reduce((sum, row) => sum + row.amount, 0) };
 };
