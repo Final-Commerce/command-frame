@@ -28,6 +28,7 @@ interface PaymentCompletedPayload {
     orderId: string;
     receiptId: string;
     resultCode: string;
+    sessionResult?: string;
 }
 ```
 
@@ -38,6 +39,23 @@ interface PaymentCompletedPayload {
 | `orderId` | `string` | The order the payment was made against. |
 | `receiptId` | `string` | Human-facing receipt number. Safe to show the shopper. |
 | `resultCode` | `string` | The provider's own outcome, typically `Authorised`. |
+| `sessionResult` | `string?` | Opaque proof of this payment, handed to the browser by the provider and to nobody else. Pass it to the order-status read. Treat it as a credential. |
+
+### What `sessionResult` is for
+
+It is the only evidence of an outcome that exists **outside** the provider's
+webhook. If that webhook is lost, this token is what lets the server ask the
+provider directly and repair the order, so send it along when you read the order
+back:
+
+```typescript
+GET /storefront/customer-order?sessionResult=<token>
+X-Order-Password: <the one-time password>
+```
+
+The server verifies it with the provider before believing any part of it, and a
+status read stays a read: nothing the browser sends can mark an order paid. Do
+not log it and do not put it in a URL you share.
 
 ## Example Usage
 
@@ -49,6 +67,8 @@ const subscriptionId = topics.subscribe('checkout', (event: PaymentCompletedEven
     if (event.type === 'payment-completed') {
         // Correct: a confirmation screen the shopper can trust.
         showThankYou(event.data.receiptId);
+        // Carry the proof to the status read, so a lost webhook is recoverable.
+        rememberSessionResult(event.data.sessionResult);
         // Wrong: markOrderPaid() / releaseDownload() / "Payment received".
     }
 });

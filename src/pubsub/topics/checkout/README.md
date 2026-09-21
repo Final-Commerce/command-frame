@@ -30,6 +30,11 @@ reaching the backend, out of band and after the page is done.
 | [payment-completed](./payment-completed/README.md) | The shopper's payment succeeded on their side (authorisation, **not** settlement) | [View Details](./payment-completed/README.md) |
 | [payment-failed](./payment-failed/README.md) | An attempt was refused or errored; the shopper can retry in place | [View Details](./payment-failed/README.md) |
 
+> A shopper sent through 3-D Secure or a redirect payment method comes back on a
+> **fresh page load**, and the outcome is published only once
+> [`resumeCheckout`](../../../actions/resume-checkout/README.md) is called on
+> that new page. Subscribe first, then call it.
+
 ## Quick Start
 
 ```typescript

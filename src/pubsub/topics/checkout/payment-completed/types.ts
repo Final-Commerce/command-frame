@@ -13,6 +13,18 @@ export interface PaymentCompletedPayload {
     receiptId: string;
     /** The provider's result code, e.g. `Authorised`. */
     resultCode: string;
+    /**
+     * OPAQUE PROOF OF THIS PAYMENT, handed to the browser by the provider and to
+     * nobody else. Pass it to the order-status read and the server verifies it
+     * with the provider before believing a word of it.
+     *
+     * It is the only evidence of an outcome that exists outside the provider's
+     * webhook, so it is what recovers an order whose confirmation never arrived.
+     * Treat it as a credential: do not log it, do not put it in a URL you share.
+     *
+     * Absent when the provider reported no payment (see `resultCode`).
+     */
+    sessionResult?: string;
 }
 
 /**
