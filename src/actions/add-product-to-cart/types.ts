@@ -1,6 +1,8 @@
 // Add Product To Cart Types
 import type { AddProductDiscountParams } from '../add-product-discount/types';
 import type { AddProductFeeParams } from '../add-product-fee/types';
+import type { ModifierSelection } from '../get-product-modifier-selections/types';
+import type { CFProdModifierBreakdown } from '../../CommonTypes';
 
 export interface AddProductToCartParams {
   /** ID of the variant to add. */
@@ -23,18 +25,26 @@ export interface AddProductToCartParams {
   discounts?: AddProductDiscountParams[];
   /** Array of fees to apply immediately. */
   fees?: AddProductFeeParams[];
+  /** Modifier selections to apply immediately. */
+  modifiers?: ModifierSelection[];
   /** Note or array of notes to add immediately. */
   notes?: string | string[];
 }
 
 export interface AddProductToCartResponse {
   success: boolean;
+  /** Set when the add was rejected (e.g. a required modifier is unanswered). */
+  reason?: string;
   productId: string;
   variantId: string;
   /** The unique identifier for the specific item instance added to the cart. */
   internalId: string;
   name: string;
   quantity: number;
+  /** The modifiers the line was created with, display-ready. Empty when there are none. */
+  rows: CFProdModifierBreakdown[];
+  /** Sum of `rows[].amount` — what the modifiers added to this line, in minor units. */
+  modifiersTotal: number;
   timestamp: string;
 }
 
