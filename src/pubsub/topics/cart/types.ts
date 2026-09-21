@@ -19,6 +19,7 @@ export * from "./product-fee-added/types";
 export * from "./product-fee-removed/types";
 export * from "./product-note-added/types";
 export * from "./product-note-removed/types";
+export * from "./product-modifiers-updated/types";
 
 // Import payload types for union type
 import type { CartCreatedPayload } from "./cart-created/types";
@@ -36,6 +37,7 @@ import type { ProductFeeAddedPayload } from "./product-fee-added/types";
 import type { ProductFeeRemovedPayload } from "./product-fee-removed/types";
 import type { ProductNoteAddedPayload } from "./product-note-added/types";
 import type { ProductNoteRemovedPayload } from "./product-note-removed/types";
+import type { ProductModifiersUpdatedPayload } from "./product-modifiers-updated/types";
 
 // Union type for all cart event payloads
 export type CartEventPayload = 
@@ -53,7 +55,8 @@ export type CartEventPayload =
     | ProductFeeAddedPayload
     | ProductFeeRemovedPayload
     | ProductNoteAddedPayload
-    | ProductNoteRemovedPayload;
+    | ProductNoteRemovedPayload
+    | ProductModifiersUpdatedPayload;
 
 // Literal types for event IDs
 export type CartEventType = 
@@ -72,4 +75,5 @@ export type CartEventType =
     | "product-fee-added"
     | "product-fee-removed"
     | "product-note-added"
-    | "product-note-removed";
+    | "product-note-removed"
+    | "product-modifiers-updated";
