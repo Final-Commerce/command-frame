@@ -104,6 +104,8 @@ import type {
   SendSms,
   CreatePaymentLink,
   ChargeMoto,
+  StartCheckout,
+  ResumeCheckout,
   GetTimeClockStatus,
 } from '../../index';
 
@@ -153,6 +155,18 @@ export interface RenderProviderActions {
   integrationPayment: IntegrationPayment;
   createPaymentLink: CreatePaymentLink;
   chargeMoto: ChargeMoto;
+  /**
+   * ONLINE checkout — served only by the storefront runtime (a published
+   * website). The till tenders above are refused there, and this is refused on
+   * a register, because the two declare different things to the card networks.
+   */
+  startCheckout: StartCheckout;
+  /**
+   * The RETURN LEG of an online checkout, after a redirect payment method or
+   * 3-D Secure sent the shopper away and back. Storefront-only, like
+   * `startCheckout`, and safe to call on every page load.
+   */
+  resumeCheckout: ResumeCheckout;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;
   removeCustomerNote: RemoveCustomerNote;

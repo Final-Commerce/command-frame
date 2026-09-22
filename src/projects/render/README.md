@@ -74,6 +74,8 @@ The library provides a `command` namespace object containing all available comma
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
+- **[startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)** - Take an ONLINE payment on a published website: create the server-priced order and mount the provider's hosted card fields (the only tender available on a storefront)
+- **[resumeCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-checkout/README.md)** - Finish an online checkout the shopper was redirected away from (3-D Secure, bank apps, wallets); call it on every page load of your checkout screen
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
 - **[partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)** - Initiate a partial/split payment
@@ -401,6 +403,14 @@ Creates a hosted payment link for the current cart and texts or emails it to the
 ### [chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)
 
 Charges a keyed (card-not-present) MOTO sale for the current cart. Card fields are provider-encrypted (CSE) and opaque to the POS. Minimum charge is 50 minor units; `idempotencyKey` is held by the caller across retries, reuse it to replay, use a new one after changing the amount. Adyen-only.
+
+### [startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)
+
+Takes an **online** payment on a published website. Creates a server-priced order from the current cart (the page never sends a price) and mounts the provider's hosted card fields into an element named by a **CSS selector** — not a DOM node, which cannot cross the `postMessage` boundary. It resolves when the shopper *can* pay, not when they have: the outcome arrives on the [`checkout`](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/checkout/README.md) topic, where `payment-completed` is an authorisation rather than a settlement. This is the only tender available on a storefront; the till tenders above are refused there.
+
+### [resumeCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-checkout/README.md)
+
+Finishes an online checkout the shopper was **redirected away from**. 3-D Secure and every redirect payment method send the shopper to their bank or wallet and back to your `returnUrl` as a fresh page load, at which point the charge is still not complete: the provider has handed the browser a one-time result in the URL that has to go back to the provider. `startCheckout` ran in the page that is now gone and cannot do it. Call this unconditionally when your checkout or confirmation screen mounts — on an ordinary visit it answers `{ resumed: false }` and does nothing. It also recovers the one-time `orderPassword` the redirect destroyed, and publishes the outcome on the [`checkout`](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/checkout/README.md) topic exactly as if the shopper had never left.
 
 ### [tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)
 

@@ -45,6 +45,8 @@ import { redeemPayment } from './actions/redeem-payment/action';
 import { integrationPayment } from './actions/integration-payment/action';
 import { createPaymentLink } from './actions/create-payment-link/action';
 import { chargeMoto } from './actions/charge-moto/action';
+import { startCheckout } from './actions/start-checkout/action';
+import { resumeCheckout } from './actions/resume-checkout/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
 import { removeCustomerNote } from './actions/remove-customer-note/action';
@@ -189,6 +191,8 @@ export const command = {
   integrationPayment,
   createPaymentLink,
   chargeMoto,
+  startCheckout,
+  resumeCheckout,
   // Customer Actions
   addCustomerNote,
   removeCustomerNote,
@@ -506,6 +510,19 @@ export type {
   ChargeMotoResponse,
   ChargeMotoCardFields,
 } from './actions/charge-moto/types';
+export type {
+  StartCheckout,
+  StartCheckoutParams,
+  StartCheckoutResponse,
+  StartCheckoutContact,
+  StartCheckoutOrder,
+} from './actions/start-checkout/types';
+export type {
+  ResumeCheckout,
+  ResumeCheckoutParams,
+  ResumeCheckoutResponse,
+  ResumeCheckoutResult,
+} from './actions/resume-checkout/types';
 // Customer Actions
 export type {
   AddCustomerNote,
@@ -650,6 +667,7 @@ export { refundsTopic } from './pubsub/topics/refunds';
 export { productsTopic } from './pubsub/topics/products';
 export { cartTopic } from './pubsub/topics/cart';
 export { paymentsTopic } from './pubsub/topics/payments';
+export { checkoutTopic } from './pubsub/topics/checkout';
 export { splitPaymentsTopic } from './pubsub/topics/split-payments';
 export { customTablesTopic } from './pubsub/topics/custom-tables';
 export { printTopic } from './pubsub/topics/print';
@@ -847,6 +865,18 @@ export type {
   PaymentsEventType,
   PaymentsEventPayload,
 } from './pubsub/topics/payments/types';
+
+// Export Checkout Event Types
+export type {
+  CheckoutStartedPayload,
+  PaymentCompletedPayload,
+  PaymentFailedPayload,
+  CheckoutStartedEvent,
+  PaymentCompletedEvent,
+  PaymentFailedEvent,
+  CheckoutEventType,
+  CheckoutEventPayload,
+} from './pubsub/topics/checkout/types';
 
 // Export Split Payments Event Types
 export type {
