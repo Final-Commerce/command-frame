@@ -87,3 +87,13 @@ This action typically does not throw errors unless there's an underlying system 
 - Returns the complete cart object as it exists in the Redux store.
 - The cart includes all products, custom sales, discounts, fees, and calculated totals.
 - Useful for displaying cart contents, calculating totals, or syncing cart state with external systems.
+
+## Modifiers
+
+Each cart line (`cart.products[]`) exposes its modifier answers as
+`modifierSelections?: CFModifierSelection[]` — the pre-pricing shape
+(`{ modifierId, choices: [{ choiceId, quantity }] }`). Pricing happens at
+total-computation time: fee-level money, not in grossSales, not reduced by
+the product discount, tax inherited from the product's tax table by default.
+Read one line's selections with `getProductModifierSelections` (read-only —
+flows never edit selections after add; the host's picker UI owns that).
