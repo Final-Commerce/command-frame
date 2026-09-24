@@ -24,6 +24,10 @@ import {
   CFBookingAvailability,
   CFBookingResource,
   CFBookingSlot,
+  CFCartLineModifier,
+  CFProdModifierBreakdown,
+  CFModifierSelection,
+  CFResolvedModifier,
 } from '../CommonTypes';
 import { extendPrice, resolveUnit, toBase } from '@final-commerce/common';
 import { BookingRatePeriod, BookingResourceKind, BookingType, ReservationStatus } from '@final-commerce/common';
@@ -1304,4 +1308,77 @@ export const mockBookingAvailability = (
     ratePeriod: BookingRatePeriod.SLOT,
     slots,
   };
+};
+
+/**
+ * Price the cashier's raw modifier answers into the rows a CART line carries (FT-0010).
+ *
+ * Here rather than in an action folder because two mocks need it — addProductToCart and
+ * setProductModifierSelections — and this module is already where the shared mock helpers
+ * live (`safeSerialize`, `resetMockCart`, `mockPublishEvent`).
+ *
+ * Note the two shapes that share the name `modifiers` and are NOT interchangeable:
+ * `FullProduct.modifiers` is `ResolvedModifier[]` (the menu — question + every choice),
+ * `ActiveProduct.modifiers` is `CartLineModifier[]` (one row per CHOSEN choice). The mock
+ * builds a cart line by spreading the product, so the menu must be stripped off the line
+ * before anything reads it, or every surface renders the catalogue as if it were picked.
+ *
+ * Names and unitPrice are snapshotted, as the real host does — a later rename never
+ * rewrites an open cart. No `total`: a cart row is per line UNIT, and the host extends it.
+ * Rule validation (required/min/max) is deliberately not mocked; the real host owns it.
+ */
+/** Extend a line's priced modifier rows by the line quantity. Mirrors kaching's `buildProdModifiers`. */
+export const buildModifierRows = (
+  modifiers: CFCartLineModifier[] | undefined,
+  lineQuantity: number | undefined,
+): { rows: CFProdModifierBreakdown[]; modifiersTotal: number } => {
+  const quantity = lineQuantity ?? 1;
+  const rows: CFProdModifierBreakdown[] = (modifiers ?? []).map((modifier) => ({
+    modifierId: modifier.modifierId,
+    modifierName: modifier.modifierName,
+    choiceId: modifier.choiceId,
+    choiceName: modifier.choiceName,
+    label: modifier.label ?? `${modifier.modifierName} - ${modifier.choiceName}`,
+    unitPrice: modifier.unitPrice,
+    quantity: modifier.quantity,
+    // extendPrice, not a raw multiply: a fractional line quantity (1.5 kg) must not
+    // leave fractional minor units on the row.
+    amount: extendPrice(modifier.unitPrice * modifier.quantity, quantity),
+    tax: 0,
+    ...(modifier.taxTableId ? { taxTableId: modifier.taxTableId } : {}),
+  }));
+  return { rows, modifiersTotal: rows.reduce((sum, row) => sum + row.amount, 0) };
+};
+
+export const buildCartLineModifiers = (
+  menu: CFResolvedModifier[] | undefined,
+  selections: CFModifierSelection[] | undefined,
+  productTaxTableId?: string,
+): CFCartLineModifier[] => {
+  if (!menu?.length || !selections?.length) return [];
+  const byModifier = new Map(menu.map((modifier) => [modifier._id, modifier]));
+  const rows: CFCartLineModifier[] = [];
+  for (const selection of selections) {
+    const modifier = byModifier.get(selection.modifierId);
+    if (!modifier) continue;
+    const byChoice = new Map(modifier.choices.map((choice) => [choice._id, choice]));
+    for (const picked of selection.choices ?? []) {
+      const choice = byChoice.get(picked.choiceId);
+      // `quantity` is units per ONE line unit; 0 means "not chosen" and carries no row.
+      if (!choice || !(picked.quantity > 0)) continue;
+      rows.push({
+        modifierId: modifier._id,
+        modifierName: modifier.name,
+        choiceId: choice._id,
+        choiceName: choice.name,
+        // The cart's display label, like CustomFee.label — "Toppings - Avocado".
+        label: `${modifier.name} - ${choice.name}`,
+        unitPrice: choice.price,
+        quantity: picked.quantity,
+        // Modifier tax follows the parent product's table, as a fee's does.
+        ...(productTaxTableId ? { taxTableId: productTaxTableId } : {}),
+      });
+    }
+  }
+  return rows;
 };

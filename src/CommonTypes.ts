@@ -47,6 +47,14 @@ import type {
   FullProduct,
   ProductVariant,
   Inventory,
+  ResolvedModifier,
+  ResolvedModifierChoice,
+  ModifierSelectionType,
+  ModifierSelection,
+  ModifierChoiceSelection,
+  CartLineModifier,
+  ProdModifierBreakdown,
+  OrderLineItemModifier,
   CustomerNote,
   Attribute,
   AttributeOption,
@@ -100,6 +108,19 @@ export type CFBooking = Booking;
  *  interface. */
 export type CFCartReservation = CartReservation;
 export type CFOrderReservation = OrderReservation;
+/** Modifier (the till question) resolved onto a product — `CFProduct.modifiers`. */
+export type CFResolvedModifier = ResolvedModifier;
+export type CFResolvedModifierChoice = ResolvedModifierChoice;
+export type CFModifierSelectionType = ModifierSelectionType;
+/** One selected modifier choice on an order line item (wire shape). */
+export type CFOrderLineItemModifier = OrderLineItemModifier;
+/** Cart-line modifier answer (pre-pricing) — `CFActiveProduct.modifierSelections`. */
+export type CFModifierSelection = ModifierSelection;
+export type CFModifierChoiceSelection = ModifierChoiceSelection;
+/** One selected choice PRICED onto a cart line — `CFActiveProduct.modifiers` (not the resolved stack). */
+export type CFCartLineModifier = CartLineModifier;
+/** A priced, line-extended modifier row: "Toppings - Avocado" x2, `amount` 1000. */
+export type CFProdModifierBreakdown = ProdModifierBreakdown;
 export type CFActiveProduct = ActiveProduct;
 export type CFCustomer = ActiveCustomer;
 export type CFActiveCustomer = ActiveCustomer;
