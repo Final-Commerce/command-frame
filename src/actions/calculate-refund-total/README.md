@@ -76,3 +76,10 @@ try {
 - This is a preview calculation and does not process the refund.
 - Calculations include taxes, discounts, fees, and tips proportionally.
 - Tax calculations respect tax-inclusive vs tax-exclusive settings.
+
+## Modifiers
+
+Each `refundedLineItems[]` entry exposes the line's refunded modifier rows as
+`modifiers?: OrderLineItemModifier[]`, rescaled to the units being refunded.
+Their money is already included in the entry's `total`/`totalTax` and in the
+`summary` — display them per row (choice name + total), never add them on top.

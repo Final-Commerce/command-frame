@@ -9,6 +9,7 @@ export type SectionId =
   | 'cart'
   | 'orders'
   | 'bookings'
+  | 'modifiers'
   | 'state-machine'
   | 'outlet'
   | 'station'
@@ -49,6 +50,7 @@ const sections: Section[] = [
   { id: 'cart', label: 'Cart' },
   { id: 'orders', label: 'Orders' },
   { id: 'bookings', label: 'Bookings' },
+  { id: 'modifiers', label: 'Modifiers' },
   { id: 'state-machine', label: 'State Machine' },
   { id: 'outlet', label: 'Outlet' },
   { id: 'station', label: 'Station' },
