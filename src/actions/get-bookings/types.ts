@@ -18,7 +18,7 @@ export interface GetBookingsResponse {
   success: boolean;
   /** Why it was refused, in words a cashier can act on. Absent on success. */
   reason?: string;
-  bookings: CFBooking[];
+  bookings?: CFBooking[];
   timestamp: string;
 }
 

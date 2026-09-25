@@ -1231,6 +1231,13 @@ export const MOCK_BOOKING_RESOURCES: CFBookingResource[] = [
   { id: 'res_room_2', name: 'Room 2', kind: BookingResourceKind.ROOM },
 ];
 
+/**
+ * The clock this mock shop keeps — the same one `getContext` reports. They used to disagree: the
+ * slot hours were built with `setHours`, which is the MACHINE's clock, while the context claimed
+ * Vancouver. On a machine in Paris a correct screen showed a salon open from midnight to nine.
+ */
+export const MOCK_SHOP_TIME_ZONE = 'America/Vancouver';
+
 const at = (dayOffset: number, hour: number, minute = 0): Date => {
   // The shop's wall clock, not this machine's. Two passes, because the offset is a function of
   // the instant and the instant is what we are solving for.
@@ -1304,13 +1311,6 @@ const takenBy = (resourceId: string, startAt: Date, bufferEndAt: Date): boolean 
     (entry) =>
       entry.resourceId === resourceId && new Date(entry.startAt) < bufferEndAt && new Date(entry.bufferEndAt) > startAt,
   );
-
-/**
- * The clock this mock shop keeps — the same one `getContext` reports. They used to disagree: the
- * slot hours were built with `setHours`, which is the MACHINE's clock, while the context claimed
- * Vancouver. On a machine in Paris a correct screen showed a salon open from midnight to nine.
- */
-export const MOCK_SHOP_TIME_ZONE = 'America/Vancouver';
 
 /** The mock's shop day for an instant, `YYYY-MM-DD`, built from parts so it never reads as D/M/Y. */
 const shopDayOf = (instant: Date): string => {
