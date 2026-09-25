@@ -4,7 +4,7 @@ Releases a booking — a hold the customer walked away from, or a confirmed appo
 is cancelling. The window becomes free for everybody immediately, and the cancellation is
 recorded on the booking's history.
 
-Requires a connection, like every write to occupancy. The order, if there is one, is **not**
+Written on the device and synced up, like the claim it releases. The order, if there is one, is **not**
 touched: cancelling a booking is not a refund.
 
 ## Parameters

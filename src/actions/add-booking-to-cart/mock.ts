@@ -11,13 +11,30 @@ export const mockAddBookingToCart: AddBookingToCart = async (
   // One call, two effects — the window is claimed AND the service is in the cart. The claim goes
   // first and its refusal propagates: a cart line for a window somebody else took is worse than
   // no line at all.
-  const { booking } = await mockHoldBooking(params);
+  const held = await mockHoldBooking(params);
+  if (!held.success || !held.booking) {
+    return { success: false, reason: held.reason, timestamp: new Date().toISOString() };
+  }
+  const booking = held.booking;
 
+  // An unknown product used to be sold as "Booking" at zero. The host refuses it, and a mock that
+  // quietly sells something no catalogue contains teaches a screen a case that cannot happen.
   const product = MOCK_PRODUCTS.find(({ _id }) => _id === params.productId);
+  if (!product) {
+    return { success: false, reason: `No product ${params.productId}`, timestamp: new Date().toISOString() };
+  }
+  // A named variant is honoured or refused, never substituted — the host does the same.
   const variant = params.variantId
-    ? product?.variants?.find(({ _id }) => _id === params.variantId)
-    : product?.variants?.[0];
-  const price = variant?.price ?? product?.minPrice ?? 0;
+    ? product.variants?.find(({ _id }) => _id === params.variantId)
+    : product.variants?.[0];
+  if (params.variantId && !variant) {
+    return {
+      success: false,
+      reason: `${product.name} has no variant ${params.variantId}`,
+      timestamp: new Date().toISOString(),
+    };
+  }
+  const price = variant?.price ?? product.minPrice ?? 0;
 
   const reservation: CFCartReservation = {
     internalId: `res_${booking.id}`,
@@ -25,12 +42,12 @@ export const mockAddBookingToCart: AddBookingToCart = async (
     productId: params.productId,
     variantId: variant?._id ?? null,
     resourceId: params.resourceId,
-    name: product?.name ?? 'Booking',
+    name: product.name,
     resourceName: booking.resourceName,
     price,
     quantity: 1,
     total: price,
-    taxTableId: product?.taxTable,
+    taxTableId: product.taxTable,
     startAt: booking.startAt,
     endAt: booking.endAt,
     bufferEndAt: booking.bufferEndAt,
@@ -47,7 +64,14 @@ export const mockAddBookingToCart: AddBookingToCart = async (
 
   // The cart topic, not the bookings one: a screen that only watches bookings still has to
   // repaint its cart, and every other cart mutation announces itself the same way.
-  mockPublishEvent('cart', 'reservation-added', { reservation });
+  // `cart-created`, as the host publishes: the cart topic carries the whole cart, and a screen
+  // written against the host's event was not listening for a name only the mock used.
+  mockPublishEvent('cart', 'cart-created', { cart: MOCK_CART });
 
-  return { booking, reservationInternalId: reservation.internalId, timestamp: new Date().toISOString() };
+  return {
+    success: true,
+    booking,
+    reservationInternalId: reservation.internalId,
+    timestamp: new Date().toISOString(),
+  };
 };

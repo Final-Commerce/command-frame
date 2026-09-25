@@ -4,9 +4,14 @@ Claims a window for one customer. **This is the only way to find out whether a s
 free** — availability is a snapshot that can be a second out of date, and two customers looking
 at the same screen will both see the same free slot.
 
-The server makes the claim atomically: exactly one of two simultaneous requests for the same
-window succeeds, the other is refused. Requires a connection; a hold cannot be made offline,
-because the guarantee lives on the server.
+The claim is written ON THE DEVICE, from the booking rules and holds the till already syncs
+down, and it works with no connection — a till that cannot sell while its line is down is a till
+that stops working exactly when a shop needs it.
+
+What that costs is the guarantee: two tills with no line between them can both hold the same
+window, and neither is told. The row each wrote syncs up and is visible to everything that reads
+occupancy afterwards, so the shop resolves the clash the way it resolves any other double
+booking. A hold taken against the same device's own live data is still refused immediately.
 
 The hold expires on its own (the merchant sets how long in the rule set — 10 minutes by
 default), which is what stops an abandoned checkout from taking a resource off the market.

@@ -1,3 +1,4 @@
+import { ReservationStatus } from '@final-commerce/common';
 import { MOCK_BOOKINGS, MOCK_CART, mockPublishEvent } from '../../demo/database';
 import { RemoveBookingFromCart, RemoveBookingFromCartParams, RemoveBookingFromCartResponse } from './types';
 
@@ -16,17 +17,30 @@ export const mockRemoveBookingFromCart: RemoveBookingFromCart = async (
     MOCK_CART.total -= line;
     MOCK_CART.amountToBeCharged = MOCK_CART.total;
     MOCK_CART.remainingBalance = MOCK_CART.total;
-    mockPublishEvent('cart', 'reservation-removed', { reservation: removed });
+    mockPublishEvent('cart', 'cart-created', { cart: MOCK_CART });
   }
 
   // The hold has to go back, or the mock is a trap: `addBookingToCart` pushes into the very list
   // availability reads, so add → remove → add the same slot used to refuse forever with "that
   // window has just been taken". The reservation id is `res_<booking.id>`, the link back to the row.
   const bookingId = removed?.bookingId ?? params.reservationInternalId.replace(/^res_/, '');
-  const index = MOCK_BOOKINGS.findIndex(({ id }) => id === bookingId);
-  const [released] = index >= 0 ? MOCK_BOOKINGS.splice(index, 1) : [];
+  // CANCELLED, not deleted — the host releases a window by moving the row, and a mock that
+  // erased it hid both the trail and the fact that a released booking is still a booking.
+  const released = MOCK_BOOKINGS.find(({ id }) => id === bookingId);
+  if (released) released.status = ReservationStatus.CANCELLED;
+
+  // An id the cart does not have is a refusal, as it is on the host — resolving with an empty
+  // booking made a failed remove look like a successful one.
+  if (!removed) {
+    return {
+      success: false,
+      reason: `Reservation ${params.reservationInternalId} is not in the cart`,
+      timestamp: new Date().toISOString(),
+    };
+  }
 
   return {
+    success: true,
     reservationInternalId: params.reservationInternalId,
     booking: released,
     timestamp: new Date().toISOString(),

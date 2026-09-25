@@ -7,5 +7,5 @@ export const mockGetBookingResources: GetBookingResources = async (
   console.log('[Mock] getBookingResources called', params);
   // A resource knows nothing about outlets — where it works lives in its own records, which the
   // host reads. The mock has no such records, so `outletId` narrows nothing here.
-  return { resources: MOCK_BOOKING_RESOURCES, timestamp: new Date().toISOString() };
+  return { success: true, resources: MOCK_BOOKING_RESOURCES, timestamp: new Date().toISOString() };
 };

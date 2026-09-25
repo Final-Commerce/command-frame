@@ -6,7 +6,11 @@ export interface RemoveBookingFromCartParams {
 }
 
 export interface RemoveBookingFromCartResponse {
-  reservationInternalId: string;
+  /** False when the command was refused — a taken window, a rule, a booking that is not yours. */
+  success: boolean;
+  /** Why it was refused, in words a cashier can act on. Absent on success. */
+  reason?: string;
+  reservationInternalId?: string;
   /** The released hold, so the caller can see it is no longer held. */
   booking?: CFBooking;
   timestamp: string;

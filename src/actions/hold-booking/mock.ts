@@ -5,6 +5,8 @@ import { ReservationStatus } from '@final-commerce/common';
 const BUFFER_MINUTES = 5;
 const HOLD_MINUTES = 10;
 
+let held = 0;
+
 export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): Promise<HoldBookingResponse> => {
   console.log('[Mock] holdBooking called', params);
 
@@ -20,10 +22,14 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
       new Date(entry.startAt) < bufferEndAt &&
       new Date(entry.bufferEndAt) > startAt,
   );
-  if (clash) throw new Error('That window has just been taken — pick another slot.');
+  if (clash) {
+    return { success: false, reason: 'That window has just been taken — pick another slot.', timestamp: new Date().toISOString() };
+  }
 
   const booking = {
-    id: `bk_mock_${Date.now()}`,
+    // A counter, not a clock: two holds in the same millisecond used to share an id, and cancel
+    // or remove then acted on the wrong row. Scripted tests hit that routinely.
+    id: `bk_mock_${(held += 1)}`,
     productId: params.productId,
     resourceId: params.resourceId,
     variantId: params.variantId,
@@ -38,5 +44,5 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
 
   // Held in the same list availability reads, so the slot really does disappear.
   MOCK_BOOKINGS.push(booking);
-  return { booking, timestamp: new Date().toISOString() };
+  return { success: true, booking, timestamp: new Date().toISOString() };
 };

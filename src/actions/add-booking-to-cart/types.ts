@@ -16,10 +16,14 @@ export interface AddBookingToCartParams {
 }
 
 export interface AddBookingToCartResponse {
+  /** False when the command was refused — a taken window, a rule, a booking that is not yours. */
+  success: boolean;
+  /** Why it was refused, in words a cashier can act on. Absent on success. */
+  reason?: string;
   /** The claim the cart now stands on: `id` cancels or releases it, `expiresAt` is your clock. */
-  booking: CFBooking;
+  booking?: CFBooking;
   /** Identity of the reservation inside the cart and, later, the order. */
-  reservationInternalId: string;
+  reservationInternalId?: string;
   timestamp: string;
 }
 

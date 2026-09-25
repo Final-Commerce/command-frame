@@ -1,6 +1,6 @@
 # addBookingToCart
 
-Sells a service: claims the window on the server and puts it in the cart as a **reservation**.
+Sells a service: claims the window on the device and puts it in the cart as a **reservation**.
 
 A bookable product does not become a line item. `lineItems[]` stays the goods array; services live
 in `reservations[]` with their own money, so a booking order can be reported and changed without
