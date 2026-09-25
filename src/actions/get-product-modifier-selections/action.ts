@@ -3,18 +3,18 @@
  * Calls the getProductModifierSelections action on the parent window
  */
 
-import { commandFrameClient } from "../../client";
+import { commandFrameClient } from '../../client';
 import type {
-    GetProductModifierSelections,
-    GetProductModifierSelectionsParams,
-    GetProductModifierSelectionsResponse
-} from "./types";
+  GetProductModifierSelections,
+  GetProductModifierSelectionsParams,
+  GetProductModifierSelectionsResponse,
+} from './types';
 
 export const getProductModifierSelections: GetProductModifierSelections = async (
-    params?: GetProductModifierSelectionsParams
+  params?: GetProductModifierSelectionsParams,
 ): Promise<GetProductModifierSelectionsResponse> => {
-    return await commandFrameClient.call<GetProductModifierSelectionsParams | undefined, GetProductModifierSelectionsResponse>(
-        "getProductModifierSelections",
-        params
-    );
+  return await commandFrameClient.call<
+    GetProductModifierSelectionsParams | undefined,
+    GetProductModifierSelectionsResponse
+  >('getProductModifierSelections', params);
 };

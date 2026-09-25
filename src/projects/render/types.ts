@@ -102,6 +102,13 @@ import type {
   SaveSmartGridLayout,
   SendEmail,
   SendSms,
+  GetBookingResources,
+  GetBookingAvailability,
+  GetBookings,
+  HoldBooking,
+  AddBookingToCart,
+  RemoveBookingFromCart,
+  CancelBooking,
   CreatePaymentLink,
   ChargeMoto,
   GetTimeClockStatus,
@@ -110,6 +117,16 @@ import type {
 export interface RenderProviderActions {
   exampleFunction: ExampleFunction;
   getProducts: GetProducts;
+  // Booking (FT-0064): resources and bookings are read from the host's local database and
+  // work offline; availability, hold and cancel go to the server, because the guarantee that
+  // two customers cannot take the same window exists only there.
+  getBookingResources: GetBookingResources;
+  getBookingAvailability: GetBookingAvailability;
+  getBookings: GetBookings;
+  holdBooking: HoldBooking;
+  addBookingToCart: AddBookingToCart;
+  removeBookingFromCart: RemoveBookingFromCart;
+  cancelBooking: CancelBooking;
   addCustomSale: AddCustomSale;
   editCustomSale: EditCustomSale;
   getCustomers: GetCustomers;

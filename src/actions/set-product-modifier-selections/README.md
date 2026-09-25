@@ -13,8 +13,8 @@ snapshot and the line is repriced.
 
 ```typescript
 interface SetProductModifierSelectionsParams {
-    internalId?: string;               // the cart line to edit; defaults to the active product's line
-    selections: ModifierSelection[];   // the line's COMPLETE new answers — replaces all; [] clears
+  internalId?: string; // the cart line to edit; defaults to the active product's line
+  selections: ModifierSelection[]; // the line's COMPLETE new answers — replaces all; [] clears
 }
 ```
 
@@ -22,13 +22,13 @@ interface SetProductModifierSelectionsParams {
 
 ```typescript
 interface SetProductModifierSelectionsResponse {
-    success: boolean;
-    reason?: string;                    // set when the edit was rejected — the line is unchanged
-    internalId?: string;                // the line that was edited
-    selections: ModifierSelection[];    // now on the line (new on success, old on rejection)
-    rows: ProdModifierBreakdown[];      // the same selections, display-ready
-    modifiersTotal: number;             // Σ rows[].amount for this line, minor units
-    timestamp: string;
+  success: boolean;
+  reason?: string; // set when the edit was rejected — the line is unchanged
+  internalId?: string; // the line that was edited
+  selections: ModifierSelection[]; // now on the line (new on success, old on rejection)
+  rows: ProdModifierBreakdown[]; // the same selections, display-ready
+  modifiersTotal: number; // Σ rows[].amount for this line, minor units
+  timestamp: string;
 }
 ```
 
@@ -59,7 +59,7 @@ recover from. The mock covers every resolving case and matches the host.
 // Swap the topping on an existing line
 const { selections } = await commandFrame.getProductModifierSelections({ internalId });
 const next = selections.map((s) =>
-    s.modifierId === toppingsId ? { modifierId: toppingsId, choices: [{ choiceId: avocadoId, quantity: 1 }] } : s
+  s.modifierId === toppingsId ? { modifierId: toppingsId, choices: [{ choiceId: avocadoId, quantity: 1 }] } : s,
 );
 const result = await commandFrame.setProductModifierSelections({ internalId, selections: next });
 if (!result.success) showError(result.reason);
