@@ -11,7 +11,7 @@ const { reservationInternalId } = await renderClient.removeBookingFromCart({
 ## Why one command, not two
 
 The mirror of [`addBookingToCart`](../add-booking-to-cart/README.md), for the same reason: a
-reservation stands on a server-side hold. Dropping the cart row without cancelling the hold leaves
+reservation stands on a hold. Dropping the cart row without releasing that hold leaves
 the window occupied for everyone else with nobody able to see whose it is — and the customer who
 just changed their mind cannot rebook the slot they released a second ago.
 
@@ -33,4 +33,4 @@ just changed their mind cannot rebook the slot they released a second ago.
 
 - No active company — nothing to sell against.
 - `reservationInternalId` not in the cart.
-- Offline: releasing a window is a server decision, like taking one.
+- Offline: releasing a window works with no connection, like taking one — the row is written locally and syncs up.

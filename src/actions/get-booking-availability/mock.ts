@@ -12,5 +12,5 @@ export const mockGetBookingAvailability: GetBookingAvailability = async (
     ? new Date(params.to)
     : new Date(start.getFullYear(), start.getMonth(), start.getDate() + Math.max(1, params.days ?? 1));
   const availability = mockBookingAvailability(params.productId, start, end, params.resourceId);
-  return { availability, timestamp: new Date().toISOString() };
+  return { success: true, availability, timestamp: new Date().toISOString() };
 };

@@ -17,5 +17,5 @@ export const mockGetBookings: GetBookings = async (params?: GetBookingsParams): 
     bookings = bookings.filter((entry) => new Date(entry.startAt) < to);
   }
 
-  return { bookings, timestamp: new Date().toISOString() };
+  return { success: true, bookings, timestamp: new Date().toISOString() };
 };

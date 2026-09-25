@@ -8,7 +8,7 @@ export interface HoldBookingParams {
   startAt: string;
   /**
    * End of the window — the `endAt` of the slot you picked, or of the last slot in a stay.
-   * Required: the server refuses a window it cannot line up with its own grid, and the till
+   * Required: a window that cannot be lined up with the grid is refused, and the till
    * has no local copy of the rules to derive it from.
    */
   endAt: string;
@@ -19,8 +19,12 @@ export interface HoldBookingParams {
 }
 
 export interface HoldBookingResponse {
+  /** False when the command was refused — a taken window, a rule, a booking that is not yours. */
+  success: boolean;
+  /** Why it was refused, in words a cashier can act on. Absent on success. */
+  reason?: string;
   /** The claim. `expiresAt` says how long it survives unpaid; `id` is what you confirm or cancel. */
-  booking: CFBooking;
+  booking?: CFBooking;
   timestamp: string;
 }
 

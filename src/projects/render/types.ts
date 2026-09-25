@@ -117,9 +117,10 @@ import type {
 export interface RenderProviderActions {
   exampleFunction: ExampleFunction;
   getProducts: GetProducts;
-  // Booking (FT-0064): resources and bookings are read from the host's local database and
-  // work offline; availability, hold and cancel go to the server, because the guarantee that
-  // two customers cannot take the same window exists only there.
+  // Booking (FT-0064): every one of these is answered from the host's own synced data and works
+  // offline — availability is computed on the device from the rules, and a hold is written there
+  // too. What that costs is the guarantee: two tills with no line between them can both take the
+  // same window, and the shop resolves it afterwards like any other double booking.
   getBookingResources: GetBookingResources;
   getBookingAvailability: GetBookingAvailability;
   getBookings: GetBookings;

@@ -1159,6 +1159,20 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
   };
 
   MOCK_ORDERS.push(newOrder);
+
+  // Payment is what turns a held window into a kept appointment, so the ROW moves too — the
+  // comment above said CONFIRMED while nothing set it. Left held, a paid appointment dropped out
+  // of `getBookings` when its deadline passed and the window could be taken again, which is the
+  // one transition a booking screen most needs to be able to test.
+  for (const reservation of newOrder.reservations ?? []) {
+    const row = MOCK_BOOKINGS.find(({ id }) => id === reservation.bookingId);
+    if (row) {
+      row.status = ReservationStatus.CONFIRMED;
+      row.orderId = newOrder._id;
+      row.expiresAt = undefined;
+    }
+  }
+
   resetMockCart();
 
   // Publish cart-created event after cart is reset (simulates new empty cart)
@@ -1218,10 +1232,38 @@ export const MOCK_BOOKING_RESOURCES: CFBookingResource[] = [
 ];
 
 const at = (dayOffset: number, hour: number, minute = 0): Date => {
-  const date = new Date();
-  date.setDate(date.getDate() + dayOffset);
-  date.setHours(hour, minute, 0, 0);
-  return date;
+  // The shop's wall clock, not this machine's. Two passes, because the offset is a function of
+  // the instant and the instant is what we are solving for.
+  const naive = Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth(),
+    new Date().getUTCDate() + dayOffset,
+    hour,
+    minute,
+  );
+  const offsetAt = (instant: number): number => {
+    const parts: Record<string, string> = {};
+    for (const part of new Intl.DateTimeFormat('en-US', {
+      timeZone: MOCK_SHOP_TIME_ZONE,
+      hour12: false,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).formatToParts(new Date(instant))) {
+      parts[part.type] = part.value;
+    }
+    const asUtc = Date.UTC(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(parts.hour) % 24,
+      Number(parts.minute),
+    );
+    return asUtc - instant;
+  };
+  return new Date(naive - offsetAt(naive - offsetAt(naive)));
 };
 
 const booking = (
@@ -1264,16 +1306,24 @@ const takenBy = (resourceId: string, startAt: Date, bufferEndAt: Date): boolean 
   );
 
 /**
- * The clock this mock shop keeps. `null` — the machine's — because a fake dataset that claimed a
- * real zone would make every screen look right in one city and wrong in the next, which is the
- * bug this field exists to kill.
+ * The clock this mock shop keeps — the same one `getContext` reports. They used to disagree: the
+ * slot hours were built with `setHours`, which is the MACHINE's clock, while the context claimed
+ * Vancouver. On a machine in Paris a correct screen showed a salon open from midnight to nine.
  */
-export const MOCK_SHOP_TIME_ZONE: string | null = null;
+export const MOCK_SHOP_TIME_ZONE = 'America/Vancouver';
 
 /** The mock's shop day for an instant, `YYYY-MM-DD`, built from parts so it never reads as D/M/Y. */
 const shopDayOf = (instant: Date): string => {
-  const pad = (value: number) => String(value).padStart(2, '0');
-  return `${instant.getFullYear()}-${pad(instant.getMonth() + 1)}-${pad(instant.getDate())}`;
+  const parts: Record<string, string> = {};
+  for (const part of new Intl.DateTimeFormat('en-CA', {
+    timeZone: MOCK_SHOP_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(instant)) {
+    parts[part.type] = part.value;
+  }
+  return `${parts.year}-${parts.month}-${parts.day}`;
 };
 
 export const mockBookingAvailability = (
@@ -1290,8 +1340,11 @@ export const mockBookingAvailability = (
 
   for (let day = 0; day < 14; day += 1) {
     const open = at(day, OPEN_HOUR);
-    if (open < from || open > to) continue;
     const close = at(day, CLOSE_HOUR);
+    // Overlap, not containment. Asking from noon used to return nothing for today, because the
+    // day's opening hour lay before the range start — so an afternoon question got an empty
+    // calendar and read as "fully booked".
+    if (close <= from || open >= to) continue;
     for (let start = open.getTime(); start + SLOT_MINUTES * 60_000 <= close.getTime(); start += step) {
       const startAt = new Date(start);
       const endAt = new Date(start + SLOT_MINUTES * 60_000);

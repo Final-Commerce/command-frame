@@ -1,12 +1,13 @@
 # getBookingAvailability
 
 Returns the free windows for a bookable product over a date range: the calendar. **Computed by
-the server** out of the merchant's rule set, the outlet's opening hours, the turnaround between
+the device** out of the merchant's rule set, the outlet's opening hours, the turnaround between
 bookings and everything already taken — it is not a stored list you can read from the local
 database, and it changes the moment somebody else books.
 
 Ask for the range the user is looking at (a day, a week, a month) and re-ask after any hold or
-cancel. Requires a connection; a till with no network can display existing bookings
+cancel. No connection needed — the rules and the holds are synced down, and the grid is
+computed from them locally. A till with no network can display existing bookings
 (`getBookings`) but cannot offer new times.
 
 ## Parameters
@@ -18,7 +19,7 @@ interface GetBookingAvailabilityParams {
   days?: number; // how many shop days from fromDay (default 1)
   from?: string; // ISO 8601 — the instant form, when you genuinely have instants
   to?: string; // ISO 8601
-  resourceId?: string; // "only Marco" — the host narrows the answer; the server returns every resource
+  resourceId?: string; // "only Marco" — narrows the answer; omit it and every resource is returned
   outletId?: string;
 }
 ```
