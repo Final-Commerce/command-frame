@@ -1263,6 +1263,19 @@ const takenBy = (resourceId: string, startAt: Date, bufferEndAt: Date): boolean 
       entry.resourceId === resourceId && new Date(entry.startAt) < bufferEndAt && new Date(entry.bufferEndAt) > startAt,
   );
 
+/**
+ * The clock this mock shop keeps. `null` — the machine's — because a fake dataset that claimed a
+ * real zone would make every screen look right in one city and wrong in the next, which is the
+ * bug this field exists to kill.
+ */
+export const MOCK_SHOP_TIME_ZONE: string | null = null;
+
+/** The mock's shop day for an instant, `YYYY-MM-DD`, built from parts so it never reads as D/M/Y. */
+const shopDayOf = (instant: Date): string => {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${instant.getFullYear()}-${pad(instant.getMonth() + 1)}-${pad(instant.getDate())}`;
+};
+
 export const mockBookingAvailability = (
   productId: string,
   from: Date,
@@ -1297,6 +1310,10 @@ export const mockBookingAvailability = (
         booked: resources.reduce((sum, entry) => sum + entry.booked, 0),
         free: resources.reduce((sum, entry) => sum + entry.free, 0),
         resources,
+        // The shop day, as the real host stamps it. The mock keeps one shop on the machine's
+        // own clock, so here that is the machine's day — the point is that the FIELD is there,
+        // so a screen built against the mock never learns to work the day out for itself.
+        dayKey: shopDayOf(startAt),
       });
     }
   }
@@ -1307,6 +1324,8 @@ export const mockBookingAvailability = (
     bookingType: BookingType.APPOINTMENT,
     ratePeriod: BookingRatePeriod.SLOT,
     slots,
+    timeZone: MOCK_SHOP_TIME_ZONE,
+    days: [...new Set(slots.map((slot) => slot.dayKey!))],
   };
 };
 

@@ -14,8 +14,10 @@ cancel. Requires a connection; a till with no network can display existing booki
 ```typescript
 interface GetBookingAvailabilityParams {
   productId: string; // must be a product with productType: 'booking'
-  from: string; // ISO 8601
-  to: string; // ISO 8601
+  fromDay?: string; // 'YYYY-MM-DD' — the SHOP's day. Prefer this.
+  days?: number; // how many shop days from fromDay (default 1)
+  from?: string; // ISO 8601 — the instant form, when you genuinely have instants
+  to?: string; // ISO 8601
   resourceId?: string; // "only Marco" — the host narrows the answer; the server returns every resource
   outletId?: string;
 }
@@ -61,13 +63,23 @@ interface CFBookingSlot {
 ## Example
 
 ```typescript
+// A fortnight of the shop's own days, for a day picker.
 const { availability } = await renderClient.getBookingAvailability({
   productId: product._id,
-  from: startOfDay.toISOString(),
-  to: endOfDay.toISOString(),
+  fromDay: '2026-09-25',
+  days: 14,
 });
 
-const openSlots = availability.slots.filter((slot) => slot.free > 0 && slot.canStart);
+availability.days; // ['2026-09-25', '2026-09-26', …] — the chips
+const monday = availability.slots.filter((slot) => slot.dayKey === '2026-09-29');
+const openSlots = monday.filter((slot) => slot.free > 0 && slot.canStart);
+
+// Printing a time: use the clock the answer names, never the machine's.
+new Intl.DateTimeFormat([], {
+  timeZone: availability.timeZone ?? undefined,
+  hour: '2-digit',
+  minute: '2-digit',
+}).format(new Date(openSlots[0].startAt));
 ```
 
 ## Notes
@@ -78,4 +90,14 @@ const openSlots = availability.slots.filter((slot) => slot.free > 0 && slot.canS
 - `free === 0` means taken; `canStart === false` means the window exists but a stay may not begin
   there (arrival days).
 - `bufferEndAt` is when the resource is genuinely free again. Do not draw the next slot from `endAt`.
+- **Do not work out which day a slot is on.** `slot.dayKey` says it, stamped in the zone the grid
+  was built in. The same instant is Monday in Vancouver and Tuesday in Auckland, so a client that
+  derives the day owns a copy of a rule — that copy is how a salon's 9am came out at 1:30pm on a
+  till in another province, with the calendar and the order screen wrong in the same direction so
+  they agreed with each other.
+- **Do not turn a day into instants yourself.** `fromDay` + `days` is resolved local-midnight to
+  local-midnight in the shop's zone, so a 23- or 25-hour day is still one day. Asking a wide
+  instant range and filtering afterwards is the workaround this replaces.
+- `availability.timeZone` is the clock to print on — the outlet's, else the company's, `null` when
+  the business configured none. Format with it; never reach for the machine's zone.
 - Re-ask after `holdBooking` or `cancelBooking` rather than mutating the list locally.
