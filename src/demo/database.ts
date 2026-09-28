@@ -20,12 +20,17 @@ import {
   CFSession,
   CFActiveRefundDetails,
   CFSmartGridLayout,
+  CFBooking,
+  CFBookingAvailability,
+  CFBookingResource,
+  CFBookingSlot,
   CFCartLineModifier,
   CFProdModifierBreakdown,
   CFModifierSelection,
   CFResolvedModifier,
 } from '../CommonTypes';
 import { extendPrice, resolveUnit, toBase } from '@final-commerce/common';
+import { BookingRatePeriod, BookingResourceKind, BookingType, ReservationStatus } from '@final-commerce/common';
 
 export * from './mocks';
 
@@ -40,6 +45,10 @@ export interface MockDatabaseConfig {
   products?: CFProduct[];
   orders?: CFActiveOrder[];
   parkedOrders?: CFActiveOrder[];
+  /** Who is scarce: the staff, rooms or machines the dataset's services are booked against. */
+  bookingResources?: CFBookingResource[];
+  /** Windows already taken when the dataset loads, so a calendar does not open empty. */
+  bookings?: CFBooking[];
 }
 
 // Asset Imports - Using Remote URLs to avoid build complexity with asset copying
@@ -849,6 +858,15 @@ export const MOCK_CATEGORIES = [
   MOCK_CATEGORY_VEGAN,
   MOCK_CATEGORY_SPICY,
 ];
+// A service, not a thing on a shelf: no stock, sold as a slot of somebody's time.
+// `bookingRulesId` is what tells a catalogue screen to ask for slots instead of stock.
+export const MOCK_PRODUCT_HAIRCUT: CFProduct = {
+  ...createSimpleProduct('prod_haircut', 'Haircut', 4500, '', [MOCK_CATEGORY_SPECIALTY], 'Cut and finish, 30 minutes.'),
+  images: [],
+  productType: CFProductType.BOOKING,
+  bookingRulesId: 'rule_salon_30',
+};
+
 export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_BASIL_ALMOND,
   MOCK_PRODUCT_BEER,
@@ -864,6 +882,7 @@ export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_CHILI_GARLIC,
   MOCK_PRODUCT_HABANERO,
   MOCK_PRODUCT_BLACK_GARLIC,
+  MOCK_PRODUCT_HAIRCUT,
 ];
 export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2, MOCK_ORDER_3, MOCK_ORDER_4];
 export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [MOCK_PARKED_ORDER_1, MOCK_PARKED_ORDER_2];
@@ -880,6 +899,7 @@ export let MOCK_CART: CFActiveCart = {
   remainingBalance: 0,
   products: [],
   customSales: [],
+  reservations: [],
   nonRevenueItems: [],
   customer: null,
 };
@@ -904,6 +924,7 @@ export const resetMockCart = () => {
     remainingBalance: 0,
     products: [],
     customSales: [],
+    reservations: [],
     nonRevenueItems: [],
     customer: null,
   };
@@ -949,6 +970,12 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   }
   if (config.parkedOrders !== undefined) {
     MOCK_PARKED_ORDERS.splice(0, MOCK_PARKED_ORDERS.length, ...config.parkedOrders);
+  }
+  if (config.bookingResources !== undefined) {
+    MOCK_BOOKING_RESOURCES.splice(0, MOCK_BOOKING_RESOURCES.length, ...config.bookingResources);
+  }
+  if (config.bookings !== undefined) {
+    MOCK_BOOKINGS.splice(0, MOCK_BOOKINGS.length, ...config.bookings);
   }
 
   if (MOCK_OUTLETS.length > 0) {
@@ -1099,6 +1126,30 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
     billing: MOCK_CART.customer?.billing || null,
     shipping: MOCK_CART.customer?.shipping || null,
     lineItems,
+    // A paid booking is a sale: it belongs on the order (and thus the receipt),
+    // in its own array rather than among the line items, and CONFIRMED — payment
+    // is what turns a held window into a kept appointment.
+    reservations: (MOCK_CART.reservations ?? []).map((reservation) => ({
+      internalId: reservation.internalId,
+      bookingId: reservation.bookingId,
+      productId: reservation.productId,
+      variantId: reservation.variantId,
+      resourceId: reservation.resourceId,
+      name: reservation.name,
+      resourceName: reservation.resourceName,
+      price: reservation.price,
+      quantity: reservation.quantity,
+      total: reservation.total,
+      taxTableId: reservation.taxTableId,
+      startAt: reservation.startAt,
+      endAt: reservation.endAt,
+      bufferEndAt: reservation.bufferEndAt,
+      // The mock computes no tax anywhere — line items ship `taxes: []` too.
+      taxes: [],
+      // Neither `expiresAt` nor a status comes along: a booking's state lives on its own
+      // row — which is what `getBookings` reads — and a copy frozen on the order would be
+      // wrong from the next moment on.
+    })),
     customSales: [],
     balance: 0,
     user: employeeUser,
@@ -1108,6 +1159,20 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
   };
 
   MOCK_ORDERS.push(newOrder);
+
+  // Payment is what turns a held window into a kept appointment, so the ROW moves too — the
+  // comment above said CONFIRMED while nothing set it. Left held, a paid appointment dropped out
+  // of `getBookings` when its deadline passed and the window could be taken again, which is the
+  // one transition a booking screen most needs to be able to test.
+  for (const reservation of newOrder.reservations ?? []) {
+    const row = MOCK_BOOKINGS.find(({ id }) => id === reservation.bookingId);
+    if (row) {
+      row.status = ReservationStatus.CONFIRMED;
+      row.orderId = newOrder._id;
+      row.expiresAt = undefined;
+    }
+  }
+
   resetMockCart();
 
   // Publish cart-created event after cart is reset (simulates new empty cart)
@@ -1144,6 +1209,177 @@ export const applyMockPayment = (
   const order = createOrderFromCart(paymentType, orderTotal, processor);
   mockPublishEvent('payments', 'payment-done', { order });
   return order;
+};
+
+// ── Booking (FT-0064) ────────────────────────────────────────────────────────────
+// A salon: one service, two people who can perform it, a 30-minute slot with a
+// 5-minute turnaround, open 9–18. Enough to click through a booking screen with no
+// server. Availability here is COMPUTED, exactly as the host computes it — a mock
+// that returned a fixed list of slots would hide the one behaviour that matters:
+// a slot disappears once somebody takes it.
+
+export const MOCK_BOOKING_RULES_ID = 'rule_salon_30';
+const SLOT_MINUTES = 30;
+const BUFFER_MINUTES = 5;
+const OPEN_HOUR = 9;
+const CLOSE_HOUR = 18;
+
+// Rooms, not people: a resource is whatever is scarce, and a room is the case that
+// reads the same in every vertical a dataset might describe.
+export const MOCK_BOOKING_RESOURCES: CFBookingResource[] = [
+  { id: 'res_room_1', name: 'Room 1', kind: BookingResourceKind.ROOM },
+  { id: 'res_room_2', name: 'Room 2', kind: BookingResourceKind.ROOM },
+];
+
+/**
+ * The clock this mock shop keeps — the same one `getContext` reports. They used to disagree: the
+ * slot hours were built with `setHours`, which is the MACHINE's clock, while the context claimed
+ * Vancouver. On a machine in Paris a correct screen showed a salon open from midnight to nine.
+ */
+export const MOCK_SHOP_TIME_ZONE = 'America/Vancouver';
+
+const at = (dayOffset: number, hour: number, minute = 0): Date => {
+  // The shop's wall clock, not this machine's. Two passes, because the offset is a function of
+  // the instant and the instant is what we are solving for.
+  const naive = Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth(),
+    new Date().getUTCDate() + dayOffset,
+    hour,
+    minute,
+  );
+  const offsetAt = (instant: number): number => {
+    const parts: Record<string, string> = {};
+    for (const part of new Intl.DateTimeFormat('en-US', {
+      timeZone: MOCK_SHOP_TIME_ZONE,
+      hour12: false,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).formatToParts(new Date(instant))) {
+      parts[part.type] = part.value;
+    }
+    const asUtc = Date.UTC(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(parts.hour) % 24,
+      Number(parts.minute),
+    );
+    return asUtc - instant;
+  };
+  return new Date(naive - offsetAt(naive - offsetAt(naive)));
+};
+
+const booking = (
+  id: string,
+  resourceId: string,
+  start: Date,
+  status: ReservationStatus,
+  customerName?: string,
+): CFBooking => ({
+  id,
+  productId: MOCK_PRODUCT_HAIRCUT._id!,
+  resourceId,
+  startAt: start.toISOString(),
+  endAt: new Date(start.getTime() + SLOT_MINUTES * 60_000).toISOString(),
+  bufferEndAt: new Date(start.getTime() + (SLOT_MINUTES + BUFFER_MINUTES) * 60_000).toISOString(),
+  status,
+  productName: MOCK_PRODUCT_HAIRCUT.name,
+  resourceName: MOCK_BOOKING_RESOURCES.find((resource) => resource.id === resourceId)?.name,
+  customerName,
+});
+
+export const MOCK_BOOKINGS: CFBooking[] = [
+  booking('bk_1', 'res_room_1', at(0, 10), ReservationStatus.CONFIRMED, 'Alex Green'),
+  booking('bk_2', 'res_room_2', at(0, 11, 30), ReservationStatus.CONFIRMED, 'Dana White'),
+  booking('bk_3', 'res_room_1', at(1, 9, 30), ReservationStatus.CONFIRMED, 'Sam Blue'),
+];
+
+/** Live = confirmed, or held and not yet expired. An expired hold occupies nothing. */
+export const mockLiveBookings = (): CFBooking[] =>
+  MOCK_BOOKINGS.filter(
+    ({ status, expiresAt }) =>
+      status === ReservationStatus.CONFIRMED ||
+      (status === ReservationStatus.HELD && (!expiresAt || new Date(expiresAt) > new Date())),
+  );
+
+const takenBy = (resourceId: string, startAt: Date, bufferEndAt: Date): boolean =>
+  mockLiveBookings().some(
+    (entry) =>
+      entry.resourceId === resourceId && new Date(entry.startAt) < bufferEndAt && new Date(entry.bufferEndAt) > startAt,
+  );
+
+/** The mock's shop day for an instant, `YYYY-MM-DD`, built from parts so it never reads as D/M/Y. */
+const shopDayOf = (instant: Date): string => {
+  const parts: Record<string, string> = {};
+  for (const part of new Intl.DateTimeFormat('en-CA', {
+    timeZone: MOCK_SHOP_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(instant)) {
+    parts[part.type] = part.value;
+  }
+  return `${parts.year}-${parts.month}-${parts.day}`;
+};
+
+export const mockBookingAvailability = (
+  productId: string,
+  from: Date,
+  to: Date,
+  resourceId?: string,
+): CFBookingAvailability => {
+  const serving = resourceId
+    ? MOCK_BOOKING_RESOURCES.filter((resource) => resource.id === resourceId)
+    : MOCK_BOOKING_RESOURCES;
+  const slots: CFBookingSlot[] = [];
+  const step = (SLOT_MINUTES + BUFFER_MINUTES) * 60_000;
+
+  for (let day = 0; day < 14; day += 1) {
+    const open = at(day, OPEN_HOUR);
+    const close = at(day, CLOSE_HOUR);
+    // Overlap, not containment. Asking from noon used to return nothing for today, because the
+    // day's opening hour lay before the range start — so an afternoon question got an empty
+    // calendar and read as "fully booked".
+    if (close <= from || open >= to) continue;
+    for (let start = open.getTime(); start + SLOT_MINUTES * 60_000 <= close.getTime(); start += step) {
+      const startAt = new Date(start);
+      const endAt = new Date(start + SLOT_MINUTES * 60_000);
+      const bufferEndAt = new Date(start + (SLOT_MINUTES + BUFFER_MINUTES) * 60_000);
+      if (bufferEndAt < new Date()) continue;
+      const resources = serving.map((resource) => {
+        const free = takenBy(resource.id, startAt, bufferEndAt) ? 0 : 1;
+        return { resourceId: resource.id, name: resource.name, capacity: 1, booked: 1 - free, free };
+      });
+      slots.push({
+        startAt: startAt.toISOString(),
+        endAt: endAt.toISOString(),
+        bufferEndAt: bufferEndAt.toISOString(),
+        canStart: true,
+        capacity: resources.length,
+        booked: resources.reduce((sum, entry) => sum + entry.booked, 0),
+        free: resources.reduce((sum, entry) => sum + entry.free, 0),
+        resources,
+        // The shop day, as the real host stamps it. The mock keeps one shop on the machine's
+        // own clock, so here that is the machine's day — the point is that the FIELD is there,
+        // so a screen built against the mock never learns to work the day out for itself.
+        dayKey: shopDayOf(startAt),
+      });
+    }
+  }
+
+  return {
+    productId,
+    bookingRulesId: MOCK_BOOKING_RULES_ID,
+    bookingType: BookingType.APPOINTMENT,
+    ratePeriod: BookingRatePeriod.SLOT,
+    slots,
+    timeZone: MOCK_SHOP_TIME_ZONE,
+    days: [...new Set(slots.map((slot) => slot.dayKey!))],
+  };
 };
 
 /**

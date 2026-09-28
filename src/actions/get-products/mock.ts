@@ -9,6 +9,13 @@ export const mockGetProducts: GetProducts = async (params?: GetProductsParams): 
   let products = MOCK_PRODUCTS;
   const query = params?.query || {};
 
+  // Same rule as the real host: a bookable service is not catalogue stock and is left out unless
+  // the query names `productType`. Mirrored here on purpose — a mock that hands back services the
+  // device withholds is how a flow gets built around a grid that cannot exist.
+  if (!JSON.stringify(query).includes('productType')) {
+    products = products.filter((p) => (p as { productType?: string }).productType !== 'booking');
+  }
+
   if (query.searchValue) {
     const search = String(query.searchValue).toLowerCase();
     products = products.filter((p) => p.name.toLowerCase().includes(search) || p.sku?.toLowerCase().includes(search));
