@@ -20,6 +20,14 @@ export interface GetRemainingRefundableQuantitiesResponse {
    * 0/1 semantics: `1` = still refundable, `0` = already refunded.
    */
   tips: Record<string, number>;
+  /**
+   * Remaining refundable bookings, keyed by `order.reservations[].internalId` —
+   * the same key `processPartialRefund` takes for `type: 'reservation'` items.
+   * A service is sold as a reservation rather than a line item, so without this
+   * map a refund screen can show everything on the order EXCEPT the appointment.
+   * 0/1 semantics: `1` = still refundable, `0` = already refunded.
+   */
+  reservations: Record<string, number>;
   timestamp: string;
 }
 
