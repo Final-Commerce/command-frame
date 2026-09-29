@@ -85,6 +85,17 @@ import { type CFProduct, type CFProductVariant } from '@final-commerce/command-f
 
 See the [Real Data Examples](#real-data-examples) section below for actual product and variant object structures.
 
+**Composite products** (`productType: 'composite'`) carry `composite: CFComposite` — `null` on every other product.
+It is the whole picker, decided by the host: `parts[]` (`name`, `required`, `min`, `max`) → `items[]` (`name`, `cost` =
+what one pick adds, `unavailable` = null or `'deleted' | 'inactive' | 'hidden' | 'empty'`, `choices[]` = the variants a
+pick may name), plus `available` (false = show the composite Unavailable — also while it has no parts on this till, e.g. mid-sync; then `fromPrice` is null), `basePrice` (the line before any pick) and
+`fromPrice` (the "from" price for the card). Each part's `defaultPick` (`{ itemId, variantId }`) is the pick to show
+preselected (B29 = D36): only on a required "pick 1" part (`required`, `min = max = 1`) — its cheapest available item
+(lowest `cost`, ties to the first listed); `null` on every other part, and when the cheapest is a category item. Parts
+without a default show how many picks they still need (`getCompositePrice().missing`). A part with `max = 1` is a
+radio: picking another item replaces the pick. Show these; do not recompute prices, availability or defaults. Send the picks with
+`addProductToCart({ variantId, composite: [{ itemId, variantId, quantity? }] })`.
+
 #### `total` (number, optional)
 
 Total number of products matching the query, ignoring `offset`/`limit`. Optional — hosts that cannot cheaply compute the total may omit it (the kaching host currently does not return it).
@@ -379,3 +390,10 @@ The handler does not catch or swallow errors. If the underlying query fails (e.g
 - Only products with `status: 'active'` are returned — draft and inactive products are excluded, even if requested via `query.status`
 - Results are scoped to the currently active outlet: products not assigned to that outlet, or explicitly hidden there via catalog visibility, are excluded
 - Variants are included in the response; soft-deleted variants (sync tombstones) are stripped out before the response is returned
+
+### Composite choices carry their modifiers
+
+`composite.parts[].items[].choices[].modifiers` is the picked product's own modifier menu (same shape as
+`product.modifiers`, resolved by the host). Offer it inside the picker and send the answers as
+`composite[].modifiers`. A choice whose required modifier has nothing sold at this outlet is left out; an item with no
+choice left is `unavailable: 'empty'`.

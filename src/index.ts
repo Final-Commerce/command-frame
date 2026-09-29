@@ -28,6 +28,7 @@ import { updateCartItemQuantity } from './actions/update-cart-item-quantity/acti
 import { addProductNote } from './actions/add-product-note/action';
 import { addProductFee } from './actions/add-product-fee/action';
 import { getProductModifierSelections } from './actions/get-product-modifier-selections/action';
+import { getCompositePrice } from './actions/get-composite-price/action';
 import { setProductModifierSelections } from './actions/set-product-modifier-selections/action';
 import { setActiveProductFee } from './actions/set-active-product-fee/action';
 import { setActiveProductDiscount } from './actions/set-active-product-discount/action';
@@ -179,6 +180,7 @@ export const command = {
   addProductNote,
   addProductFee,
   getProductModifierSelections,
+  getCompositePrice,
   setProductModifierSelections,
   setActiveProductFee,
   setActiveProductDiscount,
@@ -469,6 +471,11 @@ export type {
   ModifierSelection,
   ModifierChoiceSelection,
 } from './actions/get-product-modifier-selections/types';
+export type {
+  GetCompositePrice,
+  GetCompositePriceParams,
+  GetCompositePriceResponse,
+} from './actions/get-composite-price/types';
 export type {
   SetProductModifierSelections,
   SetProductModifierSelectionsParams,

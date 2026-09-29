@@ -116,3 +116,7 @@ The active product's resolved modifiers (what the till should ask) come from
 the catalog product (`FullProduct.modifiers`, direct + category-inherited).
 Once the line is in the cart, its answers live on the cart line as
 `modifierSelections` — see `getCurrentCart` and `getProductModifierSelections`.
+
+## Composite lines (FT-83)
+
+The same `components[]` and `modifiers[].componentIndex` as on the cart line (see `getCurrentCart`).

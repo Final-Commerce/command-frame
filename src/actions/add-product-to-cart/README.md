@@ -13,6 +13,7 @@ interface AddProductToCartParams {
   discounts?: AddProductDiscountParams[]; // Optional array of discounts to apply immediately
   fees?: AddProductFeeParams[]; // Optional array of fees to apply immediately
   modifiers?: ModifierSelection[]; // Optional modifier selections, validated by the host before the line is added
+  composite?: CFCompositePick[]; // Optional picks for a composite product, validated by the host
   notes?: string | string[]; // Optional note or array of notes to add immediately
 }
 ```
@@ -29,6 +30,14 @@ through refunds. Money-wise a modifier sits at the product-fee level: never part
 grossSales, never reduced by a product discount — it joins the line after the discount,
 alongside `fees`, and inherits the product's tax table by default. Selections apply to
 every unit of the line — ring differing configurations as separate lines.
+
+#### `composite` (optional)
+
+Picks for a composite product, one `CFCompositePick` (`{ itemId, variantId, quantity?, modifiers? }`) per pick: `itemId` from
+`product.composite.parts[].items[]`, `variantId` one of that item's `choices`. The host checks availability and each
+part's `required` / `min` / `max` before the line exists and answers `success: false` with a `reason` otherwise. Picks
+sent for a product that is not a composite are refused. `modifiers` are the picked item's own (`choices[].modifiers`),
+checked by that item's rules.
 
 #### `variantId` (required)
 
@@ -181,3 +190,14 @@ try {
 ## Events
 
 Always publishes a `product-added` event on the `cart` topic with the newly added product. If the cart was empty before this call, also publishes a `cart-created` event on the `cart` topic with the updated cart.
+
+## Composite products (FT-83)
+
+- `composite: [{ itemId, variantId, quantity?, modifiers? }]` — `itemId` from `product.composite.parts[].items[]`,
+  `variantId` one of that item's `choices`, `modifiers` the choice's own `choices[].modifiers` answered per ONE pick.
+- The host validates, prices (each item's own tax: Σ picks' `cost`; tax group: the composite's price + Σ `extraCharge`)
+  and taxes the line; the cart line carries `components[]` (each one's share of ONE composite, Σ = line price) and
+  the items' modifier rows flat in `modifiers[]` with `componentIndex`, their quantity already × the component's units.
+- Refused with a `reason`: invalid picks; `composite` on a product that is not a composite; the composite's own
+  `modifiers` or a taxable fee when it is taxed by its items (nothing to inherit); a tax-group price that cannot be
+  split over the picked items. Never a guessed price or a tax of 0.

@@ -2,7 +2,7 @@
 import type { AddProductDiscountParams } from '../add-product-discount/types';
 import type { AddProductFeeParams } from '../add-product-fee/types';
 import type { ModifierSelection } from '../get-product-modifier-selections/types';
-import type { CFProdModifierBreakdown } from '../../CommonTypes';
+import type { CFCompositePick, CFProdModifierBreakdown } from '../../CommonTypes';
 
 export interface AddProductToCartParams {
   /** ID of the variant to add. */
@@ -27,6 +27,19 @@ export interface AddProductToCartParams {
   fees?: AddProductFeeParams[];
   /** Modifier selections to apply immediately. */
   modifiers?: ModifierSelection[];
+  /**
+   * Picks for a composite product (`CFProduct.composite`), validated by the host against each part's
+   * required / min / max, availability and each picked item's own modifier rules before the line exists; a
+   * rejected add returns `success: false` with a `reason`. Refused for a product that is not a composite.
+   *
+   * `composite[].modifiers` are the PICKED ITEM's modifiers (`choices[].modifiers`), taxed at that item's table
+   * (B28); send their quantity per one pick — the host multiplies it by the pick's units. The line comes back with
+   * `components[]` and those rows in its flat `modifiers[]` with `componentIndex`.
+   *
+   * The composite's own `modifiers` / taxable `fees` are refused when it is taxed by its items (no tax group):
+   * there is no table for them to inherit.
+   */
+  composite?: CFCompositePick[];
   /** Note or array of notes to add immediately. */
   notes?: string | string[];
 }

@@ -1,12 +1,21 @@
 import { AddProductToCart, AddProductToCartParams, AddProductToCartResponse } from './types';
 import {
   MOCK_CART,
+  MOCK_OUTLET,
   MOCK_PRODUCTS,
   buildCartLineModifiers,
   buildModifierRows,
   mockPublishEvent,
 } from '../../demo/database';
-import { CFActiveProduct } from '../../CommonTypes';
+import {
+  CFActiveProduct,
+  CFCartLineComponent,
+  CFCartLineModifier,
+  CFComposite,
+  CFCompositePick,
+  CFResolvedModifier,
+} from '../../CommonTypes';
+import type { ModifierSelection } from '../get-product-modifier-selections/types';
 import { extendPrice, isValidQuantity, resolveUnit } from '@final-commerce/common';
 
 export const mockAddProductToCart: AddProductToCart = async (
@@ -34,6 +43,36 @@ export const mockAddProductToCart: AddProductToCart = async (
         break;
       }
     }
+  }
+
+  // Composites: the host's refusals with its texts, then the same line it builds (kaching `buildCompositeLine`).
+  let compositeLine: MockCompositeLine | undefined;
+  if (product.composite || params?.composite?.length) {
+    const ownTax = !product.taxTable;
+    const picks = params?.composite ?? [];
+    const reason = !product.composite
+      ? `${product.name} is not a composite: it takes no composite picks`
+      : ownTax && params?.modifiers?.length
+        ? `${product.name} is taxed by its items: put modifiers on the picked items, not on the composite`
+        : ownTax && params?.fees?.some((fee) => fee.applyTaxes)
+          ? `${product.name} is taxed by its items: a taxable fee on it has no table to inherit`
+          : (compositePicksRefusal(product.composite, picks) ?? undefined);
+    const line = reason ?? mockCompositeLine(product.composite!, picks, ownTax);
+    if (typeof line === 'string') {
+      return {
+        success: false,
+        reason: line,
+        productId: product._id,
+        variantId: variant._id,
+        internalId: '',
+        name: product.name,
+        quantity: 0,
+        rows: [],
+        modifiersTotal: 0,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    compositeLine = line;
   }
 
   // A measured variant carries a resolved unit; the host does the same. What the unit can
@@ -79,6 +118,8 @@ export const mockAddProductToCart: AddProductToCart = async (
   // shapes, one name. Drop it before anything reads the line, or every surface renders the
   // whole catalogue as if the cashier had picked all of it.
   delete (activeProduct as { modifiers?: unknown }).modifiers;
+  // Same for the catalogue's `composite` picker: a cart line carries `components`, never the menu.
+  delete (activeProduct as { composite?: unknown }).composite;
 
   // Keep the raw answers AND the priced rows, the same pair the real host writes. The cart
   // TOTAL is deliberately left alone: like a product fee (see add-product-fee), per-line
@@ -86,6 +127,13 @@ export const mockAddProductToCart: AddProductToCart = async (
   if (params?.modifiers?.length) {
     activeProduct.modifierSelections = params.modifiers;
     activeProduct.modifiers = buildCartLineModifiers(product.modifiers, params.modifiers, product.taxTable);
+  }
+  if (compositeLine) {
+    activeProduct.price = compositeLine.price;
+    activeProduct.components = compositeLine.components;
+    if (compositeLine.modifiers.length) {
+      activeProduct.modifiers = [...(activeProduct.modifiers ?? []), ...compositeLine.modifiers];
+    }
   }
 
   MOCK_CART.products.push(activeProduct);
@@ -118,3 +166,140 @@ export const mockAddProductToCart: AddProductToCart = async (
     timestamp: new Date().toISOString(),
   };
 };
+
+/** The host's pick checks (kaching `validateCompositePicks`), same order and texts; null = valid. */
+export function compositePicksRefusal(composite: CFComposite, picks: CFCompositePick[]): string | null {
+  if (!composite.parts.length) return 'This composite has no parts on this till yet';
+  if (!composite.available) return 'This composite is unavailable: a part it needs has nothing to pick';
+  const counts = new Map<string, number>();
+  for (const pick of picks) {
+    const quantity = pick.quantity ?? 1;
+    const part = composite.parts.find((candidate) => candidate.items.some((item) => item._id === pick.itemId));
+    const item = part?.items.find((candidate) => candidate._id === pick.itemId);
+    if (!part || !item) return `Unknown composite item ${pick.itemId}`;
+    if (!Number.isInteger(quantity) || quantity <= 0) return `${item.name}: quantity must be a positive whole number`;
+    if (item.unavailable) return `${item.name} is not available`;
+    const choice = item.choices.find((candidate) => candidate.variantId === pick.variantId);
+    if (!choice) return `${item.name}: that variant is not one of its choices`;
+    // The picked product's own modifiers, by its own rules (B28).
+    const modifiers = mockSelectionsRefusal(choice.modifiers ?? [], pick.modifiers ?? []);
+    if (modifiers) return `${choice.name}: ${modifiers}`;
+    counts.set(part._id, (counts.get(part._id) ?? 0) + quantity);
+  }
+  for (const part of composite.parts) {
+    const count = counts.get(part._id) ?? 0;
+    if (count < part.min) return `${part.name ?? 'Choose'}: pick at least ${part.min}`;
+    if (count > part.max) return `${part.name ?? 'Choose'}: pick at most ${part.max}`;
+  }
+  return null;
+}
+
+/** The host's modifier rules (kaching `validateModifiers.ts` `validateSelections`), same order and texts, at the demo
+ *  outlet; null = valid. A copy — change both in one step. */
+function mockSelectionsRefusal(modifiers: CFResolvedModifier[], selections: ModifierSelection[]): string | null {
+  const outletId = MOCK_OUTLET.id;
+  const sellable = (choice: CFResolvedModifier['choices'][number]) =>
+    !(choice.unavailableOutletIds ?? []).includes(outletId);
+  if (new Set(selections.map((selection) => selection.modifierId)).size !== selections.length) {
+    return 'Duplicate selection for the same modifier';
+  }
+  if (selections.some((selection) => !modifiers.some((modifier) => modifier._id === selection.modifierId))) {
+    return 'A selected modifier does not apply to this product';
+  }
+  for (const modifier of modifiers) {
+    if (modifier.required && !modifier.choices.some(sellable)) {
+      return `${modifier.name} is required, but nothing is sold at this outlet`;
+    }
+    const picked = selections.find((selection) => selection.modifierId === modifier._id)?.choices ?? [];
+    for (const { choiceId, quantity } of picked) {
+      const choice = modifier.choices.find((candidate) => candidate._id === choiceId);
+      if (!choice) return `Unknown choice for ${modifier.name}`;
+      if (!sellable(choice)) return `${choice.name} is not sold at this outlet`;
+      if (!Number.isInteger(quantity) || quantity < 1)
+        return `${choice.name}: quantity must be a positive whole number`;
+      const takesQuantity =
+        modifier.selectionType === 'quantity' || (modifier.selectionType === 'multiple' && modifier.allowQuantity);
+      if (!takesQuantity && quantity !== 1) return `${modifier.name} does not take quantities`;
+    }
+    if (new Set(picked.map((choice) => choice.choiceId)).size !== picked.length)
+      return `${modifier.name}: duplicate choice`;
+    const units = picked.reduce((sum, choice) => sum + choice.quantity, 0);
+    if (modifier.selectionType === 'single') {
+      if (units > 1) return `${modifier.name}: pick one`;
+      if (modifier.required && units < 1) return `${modifier.name} is required`;
+      continue;
+    }
+    const min = modifier.required ? Math.max(1, modifier.min ?? 1) : 0;
+    if (units < min) return `${modifier.name}: pick at least ${min}`;
+    if (modifier.max != null && units > modifier.max) return `${modifier.name}: at most ${modifier.max}`;
+  }
+  return null;
+}
+
+/** The host's `picksStillNeeded` (kaching `resolveComposite.ts`): per part, what is left of its min; an Optional part
+ *  left empty is not listed. A copy — change both in one step. */
+export function mockPicksStillNeeded(composite: CFComposite, picks: CFCompositePick[]) {
+  return composite.parts.flatMap((part) => {
+    const count = picks
+      .filter((pick) => part.items.some((item) => item._id === pick.itemId))
+      .reduce((sum, pick) => sum + (pick.quantity ?? 1), 0);
+    const needed = Math.max(0, part.min - count);
+    return needed > 0 ? [{ partId: part._id, needed }] : [];
+  });
+}
+
+type MockCompositeLine = { price: number; components: CFCartLineComponent[]; modifiers: CFCartLineModifier[] };
+
+/** kaching `buildCompositeLine`: a component's share of ONE composite (Σ = price), item modifiers flat with
+ *  `componentIndex` and quantity × the component's units. Tax group: the base split by `item.price × units`. */
+export function mockCompositeLine(
+  composite: CFComposite,
+  picks: CFCompositePick[],
+  ownTax: boolean,
+): MockCompositeLine | string {
+  const rows = picks.map((pick) => {
+    const part = composite.parts.find((candidate) => candidate.items.some((item) => item._id === pick.itemId))!;
+    const item = part.items.find((candidate) => candidate._id === pick.itemId)!;
+    const choice = item.choices.find((candidate) => candidate.variantId === pick.variantId)!;
+    const taxTable = MOCK_PRODUCTS.find((candidate) => candidate._id === choice.productId)?.taxTable || undefined;
+    return {
+      part,
+      item,
+      choice,
+      taxTable,
+      pickQuantity: pick.quantity ?? 1,
+      units: (pick.quantity ?? 1) * item.quantity,
+    };
+  });
+  const base = composite.basePrice ?? 0;
+  const weights = rows.map((row) => (ownTax ? 0 : row.item.price * row.units));
+  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+  if (rows.length > 0 && base > 0 && totalWeight === 0) {
+    return 'This composite cannot be priced: none of its picked items has a price to share it by';
+  }
+  // Largest remainder, ties to the first — the host's allocateRateAcrossLines.
+  const floors = weights.map((weight) => (totalWeight ? Math.floor((base * weight) / totalWeight) : 0));
+  const ranked = weights
+    .map((weight, index) => ({ index, remainder: totalWeight ? (base * weight) % totalWeight : 0 }))
+    .sort((a, b) => b.remainder - a.remainder || a.index - b.index);
+  for (let k = 0; k < (totalWeight ? base - floors.reduce((a, b) => a + b, 0) : 0); k++) floors[ranked[k].index] += 1;
+
+  const components = rows.map((row, index) => ({
+    ...(row.part.name ? { partName: row.part.name } : {}),
+    productId: row.choice.productId,
+    variantId: row.choice.variantId,
+    name: row.choice.name,
+    ...(row.choice.attributes.length ? { attributes: row.choice.attributes } : {}),
+    quantity: row.units,
+    unitPrice: row.item.cost * row.pickQuantity + floors[index],
+    ...(ownTax && row.taxTable ? { taxTableId: row.taxTable } : {}),
+  }));
+  const modifiers = rows.flatMap((row, index) =>
+    buildCartLineModifiers(row.choice.modifiers, picks[index].modifiers, row.taxTable).map((modifier) => ({
+      ...modifier,
+      quantity: modifier.quantity * row.units,
+      componentIndex: index,
+    })),
+  );
+  return { price: rows.reduce((sum, row) => sum + row.item.cost * row.pickQuantity, base), components, modifiers };
+}

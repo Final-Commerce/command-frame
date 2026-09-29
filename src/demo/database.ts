@@ -303,6 +303,7 @@ const createSimpleProduct = (
     maxPrice: price,
     status: 'active',
     productType: CFProductType.SIMPLE,
+    composite: null,
     taxTable: 'tax_standard',
     description,
     images: [image],
@@ -347,6 +348,7 @@ const createVariableProduct = (
     maxPrice: largePrice,
     status: 'active',
     productType: CFProductType.VARIABLE,
+    composite: null,
     taxTable: 'tax_standard',
     description,
     images: [image],
@@ -867,7 +869,115 @@ export const MOCK_PRODUCT_HAIRCUT: CFProduct = {
   bookingRulesId: 'rule_salon_30',
 };
 
+// A composite (FT-83) as the host serves it: each item keeps its own tax (`taxTable` empty), so the line is the picks
+// alone. One item points at a deleted variant (unavailable), one is a whole category (its products are the choices).
+export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
+  ...createSimpleProduct(
+    'prod_paste_trio',
+    'Paste Trio',
+    2700,
+    basilAlmondImg,
+    [MOCK_CATEGORY_PASTES],
+    'Pick a paste and a spicy one.',
+  ),
+  productType: CFProductType.COMPOSITE,
+  taxTable: '',
+  composite: {
+    available: true,
+    basePrice: 0,
+    fromPrice: 2700,
+    parts: [
+      {
+        _id: 'part_paste',
+        name: 'Paste',
+        required: true,
+        min: 1,
+        max: 1,
+        defaultPick: { itemId: 'item_basil', variantId: 'prod_basil_almond_var_main' },
+        items: [
+          {
+            _id: 'item_basil',
+            variantId: 'prod_basil_almond_var_main',
+            categoryId: null,
+            name: 'Basil Almond Paste',
+            price: 1200,
+            extraCharge: 0,
+            quantity: 1,
+            cost: 1200,
+            unavailable: null,
+            choices: [
+              {
+                productId: 'prod_basil_almond',
+                variantId: 'prod_basil_almond_var_main',
+                name: 'Basil Almond Paste',
+                attributes: [],
+                // The picked product's own modifiers (B28): taxed at its table, sent in the pick.
+                modifiers: [
+                  {
+                    _id: 'mod_texture',
+                    name: 'Texture',
+                    selectionType: 'single',
+                    required: false,
+                    sortOrder: 0,
+                    choices: [
+                      { _id: 'choice_smooth', name: 'Smooth', price: 0, sortOrder: 0 },
+                      { _id: 'choice_chunky', name: 'Chunky', price: 50, sortOrder: 1 },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            _id: 'item_gone',
+            variantId: 'prod_gone_var_main',
+            categoryId: null,
+            name: '',
+            price: 900,
+            extraCharge: 0,
+            quantity: 1,
+            cost: 900,
+            unavailable: 'deleted',
+            choices: [],
+          },
+        ],
+      },
+      {
+        _id: 'part_spicy',
+        name: null,
+        required: true,
+        min: 1,
+        max: 2,
+        // "Pick up to 2": no preselected pick (B29 = D36) — the till shows how many are still needed.
+        defaultPick: null,
+        items: [
+          {
+            _id: 'item_spicy',
+            variantId: null,
+            categoryId: MOCK_CATEGORY_SPICY.id,
+            name: 'Spicy',
+            price: 1400,
+            extraCharge: 100,
+            quantity: 1,
+            cost: 1500,
+            unavailable: null,
+            choices: [
+              {
+                productId: 'prod_habanero',
+                variantId: 'prod_habanero_var_main',
+                name: 'Habanero Paste',
+                attributes: [],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+};
+
 export const MOCK_PRODUCTS = [
+  MOCK_PRODUCT_PASTE_TRIO,
   MOCK_PRODUCT_BASIL_ALMOND,
   MOCK_PRODUCT_BEER,
   MOCK_PRODUCT_BEET,
@@ -1418,6 +1528,7 @@ export const buildModifierRows = (
     amount: extendPrice(modifier.unitPrice * modifier.quantity, quantity),
     tax: 0,
     ...(modifier.taxTableId ? { taxTableId: modifier.taxTableId } : {}),
+    ...(modifier.componentIndex !== undefined ? { componentIndex: modifier.componentIndex } : {}),
   }));
   return { rows, modifiersTotal: rows.reduce((sum, row) => sum + row.amount, 0) };
 };

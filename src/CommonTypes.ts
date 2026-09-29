@@ -68,6 +68,14 @@ import type {
   Booking,
   CartReservation,
   OrderReservation,
+  Composite,
+  CompositePart,
+  CompositeItem,
+  CompositeChoice,
+  CompositeItemUnavailable,
+  CompositePick,
+  CartLineComponent,
+  OrderLineItemComponent,
 } from '@final-commerce/common/pos-types';
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
@@ -98,6 +106,16 @@ export type CFTransaction = Transaction;
 export type CFCategory = Category;
 export type CFProductVariant = ProductVariant;
 export type CFProduct = FullProduct;
+/** Composite products (FT-83): `CFProduct.composite`, the picks `addProductToCart` takes, the cart/order line's
+ *  components. The host decides availability, prices and tax; a flow renders them and sends picks. */
+export type CFComposite = Composite;
+export type CFCompositePart = CompositePart;
+export type CFCompositeItem = CompositeItem;
+export type CFCompositeChoice = CompositeChoice;
+export type CFCompositeItemUnavailable = CompositeItemUnavailable;
+export type CFCompositePick = CompositePick;
+export type CFCartLineComponent = CartLineComponent;
+export type CFOrderLineItemComponent = OrderLineItemComponent;
 export type CFBookingAvailability = BookingAvailability;
 export type CFBookingSlot = BookingSlot;
 export type CFBookingSlotResource = BookingSlotResource;

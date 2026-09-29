@@ -4,28 +4,31 @@
  */
 
 // Re-export all event types
-export * from "./product-created/types";
-export * from "./product-updated/types";
-export * from "./product-set-active/types";
-export * from "./product-get-active/types";
+export * from './product-created/types';
+export * from './product-updated/types';
+export * from './composite-changed/types';
+export * from './product-set-active/types';
+export * from './product-get-active/types';
 
 // Import payload types for union type
-import type { ProductCreatedPayload } from "./product-created/types";
-import type { ProductUpdatedPayload } from "./product-updated/types";
-import type { ProductSetActivePayload } from "./product-set-active/types";
-import type { ProductGetActivePayload } from "./product-get-active/types";
+import type { ProductCreatedPayload } from './product-created/types';
+import type { ProductUpdatedPayload } from './product-updated/types';
+import type { CompositeChangedPayload } from './composite-changed/types';
+import type { ProductSetActivePayload } from './product-set-active/types';
+import type { ProductGetActivePayload } from './product-get-active/types';
 
 // Union type for all product event payloads
 export type ProductsEventPayload =
-    | ProductCreatedPayload
-    | ProductUpdatedPayload
-    | ProductSetActivePayload
-    | ProductGetActivePayload;
+  | ProductCreatedPayload
+  | ProductUpdatedPayload
+  | CompositeChangedPayload
+  | ProductSetActivePayload
+  | ProductGetActivePayload;
 
 // Literal types for event IDs
 export type ProductsEventType =
-    | "product-created"
-    | "product-updated"
-    | "set-active-product"
-    | "get-active-product";
-
+  | 'product-created'
+  | 'product-updated'
+  | 'composite-changed'
+  | 'set-active-product'
+  | 'get-active-product';
