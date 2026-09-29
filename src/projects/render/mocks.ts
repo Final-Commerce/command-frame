@@ -68,6 +68,7 @@ import { mockRemoveCustomerFromCart } from '../../actions/remove-customer-from-c
 import { mockResetRefundDetails } from '../../actions/reset-refund-details/mock';
 import { mockResumeParkedOrder } from '../../actions/resume-parked-order/mock';
 import { mockResumeOrder } from '../../actions/resume-order/mock';
+import { mockSetOrderMetadata } from '../../actions/set-order-metadata/mock';
 import { mockSelectAllRefundItems } from '../../actions/select-all-refund-items/mock';
 import { mockSetRefundStockAction } from '../../actions/set-refund-stock-action/mock';
 import { mockShowConfirmation } from '../../actions/show-confirmation/mock';
@@ -178,6 +179,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   resetRefundDetails: mockResetRefundDetails,
   resumeParkedOrder: mockResumeParkedOrder,
   resumeOrder: mockResumeOrder,
+  setOrderMetadata: mockSetOrderMetadata,
   selectAllRefundItems: mockSelectAllRefundItems,
   setRefundStockAction: mockSetRefundStockAction,
   showConfirmation: mockShowConfirmation,

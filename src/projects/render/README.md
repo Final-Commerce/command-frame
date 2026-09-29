@@ -69,6 +69,7 @@ The library provides a `command` namespace object containing all available comma
 - **[parkOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/park-order/README.md)** - Park (save) the current order for later retrieval
 - **[resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)** - Resume a previously parked order
 - **[resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)** - Resume any open order (parked or not) into the cart; in-cart, completed, refunded and cancelled orders are rejected
+- **[setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)** - Set or remove key/value metadata on an order or the live cart (e.g. order type); syncs with the order
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
 - **[voidOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/void-order/README.md)** - Cancel an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of captured split legs when a deposit was taken; completed orders are rejected (`ORDER_NOT_VOIDABLE`) and go through the refund flow
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
@@ -386,6 +387,10 @@ Resumes a previously parked order by loading it back into the cart.
 ### [resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)
 
 Resumes any open order into the cart — the general form of `resumeParkedOrder`. Eligibility comes from the state pair: open payment (`unpaid` / `partially_paid` / `paid`) and open fulfillment (`pending` / `on_hold` / `in_progress` / `partially_fulfilled`). Unpaid orders land in `draft`; orders with captured money never return to `draft`.
+
+### [setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)
+
+Sets (string) or removes (`null`) metadata keys on an order by id, or on the live cart — carried onto the order when it's created. Stored on `order.metadata`, so it syncs with the order to other stations.
 
 ### [deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)
 
@@ -768,6 +773,9 @@ import type {
   ResumeOrderParams,
   ResumeOrderResponse,
   ResumeOrder,
+  SetOrderMetadataParams,
+  SetOrderMetadataResponse,
+  SetOrderMetadata,
   DeleteParkedOrderParams,
   DeleteParkedOrderResponse,
   DeleteParkedOrder,

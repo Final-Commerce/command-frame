@@ -34,6 +34,7 @@ import type {
   ParkOrder,
   ResumeParkedOrder,
   ResumeOrder,
+  SetOrderMetadata,
   DeleteParkedOrder,
   VoidOrder,
   InitiateRefund,
@@ -163,6 +164,7 @@ export interface RenderProviderActions {
   parkOrder: ParkOrder;
   resumeParkedOrder: ResumeParkedOrder;
   resumeOrder: ResumeOrder;
+  setOrderMetadata: SetOrderMetadata;
   deleteParkedOrder: DeleteParkedOrder;
   voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;
