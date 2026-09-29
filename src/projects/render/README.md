@@ -68,6 +68,7 @@ The library provides a `command` namespace object containing all available comma
 - **[clearCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/clear-cart/README.md)** - Clear all items from the current cart
 - **[parkOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/park-order/README.md)** - Park (save) the current order for later retrieval
 - **[resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)** - Resume a previously parked order
+- **[resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)** - Resume any open order (parked or not) into the cart; in-cart, completed, refunded and cancelled orders are rejected
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
 - **[voidOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/void-order/README.md)** - Cancel an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of captured split legs when a deposit was taken; completed orders are rejected (`ORDER_NOT_VOIDABLE`) and go through the refund flow
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
@@ -381,6 +382,10 @@ Parks (saves) the current order for later retrieval. The cart is cleared after p
 ### [resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)
 
 Resumes a previously parked order by loading it back into the cart.
+
+### [resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)
+
+Resumes any open order into the cart — the general form of `resumeParkedOrder`. Eligibility comes from the state pair: open payment (`unpaid` / `partially_paid` / `paid`) and open fulfillment (`pending` / `on_hold` / `in_progress` / `partially_fulfilled`). Unpaid orders land in `draft`; orders with captured money never return to `draft`.
 
 ### [deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)
 
@@ -760,6 +765,9 @@ import type {
   ResumeParkedOrderParams,
   ResumeParkedOrderResponse,
   ResumeParkedOrder,
+  ResumeOrderParams,
+  ResumeOrderResponse,
+  ResumeOrder,
   DeleteParkedOrderParams,
   DeleteParkedOrderResponse,
   DeleteParkedOrder,

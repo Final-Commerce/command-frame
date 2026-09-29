@@ -33,6 +33,7 @@ import type {
   ClearCart,
   ParkOrder,
   ResumeParkedOrder,
+  ResumeOrder,
   DeleteParkedOrder,
   VoidOrder,
   InitiateRefund,
@@ -161,6 +162,7 @@ export interface RenderProviderActions {
   clearCart: ClearCart;
   parkOrder: ParkOrder;
   resumeParkedOrder: ResumeParkedOrder;
+  resumeOrder: ResumeOrder;
   deleteParkedOrder: DeleteParkedOrder;
   voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;
