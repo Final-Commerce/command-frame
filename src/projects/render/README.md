@@ -70,6 +70,7 @@ The library provides a `command` namespace object containing all available comma
 - **[resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)** - Resume a previously parked order
 - **[resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)** - Resume any open order (parked or not) into the cart; in-cart, completed, refunded and cancelled orders are rejected
 - **[setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)** - Set or remove key/value metadata on an order or the live cart (e.g. order type); syncs with the order
+- **[assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)** - Assign a user (e.g. the driver) to an order, or unassign; one assignee at a time, synced with the order
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
 - **[voidOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/void-order/README.md)** - Cancel an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of captured split legs when a deposit was taken; completed orders are rejected (`ORDER_NOT_VOIDABLE`) and go through the refund flow
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
@@ -391,6 +392,10 @@ Resumes any open order into the cart — the general form of `resumeParkedOrder`
 ### [setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)
 
 Sets (string) or removes (`null`) metadata keys on an order by id, or on the live cart — carried onto the order when it's created. Stored on `order.metadata`, so it syncs with the order to other stations.
+
+### [assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)
+
+Sets `order.assignedUser` to `{ userId, assignedAt }` (or `null` to unassign) on an order by id or the live cart's existing order. Separate from `posData.employee`. Filter with `getOrders({ assignedUserId })`.
 
 ### [deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)
 
@@ -776,6 +781,9 @@ import type {
   SetOrderMetadataParams,
   SetOrderMetadataResponse,
   SetOrderMetadata,
+  AssignOrderUserParams,
+  AssignOrderUserResponse,
+  AssignOrderUser,
   DeleteParkedOrderParams,
   DeleteParkedOrderResponse,
   DeleteParkedOrder,

@@ -12,6 +12,8 @@ export interface GetOrdersParams {
   fulfillmentState?: string | string[];
   /** Only orders placed at this outlet (`posData.outlet`). Without it, orders from every outlet in the company are returned. */
   outletId?: string;
+  /** Only orders assigned to this user (`assignedUser.userId`), e.g. a driver's deliveries. */
+  assignedUserId?: string;
   /** Default: 50. */
   limit?: number;
   /** Default: 0. */

@@ -23,6 +23,7 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       paymentState,
       fulfillmentState,
       outletId,
+      assignedUserId,
       searchValue,
       limit,
       offset,
@@ -57,6 +58,10 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
 
     if (outletId) {
       orders = orders.filter((o) => o.posData?.outlet === outletId);
+    }
+
+    if (assignedUserId) {
+      orders = orders.filter((o) => o.assignedUser?.userId === assignedUserId);
     }
 
     if (searchValue) {

@@ -11,6 +11,7 @@ import type {
   Tip,
   Address,
   MetadataItem,
+  OrderAssignedUser,
   PosDataItem,
   CartFeeTaxEntry,
   CartFeeItem,
@@ -87,6 +88,7 @@ export type CFDiscount = Discount;
 export type CFCustomFee = CustomFee;
 export type CFAddress = Address;
 export type CFMetadataItem = MetadataItem;
+export type CFOrderAssignedUser = OrderAssignedUser;
 export type CFTax = Tax;
 export type CFCartFeeTaxEntry = CartFeeTaxEntry;
 export type CFInventory = Inventory;
