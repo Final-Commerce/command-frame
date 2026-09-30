@@ -45,6 +45,7 @@ import { resumeParkedOrder } from './actions/resume-parked-order/action';
 import { resumeOrder } from './actions/resume-order/action';
 import { setOrderMetadata } from './actions/set-order-metadata/action';
 import { assignOrderUser } from './actions/assign-order-user/action';
+import { releaseFromCart } from './actions/release-from-cart/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
 import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
@@ -200,6 +201,7 @@ export const command = {
   resumeOrder,
   setOrderMetadata,
   assignOrderUser,
+  releaseFromCart,
   deleteParkedOrder,
   voidOrder,
   cashPayment,
@@ -537,6 +539,7 @@ export type {
   AssignOrderUserParams,
   AssignOrderUserResponse,
 } from './actions/assign-order-user/types';
+export type { ReleaseFromCart, ReleaseFromCartResponse } from './actions/release-from-cart/types';
 export type {
   DeleteParkedOrder,
   DeleteParkedOrderParams,

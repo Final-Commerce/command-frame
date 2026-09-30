@@ -49,6 +49,15 @@ describe('getOrders mock', () => {
     expect(mismatch.orders).toEqual([]);
   });
 
+  it('filters by inCart with the legacy fallback', async () => {
+    const released = await mockGetOrders({ inCart: false });
+    const inCart = await mockGetOrders({ inCart: true });
+
+    // No demo order is a draft or carries an active flag.
+    expect(inCart.orders).toEqual([]);
+    expect(released.orders.length).toBeGreaterThan(0);
+  });
+
   it('filters by outlet', async () => {
     const main = await mockGetOrders({ outletId: 'outlet_main', fulfillmentState: 'fulfilled' });
     const none = await mockGetOrders({ outletId: 'no-such-outlet' });

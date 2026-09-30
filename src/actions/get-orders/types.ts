@@ -14,6 +14,11 @@ export interface GetOrdersParams {
   outletId?: string;
   /** Only orders assigned to this user (`assignedUser.userId`), e.g. a driver's deliveries. */
   assignedUserId?: string;
+  /**
+   * true: only orders loaded in a cart; false: only orders that aren't. Reads `order.inCart` when the order
+   * carries it, otherwise the legacy reading (fulfillment 'draft' / status 'in-cart').
+   */
+  inCart?: boolean;
   /** Default: 50. */
   limit?: number;
   /** Default: 0. */

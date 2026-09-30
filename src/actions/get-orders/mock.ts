@@ -24,6 +24,7 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       fulfillmentState,
       outletId,
       assignedUserId,
+      inCart,
       searchValue,
       limit,
       offset,
@@ -62,6 +63,17 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
 
     if (assignedUserId) {
       orders = orders.filter((o) => o.assignedUser?.userId === assignedUserId);
+    }
+
+    if (typeof inCart === 'boolean') {
+      // Mirrors common's isInCart: the flag when present, else the legacy reading.
+      const orderInCart = (o: (typeof orders)[number]) =>
+        o.inCart != null
+          ? o.inCart.active
+          : o.fulfillmentState
+            ? o.fulfillmentState === 'draft'
+            : o.status === 'in-cart';
+      orders = orders.filter((o) => orderInCart(o) === inCart);
     }
 
     if (searchValue) {

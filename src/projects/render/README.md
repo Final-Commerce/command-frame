@@ -71,6 +71,7 @@ The library provides a `command` namespace object containing all available comma
 - **[resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)** - Resume any open order (parked or not) into the cart; in-cart, completed, refunded and cancelled orders are rejected
 - **[setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)** - Set or remove key/value metadata on an order or the live cart (e.g. order type); syncs with the order
 - **[assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)** - Assign a user (e.g. the driver) to an order, or unassign; one assignee at a time, synced with the order
+- **[releaseFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/release-from-cart/README.md)** - Take the order out of the cart unchanged (saved with `inCart.active: false`) and clear the terminal; resume it later with `resumeOrder`
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
 - **[voidOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/void-order/README.md)** - Cancel an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of captured split legs when a deposit was taken; completed orders are rejected (`ORDER_NOT_VOIDABLE`) and go through the refund flow
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
@@ -396,6 +397,10 @@ Sets (string) or removes (`null`) metadata keys on an order by id, or on the liv
 ### [assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)
 
 Sets `order.assignedUser` to `{ userId, assignedAt }` (or `null` to unassign) on an order by id or the live cart's existing order. Separate from `posData.employee`. Filter with `getOrders({ assignedUserId })`.
+
+### [releaseFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/release-from-cart/README.md)
+
+Saves the order in the cart as-is — state unchanged, current cart contents kept — marks it `inCart.active: false` and resets the terminal. A cart that isn't an order yet becomes an unpaid draft. Unlike `clearCart`, nothing is discarded.
 
 ### [deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)
 
@@ -784,6 +789,8 @@ import type {
   AssignOrderUserParams,
   AssignOrderUserResponse,
   AssignOrderUser,
+  ReleaseFromCartResponse,
+  ReleaseFromCart,
   DeleteParkedOrderParams,
   DeleteParkedOrderResponse,
   DeleteParkedOrder,
