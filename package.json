@@ -57,7 +57,7 @@
     "ignoreBranchesMissingTickets": true
   },
   "dependencies": {
-    "@final-commerce/common": "2.4.0-preprod.3"
+    "@final-commerce/common": "2.4.0-preprod.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
