@@ -46,6 +46,7 @@ import { integrationPayment } from './actions/integration-payment/action';
 import { createPaymentLink } from './actions/create-payment-link/action';
 import { chargeMoto } from './actions/charge-moto/action';
 import { startCheckout } from './actions/start-checkout/action';
+import { attachCheckoutContact } from './actions/attach-checkout-contact/action';
 import { resumeCheckout } from './actions/resume-checkout/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
@@ -192,6 +193,7 @@ export const command = {
   createPaymentLink,
   chargeMoto,
   startCheckout,
+  attachCheckoutContact,
   resumeCheckout,
   // Customer Actions
   addCustomerNote,
@@ -517,6 +519,11 @@ export type {
   StartCheckoutContact,
   StartCheckoutOrder,
 } from './actions/start-checkout/types';
+export type {
+  AttachCheckoutContact,
+  AttachCheckoutContactParams,
+  AttachCheckoutContactResponse,
+} from './actions/attach-checkout-contact/types';
 export type {
   ResumeCheckout,
   ResumeCheckoutParams,
