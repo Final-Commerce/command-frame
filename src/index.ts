@@ -376,6 +376,13 @@ export type {
   RefundPlanSource,
   RefundPlanAllocation,
   RefundPlanLeg,
+  RefundPlanRowType,
+  RefundPlanTaxLine,
+  RefundPlanAmounts,
+  RefundPlanRow,
+  RefundPlanSelectedRow,
+  RefundPlanTotals,
+  RefundPlanBreakdown,
 } from './actions/get-refund-plan/types';
 export type { CheckPermission, CheckPermissionParams, CheckPermissionResponse } from './actions/check-permission/types';
 // Refund Actions
