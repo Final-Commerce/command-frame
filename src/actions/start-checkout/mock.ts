@@ -4,7 +4,7 @@ import { MOCK_CART, MOCK_COMPANY, mockPublishEvent } from '../../demo/database';
 /**
  * Standalone mock of the storefront checkout.
  *
- * It mirrors the REFUSALS of the real command (empty cart, missing email,
+ * It mirrors the REFUSALS of the real command (empty cart,
  * container not on the page) in the same order, because those are what a
  * builder actually hits first — a mock that accepted anything would let a
  * checkout screen look finished and fail on the published site.
@@ -15,15 +15,13 @@ import { MOCK_CART, MOCK_COMPANY, mockPublishEvent } from '../../demo/database';
  * it does. Its button publishes `payment-completed` so a flow's subscriber —
  * the only way the outcome ever arrives — can be exercised in preview.
  */
-export const mockStartCheckout: StartCheckout = async (
-  params: StartCheckoutParams,
-): Promise<StartCheckoutResponse> => {
+export const mockStartCheckout: StartCheckout = async (params: StartCheckoutParams): Promise<StartCheckoutResponse> => {
   console.log('[Mock] startCheckout called', params);
 
   if (!params) throw new Error('Params required');
-  if (!params.contact?.email || !params.contact.email.trim()) {
-    throw new Error('startCheckout: contact.email is required — it is where the receipt goes');
-  }
+  // No email check: contact is optional now, because checkout starts on arrival.
+  // Refusing here would make "start on arrival" fail in PREVIEW while working on
+  // the published site, which is the worst way for this to be wrong.
   if (!params.container || typeof params.container !== 'string') {
     throw new Error(
       'startCheckout: container must be a CSS selector string (e.g. "#card-fields") — a DOM element cannot cross the command boundary',

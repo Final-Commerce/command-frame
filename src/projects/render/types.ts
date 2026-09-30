@@ -105,6 +105,7 @@ import type {
   CreatePaymentLink,
   ChargeMoto,
   StartCheckout,
+  AttachCheckoutContact,
   ResumeCheckout,
   GetTimeClockStatus,
 } from '../../index';
@@ -161,6 +162,7 @@ export interface RenderProviderActions {
    * a register, because the two declare different things to the card networks.
    */
   startCheckout: StartCheckout;
+  attachCheckoutContact: AttachCheckoutContact;
   /**
    * The RETURN LEG of an online checkout, after a redirect payment method or
    * 3-D Secure sent the shopper away and back. Storefront-only, like

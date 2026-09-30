@@ -19,7 +19,16 @@ export interface StartCheckoutContact {
 }
 
 export interface StartCheckoutParams {
-  contact: StartCheckoutContact;
+  /**
+   * OPTIONAL, because checkout starts when the shopper ARRIVES rather than when
+   * they submit a form. The card fields cannot render without a payment session,
+   * a session needs a server-priced amount, and an amount needs an order — so the
+   * order has to exist before they have typed anything.
+   *
+   * Supply it afterwards with `attachCheckoutContact`, which re-sends the same
+   * idempotency key and so reaches the SAME order.
+   */
+  contact?: StartCheckoutContact;
   /**
    * CSS SELECTOR for the element the payment fields mount into, e.g.
    * `'#card-fields'`. The element must already be in the DOM when this is
