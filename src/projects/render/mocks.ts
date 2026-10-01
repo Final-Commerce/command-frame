@@ -35,6 +35,8 @@ import { mockCreatePaymentLink } from '../../actions/create-payment-link/mock';
 import { mockChargeMoto } from '../../actions/charge-moto/mock';
 import { mockStartCheckout } from '../../actions/start-checkout/mock';
 import { mockAttachCheckoutContact } from '../../actions/attach-checkout-contact/mock';
+import { mockGetOutlets } from '../../actions/get-outlets/mock';
+import { mockSetOutlet } from '../../actions/set-outlet/mock';
 import { mockResumeCheckout } from '../../actions/resume-checkout/mock';
 import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
@@ -139,6 +141,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   chargeMoto: mockChargeMoto,
   startCheckout: mockStartCheckout,
   attachCheckoutContact: mockAttachCheckoutContact,
+  getOutlets: mockGetOutlets,
+  setOutlet: mockSetOutlet,
   resumeCheckout: mockResumeCheckout,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
