@@ -12,13 +12,15 @@ The `products` topic provides events related to product lifecycle. Subscribe to 
 
 ## Events
 
-| Event                                                | Description                                                                | Documentation                                  |
-| ---------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------- |
-| [product-created](./product-created/README.md)       | Published when a new product is synced/created                             | [View Details](./product-created/README.md)    |
-| [product-updated](./product-updated/README.md)       | Published when a product is synced/updated                                 | [View Details](./product-updated/README.md)    |
-| [composite-changed](./composite-changed/README.md)   | Published when a composite's part or item is synced — re-ask `getProducts` | [View Details](./composite-changed/README.md)  |
-| [set-active-product](./product-set-active/README.md) | Published when a product is set as the active product                      | [View Details](./product-set-active/README.md) |
-| [get-active-product](./product-get-active/README.md) | Published when the active product is retrieved                             | [View Details](./product-get-active/README.md) |
+| Event                                                                | Description                                                                     | Documentation                                          |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [product-created](./product-created/README.md)                       | Published when a new product is synced/created                                  | [View Details](./product-created/README.md)            |
+| [product-updated](./product-updated/README.md)                       | Published when a product is synced/updated                                      | [View Details](./product-updated/README.md)            |
+| [composite-changed](./composite-changed/README.md)                   | Published when a composite's part or item is synced — re-ask `getProducts`      | [View Details](./composite-changed/README.md)          |
+| [catalog-visibility-changed](./catalog-visibility-changed/README.md) | Published when a product is hidden or shown at an outlet — re-ask `getProducts` | [View Details](./catalog-visibility-changed/README.md) |
+| [inventory-changed](./inventory-changed/README.md)                   | Published when a variant's stock at an outlet syncs — re-ask `getProducts`      | [View Details](./inventory-changed/README.md)          |
+| [set-active-product](./product-set-active/README.md)                 | Published when a product is set as the active product                           | [View Details](./product-set-active/README.md)         |
+| [get-active-product](./product-get-active/README.md)                 | Published when the active product is retrieved                                  | [View Details](./product-get-active/README.md)         |
 
 ## Quick Start
 

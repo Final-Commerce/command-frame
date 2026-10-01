@@ -26,6 +26,16 @@ export const productsTopic: TopicDefinition = {
       description: "Published when a composite's part or item is synced; re-ask getProducts",
     },
     {
+      id: 'catalog-visibility-changed',
+      name: 'Catalog Visibility Changed',
+      description: 'Published when a product is hidden or shown at an outlet; re-ask getProducts',
+    },
+    {
+      id: 'inventory-changed',
+      name: 'Inventory Changed',
+      description: "Published when a variant's stock at an outlet syncs; re-ask getProducts",
+    },
+    {
       id: 'set-active-product',
       name: 'Set Active Product',
       description: 'Published when a product is set as the active product',

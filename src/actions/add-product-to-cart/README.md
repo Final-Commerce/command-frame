@@ -195,9 +195,13 @@ Always publishes a `product-added` event on the `cart` topic with the newly adde
 
 - `composite: [{ itemId, variantId, quantity?, modifiers? }]` — `itemId` from `product.composite.parts[].items[]`,
   `variantId` one of that item's `choices`, `modifiers` the choice's own `choices[].modifiers` answered per ONE pick.
-- The host validates, prices (each item's own tax: Σ picks' `cost`; tax group: the composite's price + Σ `extraCharge`)
-  and taxes the line; the cart line carries `components[]` (each one's share of ONE composite, Σ = line price) and
+- The host validates, prices (the composite's price + Σ picks' `cost`, in both tax modes) and taxes the line; the cart
+  line carries `components[]` — each one's share of ONE composite: the composite's price split by the picked variant's
+  current price × units (all $0 → by units), exact to the cent, plus its own upcharge; Σ = line price; frozen at add (B31) — and
   the items' modifier rows flat in `modifiers[]` with `componentIndex`, their quantity already × the component's units.
-- Refused with a `reason`: invalid picks; `composite` on a product that is not a composite; the composite's own
-  `modifiers` or a taxable fee when it is taxed by its items (nothing to inherit); a tax-group price that cannot be
-  split over the picked items. Never a guessed price or a tax of 0.
+  The composite's own `modifiers` (no `componentIndex`) are accepted in both tax modes: taxed by its items, each row's
+  amount is split over the components by the same weights and taxed at each one's table — the row's `taxes[]` can then
+  hold several tables (B32).
+- Refused with a `reason`: invalid picks; `composite` on a product that is not a composite; a taxable fee when it is
+  taxed by its items (nothing to inherit); a picked variant whose price cannot be read; nothing picked on a composite
+  taxed by its items that has a price or its own modifiers. Never a guessed price or a tax of 0.

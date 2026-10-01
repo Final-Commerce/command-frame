@@ -87,9 +87,31 @@ See the [Real Data Examples](#real-data-examples) section below for actual produ
 
 **Composite products** (`productType: 'composite'`) carry `composite: CFComposite` — `null` on every other product.
 It is the whole picker, decided by the host: `parts[]` (`name`, `required`, `min`, `max`) → `items[]` (`name`, `cost` =
-what one pick adds, `unavailable` = null or `'deleted' | 'inactive' | 'hidden' | 'empty'`, `choices[]` = the variants a
-pick may name), plus `available` (false = show the composite Unavailable — also while it has no parts on this till, e.g. mid-sync; then `fromPrice` is null), `basePrice` (the line before any pick) and
-`fromPrice` (the "from" price for the card). Each part's `defaultPick` (`{ itemId, variantId }`) is the pick to show
+what one pick adds on top of the composite's price — its upcharge × quantity (B31), `unavailable` = null or `'deleted' | 'inactive' | 'empty' | 'out_of_stock'`, `choices[]` = the variants a pick may
+name), plus
+`available` (false = show the composite Unavailable; `fromPrice` is then null when nothing is left to price), `basePrice` (the composite's own price, set by the merchant, in every tax mode) and
+`fromPrice` (the "from" price for the card).
+
+_At the till's outlet_ (catalog-visibility, per product): a composite hidden there is not returned at all (and
+`addProductToCart` / `getCompositePrice` refuse it: "<name> is not sold at this outlet"); an item whose product is hidden
+there is left out of its part; a category item keeps only the products sold there — none left → `unavailable: 'empty'`;
+an Optional part with nothing to pick there is not offered; a required part with nothing to pick makes the composite
+`available: false`, and the host's refusal names that part ("Drink: nothing can be picked at this outlet"). A pick of an
+item not offered is refused ("Composite item <id> is not offered here"). `'hidden'` stays in the type for the back office (an item hidden at an outlet), but the till leaves such items out —
+a flow never receives it. A hide or show
+arrives as `products` / `catalog-visibility-changed` — refetch.
+
+_Stock at the till's outlet_ (B35): an item whose variant is tracked, not on backorder, and short of one pick's
+quantity (in its pool's base units — `stockVariantId` shares a shelf) is `unavailable: 'out_of_stock'` — show it
+"Sold out"; it cannot be picked. A category item is in stock while any of its products is (its `choices` are those). A unit-sold, tracked choice carries
+`stockLeft` — how much its shelf still serves here, in its own unit, floored at the unit's precision (`availableIn`,
+B36e): show "2.35 kg left". Absent when sold by the piece or untracked; never compute it.
+Untracked variants are always in stock. A required part with nothing in stock makes the composite unavailable. At
+`addProductToCart` / `getCompositePrice`, and again at the first payment, the host adds up what the whole cart takes
+from each shelf (pick × item × line, plain lines on the same pool included) and refuses "<item>: only N left". A stock
+move arrives as `products` / `inventory-changed` — refetch.
+
+Each part's `defaultPick` (`{ itemId, variantId }`) is the pick to show
 preselected (B29 = D36): only on a required "pick 1" part (`required`, `min = max = 1`) — its cheapest available item
 (lowest `cost`, ties to the first listed); `null` on every other part, and when the cheapest is a category item. Parts
 without a default show how many picks they still need (`getCompositePrice().missing`). A part with `max = 1` is a

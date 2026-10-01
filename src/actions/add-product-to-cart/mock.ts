@@ -2,6 +2,9 @@ import { AddProductToCart, AddProductToCartParams, AddProductToCartResponse } fr
 import {
   MOCK_CART,
   MOCK_OUTLET,
+  mockCompositeAtOutlet,
+  mockCompositeStockRefusal,
+  mockHiddenProductIds,
   MOCK_PRODUCTS,
   buildCartLineModifiers,
   buildModifierRows,
@@ -50,14 +53,26 @@ export const mockAddProductToCart: AddProductToCart = async (
   if (product.composite || params?.composite?.length) {
     const ownTax = !product.taxTable;
     const picks = params?.composite ?? [];
-    const reason = !product.composite
+    // What this outlet sells (the host's catalog-visibility rules).
+    const composite = product.composite && mockCompositeAtOutlet(product.composite);
+    const reason = !composite
       ? `${product.name} is not a composite: it takes no composite picks`
-      : ownTax && params?.modifiers?.length
-        ? `${product.name} is taxed by its items: put modifiers on the picked items, not on the composite`
+      : mockHiddenProductIds().has(product._id)
+        ? `${product.name} is not sold at this outlet`
         : ownTax && params?.fees?.some((fee) => fee.applyTaxes)
           ? `${product.name} is taxed by its items: a taxable fee on it has no table to inherit`
-          : (compositePicksRefusal(product.composite, picks) ?? undefined);
-    const line = reason ?? mockCompositeLine(product.composite!, picks, ownTax);
+          : (compositePicksRefusal(composite, picks) ?? undefined);
+    const built = reason ?? mockCompositeLine(composite!, picks, ownTax);
+    // B32: the composite's own modifiers are taxed through its components — with none picked there is nothing to carry them.
+    const line =
+      typeof built !== 'string' && ownTax && params?.modifiers?.length && !built.components.length
+        ? 'Pick at least one item: this composite is taxed by its items'
+        : typeof built !== 'string'
+          ? (mockCompositeStockRefusal([
+              ...MOCK_CART.products,
+              { variantId: variant._id, quantity, components: built.components },
+            ]) ?? built)
+          : built;
     if (typeof line === 'string') {
       return {
         success: false,
@@ -169,14 +184,19 @@ export const mockAddProductToCart: AddProductToCart = async (
 
 /** The host's pick checks (kaching `validateCompositePicks`), same order and texts; null = valid. */
 export function compositePicksRefusal(composite: CFComposite, picks: CFCompositePick[]): string | null {
-  if (!composite.parts.length) return 'This composite has no parts on this till yet';
-  if (!composite.available) return 'This composite is unavailable: a part it needs has nothing to pick';
+  if (!composite.available) {
+    if (!composite.parts.length) return 'This composite has no parts on this till yet';
+    const blocking = composite.parts.find((part) => part.min > 0 && !part.items.some((item) => !item.unavailable));
+    return blocking
+      ? `${blocking.name ?? 'Choose'}: nothing can be picked at this outlet`
+      : 'This composite is unavailable: a part it needs has nothing to pick';
+  }
   const counts = new Map<string, number>();
   for (const pick of picks) {
     const quantity = pick.quantity ?? 1;
     const part = composite.parts.find((candidate) => candidate.items.some((item) => item._id === pick.itemId));
     const item = part?.items.find((candidate) => candidate._id === pick.itemId);
-    if (!part || !item) return `Unknown composite item ${pick.itemId}`;
+    if (!part || !item) return `Composite item ${pick.itemId} is not offered here`;
     if (!Number.isInteger(quantity) || quantity <= 0) return `${item.name}: quantity must be a positive whole number`;
     if (item.unavailable) return `${item.name} is not available`;
     const choice = item.choices.find((candidate) => candidate.variantId === pick.variantId);
@@ -250,8 +270,9 @@ export function mockPicksStillNeeded(composite: CFComposite, picks: CFCompositeP
 
 type MockCompositeLine = { price: number; components: CFCartLineComponent[]; modifiers: CFCartLineModifier[] };
 
-/** kaching `buildCompositeLine`: a component's share of ONE composite (Σ = price), item modifiers flat with
- *  `componentIndex` and quantity × the component's units. Tax group: the base split by `item.price × units`. */
+/** kaching `buildCompositeLine` (B31): a component's share of ONE composite = the composite price split by the picked
+ *  variant's price × units (all 0 → units) + its own upcharge; Σ = price. Item modifiers flat with `componentIndex`
+ *  and quantity × the component's units. A copy — change both in one step. */
 export function mockCompositeLine(
   composite: CFComposite,
   picks: CFCompositePick[],
@@ -261,22 +282,27 @@ export function mockCompositeLine(
     const part = composite.parts.find((candidate) => candidate.items.some((item) => item._id === pick.itemId))!;
     const item = part.items.find((candidate) => candidate._id === pick.itemId)!;
     const choice = item.choices.find((candidate) => candidate.variantId === pick.variantId)!;
-    const taxTable = MOCK_PRODUCTS.find((candidate) => candidate._id === choice.productId)?.taxTable || undefined;
+    const product = MOCK_PRODUCTS.find((candidate) => candidate._id === choice.productId);
+    const variant = product?.variants.find((candidate) => candidate._id === choice.variantId);
+    const selected = variant?.isOnSale ? variant.salePrice : variant?.price;
     return {
       part,
       item,
       choice,
-      taxTable,
+      productName: product?.name ?? choice.name,
+      taxTable: product?.taxTable || undefined,
+      price: typeof selected === 'number' && Number.isFinite(selected) ? Math.round(selected) : null,
       pickQuantity: pick.quantity ?? 1,
       units: (pick.quantity ?? 1) * item.quantity,
     };
   });
+  const unreadable = rows.find((row) => row.price === null);
+  if (unreadable) return `${unreadable.productName}: its price cannot be read, so the composite cannot be split`;
   const base = composite.basePrice ?? 0;
-  const weights = rows.map((row) => (ownTax ? 0 : row.item.price * row.units));
+  if (ownTax && rows.length === 0 && base > 0) return 'Pick at least one item: this composite is taxed by its items';
+  const priced = rows.map((row) => row.price! * row.units);
+  const weights = priced.some((weight) => weight > 0) ? priced : rows.map((row) => row.units);
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-  if (rows.length > 0 && base > 0 && totalWeight === 0) {
-    return 'This composite cannot be priced: none of its picked items has a price to share it by';
-  }
   // Largest remainder, ties to the first — the host's allocateRateAcrossLines.
   const floors = weights.map((weight) => (totalWeight ? Math.floor((base * weight) / totalWeight) : 0));
   const ranked = weights

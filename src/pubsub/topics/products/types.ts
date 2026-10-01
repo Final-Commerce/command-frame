@@ -7,6 +7,8 @@
 export * from './product-created/types';
 export * from './product-updated/types';
 export * from './composite-changed/types';
+export * from './catalog-visibility-changed/types';
+export * from './inventory-changed/types';
 export * from './product-set-active/types';
 export * from './product-get-active/types';
 
@@ -14,6 +16,8 @@ export * from './product-get-active/types';
 import type { ProductCreatedPayload } from './product-created/types';
 import type { ProductUpdatedPayload } from './product-updated/types';
 import type { CompositeChangedPayload } from './composite-changed/types';
+import type { CatalogVisibilityChangedPayload } from './catalog-visibility-changed/types';
+import type { InventoryChangedPayload } from './inventory-changed/types';
 import type { ProductSetActivePayload } from './product-set-active/types';
 import type { ProductGetActivePayload } from './product-get-active/types';
 
@@ -22,6 +26,8 @@ export type ProductsEventPayload =
   | ProductCreatedPayload
   | ProductUpdatedPayload
   | CompositeChangedPayload
+  | CatalogVisibilityChangedPayload
+  | InventoryChangedPayload
   | ProductSetActivePayload
   | ProductGetActivePayload;
 
@@ -30,5 +36,7 @@ export type ProductsEventType =
   | 'product-created'
   | 'product-updated'
   | 'composite-changed'
+  | 'catalog-visibility-changed'
+  | 'inventory-changed'
   | 'set-active-product'
   | 'get-active-product';

@@ -11,6 +11,8 @@ import {
   CFActiveOrder,
   CFCustomer,
   CFProduct,
+  CFComposite,
+  CFCartLineComponent,
   CFProductType,
   CFUserTypes,
   CFActiveCart,
@@ -29,7 +31,13 @@ import {
   CFModifierSelection,
   CFResolvedModifier,
 } from '../CommonTypes';
-import { extendPrice, resolveUnit, toBase } from '@final-commerce/common';
+import {
+  cheapestCompositeItem,
+  cheapestCompositePrice,
+  extendPrice,
+  resolveUnit,
+  toBase,
+} from '@final-commerce/common';
 import { BookingRatePeriod, BookingResourceKind, BookingType, ReservationStatus } from '@final-commerce/common';
 
 export * from './mocks';
@@ -49,6 +57,13 @@ export interface MockDatabaseConfig {
   bookingResources?: CFBookingResource[];
   /** Windows already taken when the dataset loads, so a calendar does not open empty. */
   bookings?: CFBooking[];
+  /** Products hidden at an outlet (the host's `catalog-visibility`, product-level rows). Empty = sold everywhere. */
+  catalogVisibility?: MockCatalogVisibility[];
+}
+
+export interface MockCatalogVisibility {
+  productId: string;
+  outletId: string;
 }
 
 // Asset Imports - Using Remote URLs to avoid build complexity with asset copying
@@ -869,8 +884,8 @@ export const MOCK_PRODUCT_HAIRCUT: CFProduct = {
   bookingRulesId: 'rule_salon_30',
 };
 
-// A composite (FT-83) as the host serves it: each item keeps its own tax (`taxTable` empty), so the line is the picks
-// alone. One item points at a deleted variant (unavailable), one is a whole category (its products are the choices).
+// A composite (FT-83) as the host serves it: the merchant's price 27.00, items add only their upcharges (B31); each item
+// keeps its own tax (`taxTable` empty). One item points at a deleted variant (unavailable), one is a whole category.
 export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
   ...createSimpleProduct(
     'prod_paste_trio',
@@ -882,10 +897,21 @@ export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
   ),
   productType: CFProductType.COMPOSITE,
   taxTable: '',
+  // The composite's own modifier (B32): with each item's own tax its price is split over the picks like the composite's.
+  modifiers: [
+    {
+      _id: 'mod_gift_box',
+      name: 'Gift box',
+      selectionType: 'single',
+      required: false,
+      sortOrder: 0,
+      choices: [{ _id: 'choice_gift_box', name: 'Gift box', price: 200, sortOrder: 0 }],
+    },
+  ],
   composite: {
     available: true,
-    basePrice: 0,
-    fromPrice: 2700,
+    basePrice: 2700,
+    fromPrice: 2800,
     parts: [
       {
         _id: 'part_paste',
@@ -900,10 +926,9 @@ export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
             variantId: 'prod_basil_almond_var_main',
             categoryId: null,
             name: 'Basil Almond Paste',
-            price: 1200,
             extraCharge: 0,
             quantity: 1,
-            cost: 1200,
+            cost: 0,
             unavailable: null,
             choices: [
               {
@@ -933,10 +958,9 @@ export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
             variantId: 'prod_gone_var_main',
             categoryId: null,
             name: '',
-            price: 900,
             extraCharge: 0,
             quantity: 1,
-            cost: 900,
+            cost: 0,
             unavailable: 'deleted',
             choices: [],
           },
@@ -956,10 +980,9 @@ export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
             variantId: null,
             categoryId: MOCK_CATEGORY_SPICY.id,
             name: 'Spicy',
-            price: 1400,
             extraCharge: 100,
             quantity: 1,
-            cost: 1500,
+            cost: 100,
             unavailable: null,
             choices: [
               {
@@ -995,6 +1018,102 @@ export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_HAIRCUT,
 ];
 export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2, MOCK_ORDER_3, MOCK_ORDER_4];
+/** Nothing hidden by default; `setMockDatabase({ catalogVisibility })` hides products at an outlet. */
+export const MOCK_CATALOG_VISIBILITY: MockCatalogVisibility[] = [];
+
+/**
+ * The host's cart stock check for composites (kaching `compositeStockRefusal`), over the demo shelves — a copy: what the
+ * cart takes of each component's variant (plain lines and components × their line quantity) against its shelf here.
+ * The demo has no pools or units, so it counts per variant; untracked and backordered variants are never short.
+ */
+export function mockCompositeStockRefusal(
+  products: { variantId: string; quantity: number; components?: CFCartLineComponent[] }[],
+): string | null {
+  const components = products.flatMap((product) => product.components ?? []);
+  const demand = new Map<string, number>();
+  for (const product of products) {
+    if (product.components)
+      for (const component of product.components)
+        demand.set(component.variantId, (demand.get(component.variantId) ?? 0) + component.quantity * product.quantity);
+    else demand.set(product.variantId, (demand.get(product.variantId) ?? 0) + product.quantity);
+  }
+  for (const component of components) {
+    const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find(
+      (candidate) => candidate._id === component.variantId,
+    );
+    if (!variant?.manageStock || variant.allowBackorder) continue;
+    const left = variant.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock ?? 0;
+    if ((demand.get(component.variantId) ?? 0) > left) return `${component.name}: only ${left} left`;
+  }
+  return null;
+}
+
+/** Product ids hidden at the demo's active outlet. */
+export const mockHiddenProductIds = (): Set<string> =>
+  new Set(MOCK_CATALOG_VISIBILITY.filter((row) => row.outletId === MOCK_OUTLET.id).map((row) => row.productId));
+
+/**
+ * The host's outlet rules for a composite (kaching `resolveComposite`), over the demo's static view — a copy, change both
+ * in one step: an item whose product is hidden here is left out, a category item keeps only products sold here (none →
+ * `'empty'`), an Optional part with nothing to pick is not offered, a required one with nothing makes it unavailable,
+ * and the D36 default and "from" price are read off what is left.
+ */
+export function mockCompositeAtOutlet(composite: CFComposite, hidden = mockHiddenProductIds()): CFComposite {
+  // B35: a tracked variant without `quantity` on the demo shelf here (and no backorder) is sold out.
+  const soldOut = (variantId: string, quantity: number) => {
+    const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find(
+      (candidate) => candidate._id === variantId,
+    );
+    if (!variant?.manageStock || variant.allowBackorder) return false;
+    return (variant.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock ?? 0) < quantity;
+  };
+  // B36e: "N left" on a unit-sold tracked choice — the demo shelf already reads in the variant's own unit.
+  const withStockLeft = (choice: CFComposite['parts'][number]['items'][number]['choices'][number]) => {
+    const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find(
+      (candidate) => candidate._id === choice.variantId,
+    );
+    const onHand = variant?.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock;
+    return variant?.unitId && variant.manageStock && typeof onHand === 'number'
+      ? { ...choice, stockLeft: onHand }
+      : choice;
+  };
+  const upcharge = (item: CFComposite['parts'][number]['items'][number]) => ({
+    extraCharge: item.extraCharge,
+    quantity: item.quantity,
+    available: !item.unavailable,
+  });
+  const parts = composite.parts
+    .map((part) => {
+      const items = part.items.flatMap((item) => {
+        if (item.variantId) {
+          if (item.choices.some((choice) => hidden.has(choice.productId))) return [];
+          return item.unavailable || !soldOut(item.variantId, item.quantity)
+            ? [{ ...item, choices: item.choices.map(withStockLeft) }]
+            : [{ ...item, unavailable: 'out_of_stock' as const, choices: [] }];
+        }
+        const sold = item.choices.filter((choice) => !hidden.has(choice.productId));
+        const choices = sold.filter((choice) => !soldOut(choice.variantId, item.quantity));
+        const unavailable = item.unavailable ?? (!sold.length ? 'empty' : !choices.length ? 'out_of_stock' : null);
+        return [{ ...item, choices: unavailable ? [] : choices.map(withStockLeft), unavailable }];
+      });
+      const index = part.min === 1 && part.max === 1 ? cheapestCompositeItem(items.map(upcharge)) : undefined;
+      const cheapest = index === undefined ? undefined : items[index];
+      return {
+        ...part,
+        items,
+        defaultPick: cheapest?.variantId ? { itemId: cheapest._id, variantId: cheapest.variantId } : null,
+      };
+    })
+    .filter((part) => part.min > 0 || part.items.some((item) => !item.unavailable));
+  const cheapest = cheapestCompositePrice(parts.map((part) => ({ min: part.min, items: part.items.map(upcharge) })));
+  return {
+    ...composite,
+    available:
+      composite.available && parts.every((part) => part.min === 0 || part.items.some((item) => !item.unavailable)),
+    fromPrice: composite.basePrice === null || cheapest === undefined ? null : composite.basePrice + cheapest,
+    parts,
+  };
+}
 export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [MOCK_PARKED_ORDER_1, MOCK_PARKED_ORDER_2];
 
 // Compatibility Exports (reassigned by setMockDatabase)
@@ -1086,6 +1205,9 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   }
   if (config.bookings !== undefined) {
     MOCK_BOOKINGS.splice(0, MOCK_BOOKINGS.length, ...config.bookings);
+  }
+  if (config.catalogVisibility !== undefined) {
+    MOCK_CATALOG_VISIBILITY.splice(0, MOCK_CATALOG_VISIBILITY.length, ...config.catalogVisibility);
   }
 
   if (MOCK_OUTLETS.length > 0) {

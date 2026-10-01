@@ -10,7 +10,7 @@ export interface GetCompositePriceParams {
 
 export interface GetCompositePriceResponse {
   success: boolean;
-  /** Why these picks cannot be priced — the same refusal and text `addProductToCart` would give. */
+  /** Why these picks are refused — the same refusal and text `addProductToCart` would give. */
   reason?: string;
   /**
    * What ONE composite with these picks adds to the cart, minor units: the line price the host would build plus the

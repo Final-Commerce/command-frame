@@ -36,8 +36,9 @@ export interface AddProductToCartParams {
    * (B28); send their quantity per one pick — the host multiplies it by the pick's units. The line comes back with
    * `components[]` and those rows in its flat `modifiers[]` with `componentIndex`.
    *
-   * The composite's own `modifiers` / taxable `fees` are refused when it is taxed by its items (no tax group):
-   * there is no table for them to inherit.
+   * The composite's own `modifiers` are accepted in both tax modes (B32): when it is taxed by its items, their price is
+   * split over the picked items by the same weights as the composite's price, each part taxed at its item's table.
+   * A taxable `fee` on such a composite is still refused: there is no table for it to inherit.
    */
   composite?: CFCompositePick[];
   /** Note or array of notes to add immediately. */
