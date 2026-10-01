@@ -47,6 +47,7 @@ import { createPaymentLink } from './actions/create-payment-link/action';
 import { chargeMoto } from './actions/charge-moto/action';
 import { startCheckout } from './actions/start-checkout/action';
 import { attachCheckoutContact } from './actions/attach-checkout-contact/action';
+import { setOutlet } from './actions/set-outlet/action';
 import { resumeCheckout } from './actions/resume-checkout/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
@@ -194,6 +195,7 @@ export const command = {
   chargeMoto,
   startCheckout,
   attachCheckoutContact,
+  setOutlet,
   resumeCheckout,
   // Customer Actions
   addCustomerNote,
@@ -323,7 +325,7 @@ export type {
 
 export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from './actions/delete-product/types';
 
-export type { GetOutlets, GetOutletsResponse } from './actions/get-outlets/types';
+export type { GetOutlets, GetOutletsParams, GetOutletsResponse } from './actions/get-outlets/types';
 
 export type { GetStations, GetStationsParams, GetStationsResponse } from './actions/get-stations/types';
 
@@ -524,6 +526,7 @@ export type {
   AttachCheckoutContactParams,
   AttachCheckoutContactResponse,
 } from './actions/attach-checkout-contact/types';
+export type { SetOutlet, SetOutletParams, SetOutletResponse } from './actions/set-outlet/types';
 export type {
   ResumeCheckout,
   ResumeCheckoutParams,

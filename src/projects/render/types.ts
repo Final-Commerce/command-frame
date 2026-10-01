@@ -106,6 +106,8 @@ import type {
   ChargeMoto,
   StartCheckout,
   AttachCheckoutContact,
+  GetOutlets,
+  SetOutlet,
   ResumeCheckout,
   GetTimeClockStatus,
 } from '../../index';
@@ -163,6 +165,8 @@ export interface RenderProviderActions {
    */
   startCheckout: StartCheckout;
   attachCheckoutContact: AttachCheckoutContact;
+  getOutlets: GetOutlets;
+  setOutlet: SetOutlet;
   /**
    * The RETURN LEG of an online checkout, after a redirect payment method or
    * 3-D Secure sent the shopper away and back. Storefront-only, like
