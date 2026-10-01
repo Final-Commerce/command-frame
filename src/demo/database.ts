@@ -1459,8 +1459,10 @@ const CLOSE_HOUR = 18;
 // Rooms, not people: a resource is whatever is scarce, and a room is the case that
 // reads the same in every vertical a dataset might describe.
 export const MOCK_BOOKING_RESOURCES: CFBookingResource[] = [
-  { id: 'res_room_1', name: 'Room 1', kind: BookingResourceKind.ROOM },
-  { id: 'res_room_2', name: 'Room 2', kind: BookingResourceKind.ROOM },
+  // Two different photos, from the assets this demo already ships: a screen that picks a
+  // resource by sight has to be fed two that look apart, not one repeated.
+  { id: 'res_room_1', name: 'Room 1', kind: BookingResourceKind.ROOM, image: beetImg },
+  { id: 'res_room_2', name: 'Room 2', kind: BookingResourceKind.ROOM, image: roastedTomatoImg },
 ];
 
 /**
