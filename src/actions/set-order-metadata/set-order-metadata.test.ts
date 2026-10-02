@@ -16,22 +16,25 @@ describe('setOrderMetadata action', () => {
   it('calls commandFrameClient with setOrderMetadata and params', async () => {
     mockCall.mockResolvedValue({ success: true });
 
-    await setOrderMetadata({ orderId: 'o1', metadata: { orderType: 'delivery' } });
+    await setOrderMetadata({ orderId: 'o1', metadata: { deliveryNote: 'delivery' } });
 
-    expect(mockCall).toHaveBeenCalledWith('setOrderMetadata', { orderId: 'o1', metadata: { orderType: 'delivery' } });
+    expect(mockCall).toHaveBeenCalledWith('setOrderMetadata', {
+      orderId: 'o1',
+      metadata: { deliveryNote: 'delivery' },
+    });
   });
 });
 
 describe('mergeMetadata', () => {
   it('sets, overwrites and removes keys, keeping the rest', () => {
     const current = [
-      { key: 'orderType', value: 'pickup' },
+      { key: 'deliveryNote', value: 'pickup' },
       { key: 'driver', value: 'Sam' },
       { key: 'woo', value: '1', externalId: 'ext-1' },
     ];
 
-    expect(mergeMetadata(current, { orderType: 'delivery', driver: null, eta: '18:30' })).toEqual([
-      { key: 'orderType', value: 'delivery' },
+    expect(mergeMetadata(current, { deliveryNote: 'delivery', driver: null, eta: '18:30' })).toEqual([
+      { key: 'deliveryNote', value: 'delivery' },
       { key: 'woo', value: '1', externalId: 'ext-1' },
       { key: 'eta', value: '18:30' },
     ]);
@@ -49,21 +52,21 @@ describe('setOrderMetadata mock', () => {
   });
 
   it('keeps metadata on the live cart when no order is given', async () => {
-    const first = await mockSetOrderMetadata({ metadata: { orderType: 'takeout' } });
+    const first = await mockSetOrderMetadata({ metadata: { deliveryNote: 'takeout' } });
     const second = await mockSetOrderMetadata({ metadata: { note: 'extra napkins' } });
 
     expect(first.orderId).toBeNull();
     expect(second.metadata).toEqual([
-      { key: 'orderType', value: 'takeout' },
+      { key: 'deliveryNote', value: 'takeout' },
       { key: 'note', value: 'extra napkins' },
     ]);
   });
 
   it('updates an order by id', async () => {
-    const response = await mockSetOrderMetadata({ orderId: 'order_1004', metadata: { orderType: 'delivery' } });
+    const response = await mockSetOrderMetadata({ orderId: 'order_1004', metadata: { deliveryNote: 'delivery' } });
 
     expect(response.orderId).toBe('order_1004');
-    expect(response.metadata).toContainEqual({ key: 'orderType', value: 'delivery' });
+    expect(response.metadata).toContainEqual({ key: 'deliveryNote', value: 'delivery' });
   });
 
   it('throws for an unknown order', async () => {

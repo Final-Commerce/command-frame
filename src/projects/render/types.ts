@@ -37,6 +37,7 @@ import type {
   SetOrderMetadata,
   AssignOrderUser,
   ReleaseFromCart,
+  SetOrderType,
   DeleteParkedOrder,
   VoidOrder,
   InitiateRefund,
@@ -169,6 +170,7 @@ export interface RenderProviderActions {
   setOrderMetadata: SetOrderMetadata;
   assignOrderUser: AssignOrderUser;
   releaseFromCart: ReleaseFromCart;
+  setOrderType: SetOrderType;
   deleteParkedOrder: DeleteParkedOrder;
   voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;

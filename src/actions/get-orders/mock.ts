@@ -25,6 +25,7 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       outletId,
       assignedUserId,
       inCart,
+      orderType,
       searchValue,
       limit,
       offset,
@@ -63,6 +64,11 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
 
     if (assignedUserId) {
       orders = orders.filter((o) => o.assignedUser?.userId === assignedUserId);
+    }
+
+    if (orderType !== undefined) {
+      const types = Array.isArray(orderType) ? orderType : [orderType];
+      if (types.length) orders = orders.filter((o) => types.includes(o.orderType ?? ''));
     }
 
     if (typeof inCart === 'boolean') {

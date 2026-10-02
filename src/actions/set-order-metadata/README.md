@@ -1,6 +1,6 @@
 # setOrderMetadata
 
-Sets or removes key/value metadata on an order — e.g. the order type (`takeout`, `delivery`, `pickup`) so a kitchen or driver flow on another station can read it. Metadata lives on the order itself (`order.metadata`), so it syncs with the order and arrives with its `orders` / `order-updated` events.
+Sets or removes free-form key/value metadata on an order — e.g. a delivery note or gate code a driver flow on another station reads. (For the order type use [`setOrderType`](../set-order-type/README.md), which `getOrders` can filter by.) Metadata lives on the order itself (`order.metadata`), so it syncs with the order and arrives with its `orders` / `order-updated` events.
 
 ## Parameters
 
@@ -28,7 +28,7 @@ Sets or removes key/value metadata on an order — e.g. the order type (`takeout
 import { command } from '@final-commerce/command-frame';
 
 // While building the order on the main POS
-await command.setOrderMetadata({ metadata: { orderType: 'delivery', deliveryAddress: '12 Main St' } });
+await command.setOrderMetadata({ metadata: { deliveryNote: 'Ring twice', gateCode: '4512' } });
 
 // Later, on another station, by id
 await command.setOrderMetadata({ orderId: 'order-id-123', metadata: { driver: 'Sam' } });
@@ -38,7 +38,7 @@ await command.setOrderMetadata({ orderId: 'order-id-123', metadata: { driver: nu
 
 // Reading it back
 const { orders } = await command.getOrders({ fulfillmentState: 'in_progress' });
-const type = orders[0].metadata?.find((m) => m.key === 'orderType')?.value;
+const note = orders[0].metadata?.find((m) => m.key === 'deliveryNote')?.value;
 ```
 
 ## Error Handling

@@ -19,6 +19,8 @@ export interface GetOrdersParams {
    * carries it, otherwise the legacy reading (fulfillment 'draft' / status 'in-cart').
    */
   inCart?: boolean;
+  /** Order type label(s) set with setOrderType, e.g. 'delivery' or ['pickup', 'takeout']. Exact match; a list matches any. */
+  orderType?: string | string[];
   /** Default: 50. */
   limit?: number;
   /** Default: 0. */

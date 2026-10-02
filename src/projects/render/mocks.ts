@@ -71,6 +71,7 @@ import { mockResumeOrder } from '../../actions/resume-order/mock';
 import { mockSetOrderMetadata } from '../../actions/set-order-metadata/mock';
 import { mockAssignOrderUser } from '../../actions/assign-order-user/mock';
 import { mockReleaseFromCart } from '../../actions/release-from-cart/mock';
+import { mockSetOrderType } from '../../actions/set-order-type/mock';
 import { mockSelectAllRefundItems } from '../../actions/select-all-refund-items/mock';
 import { mockSetRefundStockAction } from '../../actions/set-refund-stock-action/mock';
 import { mockShowConfirmation } from '../../actions/show-confirmation/mock';
@@ -184,6 +185,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   setOrderMetadata: mockSetOrderMetadata,
   assignOrderUser: mockAssignOrderUser,
   releaseFromCart: mockReleaseFromCart,
+  setOrderType: mockSetOrderType,
   selectAllRefundItems: mockSelectAllRefundItems,
   setRefundStockAction: mockSetRefundStockAction,
   showConfirmation: mockShowConfirmation,
