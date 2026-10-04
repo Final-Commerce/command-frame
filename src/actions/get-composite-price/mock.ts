@@ -7,7 +7,12 @@ import {
   mockCompositeStockRefusal,
   mockHiddenProductIds,
 } from '../../demo/database';
-import { compositePicksRefusal, mockCompositeLine, mockPicksStillNeeded } from '../add-product-to-cart/mock';
+import {
+  compositePicksRefusal,
+  mockCompositeLine,
+  mockNeedsDateRefusal,
+  mockPicksStillNeeded,
+} from '../add-product-to-cart/mock';
 
 // The same line the mock addProductToCart builds, priced for ONE composite and added to nothing.
 export const mockGetCompositePrice: GetCompositePrice = async (
@@ -27,12 +32,15 @@ export const mockGetCompositePrice: GetCompositePrice = async (
   }
   const picks = params.composite ?? [];
   // What this outlet sells (the host's catalog-visibility rules).
-  const composite = mockCompositeAtOutlet(product.composite);
+  const composite = mockCompositeAtOutlet(product.composite, undefined, params.compositeSlot);
   const missing = mockPicksStillNeeded(composite, picks);
   if (mockHiddenProductIds().has(product._id)) {
     return { success: false, reason: `${product.name} is not sold at this outlet`, missing, timestamp };
   }
-  const line = compositePicksRefusal(composite, picks) ?? mockCompositeLine(composite, picks, !product.taxTable);
+  const line =
+    mockNeedsDateRefusal(product.name, composite, params.compositeSlot) ??
+    compositePicksRefusal(composite, picks) ??
+    mockCompositeLine(composite, picks, !product.taxTable);
   if (typeof line === 'string') return { success: false, reason: line, missing, timestamp };
   const shortOfStock = mockCompositeStockRefusal([
     ...MOCK_CART.products,

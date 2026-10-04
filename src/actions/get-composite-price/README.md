@@ -9,7 +9,8 @@ texts) and adds nothing to the cart.
 ```typescript
 interface GetCompositePriceParams {
   variantId: string; // the composite's variant
-  composite: CFCompositePick[]; // the picks so far: { itemId, variantId, quantity?, modifiers? }
+  composite: CFCompositePick[]; // the picks so far: { itemId, variantId, quantity?, modifiers?, resourceId? }
+  compositeSlot?: { startAt: string }; // B41: the date and time bookable picks are for (getCompositeAvailability)
 }
 ```
 
@@ -18,7 +19,7 @@ interface GetCompositePriceParams {
 ```typescript
 interface GetCompositePriceResponse {
   success: boolean;
-  reason?: string; // picks the host would refuse (e.g. "Side: pick at least 1")
+  reason?: string; // picks the host would refuse (e.g. "Side: pick 1"; "Toppings: pick at least 2" when the part allows more)
   total?: number; // ONE composite: line price + picked items' modifiers, minor units; before discounts, fees, tax
   missing: { partId: string; needed: number }[]; // parts still short of their min ("Pick 2 more"); [] = all filled
   timestamp: string;

@@ -9,7 +9,8 @@ export const mockGetProducts: GetProducts = async (params?: GetProductsParams): 
   // what is sold here.
   const hidden = mockHiddenProductIds();
   let products = MOCK_PRODUCTS.filter((p) => !hidden.has(p._id)).map((p) =>
-    p.composite ? { ...p, composite: mockCompositeAtOutlet(p.composite, hidden) } : p,
+    // B43: the host never hands a composite modifiers of its own.
+    p.composite ? { ...p, modifiers: [], composite: mockCompositeAtOutlet(p.composite, hidden) } : p,
   );
   const query = params?.query || {};
 

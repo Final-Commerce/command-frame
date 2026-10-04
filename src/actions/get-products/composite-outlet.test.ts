@@ -12,7 +12,8 @@ afterEach(() => setMockDatabase({ catalogVisibility: [] }));
 
 describe('mock composite at this outlet', () => {
   it('nothing hidden: the demo as it is', async () => {
-    expect((await trio())?.composite).toEqual(MOCK_PRODUCT_PASTE_TRIO.composite);
+    // B41: the host adds `needsDate`; the demo trio holds nothing bookable.
+    expect((await trio())?.composite).toEqual({ ...MOCK_PRODUCT_PASTE_TRIO.composite, needsDate: false });
   });
 
   it('a required part left with nothing sold here makes it unavailable; its item is not offered', async () => {

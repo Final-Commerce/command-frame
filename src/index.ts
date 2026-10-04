@@ -29,6 +29,7 @@ import { addProductNote } from './actions/add-product-note/action';
 import { addProductFee } from './actions/add-product-fee/action';
 import { getProductModifierSelections } from './actions/get-product-modifier-selections/action';
 import { getCompositePrice } from './actions/get-composite-price/action';
+import { getCompositeAvailability } from './actions/get-composite-availability/action';
 import { setProductModifierSelections } from './actions/set-product-modifier-selections/action';
 import { setActiveProductFee } from './actions/set-active-product-fee/action';
 import { setActiveProductDiscount } from './actions/set-active-product-discount/action';
@@ -181,6 +182,7 @@ export const command = {
   addProductFee,
   getProductModifierSelections,
   getCompositePrice,
+  getCompositeAvailability,
   setProductModifierSelections,
   setActiveProductFee,
   setActiveProductDiscount,
@@ -476,6 +478,12 @@ export type {
   GetCompositePriceParams,
   GetCompositePriceResponse,
 } from './actions/get-composite-price/types';
+export type {
+  GetCompositeAvailability,
+  GetCompositeAvailabilityParams,
+  GetCompositeAvailabilityResponse,
+  CFCompositeSlot,
+} from './actions/get-composite-availability/types';
 export type {
   SetProductModifierSelections,
   SetProductModifierSelectionsParams,

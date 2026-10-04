@@ -1,6 +1,6 @@
 # addProductToCart
 
-Adds a product to the cart in the parent application. This atomic action handles product selection, application of options (discounts, fees, notes), and addition to the cart in a single step. `quantity` may be fractional when the variant carries a `unit` (1.509 kg is a sale) — build quantity inputs from `unit.precision`, never as a hardcoded integer stepper.
+Adds a product to the cart in the parent application. This atomic action handles product selection, application of options (discounts, fees, notes), and addition to the cart in a single step. `quantity` may be fractional when the variant carries a `unit` (1.509 kg is a sale) — build quantity inputs from `unit.precision`, never as a hardcoded integer stepper. A composite (`product.composite`) is added with its `composite` picks; when `composite.needsDate` is true it holds a bookable item and you MUST show a date and time picker first (`getCompositeAvailability`) and pass the chosen `compositeSlot: { startAt }` — without it the add is refused with a `reason`.
 
 ## Parameters
 
@@ -198,10 +198,16 @@ Always publishes a `product-added` event on the `cart` topic with the newly adde
 - The host validates, prices (the composite's price + Σ picks' `cost`, in both tax modes) and taxes the line; the cart
   line carries `components[]` — each one's share of ONE composite: the composite's price split by the picked variant's
   current price × units (all $0 → by units), exact to the cent, plus its own upcharge; Σ = line price; frozen at add (B31) — and
-  the items' modifier rows flat in `modifiers[]` with `componentIndex`, their quantity already × the component's units.
-  The composite's own `modifiers` (no `componentIndex`) are accepted in both tax modes: taxed by its items, each row's
-  amount is split over the components by the same weights and taxed at each one's table — the row's `taxes[]` can then
-  hold several tables (B32).
+  the items' modifier rows flat in `modifiers[]` with `componentIndex`, their quantity already × the component's units,
+  each taxed with its item (B28). A composite has no modifiers of its own (B43): `product.modifiers` is `[]` on it, and
+  `modifiers` sent with `composite` are refused.
 - Refused with a `reason`: invalid picks; `composite` on a product that is not a composite; a taxable fee when it is
   taxed by its items (nothing to inherit); a picked variant whose price cannot be read; nothing picked on a composite
-  taxed by its items that has a price or its own modifiers. Never a guessed price or a tax of 0.
+  taxed by its items that has a price; `modifiers` on the composite itself. Never a guessed price or a tax of 0.
+- Bookable items (B41): send `compositeSlot: { startAt }` — one start for every bookable pick, from
+  `getCompositeAvailability`; a pick may name `resourceId`. The host checks goods stock, then seats (one resource's,
+  else several resources'), then holds each one; any failure releases what it took and refuses with a `reason`. Each
+  hold is a `cart.reservations[]` row at price 0 with `lineItemInternalId` + `componentIndex` — the component keeps the
+  money and tax. The line's quantity cannot be changed, it never merges with another line, and it is refunded whole
+  only; removing it, or any of its holds lapsing, takes the whole line and releases the other holds.
+  `removeBookingFromCart` refuses such a booking — remove the composite.

@@ -897,17 +897,8 @@ export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
   ),
   productType: CFProductType.COMPOSITE,
   taxTable: '',
-  // The composite's own modifier (B32): with each item's own tax its price is split over the picks like the composite's.
-  modifiers: [
-    {
-      _id: 'mod_gift_box',
-      name: 'Gift box',
-      selectionType: 'single',
-      required: false,
-      sortOrder: 0,
-      choices: [{ _id: 'choice_gift_box', name: 'Gift box', price: 200, sortOrder: 0 }],
-    },
-  ],
+  // B43: a composite has no modifiers of its own; its items carry theirs.
+  modifiers: [],
   composite: {
     available: true,
     basePrice: 2700,
@@ -1058,7 +1049,36 @@ export const mockHiddenProductIds = (): Set<string> =>
  * `'empty'`), an Optional part with nothing to pick is not offered, a required one with nothing makes it unavailable,
  * and the D36 default and "from" price are read off what is left.
  */
-export function mockCompositeAtOutlet(composite: CFComposite, hidden = mockHiddenProductIds()): CFComposite {
+/** B41: the seats a bookable demo product has free in the slot starting at `startAt` — as the host reads them. */
+export function mockBookableWindow(productId: string, startAt: string): { free: number; slot: CFBookingSlot | null } {
+  const at = new Date(startAt);
+  const slot =
+    mockBookingAvailability(productId, at, new Date(+at + 86_400_000)).slots.find(
+      (candidate) => +new Date(candidate.startAt) === +at && candidate.canStart,
+    ) ?? null;
+  return { free: slot?.free ?? 0, slot };
+}
+
+export const mockIsBookable = (productId: string) =>
+  MOCK_PRODUCTS.find((product) => product._id === productId)?.productType === CFProductType.BOOKING;
+
+export function mockCompositeAtOutlet(
+  composite: Omit<CFComposite, 'needsDate'>,
+  hidden = mockHiddenProductIds(),
+  /** B41: the window bookable items are judged in; absent = `by_date`. */
+  slot?: { startAt: string },
+): CFComposite {
+  // B41: a bookable item is judged by seats in the window, never by stock; with no window it waits for a date.
+  const bookable = (item: CFComposite['parts'][number]['items'][number]) =>
+    !!item.variantId && item.choices.some((choice) => mockIsBookable(choice.productId));
+  const seatsFor = (item: CFComposite['parts'][number]['items'][number]) =>
+    !slot
+      ? ('by_date' as const)
+      : mockBookableWindow(item.choices[0].productId, slot.startAt).free >= item.quantity
+        ? null
+        : ('fully_booked' as const);
+  const offered = (item: { unavailable: CFComposite['parts'][number]['items'][number]['unavailable'] }) =>
+    !item.unavailable || item.unavailable === 'by_date';
   // B35: a tracked variant without `quantity` on the demo shelf here (and no backorder) is sold out.
   const soldOut = (variantId: string, quantity: number) => {
     const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find(
@@ -1080,13 +1100,14 @@ export function mockCompositeAtOutlet(composite: CFComposite, hidden = mockHidde
   const upcharge = (item: CFComposite['parts'][number]['items'][number]) => ({
     extraCharge: item.extraCharge,
     quantity: item.quantity,
-    available: !item.unavailable,
+    available: offered(item),
   });
   const parts = composite.parts
     .map((part) => {
       const items = part.items.flatMap((item) => {
         if (item.variantId) {
           if (item.choices.some((choice) => hidden.has(choice.productId))) return [];
+          if (!item.unavailable && bookable(item)) return [{ ...item, unavailable: seatsFor(item) }];
           return item.unavailable || !soldOut(item.variantId, item.quantity)
             ? [{ ...item, choices: item.choices.map(withStockLeft) }]
             : [{ ...item, unavailable: 'out_of_stock' as const, choices: [] }];
@@ -1104,12 +1125,12 @@ export function mockCompositeAtOutlet(composite: CFComposite, hidden = mockHidde
         defaultPick: cheapest?.variantId ? { itemId: cheapest._id, variantId: cheapest.variantId } : null,
       };
     })
-    .filter((part) => part.min > 0 || part.items.some((item) => !item.unavailable));
+    .filter((part) => part.min > 0 || part.items.some(offered));
   const cheapest = cheapestCompositePrice(parts.map((part) => ({ min: part.min, items: part.items.map(upcharge) })));
   return {
     ...composite,
-    available:
-      composite.available && parts.every((part) => part.min === 0 || part.items.some((item) => !item.unavailable)),
+    available: composite.available && parts.every((part) => part.min === 0 || part.items.some(offered)),
+    needsDate: parts.some((part) => part.items.some(bookable)),
     fromPrice: composite.basePrice === null || cheapest === undefined ? null : composite.basePrice + cheapest,
     parts,
   };

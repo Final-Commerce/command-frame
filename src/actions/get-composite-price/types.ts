@@ -6,6 +6,8 @@ export interface GetCompositePriceParams {
   variantId: string;
   /** The picks so far, exactly as `addProductToCart({ composite })` would send them. */
   composite: CFCompositePick[];
+  /** B41: the date and time a bookable pick is for, as `addProductToCart` takes it; without one a bookable pick is refused. */
+  compositeSlot?: { startAt: string };
 }
 
 export interface GetCompositePriceResponse {

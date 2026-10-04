@@ -14,6 +14,7 @@ import { mockAddProductDiscount } from '../../actions/add-product-discount/mock'
 import { mockAddProductFee } from '../../actions/add-product-fee/mock';
 import { mockGetProductModifierSelections } from '../../actions/get-product-modifier-selections/mock';
 import { mockGetCompositePrice } from '../../actions/get-composite-price/mock';
+import { mockGetCompositeAvailability } from '../../actions/get-composite-availability/mock';
 import { mockSetProductModifierSelections } from '../../actions/set-product-modifier-selections/mock';
 import { mockRemoveProductDiscount } from '../../actions/remove-product-discount/mock';
 import { mockRemoveProductFee } from '../../actions/remove-product-fee/mock';
@@ -126,6 +127,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   addProductFee: mockAddProductFee,
   getProductModifierSelections: mockGetProductModifierSelections,
   getCompositePrice: mockGetCompositePrice,
+  getCompositeAvailability: mockGetCompositeAvailability,
   setProductModifierSelections: mockSetProductModifierSelections,
   setActiveProductFee: mockSetActiveProductFee,
   setActiveProductDiscount: mockSetActiveProductDiscount,

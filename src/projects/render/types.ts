@@ -22,6 +22,7 @@ import type {
   AddProductFee,
   GetProductModifierSelections,
   GetCompositePrice,
+  GetCompositeAvailability,
   SetProductModifierSelections,
   SetActiveProductFee,
   SetActiveProductDiscount,
@@ -150,6 +151,7 @@ export interface RenderProviderActions {
   addProductFee: AddProductFee;
   getProductModifierSelections: GetProductModifierSelections;
   getCompositePrice: GetCompositePrice;
+  getCompositeAvailability: GetCompositeAvailability;
   setProductModifierSelections: SetProductModifierSelections;
   setActiveProductFee: SetActiveProductFee;
   setActiveProductDiscount: SetActiveProductDiscount;

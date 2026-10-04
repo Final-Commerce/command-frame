@@ -1,6 +1,6 @@
 # getProducts
 
-Retrieves a list of products from the parent application's local database.
+Retrieves a list of products from the parent application's local database. A composite whose `composite.needsDate` is true holds a bookable item: show "By date" instead of a ready Add button and route Add through a date and time picker (`getCompositeAvailability`); its items reading `unavailable: 'by_date'` stay pickable.
 
 > **Bookable services are excluded unless you ask for them.** A service is not catalogue stock:
 > it is sold by claiming a time with `addBookingToCart`, and `addProductToCart` refuses it
@@ -87,7 +87,7 @@ See the [Real Data Examples](#real-data-examples) section below for actual produ
 
 **Composite products** (`productType: 'composite'`) carry `composite: CFComposite` — `null` on every other product.
 It is the whole picker, decided by the host: `parts[]` (`name`, `required`, `min`, `max`) → `items[]` (`name`, `cost` =
-what one pick adds on top of the composite's price — its upcharge × quantity (B31), `unavailable` = null or `'deleted' | 'inactive' | 'empty' | 'out_of_stock'`, `choices[]` = the variants a pick may
+what one pick adds on top of the composite's price — its upcharge × quantity (B31), `unavailable` = null or `'deleted' | 'inactive' | 'empty' | 'out_of_stock' | 'by_date' | 'fully_booked'`, `choices[]` = the variants a pick may
 name), plus
 `available` (false = show the composite Unavailable; `fromPrice` is then null when nothing is left to price), `basePrice` (the composite's own price, set by the merchant, in every tax mode) and
 `fromPrice` (the "from" price for the card).
@@ -110,6 +110,13 @@ Untracked variants are always in stock. A required part with nothing in stock ma
 `addProductToCart` / `getCompositePrice`, and again at the first payment, the host adds up what the whole cart takes
 from each shelf (pick × item × line, plain lines on the same pool included) and refuses "<item>: only N left". A stock
 move arrives as `products` / `inventory-changed` — refetch.
+
+_Bookable items_ (B41): an item whose product is bookable is judged by seats, never stock. `composite.needsDate` is
+true when the composite offers one: show "By date" instead of a ready-to-add state. Until a date and time is chosen
+such an item reads `unavailable: 'by_date'` — it still has its `choices` and does NOT make the composite unavailable.
+Ask `getCompositeAvailability` for the start times free for all of them, then `getCompositePrice` /
+`addProductToCart` with `compositeSlot: { startAt }`; there an item without enough seats reads `'fully_booked'`.
+A category item never hands out bookables.
 
 Each part's `defaultPick` (`{ itemId, variantId }`) is the pick to show
 preselected (B29 = D36): only on a required "pick 1" part (`required`, `min = max = 1`) — its cheapest available item
