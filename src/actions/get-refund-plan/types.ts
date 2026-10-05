@@ -31,11 +31,14 @@ export interface GetRefundPlanParams {
    * nothing staged, no `allocation` comes back.
    */
   items?: {
-    /** `internalId` / `variantId` for a product, `customSaleId`, cart-fee id, or tip `transactionId`. */
+    /**
+     * `internalId` / `variantId` for a product, `customSaleId`, cart-fee id, tip
+     * `transactionId`, or a booking's own `internalId` on `order.reservations[]`.
+     */
     itemKey: string;
     quantity: number;
     /** Optional hint; inferred from the order when omitted. */
-    type?: 'product' | 'customSale' | 'fee' | 'tip';
+    type?: 'product' | 'customSale' | 'fee' | 'tip' | 'reservation';
   }[];
 }
 

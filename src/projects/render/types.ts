@@ -102,6 +102,13 @@ import type {
   SaveSmartGridLayout,
   SendEmail,
   SendSms,
+  GetBookingResources,
+  GetBookingAvailability,
+  GetBookings,
+  HoldBooking,
+  AddBookingToCart,
+  RemoveBookingFromCart,
+  CancelBooking,
   CreatePaymentLink,
   ChargeMoto,
   GetTimeClockStatus,
@@ -110,6 +117,17 @@ import type {
 export interface RenderProviderActions {
   exampleFunction: ExampleFunction;
   getProducts: GetProducts;
+  // Booking (FT-0064): every one of these is answered from the host's own synced data and works
+  // offline — availability is computed on the device from the rules, and a hold is written there
+  // too. What that costs is the guarantee: two tills with no line between them can both take the
+  // same window, and the shop resolves it afterwards like any other double booking.
+  getBookingResources: GetBookingResources;
+  getBookingAvailability: GetBookingAvailability;
+  getBookings: GetBookings;
+  holdBooking: HoldBooking;
+  addBookingToCart: AddBookingToCart;
+  removeBookingFromCart: RemoveBookingFromCart;
+  cancelBooking: CancelBooking;
   addCustomSale: AddCustomSale;
   editCustomSale: EditCustomSale;
   getCustomers: GetCustomers;

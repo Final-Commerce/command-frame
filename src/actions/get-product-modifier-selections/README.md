@@ -10,7 +10,7 @@ changed from a flow; a line's selections are supplied via
 
 ```typescript
 interface GetProductModifierSelectionsParams {
-    internalId?: string;   // the cart line to read; defaults to the active product's line
+  internalId?: string; // the cart line to read; defaults to the active product's line
 }
 ```
 
@@ -18,13 +18,13 @@ interface GetProductModifierSelectionsParams {
 
 ```typescript
 interface GetProductModifierSelectionsResponse {
-    success: boolean;
-    reason?: string;                    // set when the read failed (no such line / no active product)
-    internalId?: string;                // the line that was read
-    selections: ModifierSelection[];    // raw: { modifierId, choices: [{ choiceId, quantity }] }
-    rows: ProdModifierBreakdown[];      // display-ready, one row per chosen choice
-    modifiersTotal: number;             // Σ rows[].amount for this line, minor units
-    timestamp: string;
+  success: boolean;
+  reason?: string; // set when the read failed (no such line / no active product)
+  internalId?: string; // the line that was read
+  selections: ModifierSelection[]; // raw: { modifierId, choices: [{ choiceId, quantity }] }
+  rows: ProdModifierBreakdown[]; // display-ready, one row per chosen choice
+  modifiersTotal: number; // Σ rows[].amount for this line, minor units
+  timestamp: string;
 }
 ```
 
@@ -61,8 +61,8 @@ its own README. The mock matches the host in both cases.
 const { rows, modifiersTotal } = await commandFrame.getProductModifierSelections({ internalId });
 
 rows.forEach((row) => {
-    // "Toppings - Avocado  x2   $10.00"  — nothing to look up, nothing to multiply
-    console.log(row.label, `x${row.quantity}`, formatMoney(row.amount));
+  // "Toppings - Avocado  x2   $10.00"  — nothing to look up, nothing to multiply
+  console.log(row.label, `x${row.quantity}`, formatMoney(row.amount));
 });
 console.log('Modifiers', formatMoney(modifiersTotal));
 ```
@@ -72,8 +72,8 @@ To edit, send `selections` back rather than `rows`:
 ```typescript
 const { selections } = await commandFrame.getProductModifierSelections({ internalId });
 await commandFrame.setProductModifierSelections({
-    internalId,
-    selections: selections.filter((s) => s.modifierId !== droppedModifierId)
+  internalId,
+  selections: selections.filter((s) => s.modifierId !== droppedModifierId),
 });
 ```
 
