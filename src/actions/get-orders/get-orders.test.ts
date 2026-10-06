@@ -58,6 +58,14 @@ describe('getOrders mock', () => {
     expect(released.orders.length).toBeGreaterThan(0);
   });
 
+  it('assignedUserId: null keeps only unassigned orders', async () => {
+    const all = await mockGetOrders({});
+    const unassigned = await mockGetOrders({ assignedUserId: null });
+
+    expect(unassigned.orders.every((o) => o.assignedUser == null)).toBe(true);
+    expect(unassigned.orders.length).toBe(all.orders.filter((o) => o.assignedUser == null).length);
+  });
+
   it('filters by outlet', async () => {
     const main = await mockGetOrders({ outletId: 'outlet_main', fulfillmentState: 'fulfilled' });
     const none = await mockGetOrders({ outletId: 'no-such-outlet' });

@@ -35,6 +35,9 @@ await command.assignOrderUser({ orderId: 'order-id-123', userId: user.id });
 // "My deliveries"
 const { orders } = await command.getOrders({ assignedUserId: user.id, fulfillmentState: 'partially_fulfilled' });
 
+// Deliveries nobody has claimed yet
+const { orders: unclaimed } = await command.getOrders({ orderType: 'delivery', assignedUserId: null });
+
 // Hand it back
 await command.assignOrderUser({ orderId: 'order-id-123', userId: null });
 ```

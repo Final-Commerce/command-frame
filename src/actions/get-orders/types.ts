@@ -12,8 +12,11 @@ export interface GetOrdersParams {
   fulfillmentState?: string | string[];
   /** Only orders placed at this outlet (`posData.outlet`). Without it, orders from every outlet in the company are returned. */
   outletId?: string;
-  /** Only orders assigned to this user (`assignedUser.userId`), e.g. a driver's deliveries. */
-  assignedUserId?: string;
+  /**
+   * Only orders assigned to this user (`assignedUser.userId`), e.g. a driver's deliveries.
+   * `null`: only orders nobody is assigned to yet (e.g. deliveries awaiting a driver).
+   */
+  assignedUserId?: string | null;
   /**
    * true: only orders loaded in a cart; false: only orders that aren't. Reads `order.inCart` when the order
    * carries it, otherwise the legacy reading (fulfillment 'draft' / status 'in-cart').

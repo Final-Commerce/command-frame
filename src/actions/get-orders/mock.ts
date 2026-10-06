@@ -64,6 +64,8 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
 
     if (assignedUserId) {
       orders = orders.filter((o) => o.assignedUser?.userId === assignedUserId);
+    } else if (assignedUserId === null) {
+      orders = orders.filter((o) => o.assignedUser == null);
     }
 
     if (orderType !== undefined) {
