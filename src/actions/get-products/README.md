@@ -1,6 +1,24 @@
 # getProducts
 
-Retrieves a list of products from the parent application's local database. A variant sold by measure carries `unitId` (and a resolved `unit`), and its `inventory[].stock` is ALREADY in that selling unit — the host converts its base-unit ledger before the variant reaches you. Show it as `${stock} ${unit.abbreviation}`; never divide or multiply it by `unit.ratioToBase`.
+Retrieves a list of products from the parent application's local database.
+
+> **Bookable services are excluded unless you ask for them.** A service is not catalogue stock:
+> it is sold by claiming a time with `addBookingToCart`, and `addProductToCart` refuses it
+> outright. Returned by default it appeared in ordinary product grids, where the obvious gesture —
+> tap, add to cart, charge — took the money and reserved nothing at all: no hold, no reservation
+> on the order, the slot still free for the next customer.
+>
+> Ask for them when the user genuinely wants services — a Book tab, a services screen, a search
+> that should span everything:
+>
+> ```typescript
+> getProducts({ query: { productType: 'booking' } }); // services only
+> getProducts({ query: { productType: { $in: ['simple', 'variable', 'booking'] } } }); // both
+> ```
+>
+> Any query that names `productType` is used exactly as written — the default exclusion switches
+> off entirely, so `{ $ne: 'booking' }` also means what it says.
+> A variant sold by measure carries `unitId` (and a resolved `unit`), and its `inventory[].stock` is ALREADY in that selling unit — the host converts its base-unit ledger before the variant reaches you. Show it as `${stock} ${unit.abbreviation}`; never divide or multiply it by `unit.ratioToBase`.
 
 ## Parameters
 
@@ -12,7 +30,8 @@ interface GetProductsParams {
     name?: string | { $regex?: string; $options?: string };
     sku?: string | { $regex?: string; $options?: string };
     status?: string;
-    productType?: string;
+    /** `simple` | `variable` | `booking`. Naming it switches off the bookable-service exclusion. */
+    productType?: string | { $in?: string[]; $ne?: string };
     categories?: string | { $in?: string[] };
     tags?: string | { $in?: string[] };
     supplier?: string;
