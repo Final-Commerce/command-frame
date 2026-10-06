@@ -6,8 +6,9 @@ import { CategoriesSection } from './components/sections/CategoriesSection';
 import { ProductsSection } from './components/sections/ProductsSection';
 import { CustomersSection } from './components/sections/CustomersSection';
 import { CartSection } from './components/sections/CartSection';
-import { ModifiersSection } from './components/sections/ModifiersSection';
 import { OrdersSection } from './components/sections/OrdersSection';
+import { BookingsSection } from './components/sections/BookingsSection';
+import { ModifiersSection } from './components/sections/ModifiersSection';
 import { OutletSection } from './components/sections/OutletSection';
 import { StationSection } from './components/sections/StationSection';
 import { SessionSection } from './components/sections/SessionSection';
@@ -48,10 +49,12 @@ function App() {
         return <CustomersSection isInIframe={isInIframe} />;
       case 'cart':
         return <CartSection isInIframe={isInIframe} />;
-      case 'modifiers':
-        return <ModifiersSection isInIframe={isInIframe} />;
       case 'orders':
         return <OrdersSection isInIframe={isInIframe} />;
+      case 'bookings':
+        return <BookingsSection isInIframe={isInIframe} />;
+      case 'modifiers':
+        return <ModifiersSection isInIframe={isInIframe} />;
       case 'state-machine':
         return <StateMachineSection isInIframe={isInIframe} />;
       case 'outlet':

@@ -31,11 +31,14 @@ export interface GetRefundPlanParams {
    * nothing staged, no `allocation` comes back.
    */
   items?: {
-    /** `internalId` / `variantId` for a product, `customSaleId`, cart-fee id, or tip `transactionId`. */
+    /**
+     * `internalId` / `variantId` for a product, `customSaleId`, cart-fee id, tip
+     * `transactionId`, or a booking's own `internalId` on `order.reservations[]`.
+     */
     itemKey: string;
     quantity: number;
     /** Optional hint; inferred from the order when omitted. */
-    type?: 'product' | 'customSale' | 'fee' | 'tip';
+    type?: 'product' | 'customSale' | 'fee' | 'tip' | 'reservation';
   }[];
 }
 
@@ -92,6 +95,88 @@ export interface RefundPlanLeg {
   };
 }
 
+export type RefundPlanRowType = 'product' | 'customSale' | 'fee' | 'tip';
+
+/** One tax rate's share of a row's refund (minor units). */
+export interface RefundPlanTaxLine {
+  name: string;
+  /** Decimal rate as stored on the order (e.g. `0.15`), when the order recorded one. */
+  percentage?: number;
+  amount: number;
+}
+
+/**
+ * The money a row refunds, split the way a receipt shows it. Every field is
+ * minor units and already rounded; `subtotal − itemDiscount − cartDiscount +
+ * tax === total` always holds. DISPLAY IT — never re-add or prorate it.
+ */
+export interface RefundPlanAmounts {
+  /** Before discounts, tax excluded. For a tip row, the tip itself. */
+  subtotal: number;
+  /** Per-item discounts on the refunded quantity (positive). */
+  itemDiscount: number;
+  /** Cart discount share on the refunded quantity (positive). */
+  cartDiscount: number;
+  /** Tax on the refunded quantity. Zero for a tip. */
+  tax: number;
+  /** `tax` per rate — the price breakdown's tax lines. */
+  taxes: RefundPlanTaxLine[];
+  /** What the row refunds. */
+  total: number;
+}
+
+/**
+ * One refundable row of the order — a line item, custom sale, cart fee or tip —
+ * served ready to render. Rows with nothing left to refund are not listed.
+ */
+export interface RefundPlanRow {
+  type: RefundPlanRowType;
+  /** The key `items[].itemKey` takes, for this call and for `processPartialRefund`. */
+  itemKey: string;
+  /** Line or fee name; `Tip` for a tip. */
+  label: string;
+  /** Product lines only, when the order recorded them. */
+  sku?: string;
+  attributes?: string;
+  /** Tip rows only: the tender that took the tip (`card`, `cash`, …). */
+  paymentType?: string;
+  /** Quantity originally sold. Fees and tips are `1` — all or nothing. */
+  quantity: number;
+  /** Quantity still refundable — the stepper's max. */
+  refundableQuantity: number;
+  /** The money for refunding ALL of `refundableQuantity`. */
+  amounts: RefundPlanAmounts;
+}
+
+/** One selected row and what refunding the selected quantity of it moves. */
+export interface RefundPlanSelectedRow {
+  type: RefundPlanRowType;
+  itemKey: string;
+  quantity: number;
+  amounts: RefundPlanAmounts;
+}
+
+/**
+ * The selection's goods value broken down for display. Minor units;
+ * `items − discounts + fees + tax + tip === total === allocation.itemTotal`.
+ */
+export interface RefundPlanTotals {
+  /** Σ selected line subtotals (before discounts, tax excluded). */
+  items: number;
+  /** Σ item + cart discounts on the selected lines (positive). */
+  discounts: number;
+  /** Σ selected cart fees, tax excluded. */
+  fees: number;
+  tax: number;
+  tip: number;
+  total: number;
+}
+
+export interface RefundPlanBreakdown {
+  rows: RefundPlanSelectedRow[];
+  totals: RefundPlanTotals;
+}
+
 /**
  * The engine's own allocation of the CURRENT refund selection across the
  * order's captures — what a flow renders and submits instead of computing a
@@ -119,12 +204,26 @@ export interface RefundPlanAllocation {
   rounding: number;
   /** One leg per source that receives money. Submit as `legs`, unchanged. */
   legs: RefundPlanLeg[];
+  /**
+   * What the selection refunds, per row and in total — the numbers a refund
+   * dialog's rows and footer render. Optional so an older runtime still
+   * type-checks; kaching 1.12.1+ always sends it.
+   */
+  breakdown?: RefundPlanBreakdown;
 }
 
 export interface GetRefundPlanResponse {
   success: boolean;
   orderId: string;
   sources: RefundPlanSource[];
+  /**
+   * Every row still refundable on the order, with the money for refunding all
+   * of it — what a refund dialog lists before anything is selected. Replaces
+   * reading line totals off the order and deciding whether they include tax.
+   * Optional so an older runtime still type-checks; kaching 1.12.1+ always
+   * sends it.
+   */
+  rows?: RefundPlanRow[];
   /**
    * Ready-to-submit allocation of the current selection. Present only when a
    * refund selection exists on the active order. See {@link RefundPlanAllocation}.
