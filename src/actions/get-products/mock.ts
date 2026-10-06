@@ -1,12 +1,17 @@
 import { GetProducts, GetProductsParams, GetProductsResponse } from './types';
-import { MOCK_PRODUCTS, safeSerialize } from '../../demo/database';
+import { MOCK_PRODUCTS, mockCompositeAtOutlet, mockHiddenProductIds, safeSerialize } from '../../demo/database';
 import { resolveUnit } from '@final-commerce/common';
 
 export const mockGetProducts: GetProducts = async (params?: GetProductsParams): Promise<GetProductsResponse> => {
   console.log('[Mock] getProducts called', params);
 
-  // Simple filter simulation
-  let products = MOCK_PRODUCTS;
+  // Simple filter simulation. Like the host: a product hidden at this outlet is left out, and a composite offers only
+  // what is sold here.
+  const hidden = mockHiddenProductIds();
+  let products = MOCK_PRODUCTS.filter((p) => !hidden.has(p._id)).map((p) =>
+    // B43: the host never hands a composite modifiers of its own.
+    p.composite ? { ...p, modifiers: [], composite: mockCompositeAtOutlet(p.composite, hidden) } : p,
+  );
   const query = params?.query || {};
 
   // Same rule as the real host: a bookable service is not catalogue stock and is left out unless

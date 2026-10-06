@@ -68,6 +68,14 @@ import type {
   Booking,
   CartReservation,
   OrderReservation,
+  Composite,
+  CompositePart,
+  CompositeItem,
+  CompositeChoice,
+  CompositeItemUnavailable,
+  CompositePick,
+  CartLineComponent,
+  OrderLineItemComponent,
 } from '@final-commerce/common/pos-types';
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
@@ -98,6 +106,26 @@ export type CFTransaction = Transaction;
 export type CFCategory = Category;
 export type CFProductVariant = ProductVariant;
 export type CFProduct = FullProduct;
+/** Composite products (FT-83): `CFProduct.composite`, the picks `addProductToCart` takes, the cart/order line's
+ *  components. The host decides availability, prices and tax; a flow renders them and sends picks. */
+/**
+ * B41: `needsDate: true` — the composite holds a bookable item and CANNOT be sold without a time. Show "By date" and a
+ * date and time picker filled from `getCompositeAvailability`, then pass the chosen `compositeSlot` to `addProductToCart`.
+ * Until a time is chosen its bookable items read `unavailable: 'by_date'` — still pickable, never greyed out.
+ * INTERIM here until `common/pos-types` Composite carries it (ob_agent).
+ */
+export type CFComposite = Composite & { needsDate: boolean };
+export type CFCompositePart = CompositePart;
+export type CFCompositeItem = CompositeItem;
+export type CFCompositeChoice = CompositeChoice;
+export type CFCompositeItemUnavailable = CompositeItemUnavailable;
+/**
+ * B41: `resourceId` — on a bookable pick only: the resource that must serve it. Omitted = the host takes the first one
+ * free in that window. INTERIM here until `common/pos-types` CompositePick carries it (ob_agent).
+ */
+export type CFCompositePick = CompositePick & { resourceId?: string };
+export type CFCartLineComponent = CartLineComponent;
+export type CFOrderLineItemComponent = OrderLineItemComponent;
 export type CFBookingAvailability = BookingAvailability;
 export type CFBookingSlot = BookingSlot;
 export type CFBookingSlotResource = BookingSlotResource;

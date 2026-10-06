@@ -53,6 +53,8 @@ The library provides a `command` namespace object containing all available comma
 - **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `internalId`)
 - **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `internalId`)
 - **[adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)** - Adjust inventory/stock level for a specific product variant
+- **[getCompositePrice](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-composite-price/README.md)** - Price a composite's current picks before adding it (a picker's running total)
+- **[getCompositeAvailability](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-composite-availability/README.md)** - The start times every bookable pick of a composite is free at (one date picker for the whole composite)
 - **[setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)** - Set a product as the active product in the POS interface by variant ID
 
 #### Order Actions

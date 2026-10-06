@@ -26,6 +26,18 @@ export const mockGetProductModifierSelections: GetProductModifierSelections = as
       timestamp: new Date().toISOString(),
     };
   }
+  // Like the host (FT-83): a composite line's modifiers belong to its components.
+  if (line.components?.length) {
+    return {
+      success: false,
+      reason: 'The modifiers of a composite line cannot be edited yet: remove the line and add it again with its picks',
+      internalId: line.internalId,
+      selections: [],
+      rows: [],
+      modifiersTotal: 0,
+      timestamp: new Date().toISOString(),
+    };
+  }
 
   // The priced rows already sit on the line; extending them by the line quantity is
   // the host's job, not the flow's.
