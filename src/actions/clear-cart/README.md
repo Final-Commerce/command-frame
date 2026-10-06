@@ -24,6 +24,10 @@ import { command } from '@final-commerce/command-frame';
 await command.clearCart();
 ```
 
+## Notes
+
+- If the cart holds an order that was already saved (e.g. one loaded with [`resumeOrder`](../resume-order/README.md)), that order is **not** deleted: it keeps its last saved contents — changes made in the cart since are discarded — and is marked out of the cart (`order.inCart.active: false`), so it can be resumed again. To keep the cart's changes, use [`releaseFromCart`](../release-from-cart/README.md) instead; to cancel the order, use [`voidOrder`](../void-order/README.md).
+
 ## Events
 
 - Publishes a `cart-created` event on the `cart` topic with the reset cart

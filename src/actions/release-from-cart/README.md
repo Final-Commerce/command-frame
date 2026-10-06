@@ -2,7 +2,7 @@
 
 Takes the order in the cart **out of the cart without changing it**, and clears the terminal for the next sale. The order keeps its payment and fulfillment state — nothing is parked, paid or voided — and is saved with `inCart.active: false`, so it can be picked up again later with [`resumeOrder`](../resume-order/README.md), on this station or another.
 
-Use it instead of [`clearCart`](../clear-cart/README.md) when the order should survive: `clearCart` discards the cart (and, for an order that was already saved, leaves it marked as in a cart). Use [`voidOrder`](../void-order/README.md) to cancel an order for good.
+Use it instead of [`clearCart`](../clear-cart/README.md) when the cart's contents should survive: `clearCart` throws the cart away — an order that was already saved keeps its last saved contents (edits made since are lost) and is marked out of the cart. Use [`voidOrder`](../void-order/README.md) to cancel an order for good.
 
 ## Parameters
 
