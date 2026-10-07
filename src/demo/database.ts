@@ -3,6 +3,7 @@
  * Stores mock data that mimics the Render environment
  */
 
+import type { CFOrderStatusDefinition } from '../common-types/order-state';
 import {
   CFActiveCompany,
   CFActiveUser,
@@ -49,6 +50,7 @@ export interface MockDatabaseConfig {
   bookingResources?: CFBookingResource[];
   /** Windows already taken when the dataset loads, so a calendar does not open empty. */
   bookings?: CFBooking[];
+  orderStatuses?: CFOrderStatusDefinition[];
 }
 
 // Asset Imports - Using Remote URLs to avoid build complexity with asset copying
@@ -943,7 +945,19 @@ function resolveMockOrderCurrency(): CurrencyCode {
  * Replace in-memory mock data used by default mock handlers. Arrays are mutated in place
  * so existing imports from this module keep working.
  */
+/** The demo company's order statuses (getOrderStatuses / setOrderStatus). */
+export const MOCK_ORDER_STATUSES: CFOrderStatusDefinition[] = [
+  { id: 'in-kitchen', label: 'In kitchen', color: '#f59e0b', fulfillmentState: 'pending' },
+  { id: 'ready-for-pickup', label: 'Ready for pickup', color: '#10b981', fulfillmentState: 'in_progress' },
+  { id: 'out-for-delivery', label: 'Out for delivery', color: '#3b82f6', fulfillmentState: 'partially_fulfilled' },
+  { id: 'delivered', label: 'Delivered', fulfillmentState: 'fulfilled', requiresPaymentState: ['paid'] },
+  { id: 'driver-called', label: 'Driver called' },
+];
+
 export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
+  if (config.orderStatuses !== undefined) {
+    MOCK_ORDER_STATUSES.splice(0, MOCK_ORDER_STATUSES.length, ...config.orderStatuses);
+  }
   if (config.company !== undefined) {
     Object.assign(MOCK_COMPANY, config.company);
   }

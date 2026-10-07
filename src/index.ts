@@ -47,6 +47,8 @@ import { setOrderMetadata } from './actions/set-order-metadata/action';
 import { assignOrderUser } from './actions/assign-order-user/action';
 import { releaseFromCart } from './actions/release-from-cart/action';
 import { setOrderType } from './actions/set-order-type/action';
+import { setOrderStatus } from './actions/set-order-status/action';
+import { getOrderStatuses } from './actions/get-order-statuses/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
 import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
@@ -205,6 +207,8 @@ export const command = {
   assignOrderUser,
   releaseFromCart,
   setOrderType,
+  setOrderStatus,
+  getOrderStatuses,
   deleteParkedOrder,
   voidOrder,
   cashPayment,
@@ -545,6 +549,8 @@ export type {
 } from './actions/assign-order-user/types';
 export type { ReleaseFromCart, ReleaseFromCartResponse } from './actions/release-from-cart/types';
 export type { SetOrderType, SetOrderTypeParams, SetOrderTypeResponse } from './actions/set-order-type/types';
+export type { SetOrderStatus, SetOrderStatusParams, SetOrderStatusResponse } from './actions/set-order-status/types';
+export type { GetOrderStatuses, GetOrderStatusesResponse } from './actions/get-order-statuses/types';
 export type {
   DeleteParkedOrder,
   DeleteParkedOrderParams,

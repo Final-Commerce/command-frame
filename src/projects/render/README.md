@@ -71,6 +71,8 @@ The library provides a `command` namespace object containing all available comma
 - **[resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)** - Resume any open order (parked or not) into the cart; in-cart, completed, refunded and cancelled orders are rejected
 - **[setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)** - Set or remove free-form key/value metadata on an order or the live cart (e.g. a delivery note); syncs with the order
 - **[setOrderType](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-type/README.md)** - Label an order (or the live cart) with a free-text type such as `delivery`; display and `getOrders` filtering only, no logic
+- **[setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)** - Set one of the company's custom order statuses on an order; bound statuses move the fulfillment state, and can require a payment state
+- **[getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)** - The company's custom order statuses
 - **[assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)** - Assign a user (e.g. the driver) to an order, or unassign; one assignee at a time, synced with the order
 - **[releaseFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/release-from-cart/README.md)** - Take the order out of the cart unchanged (saved with `inCart.active: false`) and clear the terminal; resume it later with `resumeOrder`
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
@@ -399,6 +401,14 @@ Sets (string) or removes (`null`) metadata keys on an order by id, or on the liv
 ### [setOrderType](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-type/README.md)
 
 Sets `order.orderType` — free text (`takeout`, `pickup`, `delivery`, …) or `null` to clear — on an order by id or on the live cart, carried onto the order when it's created. A label for display and `getOrders({ orderType })` only; nothing in the POS logic reads it.
+
+### [setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)
+
+Sets `order.customStatus` to one of the company's statuses (or clears it). A status bound to a fulfillment state moves the order there through the state machine; one with `requiresPaymentState` fails until the order is paid accordingly. State changes elsewhere never touch the status.
+
+### [getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)
+
+Returns the company's status definitions `{ id, label, color?, icon?, fulfillmentState?, requiresPaymentState? }`.
 
 ### [assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)
 
@@ -799,6 +809,11 @@ import type {
   SetOrderTypeParams,
   SetOrderTypeResponse,
   SetOrderType,
+  SetOrderStatusParams,
+  SetOrderStatusResponse,
+  SetOrderStatus,
+  GetOrderStatusesResponse,
+  GetOrderStatuses,
   AssignOrderUserParams,
   AssignOrderUserResponse,
   AssignOrderUser,

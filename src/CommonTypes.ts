@@ -13,6 +13,7 @@ import type {
   MetadataItem,
   OrderAssignedUser,
   OrderInCart,
+  OrderCustomStatus,
   PosDataItem,
   CartFeeTaxEntry,
   CartFeeItem,
@@ -91,6 +92,7 @@ export type CFAddress = Address;
 export type CFMetadataItem = MetadataItem;
 export type CFOrderAssignedUser = OrderAssignedUser;
 export type CFOrderInCart = OrderInCart;
+export type CFOrderCustomStatus = OrderCustomStatus;
 export type CFTax = Tax;
 export type CFCartFeeTaxEntry = CartFeeTaxEntry;
 export type CFInventory = Inventory;

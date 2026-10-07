@@ -21,7 +21,8 @@ Why two axes? Because money and goods move independently: an order can be fully 
 | Park / resume / delete a parked order                     | [`parkOrder`](../src/actions/park-order/README.md), [`resumeParkedOrder`](../src/actions/resume-parked-order/README.md), [`deleteParkedOrder`](../src/actions/delete-parked-order/README.md) — built on `applyTransition` with extra business-flow guarantees; prefer these when they fit                                                                                                                                                                                                     |
 | Take an order out of the cart / bring any order back      | [`releaseFromCart`](../src/actions/release-from-cart/README.md) (out, unchanged) and [`resumeOrder`](../src/actions/resume-order/README.md) (back in) — no parking needed; see §11                                                                                                                                                                                                                                                                                                            |
 | Label, assign or annotate an order                        | [`setOrderType`](../src/actions/set-order-type/README.md) (free-text type, e.g. `delivery`), [`assignOrderUser`](../src/actions/assign-order-user/README.md) (e.g. the driver), [`setOrderMetadata`](../src/actions/set-order-metadata/README.md) (key/value) — none of them touch the state                                                                                                                                                                                                  |
-| Find orders by state, cart, type or assignee              | [`getOrders`](../src/actions/get-orders/README.md) — `paymentState`, `fulfillmentState`, `inCart`, `orderType`, `assignedUserId` (`null` = unassigned), `outletId`                                                                                                                                                                                                                                                                                                                            |
+| Move an order through the merchant's own stages           | [`setOrderStatus`](../src/actions/set-order-status/README.md) with one of the company's statuses ([`getOrderStatuses`](../src/actions/get-order-statuses/README.md)) — see §12                                                                                                                                                                                                                                                                                                                |
+| Find orders by state, cart, type or assignee              | [`getOrders`](../src/actions/get-orders/README.md) — `paymentState`, `fulfillmentState`, `inCart`, `orderType`, `assignedUserId` (`null` = unassigned), `customStatusId`, `outletId`                                                                                                                                                                                                                                                                                                          |
 | Void an order                                             | [`voidOrder`](../src/actions/void-order/README.md)                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Move the payment axis                                     | A **money operation**, never a state call: payments (`cashPayment`, `partialPayment`, `terminalPayment`, `tapToPayPayment`, `extensionPayment`, `integrationPayment`, `redeemPayment`, and [`recordExternalPayment`](../src/actions/record-external-payment/README.md) for money taken outside the terminal) and refunds (`initiateRefund`, `processPartialRefund`, `redeemRefund`, planned via `getRefundPlan`). Each operation derives its landing pair from the money that actually moved. |
 
@@ -206,7 +207,19 @@ What it changes:
 
 **Older orders.** Orders without the field (created before it, or last written by an older POS) keep the legacy reading — in a cart while fulfillment is `draft` (or legacy status `in-cart`). The first time a POS moves such an order out of a cart or resumes it, it gets the field and follows it from then on. Use `getOrders({ inCart })`, which applies both readings, rather than testing `status === 'in-cart'`.
 
-## 12. Legacy status mapping
+## 12. Custom order statuses — `order.customStatus`
+
+Each company can define its own order statuses — e.g. _In kitchen_, _Ready for pickup_, _Out for delivery_, _Delivered_ — shared by all its flows (managed through hub-api's `order-state-config/:companyId/statuses`; read with `getOrderStatuses`). A status is one of three kinds:
+
+| Definition                 | Setting it with `setOrderStatus`…                                                                          |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `fulfillmentState` set     | moves the order to that fulfillment state (same guard chain as `applyTransition`), then records the status |
+| `requiresPaymentState` set | fails unless the order's payment state is one of those — **a status never moves money**                    |
+| neither                    | just records the label                                                                                     |
+
+The status lives on the order as `customStatus: { id, label, setAt, setBy }`, **next to** `displayState`, not instead of it. State changes never touch it: payments, refunds, voids and `applyTransition` move the state and leave the status as it was, so a flow can move the state without changing the label. Two statuses may share a fulfillment state (_Ready for pickup_ and _Ready for driver_ both on `in_progress`) — the status says which.
+
+## 13. Legacy status mapping
 
 Orders predating the state machine (or arriving from old writers) are inferred from the legacy `order.status`:
 
@@ -228,7 +241,7 @@ The legacy `order.status` field continues to be written on every state change (m
 
 ---
 
-## 13. FAQ
+## 14. FAQ
 
 **Why does a voided order say "Cancelled"?**
 Because that's what the one reachable voided pair (`voided × cancelled`) always displayed, and "Voided" means nothing to a customer. The pair distinguishes it internally.

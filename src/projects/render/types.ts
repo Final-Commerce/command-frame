@@ -38,6 +38,8 @@ import type {
   AssignOrderUser,
   ReleaseFromCart,
   SetOrderType,
+  SetOrderStatus,
+  GetOrderStatuses,
   DeleteParkedOrder,
   VoidOrder,
   InitiateRefund,
@@ -172,6 +174,8 @@ export interface RenderProviderActions {
   assignOrderUser: AssignOrderUser;
   releaseFromCart: ReleaseFromCart;
   setOrderType: SetOrderType;
+  setOrderStatus: SetOrderStatus;
+  getOrderStatuses: GetOrderStatuses;
   deleteParkedOrder: DeleteParkedOrder;
   voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;

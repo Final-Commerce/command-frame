@@ -24,6 +24,8 @@ export interface GetOrdersParams {
   inCart?: boolean;
   /** Order type label(s) set with setOrderType, e.g. 'delivery' or ['pickup', 'takeout']. Exact match; a list matches any. */
   orderType?: string | string[];
+  /** Custom status id(s) set with setOrderStatus, e.g. 'in-kitchen'. A list matches any of them. */
+  customStatusId?: string | string[];
   /** Default: 50. */
   limit?: number;
   /** Default: 0. */
