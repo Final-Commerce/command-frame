@@ -19,17 +19,18 @@ query this instead.
 
 `Promise<GetRefundPlanResponse>`
 
-| Field                    | Type                    | Description                                                                                                                                            |
-| ------------------------ | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `success`                | `boolean`               | Always `true` on a resolved order (throws otherwise).                                                                                                  |
-| `orderId`                | `string`                | The order the plan was computed for.                                                                                                                   |
-| `sources`                | `RefundPlanSource[]`    | One row per original captured tender on the order (refund legs excluded).                                                                              |
-| `allocation`             | `RefundPlanAllocation?` | The engine's own split of the selection — submit-ready `legs`. Present when the call carries one, via `params.items` or a selection staged on the POS. |
-| `remainingRefundable`    | `number`                | Order-level remaining refundable (minor units), **non-revenue liability already excluded**.                                                            |
-| `nonRefundableLiability` | `number`                | Non-refundable liability (gift-card loads etc., minor units).                                                                                          |
-| `totalCaptured`          | `number`                | Total captured across the order (principal + tips, minor units).                                                                                       |
-| `totalRefunded`          | `number`                | Total already refunded across the order (minor units).                                                                                                 |
-| `timestamp`              | `string`                | ISO timestamp of the read.                                                                                                                             |
+| Field                    | Type                    | Description                                                                                                                                              |
+| ------------------------ | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `success`                | `boolean`               | Always `true` on a resolved order (throws otherwise).                                                                                                    |
+| `orderId`                | `string`                | The order the plan was computed for.                                                                                                                     |
+| `sources`                | `RefundPlanSource[]`    | One row per original captured tender on the order (refund legs excluded).                                                                                |
+| `rows`                   | `RefundPlanRow[]?`      | Every row still refundable (lines, custom sales, cart fees, tips) with the money for refunding all of it. Render these; never read totals off the order. |
+| `allocation`             | `RefundPlanAllocation?` | The engine's own split of the selection — submit-ready `legs`. Present when the call carries one, via `params.items` or a selection staged on the POS.   |
+| `remainingRefundable`    | `number`                | Order-level remaining refundable (minor units), **non-revenue liability already excluded**.                                                              |
+| `nonRefundableLiability` | `number`                | Non-refundable liability (gift-card loads etc., minor units).                                                                                            |
+| `totalCaptured`          | `number`                | Total captured across the order (principal + tips, minor units).                                                                                         |
+| `totalRefunded`          | `number`                | Total already refunded across the order (minor units).                                                                                                   |
+| `timestamp`              | `string`                | ISO timestamp of the read.                                                                                                                               |
 
 ### `RefundPlanSource`
 
@@ -46,12 +47,46 @@ query this instead.
 
 ### `RefundPlanAllocation`
 
-| Field       | Type              | Description                                                                                                       |
-| ----------- | ----------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `budget`    | `number`          | What Σ `legs.amount` **must** equal. `min(itemTotal, Σ maxRefundable)` — on a full selection, the captured total. |
-| `itemTotal` | `number`          | Goods value of the selection. **Display only** — never allocate against it.                                       |
-| `rounding`  | `number`          | `budget − itemTotal`: the sale's cash rounding, returned to the tender that took it.                              |
-| `legs`      | `RefundPlanLeg[]` | One leg per source that receives money. Pass to `processPartialRefund` **unchanged**.                             |
+| Field       | Type                   | Description                                                                                                       |
+| ----------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `budget`    | `number`               | What Σ `legs.amount` **must** equal. `min(itemTotal, Σ maxRefundable)` — on a full selection, the captured total. |
+| `itemTotal` | `number`               | Goods value of the selection. **Display only** — never allocate against it.                                       |
+| `rounding`  | `number`               | `budget − itemTotal`: the sale's cash rounding, returned to the tender that took it.                              |
+| `legs`      | `RefundPlanLeg[]`      | One leg per source that receives money. Pass to `processPartialRefund` **unchanged**.                             |
+| `breakdown` | `RefundPlanBreakdown?` | The selection's money per row (`rows`) and in total (`totals`). What the dialog's rows and footer show.           |
+
+### `RefundPlanRow`
+
+| Field                | Type                | Description                                                                 |
+| -------------------- | ------------------- | --------------------------------------------------------------------------- |
+| `type`               | `string`            | `product` / `customSale` / `fee` / `tip`.                                   |
+| `itemKey`            | `string`            | The key `items[].itemKey` takes, here and in `processPartialRefund`.        |
+| `label`              | `string`            | Line or fee name; `Tip` for a tip.                                          |
+| `sku`, `attributes`  | `string?`           | Product lines, when recorded.                                               |
+| `paymentType`        | `string?`           | Tip rows: the tender that took the tip.                                     |
+| `quantity`           | `number`            | Quantity originally sold (`1` for fees and tips, which are all or nothing). |
+| `refundableQuantity` | `number`            | Still refundable — the stepper's max.                                       |
+| `amounts`            | `RefundPlanAmounts` | The money for refunding **all** of `refundableQuantity`.                    |
+
+### `RefundPlanAmounts`
+
+`subtotal − itemDiscount − cartDiscount + tax === total`, in minor units, already rounded.
+
+| Field          | Type                  | Description                                             |
+| -------------- | --------------------- | ------------------------------------------------------- |
+| `subtotal`     | `number`              | Before discounts, tax excluded. For a tip row, the tip. |
+| `itemDiscount` | `number`              | Per-item discounts (positive).                          |
+| `cartDiscount` | `number`              | Cart discount share (positive).                         |
+| `tax`          | `number`              | Tax. Zero for a tip.                                    |
+| `taxes`        | `RefundPlanTaxLine[]` | `tax` per rate: `{ name, percentage?, amount }`.        |
+| `total`        | `number`              | What the row refunds.                                   |
+
+### `RefundPlanBreakdown`
+
+| Field    | Type                      | Description                                                                                                    |
+| -------- | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `rows`   | `RefundPlanSelectedRow[]` | One per selected row: `{ type, itemKey, quantity, amounts }` for the selected quantity.                        |
+| `totals` | `RefundPlanTotals`        | `{ items, discounts, fees, tax, tip, total }`; `items − discounts + fees + tax + tip === total === itemTotal`. |
 
 ### `RefundPlanLeg`
 
@@ -76,7 +111,8 @@ between the two:
 const items = [{ itemKey: 'cs-hh', quantity: 1 }];
 const plan = await command.getRefundPlan({ orderId, items });
 
-// UI: render plan.allocation.legs (amount, payout) — nothing derived.
+// UI: list plan.rows; show plan.allocation.breakdown for the selection and
+// plan.allocation.legs (amount, payout) for the tenders — nothing derived.
 // Submit: the SAME items, and the legs unchanged.
 await command.processPartialRefund({
   orderId,

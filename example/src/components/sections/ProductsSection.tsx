@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { renderClient as command } from '@final-commerce/command-frame';
+import type { CustomStockActionPayload, ManualStockReason } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -7,6 +8,16 @@ import './Sections.css';
 interface ProductsSectionProps {
   isInIframe: boolean;
 }
+
+const STOCK_TYPE_BY_BASE_ACTION = { ADD: 'add', REMOVE: 'subtract', RECOUNT: 'set' } as const;
+const STOCK_TYPE_BY_REASON: Record<ManualStockReason, 'add' | 'subtract' | 'set'> = {
+  STOCK_RECEIVED: 'add',
+  RESTOCK_RETURN: 'add',
+  DAMAGE: 'subtract',
+  THEFT: 'subtract',
+  LOSS: 'subtract',
+  INVENTORY_RECOUNT: 'set',
+};
 
 export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [products, setProducts] = useState<any[]>([]);
@@ -47,6 +58,9 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [inventoryStockType, setInventoryStockType] = useState<'add' | 'subtract' | 'set'>('add');
   const [adjustInventoryLoading, setAdjustInventoryLoading] = useState(false);
   const [adjustInventoryResponse, setAdjustInventoryResponse] = useState<string>('');
+  const [customStockActions, setCustomStockActions] = useState<CustomStockActionPayload[]>([]);
+  const [customActionId, setCustomActionId] = useState<string>('');
+  const [stockReason, setStockReason] = useState<ManualStockReason | ''>('');
 
   // Add Product Discount (standalone)
   const [discountAmount, setDiscountAmount] = useState<string>('5.00');
@@ -647,9 +661,49 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             />
           </div>
           <div className="form-field">
+            <label>Reason (optional):</label>
+            <select
+              value={stockReason}
+              disabled={!!customActionId}
+              onChange={(e) => {
+                const reason = e.target.value as ManualStockReason | '';
+                setStockReason(reason);
+                // stockType must match the reason.
+                if (reason) setInventoryStockType(STOCK_TYPE_BY_REASON[reason]);
+              }}
+            >
+              <option value="">Default for stock type</option>
+              {(Object.keys(STOCK_TYPE_BY_REASON) as ManualStockReason[]).map((reason) => (
+                <option key={reason} value={reason}>
+                  {reason}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-field">
+            <label>Custom Action (optional):</label>
+            <select
+              value={customActionId}
+              onChange={(e) => {
+                const action = customStockActions.find((a) => a._id === e.target.value);
+                setCustomActionId(e.target.value);
+                // stockType must match the action's baseAction.
+                if (action) setInventoryStockType(STOCK_TYPE_BY_BASE_ACTION[action.baseAction]);
+              }}
+            >
+              <option value="">None</option>
+              {customStockActions.map((action) => (
+                <option key={action._id} value={action._id}>
+                  {action.name} ({action.baseAction})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-field">
             <label>Stock Type:</label>
             <select
               value={inventoryStockType}
+              disabled={!!customActionId || !!stockReason}
               onChange={(e) => setInventoryStockType(e.target.value as 'add' | 'subtract' | 'set')}
             >
               <option value="add">Add</option>
@@ -679,6 +733,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
                 variantId,
                 amount: inventoryAmount,
                 stockType: inventoryStockType,
+                ...(customActionId && { customActionId }),
+                ...(stockReason && !customActionId && { specificAction: stockReason }),
               });
               setAdjustInventoryResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -691,6 +747,20 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           className="btn btn--primary"
         >
           {adjustInventoryLoading ? 'Adjusting...' : 'Adjust Inventory'}
+        </button>
+        <button
+          onClick={async () => {
+            try {
+              const { customStockActions } = await command.getCustomStockActions();
+              setCustomStockActions(customStockActions);
+              setAdjustInventoryResponse(JSON.stringify(customStockActions, null, 2));
+            } catch (error) {
+              setAdjustInventoryResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+          }}
+          className="btn btn--secondary"
+        >
+          Load Custom Actions
         </button>
         {adjustInventoryResponse && (
           <JsonViewer
