@@ -342,7 +342,11 @@ Adds a fee to a specific product in the cart (identified by `internalId`). Suppo
 
 ### [adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)
 
-Adjusts the inventory/stock level for a specific product variant. Supports adding, subtracting, or setting stock to a specific value.
+Adjusts the inventory/stock level for a specific product variant. Supports adding, subtracting, or setting stock to a specific value, optionally under one of the company's custom stock actions (`customActionId`).
+
+### [getCustomStockActions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-stock-actions/README.md)
+
+Lists the stock adjustment actions the company created for itself (`_id`, `name`, `baseAction`). Optional on the host.
 
 ### [setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)
 
