@@ -6,6 +6,11 @@ export interface AdjustInventoryParams {
   stockType: 'add' | 'subtract' | 'set';
   /** Variant to adjust. Omit to use the active product's selected variant. */
   variantId?: string;
+  /**
+   * A company action from getCustomStockActions. The movement is recorded under its name;
+   * `stockType` must match its baseAction (ADD → 'add', REMOVE → 'subtract', RECOUNT → 'set').
+   */
+  customActionId?: string;
 }
 
 export interface AdjustInventoryResponse {
