@@ -499,7 +499,12 @@ export type {
   SetActiveProductParams,
   SetActiveProductResponse,
 } from './actions/set-active-product/types';
-export type { AdjustInventory, AdjustInventoryParams, AdjustInventoryResponse } from './actions/adjust-inventory/types';
+export type {
+  AdjustInventory,
+  AdjustInventoryParams,
+  AdjustInventoryResponse,
+  ManualStockReason,
+} from './actions/adjust-inventory/types';
 export type {
   CustomStockActionPayload,
   GetCustomStockActions,

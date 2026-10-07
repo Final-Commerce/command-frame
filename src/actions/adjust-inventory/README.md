@@ -10,6 +10,7 @@ Adjusts the inventory/stock level for a specific product variant.
   - `'subtract'`: Subtract stock (decreases inventory)
   - `'set'`: Set stock to a specific value (recount)
 - `variantId` (string, optional): The ID of the product variant to adjust.
+- `specificAction` (string, optional): A built-in reason to record — `'STOCK_RECEIVED'`, `'RESTOCK_RETURN'` (with `'add'`), `'DAMAGE'`, `'THEFT'`, `'LOSS'` (with `'subtract'`) or `'INVENTORY_RECOUNT'` (with `'set'`). Without it the host records its default reason for `stockType`. A reason that does not match `stockType`, an unknown reason, or `specificAction` together with `customActionId` is rejected.
 - `customActionId` (string, optional): A company action from [getCustomStockActions](../get-custom-stock-actions/README.md). The movement is recorded in stock history under that action's name. `stockType` must match the action's `baseAction` (`ADD` → `'add'`, `REMOVE` → `'subtract'`, `RECOUNT` → `'set'`); a mismatch is rejected.
 
 ## Response
