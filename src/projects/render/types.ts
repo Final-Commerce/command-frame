@@ -42,6 +42,7 @@ import type {
   VoidOrder,
   InitiateRefund,
   CashPayment,
+  RecordExternalPayment,
   GetCashRoundingAmount,
   TapToPayPayment,
   TerminalPayment,
@@ -175,6 +176,7 @@ export interface RenderProviderActions {
   voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;
   cashPayment: CashPayment;
+  recordExternalPayment: RecordExternalPayment;
   getCashRoundingAmount: GetCashRoundingAmount;
   tapToPayPayment: TapToPayPayment;
   terminalPayment: TerminalPayment;

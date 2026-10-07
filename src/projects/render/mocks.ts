@@ -31,6 +31,7 @@ import { mockAssignCustomer } from '../../actions/assign-customer/mock';
 import { mockAuthenticateUser } from '../../actions/authenticate-user/mock';
 import { mockCalculateRefundTotal } from '../../actions/calculate-refund-total/mock';
 import { mockCashPayment } from '../../actions/cash-payment/mock';
+import { mockRecordExternalPayment } from '../../actions/record-external-payment/mock';
 import { mockGetCashRoundingAmount } from '../../actions/get-cash-rounding-amount/mock';
 import { mockCreatePaymentLink } from '../../actions/create-payment-link/mock';
 import { mockChargeMoto } from '../../actions/charge-moto/mock';
@@ -145,6 +146,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   authenticateUser: mockAuthenticateUser,
   calculateRefundTotal: mockCalculateRefundTotal,
   cashPayment: mockCashPayment,
+  recordExternalPayment: mockRecordExternalPayment,
   getCashRoundingAmount: mockGetCashRoundingAmount,
   createPaymentLink: mockCreatePaymentLink,
   chargeMoto: mockChargeMoto,

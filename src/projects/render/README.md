@@ -76,6 +76,7 @@ The library provides a `command` namespace object containing all available comma
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
 - **[voidOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/void-order/README.md)** - Cancel an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of captured split legs when a deposit was taken; completed orders are rejected (`ORDER_NOT_VOIDABLE`) and go through the refund flow
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
+- **[recordExternalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/record-external-payment/README.md)** - Record money taken outside the terminal (online, delivery app, voucher) under a label — full balance or a partial amount; no reader, drawer, change or tip
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
@@ -418,6 +419,10 @@ Cancels an open (not-yet-completed) order: a pure void when nothing was captured
 ### [cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)
 
 Pays (part of) the current cart with cash. `amount` (minor units) is required — below the balance due it becomes a partial payment (fixed split leg). Pass `tenderedAmount` to have the POS compute the change (after cash rounding) with no POS-owned UI; `openChangeCalculator` is deprecated.
+
+### [recordExternalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/record-external-payment/README.md)
+
+Records a labelled payment of type `external` for money taken elsewhere. Omit `amount` to settle the whole balance; pass one for a partial leg. The order is paid and moves through the state machine like any tender; supports `checkoutFulfillmentTarget`. Not the Custom Payments extension's billed `custom` tender.
 
 ### [getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)
 
@@ -804,6 +809,9 @@ import type {
   DeleteParkedOrder,
   CashPaymentParams,
   CashPaymentResponse,
+  RecordExternalPaymentParams,
+  RecordExternalPaymentResponse,
+  RecordExternalPayment,
   CashPayment,
   CreatePaymentLinkParams,
   CreatePaymentLinkResponse,

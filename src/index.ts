@@ -50,6 +50,7 @@ import { setOrderType } from './actions/set-order-type/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
 import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
+import { recordExternalPayment } from './actions/record-external-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
 import { terminalPayment } from './actions/terminal-payment/action';
@@ -207,6 +208,7 @@ export const command = {
   deleteParkedOrder,
   voidOrder,
   cashPayment,
+  recordExternalPayment,
   getCashRoundingAmount,
   tapToPayPayment,
   terminalPayment,
@@ -550,6 +552,11 @@ export type {
 } from './actions/delete-parked-order/types';
 export type { VoidOrder, VoidOrderParams, VoidOrderResponse, VoidOrderOutcome } from './actions/void-order/types';
 export type { CashPayment, CashPaymentParams, CashPaymentResponse } from './actions/cash-payment/types';
+export type {
+  RecordExternalPayment,
+  RecordExternalPaymentParams,
+  RecordExternalPaymentResponse,
+} from './actions/record-external-payment/types';
 
 export type {
   GetCashRoundingAmount,
