@@ -155,8 +155,7 @@ export interface RenderProviderActions {
   getActiveProduct: GetActiveProduct;
   setActiveProduct: SetActiveProduct;
   adjustInventory: AdjustInventory;
-  /** Optional: hosts without custom stock actions may omit it. */
-  getCustomStockActions?: GetCustomStockActions;
+  getCustomStockActions: GetCustomStockActions;
   addOrderNote: AddOrderNote;
   addCartFee: AddCartFee;
   clearCart: ClearCart;

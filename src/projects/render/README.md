@@ -346,7 +346,7 @@ Adjusts the inventory/stock level for a specific product variant. Supports addin
 
 ### [getCustomStockActions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-stock-actions/README.md)
 
-Lists the stock adjustment actions the company created for itself (`_id`, `name`, `baseAction`). Optional on the host.
+Lists the stock adjustment actions the company created for itself (`_id`, `name`, `baseAction`).
 
 ### [setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)
 

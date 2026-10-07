@@ -1,4 +1,8 @@
 // Adjust Inventory Types
+
+/** The manual reasons a person can pick, as hub-api's InventorySpecificActionType names them. */
+export type ManualStockReason = 'STOCK_RECEIVED' | 'RESTOCK_RETURN' | 'DAMAGE' | 'THEFT' | 'LOSS' | 'INVENTORY_RECOUNT';
+
 export interface AdjustInventoryParams {
   /** String to preserve precision. */
   amount: string;
@@ -11,6 +15,12 @@ export interface AdjustInventoryParams {
    * `stockType` must match its baseAction (ADD → 'add', REMOVE → 'subtract', RECOUNT → 'set').
    */
   customActionId?: string;
+  /**
+   * A built-in reason to record instead of the host's default for `stockType`. Must match it:
+   * STOCK_RECEIVED / RESTOCK_RETURN → 'add', DAMAGE / THEFT / LOSS → 'subtract', INVENTORY_RECOUNT → 'set'.
+   * Rejected together with `customActionId`.
+   */
+  specificAction?: ManualStockReason;
 }
 
 export interface AdjustInventoryResponse {

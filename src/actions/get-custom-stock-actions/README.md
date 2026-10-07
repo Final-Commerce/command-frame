@@ -42,5 +42,5 @@ await command.adjustInventory({
 
 ## Notes
 
-- Optional on `RenderProviderActions`; hosts that do not support custom stock actions may omit it.
+- Required on `RenderProviderActions`.
 - Deleted actions are not returned.
