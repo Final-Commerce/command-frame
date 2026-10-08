@@ -941,10 +941,6 @@ function resolveMockOrderCurrency(): CurrencyCode {
   return CurrencyCode.USD;
 }
 
-/**
- * Replace in-memory mock data used by default mock handlers. Arrays are mutated in place
- * so existing imports from this module keep working.
- */
 /** The demo company's order statuses (getOrderStatuses / setOrderStatus). */
 export const MOCK_ORDER_STATUSES: CFOrderStatusDefinition[] = [
   { id: 'in-kitchen', label: 'In kitchen', color: '#f59e0b', fulfillmentState: 'pending' },
@@ -954,6 +950,10 @@ export const MOCK_ORDER_STATUSES: CFOrderStatusDefinition[] = [
   { id: 'driver-called', label: 'Driver called' },
 ];
 
+/**
+ * Replace in-memory mock data used by default mock handlers. Arrays are mutated in place
+ * so existing imports from this module keep working.
+ */
 export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   if (config.orderStatuses !== undefined) {
     MOCK_ORDER_STATUSES.splice(0, MOCK_ORDER_STATUSES.length, ...config.orderStatuses);

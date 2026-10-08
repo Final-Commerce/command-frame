@@ -65,4 +65,16 @@ describe('recordExternalPayment mock', () => {
       'exceeds the balance due',
     );
   });
+
+  it('refuses a zero amount on a balance, like the host', async () => {
+    await expect(mockRecordExternalPayment({ label: 'Paid online', amount: 0 })).rejects.toThrow(
+      'amount must be a positive integer',
+    );
+  });
+
+  it('refuses an invalid checkoutFulfillmentTarget', async () => {
+    await expect(
+      mockRecordExternalPayment({ label: 'Paid online', checkoutFulfillmentTarget: 'shipped' as never }),
+    ).rejects.toThrow('invalid checkoutFulfillmentTarget "shipped"');
+  });
 });

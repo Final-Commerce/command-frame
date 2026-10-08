@@ -76,7 +76,7 @@ Throws when:
 
 ## Notes
 
-- **The cart is replaced without confirmation**, exactly like `resumeParkedOrder`. If the cashier has items in the cart, call [`getCurrentCart`](../get-current-cart/README.md) first and [`releaseFromCart`](../release-from-cart/README.md) (or park) before resuming.
+- **The cart is replaced without confirmation**, exactly like `resumeParkedOrder`. If the cashier has items in the cart, call [`getCurrentCart`](../get-current-cart/README.md) first and [`releaseFromCart`](../release-from-cart/README.md) (or park) before resuming. A saved order the cart held is marked out of the cart (`inCart.active: false`) when the resume succeeds, so it can be resumed again later; unsaved cart contents are lost.
 - Split-payment progress on the order (prior legs, remaining balance) is restored along with its items, discounts, fees and customer.
 - Amounts are integer minor currency units (e.g. `1575` = $15.75).
 

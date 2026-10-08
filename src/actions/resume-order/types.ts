@@ -17,4 +17,4 @@ export interface ResumeOrderResponse {
   timestamp: string;
 }
 
-export type ResumeOrder = (params?: ResumeOrderParams) => Promise<ResumeOrderResponse>;
+export type ResumeOrder = (params: ResumeOrderParams) => Promise<ResumeOrderResponse>;

@@ -46,7 +46,7 @@ await command.cashPayment({ amount: remainingBalance });
 
 ## Error Handling
 
-Throws when `label` is missing or empty, `amount` is negative or exceeds the balance due, `checkoutFulfillmentTarget` isn't a valid fulfillment state, or the cart is empty.
+Throws when `label` is missing or empty, `amount` is zero or negative (on a non-zero balance) or exceeds the balance due, `checkoutFulfillmentTarget` isn't a valid fulfillment state, or the cart is empty.
 
 ## Notes
 
