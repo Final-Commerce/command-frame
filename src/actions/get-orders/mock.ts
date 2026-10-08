@@ -1,139 +1,183 @@
-import { GetOrders, GetOrdersParams, GetOrdersResponse } from "./types";
+import { GetOrders, GetOrdersParams, GetOrdersResponse } from './types';
 import {
-    MOCK_ORDERS,
-    MOCK_PARKED_ORDERS,
-    MOCK_USERS,
-    MOCK_STATIONS,
-    MOCK_OUTLETS,
-    safeSerialize
-} from "../../demo/database";
+  MOCK_ORDERS,
+  MOCK_PARKED_ORDERS,
+  MOCK_USERS,
+  MOCK_STATIONS,
+  MOCK_OUTLETS,
+  safeSerialize,
+} from '../../demo/database';
 
 export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promise<GetOrdersResponse> => {
-    console.log("[Mock] getOrders called", params);
-    
-    // Start with a safe copy of mock orders, including parked (status: "parked").
-    let orders = safeSerialize([...MOCK_ORDERS, ...MOCK_PARKED_ORDERS]);
+  console.log('[Mock] getOrders called', params);
 
-    // Filter simulation
-    if (params) {
-        const { 
-            customerId, 
-            status, 
-            sessionId,
-            searchValue,
-            limit,
-            offset,
-            sortBy,
-            sortDirection
-        } = params;
-        
-        // 1. Filtering
-        if (customerId) {
-            orders = orders.filter(o => 
-                o.customer && 
-                '_id' in o.customer && 
-                o.customer._id === customerId
-            );
-        }
+  // Start with a safe copy of mock orders, including parked (status: "parked").
+  let orders = safeSerialize([...MOCK_ORDERS, ...MOCK_PARKED_ORDERS]);
 
-        if (status) {
-            orders = orders.filter(o => o.status === status);
-        }
+  // Filter simulation
+  if (params) {
+    const {
+      customerId,
+      status,
+      sessionId,
+      paymentState,
+      fulfillmentState,
+      outletId,
+      assignedUserId,
+      inCart,
+      orderType,
+      customStatusId,
+      searchValue,
+      limit,
+      offset,
+      sortBy,
+      sortDirection,
+    } = params;
 
-        if (sessionId) {
-            orders = orders.filter(o => o.sessionId === sessionId);
-        }
-
-        if (searchValue) {
-            const searchLower = String(searchValue).toLowerCase();
-            orders = orders.filter(o => {
-                const receiptMatch = o.receiptId?.toLowerCase().includes(searchLower);
-                const customerNameMatch = o.customer && 'firstName' in o.customer 
-                    ? `${o.customer.firstName} ${o.customer.lastName}`.toLowerCase().includes(searchLower)
-                    : false;
-                const customerEmailMatch = o.customer && 'email' in o.customer && o.customer.email
-                    ? o.customer.email.toLowerCase().includes(searchLower)
-                    : false;
-                
-                return receiptMatch || customerNameMatch || customerEmailMatch;
-            });
-        }
-
-        // 2. Sorting
-        if (sortBy) {
-            orders.sort((a: any, b: any) => {
-                let valA = a[sortBy];
-                let valB = b[sortBy];
-
-                // Handle nested sort fields if necessary, basic support for now
-                if (!valA && sortBy === 'createdAt') valA = a.createdAt || '';
-                if (!valB && sortBy === 'createdAt') valB = b.createdAt || '';
-
-                if (typeof valA === 'string' && typeof valB === 'string') {
-                    return sortDirection === 'descending' 
-                        ? valB.localeCompare(valA)
-                        : valA.localeCompare(valB);
-                }
-                
-                // Number comparison
-                return sortDirection === 'descending'
-                    ? (valB || 0) - (valA || 0)
-                    : (valA || 0) - (valB || 0);
-            });
-        } else {
-            // Default sort by createdAt descending
-            orders.sort((a, b) => {
-                const dateA = new Date(a.createdAt || 0).getTime();
-                const dateB = new Date(b.createdAt || 0).getTime();
-                return dateB - dateA;
-            });
-        }
-
-        // 3. Pagination
-        if (offset !== undefined || limit !== undefined) {
-            const start = offset || 0;
-            const end = limit ? start + limit : orders.length;
-            orders = orders.slice(start, end);
-        }
+    // 1. Filtering
+    if (customerId) {
+      orders = orders.filter((o) => o.customer && '_id' in o.customer && o.customer._id === customerId);
     }
-    
-    // Simulate Worker Enrichment (populating posData references with actual objects)
-    const enrichedOrders = orders.map((order: any) => {
-        const enrichedOrder = { ...order };
-        
-        if (enrichedOrder.posData) {
-            // Enrich Employee
-            if (typeof enrichedOrder.posData.employee === 'string') {
-                const employee = MOCK_USERS.find(u => u.id === enrichedOrder.posData.employee);
-                if (employee) {
-                    enrichedOrder.posData.employee = employee;
-                }
-            }
 
-            // Enrich Station
-            if (typeof enrichedOrder.posData.station === 'string') {
-                const station = MOCK_STATIONS.find(s => s._id === enrichedOrder.posData.station);
-                if (station) {
-                    enrichedOrder.posData.station = station;
-                }
-            }
+    if (status) {
+      orders = orders.filter((o) => o.status === status);
+    }
 
-            // Enrich Outlet
-            if (typeof enrichedOrder.posData.outlet === 'string') {
-                const outlet = MOCK_OUTLETS.find(o => o.id === enrichedOrder.posData.outlet);
-                if (outlet) {
-                    enrichedOrder.posData.outlet = outlet;
-                }
-            }
+    if (sessionId) {
+      orders = orders.filter((o) => o.sessionId === sessionId);
+    }
+
+    const anyOf = (criteria: string | string[] | undefined, value: string | undefined) =>
+      criteria === undefined ||
+      (Array.isArray(criteria) ? criteria.length === 0 || criteria.includes(value ?? '') : criteria === value);
+
+    if (paymentState !== undefined) {
+      orders = orders.filter((o) => anyOf(paymentState, o.paymentState));
+    }
+
+    if (fulfillmentState !== undefined) {
+      orders = orders.filter((o) => anyOf(fulfillmentState, o.fulfillmentState));
+    }
+
+    if (outletId) {
+      orders = orders.filter((o) => o.posData?.outlet === outletId);
+    }
+
+    if (assignedUserId) {
+      orders = orders.filter((o) => o.assignedUser?.userId === assignedUserId);
+    } else if (assignedUserId === null) {
+      orders = orders.filter((o) => o.assignedUser == null);
+    }
+
+    if (orderType !== undefined) {
+      const types = Array.isArray(orderType) ? orderType : [orderType];
+      if (types.length) orders = orders.filter((o) => types.includes(o.orderType ?? ''));
+    }
+
+    if (customStatusId !== undefined) {
+      const ids = Array.isArray(customStatusId) ? customStatusId : [customStatusId];
+      if (ids.length) orders = orders.filter((o) => !!o.customStatus && ids.includes(o.customStatus.id));
+    }
+
+    if (typeof inCart === 'boolean') {
+      // Mirrors common's isInCart: the flag when present, else the legacy reading.
+      const orderInCart = (o: (typeof orders)[number]) =>
+        o.inCart != null
+          ? o.inCart.active
+          : o.fulfillmentState
+            ? o.fulfillmentState === 'draft'
+            : o.status === 'in-cart';
+      orders = orders.filter((o) => orderInCart(o) === inCart);
+    }
+
+    if (searchValue) {
+      const searchLower = String(searchValue).toLowerCase();
+      orders = orders.filter((o) => {
+        const receiptMatch = o.receiptId?.toLowerCase().includes(searchLower);
+        const customerNameMatch =
+          o.customer && 'firstName' in o.customer
+            ? `${o.customer.firstName} ${o.customer.lastName}`.toLowerCase().includes(searchLower)
+            : false;
+        const customerEmailMatch =
+          o.customer && 'email' in o.customer && o.customer.email
+            ? o.customer.email.toLowerCase().includes(searchLower)
+            : false;
+
+        return receiptMatch || customerNameMatch || customerEmailMatch;
+      });
+    }
+
+    // 2. Sorting
+    if (sortBy) {
+      orders.sort((a: any, b: any) => {
+        let valA = a[sortBy];
+        let valB = b[sortBy];
+
+        // Handle nested sort fields if necessary, basic support for now
+        if (!valA && sortBy === 'createdAt') valA = a.createdAt || '';
+        if (!valB && sortBy === 'createdAt') valB = b.createdAt || '';
+
+        if (typeof valA === 'string' && typeof valB === 'string') {
+          return sortDirection === 'descending' ? valB.localeCompare(valA) : valA.localeCompare(valB);
         }
 
-        return enrichedOrder;
-    });
+        // Number comparison
+        return sortDirection === 'descending' ? (valB || 0) - (valA || 0) : (valA || 0) - (valB || 0);
+      });
+    } else {
+      // Default sort by createdAt descending
+      orders.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0).getTime();
+        const dateB = new Date(b.createdAt || 0).getTime();
+        return dateB - dateA;
+      });
+    }
 
-    return {
-        success: true,
-        orders: enrichedOrders,
-        total: MOCK_ORDERS.length, // Total before pagination
-        timestamp: new Date().toISOString()
-    };
+    // 3. Pagination
+    if (offset !== undefined || limit !== undefined) {
+      const start = offset || 0;
+      const end = limit ? start + limit : orders.length;
+      orders = orders.slice(start, end);
+    }
+  }
+
+  // Simulate Worker Enrichment (populating posData references with actual objects)
+  const enrichedOrders = orders.map((order: any) => {
+    const enrichedOrder = { ...order };
+
+    if (enrichedOrder.posData) {
+      // Enrich Employee
+      if (typeof enrichedOrder.posData.employee === 'string') {
+        const employee = MOCK_USERS.find((u) => u.id === enrichedOrder.posData.employee);
+        if (employee) {
+          enrichedOrder.posData.employee = employee;
+        }
+      }
+
+      // Enrich Station
+      if (typeof enrichedOrder.posData.station === 'string') {
+        const station = MOCK_STATIONS.find((s) => s._id === enrichedOrder.posData.station);
+        if (station) {
+          enrichedOrder.posData.station = station;
+        }
+      }
+
+      // Enrich Outlet
+      if (typeof enrichedOrder.posData.outlet === 'string') {
+        const outlet = MOCK_OUTLETS.find((o) => o.id === enrichedOrder.posData.outlet);
+        if (outlet) {
+          enrichedOrder.posData.outlet = outlet;
+        }
+      }
+    }
+
+    return enrichedOrder;
+  });
+
+  return {
+    success: true,
+    orders: enrichedOrders,
+    total: MOCK_ORDERS.length, // Total before pagination
+    timestamp: new Date().toISOString(),
+  };
 };

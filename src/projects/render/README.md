@@ -68,9 +68,17 @@ The library provides a `command` namespace object containing all available comma
 - **[clearCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/clear-cart/README.md)** - Clear all items from the current cart
 - **[parkOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/park-order/README.md)** - Park (save) the current order for later retrieval
 - **[resumeParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-parked-order/README.md)** - Resume a previously parked order
+- **[resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)** - Resume any open order (parked or not) into the cart; in-cart, completed, refunded and cancelled orders are rejected
+- **[setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)** - Set or remove free-form key/value metadata on an order or the live cart (e.g. a delivery note); syncs with the order
+- **[setOrderType](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-type/README.md)** - Label an order (or the live cart) with a free-text type such as `delivery`; display and `getOrders` filtering only, no logic
+- **[setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)** - Set one of the company's custom order statuses on an order; bound statuses move the fulfillment state, and can require a payment state
+- **[getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)** - The company's custom order statuses
+- **[assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)** - Assign a user (e.g. the driver) to an order, or unassign; one assignee at a time, synced with the order
+- **[releaseFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/release-from-cart/README.md)** - Take the order out of the cart unchanged (saved with `inCart.active: false`) and clear the terminal; resume it later with `resumeOrder`
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
 - **[voidOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/void-order/README.md)** - Cancel an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of captured split legs when a deposit was taken; completed orders are rejected (`ORDER_NOT_VOIDABLE`) and go through the refund flow
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
+- **[recordExternalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/record-external-payment/README.md)** - Record money taken outside the terminal (online, delivery app, voucher) under a label — full balance or a partial amount; no reader, drawer, change or tip
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
@@ -382,6 +390,34 @@ Parks (saves) the current order for later retrieval. The cart is cleared after p
 
 Resumes a previously parked order by loading it back into the cart.
 
+### [resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)
+
+Resumes any open order into the cart — the general form of `resumeParkedOrder`. Eligibility comes from the state pair: open payment (`unpaid` / `partially_paid` / `paid`) and open fulfillment (`pending` / `on_hold` / `in_progress` / `partially_fulfilled`). Unpaid orders land in `draft`; orders with captured money never return to `draft`.
+
+### [setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)
+
+Sets (string) or removes (`null`) metadata keys on an order by id, or on the live cart — carried onto the order when it's created. Stored on `order.metadata`, so it syncs with the order to other stations.
+
+### [setOrderType](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-type/README.md)
+
+Sets `order.orderType` — free text (`takeout`, `pickup`, `delivery`, …) or `null` to clear — on an order by id or on the live cart, carried onto the order when it's created. A label for display and `getOrders({ orderType })` only; nothing in the POS logic reads it.
+
+### [setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)
+
+Sets `order.customStatus` to one of the company's statuses (or clears it). A status bound to a fulfillment state moves the order there through the state machine; one with `requiresPaymentState` fails until the order is paid accordingly. State changes elsewhere never touch the status.
+
+### [getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)
+
+Returns the company's status definitions `{ id, label, color?, icon?, fulfillmentState?, requiresPaymentState? }`.
+
+### [assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)
+
+Sets `order.assignedUser` to `{ userId, assignedAt }` (or `null` to unassign) on an order by id or the live cart's existing order. Separate from `posData.employee`. Filter with `getOrders({ assignedUserId })`.
+
+### [releaseFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/release-from-cart/README.md)
+
+Saves the order in the cart as-is — state unchanged, current cart contents kept — marks it `inCart.active: false` and resets the terminal. A cart that isn't an order yet becomes an unpaid draft. Unlike `clearCart`, nothing is discarded.
+
 ### [deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)
 
 Deletes a parked order from the system.
@@ -393,6 +429,10 @@ Cancels an open (not-yet-completed) order: a pure void when nothing was captured
 ### [cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)
 
 Pays (part of) the current cart with cash. `amount` (minor units) is required — below the balance due it becomes a partial payment (fixed split leg). Pass `tenderedAmount` to have the POS compute the change (after cash rounding) with no POS-owned UI; `openChangeCalculator` is deprecated.
+
+### [recordExternalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/record-external-payment/README.md)
+
+Records a labelled payment of type `external` for money taken elsewhere. Omit `amount` to settle the whole balance; pass one for a partial leg. The order is paid and moves through the state machine like any tender; supports `checkoutFulfillmentTarget`. Not the Custom Payments extension's billed `custom` tender.
 
 ### [getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)
 
@@ -760,11 +800,33 @@ import type {
   ResumeParkedOrderParams,
   ResumeParkedOrderResponse,
   ResumeParkedOrder,
+  ResumeOrderParams,
+  ResumeOrderResponse,
+  ResumeOrder,
+  SetOrderMetadataParams,
+  SetOrderMetadataResponse,
+  SetOrderMetadata,
+  SetOrderTypeParams,
+  SetOrderTypeResponse,
+  SetOrderType,
+  SetOrderStatusParams,
+  SetOrderStatusResponse,
+  SetOrderStatus,
+  GetOrderStatusesResponse,
+  GetOrderStatuses,
+  AssignOrderUserParams,
+  AssignOrderUserResponse,
+  AssignOrderUser,
+  ReleaseFromCartResponse,
+  ReleaseFromCart,
   DeleteParkedOrderParams,
   DeleteParkedOrderResponse,
   DeleteParkedOrder,
   CashPaymentParams,
   CashPaymentResponse,
+  RecordExternalPaymentParams,
+  RecordExternalPaymentResponse,
+  RecordExternalPayment,
   CashPayment,
   CreatePaymentLinkParams,
   CreatePaymentLinkResponse,

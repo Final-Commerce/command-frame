@@ -131,6 +131,22 @@ await command.parkOrder();
 await command.resumeParkedOrder({ orderId: 'order-123' });
 await command.deleteParkedOrder({ orderId: 'order-123' });
 await command.voidOrder({ orderId: 'order-123', reason: 'Customer request' }); // pure void, or auto full-refund of captured legs
+
+// Order management (delivery / pickup / kitchen flows)
+await command.releaseFromCart(); // save the order as it is and free the terminal
+await command.resumeOrder({ orderId: 'order-123' }); // any open order, parked or not
+await command.setOrderType({ orderType: 'delivery' }); // live cart; pass orderId for another order
+await command.setOrderMetadata({ orderId: 'order-123', metadata: { gateCode: '4512' } });
+await command.assignOrderUser({ orderId: 'order-123', userId: 'driver-user-id' });
+const { statuses } = await command.getOrderStatuses();
+await command.setOrderStatus({ orderId: 'order-123', statusId: 'ready-for-driver' }); // may move fulfillment
+const { orders } = await command.getOrders({
+  orderType: 'delivery',
+  customStatusId: 'ready-for-driver',
+  assignedUserId: null,
+});
+await command.recordExternalPayment({ label: 'Paid online' }); // payment taken outside the terminal
+
 // All money values are integer MINOR currency units (1575 = $15.75).
 // Tender `amount` is REQUIRED: below the balance due = partial payment (split leg).
 const { cart } = await command.getCurrentCart();

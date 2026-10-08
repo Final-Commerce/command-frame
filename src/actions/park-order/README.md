@@ -43,7 +43,7 @@ console.log('Parked order:', result.order);
 ## Notes
 
 - The cart is automatically cleared after parking the order
-- Parked orders can be retrieved using `resumeParkedOrder`
+- Parked orders can be retrieved using `resumeParkedOrder` (or `resumeOrder`, which also resumes orders that weren't parked). To set an order aside without putting it on hold, use `releaseFromCart`.
 - Parked orders can be deleted using `deleteParkedOrder`
 - The returned order object includes all order details including line items, custom sales, totals, customer, and payment information
 

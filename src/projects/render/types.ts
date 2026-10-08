@@ -33,10 +33,18 @@ import type {
   ClearCart,
   ParkOrder,
   ResumeParkedOrder,
+  ResumeOrder,
+  SetOrderMetadata,
+  AssignOrderUser,
+  ReleaseFromCart,
+  SetOrderType,
+  SetOrderStatus,
+  GetOrderStatuses,
   DeleteParkedOrder,
   VoidOrder,
   InitiateRefund,
   CashPayment,
+  RecordExternalPayment,
   GetCashRoundingAmount,
   TapToPayPayment,
   TerminalPayment,
@@ -161,10 +169,18 @@ export interface RenderProviderActions {
   clearCart: ClearCart;
   parkOrder: ParkOrder;
   resumeParkedOrder: ResumeParkedOrder;
+  resumeOrder: ResumeOrder;
+  setOrderMetadata: SetOrderMetadata;
+  assignOrderUser: AssignOrderUser;
+  releaseFromCart: ReleaseFromCart;
+  setOrderType: SetOrderType;
+  setOrderStatus: SetOrderStatus;
+  getOrderStatuses: GetOrderStatuses;
   deleteParkedOrder: DeleteParkedOrder;
   voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;
   cashPayment: CashPayment;
+  recordExternalPayment: RecordExternalPayment;
   getCashRoundingAmount: GetCashRoundingAmount;
   tapToPayPayment: TapToPayPayment;
   terminalPayment: TerminalPayment;

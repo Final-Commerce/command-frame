@@ -42,9 +42,17 @@ import { getCurrentCart } from './actions/get-current-cart/action';
 import { clearCart } from './actions/clear-cart/action';
 import { parkOrder } from './actions/park-order/action';
 import { resumeParkedOrder } from './actions/resume-parked-order/action';
+import { resumeOrder } from './actions/resume-order/action';
+import { setOrderMetadata } from './actions/set-order-metadata/action';
+import { assignOrderUser } from './actions/assign-order-user/action';
+import { releaseFromCart } from './actions/release-from-cart/action';
+import { setOrderType } from './actions/set-order-type/action';
+import { setOrderStatus } from './actions/set-order-status/action';
+import { getOrderStatuses } from './actions/get-order-statuses/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
 import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
+import { recordExternalPayment } from './actions/record-external-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
 import { terminalPayment } from './actions/terminal-payment/action';
@@ -194,9 +202,17 @@ export const command = {
   clearCart,
   parkOrder,
   resumeParkedOrder,
+  resumeOrder,
+  setOrderMetadata,
+  assignOrderUser,
+  releaseFromCart,
+  setOrderType,
+  setOrderStatus,
+  getOrderStatuses,
   deleteParkedOrder,
   voidOrder,
   cashPayment,
+  recordExternalPayment,
   getCashRoundingAmount,
   tapToPayPayment,
   terminalPayment,
@@ -520,6 +536,21 @@ export type {
   ResumeParkedOrderParams,
   ResumeParkedOrderResponse,
 } from './actions/resume-parked-order/types';
+export type { ResumeOrder, ResumeOrderParams, ResumeOrderResponse } from './actions/resume-order/types';
+export type {
+  SetOrderMetadata,
+  SetOrderMetadataParams,
+  SetOrderMetadataResponse,
+} from './actions/set-order-metadata/types';
+export type {
+  AssignOrderUser,
+  AssignOrderUserParams,
+  AssignOrderUserResponse,
+} from './actions/assign-order-user/types';
+export type { ReleaseFromCart, ReleaseFromCartResponse } from './actions/release-from-cart/types';
+export type { SetOrderType, SetOrderTypeParams, SetOrderTypeResponse } from './actions/set-order-type/types';
+export type { SetOrderStatus, SetOrderStatusParams, SetOrderStatusResponse } from './actions/set-order-status/types';
+export type { GetOrderStatuses, GetOrderStatusesResponse } from './actions/get-order-statuses/types';
 export type {
   DeleteParkedOrder,
   DeleteParkedOrderParams,
@@ -527,6 +558,11 @@ export type {
 } from './actions/delete-parked-order/types';
 export type { VoidOrder, VoidOrderParams, VoidOrderResponse, VoidOrderOutcome } from './actions/void-order/types';
 export type { CashPayment, CashPaymentParams, CashPaymentResponse } from './actions/cash-payment/types';
+export type {
+  RecordExternalPayment,
+  RecordExternalPaymentParams,
+  RecordExternalPaymentResponse,
+} from './actions/record-external-payment/types';
 
 export type {
   GetCashRoundingAmount,

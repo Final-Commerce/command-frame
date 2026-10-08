@@ -31,6 +31,7 @@ import { mockAssignCustomer } from '../../actions/assign-customer/mock';
 import { mockAuthenticateUser } from '../../actions/authenticate-user/mock';
 import { mockCalculateRefundTotal } from '../../actions/calculate-refund-total/mock';
 import { mockCashPayment } from '../../actions/cash-payment/mock';
+import { mockRecordExternalPayment } from '../../actions/record-external-payment/mock';
 import { mockGetCashRoundingAmount } from '../../actions/get-cash-rounding-amount/mock';
 import { mockCreatePaymentLink } from '../../actions/create-payment-link/mock';
 import { mockChargeMoto } from '../../actions/charge-moto/mock';
@@ -67,6 +68,13 @@ import { mockCheckPermission } from '../../actions/check-permission/mock';
 import { mockRemoveCustomerFromCart } from '../../actions/remove-customer-from-cart/mock';
 import { mockResetRefundDetails } from '../../actions/reset-refund-details/mock';
 import { mockResumeParkedOrder } from '../../actions/resume-parked-order/mock';
+import { mockResumeOrder } from '../../actions/resume-order/mock';
+import { mockSetOrderMetadata } from '../../actions/set-order-metadata/mock';
+import { mockAssignOrderUser } from '../../actions/assign-order-user/mock';
+import { mockReleaseFromCart } from '../../actions/release-from-cart/mock';
+import { mockSetOrderType } from '../../actions/set-order-type/mock';
+import { mockSetOrderStatus } from '../../actions/set-order-status/mock';
+import { mockGetOrderStatuses } from '../../actions/get-order-statuses/mock';
 import { mockSelectAllRefundItems } from '../../actions/select-all-refund-items/mock';
 import { mockSetRefundStockAction } from '../../actions/set-refund-stock-action/mock';
 import { mockShowConfirmation } from '../../actions/show-confirmation/mock';
@@ -140,6 +148,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   authenticateUser: mockAuthenticateUser,
   calculateRefundTotal: mockCalculateRefundTotal,
   cashPayment: mockCashPayment,
+  recordExternalPayment: mockRecordExternalPayment,
   getCashRoundingAmount: mockGetCashRoundingAmount,
   createPaymentLink: mockCreatePaymentLink,
   chargeMoto: mockChargeMoto,
@@ -176,6 +185,13 @@ export const RENDER_MOCKS: RenderProviderActions = {
   removeCartDiscount: mockRemoveCartDiscount,
   resetRefundDetails: mockResetRefundDetails,
   resumeParkedOrder: mockResumeParkedOrder,
+  resumeOrder: mockResumeOrder,
+  setOrderMetadata: mockSetOrderMetadata,
+  assignOrderUser: mockAssignOrderUser,
+  releaseFromCart: mockReleaseFromCart,
+  setOrderType: mockSetOrderType,
+  setOrderStatus: mockSetOrderStatus,
+  getOrderStatuses: mockGetOrderStatuses,
   selectAllRefundItems: mockSelectAllRefundItems,
   setRefundStockAction: mockSetRefundStockAction,
   showConfirmation: mockShowConfirmation,

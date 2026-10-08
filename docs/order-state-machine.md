@@ -13,14 +13,18 @@ Why two axes? Because money and goods move independently: an order can be fully 
 
 ## 2. Working with order state from an extension
 
-| You want to…                                              | Use                                                                                                                                                                                                                                                                                                                                                                     |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ask "would this move be allowed?" (read-only)             | [`canTransition`](../src/actions/can-transition/README.md)                                                                                                                                                                                                                                                                                                              |
-| List the moves currently offered for an order (read-only) | [`getAvailableTransitions`](../src/actions/get-available-transitions/README.md)                                                                                                                                                                                                                                                                                         |
-| Move the fulfillment axis                                 | [`applyTransition`](../src/actions/apply-transition/README.md) — takes `targetFulfillmentState` only; **the payment axis is never client-settable**                                                                                                                                                                                                                     |
-| Park / resume / delete a parked order                     | [`parkOrder`](../src/actions/park-order/README.md), [`resumeParkedOrder`](../src/actions/resume-parked-order/README.md), [`deleteParkedOrder`](../src/actions/delete-parked-order/README.md) — built on `applyTransition` with extra business-flow guarantees; prefer these when they fit                                                                               |
-| Void an order                                             | [`voidOrder`](../src/actions/void-order/README.md)                                                                                                                                                                                                                                                                                                                      |
-| Move the payment axis                                     | A **money operation**, never a state call: payments (`cashPayment`, `partialPayment`, `terminalPayment`, `tapToPayPayment`, `extensionPayment`, `integrationPayment`, `redeemPayment`) and refunds (`initiateRefund`, `processPartialRefund`, `redeemRefund`, planned via `getRefundPlan`). Each operation derives its landing pair from the money that actually moved. |
+| You want to…                                              | Use                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ask "would this move be allowed?" (read-only)             | [`canTransition`](../src/actions/can-transition/README.md)                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| List the moves currently offered for an order (read-only) | [`getAvailableTransitions`](../src/actions/get-available-transitions/README.md)                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Move the fulfillment axis                                 | [`applyTransition`](../src/actions/apply-transition/README.md) — takes `targetFulfillmentState` only; **the payment axis is never client-settable**                                                                                                                                                                                                                                                                                                                                           |
+| Park / resume / delete a parked order                     | [`parkOrder`](../src/actions/park-order/README.md), [`resumeParkedOrder`](../src/actions/resume-parked-order/README.md), [`deleteParkedOrder`](../src/actions/delete-parked-order/README.md) — built on `applyTransition` with extra business-flow guarantees; prefer these when they fit                                                                                                                                                                                                     |
+| Take an order out of the cart / bring any order back      | [`releaseFromCart`](../src/actions/release-from-cart/README.md) (out, unchanged) and [`resumeOrder`](../src/actions/resume-order/README.md) (back in) — no parking needed; see §11                                                                                                                                                                                                                                                                                                            |
+| Label, assign or annotate an order                        | [`setOrderType`](../src/actions/set-order-type/README.md) (free-text type, e.g. `delivery`), [`assignOrderUser`](../src/actions/assign-order-user/README.md) (e.g. the driver), [`setOrderMetadata`](../src/actions/set-order-metadata/README.md) (key/value) — none of them touch the state                                                                                                                                                                                                  |
+| Move an order through the merchant's own stages           | [`setOrderStatus`](../src/actions/set-order-status/README.md) with one of the company's statuses ([`getOrderStatuses`](../src/actions/get-order-statuses/README.md)) — see §12                                                                                                                                                                                                                                                                                                                |
+| Find orders by state, cart, type or assignee              | [`getOrders`](../src/actions/get-orders/README.md) — `paymentState`, `fulfillmentState`, `inCart`, `orderType`, `assignedUserId` (`null` = unassigned), `customStatusId`, `outletId`                                                                                                                                                                                                                                                                                                          |
+| Void an order                                             | [`voidOrder`](../src/actions/void-order/README.md)                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Move the payment axis                                     | A **money operation**, never a state call: payments (`cashPayment`, `partialPayment`, `terminalPayment`, `tapToPayPayment`, `extensionPayment`, `integrationPayment`, `redeemPayment`, and [`recordExternalPayment`](../src/actions/record-external-payment/README.md) for money taken outside the terminal) and refunds (`initiateRefund`, `processPartialRefund`, `redeemRefund`, planned via `getRefundPlan`). Each operation derives its landing pair from the money that actually moved. |
 
 If a state looks wrong on the money side, the fix is a money operation (or a data correction) — never a manual state change.
 
@@ -177,10 +181,46 @@ stateDiagram-v2
 Notes on the diagram:
 
 - A parked order **with a deposit** resumes to _In Progress_ (Partially Paid), never back to _In Cart_ — invariant #7.
+- Resuming any **other** order keeps its state — being in a cart is `order.inCart`, not a state (§11).
 - There is no arrow from _Partially Paid_ to a plain _Cancelled_: money must be refunded or voided first — invariant #6.
 - Nothing ever leaves _Refunded_ or the voided _Cancelled_ — invariants #1, #2, #8, #9.
 
-## 11. Legacy status mapping
+## 11. Being in a cart — `order.inCart`
+
+Whether an order is loaded in a POS cart right now is **not** a state. It's a separate field:
+
+```typescript
+order.inCart?: { active: boolean; stationId: string | null; since: string }
+```
+
+`active` is true while the order sits in a terminal's cart; `stationId` / `since` record which station last moved it in or out, and when. The POS maintains it:
+
+| Moves the order **out** of the cart (`active: false`)                                                        | Puts it **in** (`active: true`)                                                                         |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| park, void, a completing payment, `releaseFromCart`, `applyTransition` that clears the terminal, `clearCart` | `resumeOrder` / `resumeParkedOrder`, a split-payment leg, `applyTransition` with `clearTerminal: false` |
+
+What it changes:
+
+- **Leaving and coming back doesn't need parking.** `releaseFromCart` saves the order as it is (state unchanged) and frees the terminal; `resumeOrder` brings it back on any station. `resumeOrder` refuses orders already in a cart and finished ones (completed, refunded, partially refunded, voided, cancelled, returned) and orders with a payment in flight.
+- **Orders in a cart carry their edits** — including ones that already took money. Items added or removed after a resume are saved onto the order when it next leaves the cart. An edit can't take the total below what was already paid: that operation is refused (`guard: 'paid-exceeds-edited-total'`) until the difference is refunded.
+- **Edits made elsewhere stick.** The assignee, custom status, order type and metadata change only through their own commands (`assignOrderUser`, `setOrderStatus`, `setOrderType`, `setOrderMetadata`), which save straight to the order. Payments, park and transitions never write them back, so a driver assigned from another station isn't undone when the register holding the order takes payment.
+- **Stale flags are released** when they can be known stale: `clearCart` releases the order it discards, `resumeOrder` / `resumeParkedOrder` release the saved order they replace in the cart, and when a station starts a new session it releases orders it flagged before that session opened (crash, closed terminal).
+
+**Older orders.** Orders without the field (created before it, or last written by an older POS) keep the legacy reading — in a cart while fulfillment is `draft` (or legacy status `in-cart`). The first time a POS moves such an order out of a cart or resumes it, it gets the field and follows it from then on. Use `getOrders({ inCart })`, which applies both readings, rather than testing `status === 'in-cart'`.
+
+## 12. Custom order statuses — `order.customStatus`
+
+Each company can define its own order statuses — e.g. _In kitchen_, _Ready for pickup_, _Out for delivery_, _Delivered_ — shared by all its flows (managed through hub-api's `order-state-config/:companyId/statuses`; read with `getOrderStatuses`). A status is one of three kinds:
+
+| Definition                 | Setting it with `setOrderStatus`…                                                                          |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `fulfillmentState` set     | moves the order to that fulfillment state (same guard chain as `applyTransition`), then records the status |
+| `requiresPaymentState` set | fails unless the order's payment state is one of those — **a status never moves money**                    |
+| neither                    | just records the label                                                                                     |
+
+The status lives on the order as `customStatus: { id, label, setAt, setBy }`, **next to** `displayState`, not instead of it. State changes never touch it: payments, refunds, voids and `applyTransition` move the state and leave the status as it was, so a flow can move the state without changing the label. Two statuses may share a fulfillment state (_Ready for pickup_ and _Ready for driver_ both on `in_progress`) — the status says which.
+
+## 13. Legacy status mapping
 
 Orders predating the state machine (or arriving from old writers) are inferred from the legacy `order.status`:
 
@@ -198,9 +238,11 @@ Orders predating the state machine (or arriving from old writers) are inferred f
 
 The legacy `order.status` field continues to be written on every state change (mapped back from the pair) so old consumers keep working, but it is **read-only for humans and extensions** — never edit it directly.
 
+`in-cart` is derived from fulfillment `draft`, so it no longer means "loaded in a cart" for orders carrying `order.inCart` — a draft set aside with `releaseFromCart` still reads `in-cart`. Read §11's field (or `getOrders({ inCart })`) for that question.
+
 ---
 
-## 12. FAQ
+## 14. FAQ
 
 **Why does a voided order say "Cancelled"?**
 Because that's what the one reachable voided pair (`voided × cancelled`) always displayed, and "Voided" means nothing to a customer. The pair distinguishes it internally.
@@ -216,6 +258,9 @@ That's a valid state — exchanges and store credit return the goods without ret
 
 **How do I move an order's state from a flow?**
 Fulfillment axis: `applyTransition` (or the dedicated `parkOrder` / `resumeParkedOrder` / `voidOrder` flows). Payment axis: run the actual money operation. There is no action that sets a payment state directly — by design.
+
+**How do I mark an order paid when the customer paid elsewhere (online, a delivery app)?**
+Record it with `recordExternalPayment({ label: 'Paid online' })` — no device, drawer or change; the whole balance by default, or pass `amount` for part of it. The order is paid like with any other tender and reports show the money under the label.
 
 **Can a merchant relax the money rules?**
 No. Layers 2–4 (cross-axis rules, paths, conditions) are configurable; the nine financial invariants are not.
