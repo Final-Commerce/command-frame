@@ -42,6 +42,13 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
   const [ordersStatus, setOrdersStatus] = useState<string>('');
   const [ordersCustomerId, setOrdersCustomerId] = useState<string>('');
   const [ordersLimit, setOrdersLimit] = useState<string>('10');
+  const [ordersPaymentState, setOrdersPaymentState] = useState<string>('');
+  const [ordersFulfillmentState, setOrdersFulfillmentState] = useState<string>('');
+  const [ordersOrderType, setOrdersOrderType] = useState<string>('');
+  const [ordersCustomStatusId, setOrdersCustomStatusId] = useState<string>('');
+  const [ordersAssignedUserId, setOrdersAssignedUserId] = useState<string>('');
+  const [ordersUnassigned, setOrdersUnassigned] = useState(false);
+  const [ordersInCart, setOrdersInCart] = useState<string>('');
   const [getOrdersLoading, setGetOrdersLoading] = useState(false);
   const [getOrdersResponse, setGetOrdersResponse] = useState<string>('');
 
@@ -320,7 +327,10 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
 
       {/* Get Orders */}
       <CommandSection title="Get Orders">
-        <p className="section-description">Retrieves a list of orders with optional filtering and pagination.</p>
+        <p className="section-description">
+          Retrieves a list of orders with optional filtering and pagination. Filters combine (e.g. delivery + Ready for
+          driver + only unassigned is a driver's pick-up list).
+        </p>
         <div className="form-group">
           <div className="form-field">
             <label>Status (optional):</label>
@@ -340,6 +350,74 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
               onChange={(e) => setOrdersCustomerId(e.target.value)}
               placeholder="customer-id-123"
             />
+          </div>
+          <div className="form-field">
+            <label>Payment state (optional):</label>
+            <select value={ordersPaymentState} onChange={(e) => setOrdersPaymentState(e.target.value)}>
+              <option value="">Any</option>
+              <option value="unpaid">unpaid</option>
+              <option value="partially_paid">partially_paid</option>
+              <option value="paid">paid</option>
+              <option value="partially_refunded">partially_refunded</option>
+              <option value="refunded">refunded</option>
+            </select>
+          </div>
+          <div className="form-field">
+            <label>Fulfillment state (optional):</label>
+            <select value={ordersFulfillmentState} onChange={(e) => setOrdersFulfillmentState(e.target.value)}>
+              <option value="">Any</option>
+              <option value="draft">draft</option>
+              <option value="on_hold">on_hold</option>
+              <option value="pending">pending</option>
+              <option value="in_progress">in_progress</option>
+              <option value="partially_fulfilled">partially_fulfilled</option>
+              <option value="fulfilled">fulfilled</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+          <div className="form-field">
+            <label>Order type (optional):</label>
+            <input
+              type="text"
+              value={ordersOrderType}
+              onChange={(e) => setOrdersOrderType(e.target.value)}
+              placeholder="delivery"
+            />
+          </div>
+          <div className="form-field">
+            <label>Custom status ID (optional):</label>
+            <input
+              type="text"
+              value={ordersCustomStatusId}
+              onChange={(e) => setOrdersCustomStatusId(e.target.value)}
+              placeholder="ready-for-driver"
+            />
+          </div>
+          <div className="form-field">
+            <label>Assigned user ID (optional):</label>
+            <input
+              type="text"
+              value={ordersAssignedUserId}
+              onChange={(e) => setOrdersAssignedUserId(e.target.value)}
+              placeholder="user-id"
+              disabled={ordersUnassigned}
+            />
+            <label>
+              <input
+                type="checkbox"
+                checked={ordersUnassigned}
+                onChange={(e) => setOrdersUnassigned(e.target.checked)}
+              />{' '}
+              Only unassigned
+            </label>
+          </div>
+          <div className="form-field">
+            <label>In a cart (optional):</label>
+            <select value={ordersInCart} onChange={(e) => setOrdersInCart(e.target.value)}>
+              <option value="">Either</option>
+              <option value="true">In a cart</option>
+              <option value="false">Not in a cart</option>
+            </select>
           </div>
           <div className="form-field">
             <label>Limit:</label>
@@ -363,6 +441,13 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
               const params: any = { limit: parseInt(ordersLimit) || 10 };
               if (ordersStatus) params.status = ordersStatus;
               if (ordersCustomerId) params.customerId = ordersCustomerId;
+              if (ordersPaymentState) params.paymentState = ordersPaymentState;
+              if (ordersFulfillmentState) params.fulfillmentState = ordersFulfillmentState;
+              if (ordersOrderType.trim()) params.orderType = ordersOrderType.trim();
+              if (ordersCustomStatusId.trim()) params.customStatusId = ordersCustomStatusId.trim();
+              if (ordersUnassigned) params.assignedUserId = null;
+              else if (ordersAssignedUserId.trim()) params.assignedUserId = ordersAssignedUserId.trim();
+              if (ordersInCart) params.inCart = ordersInCart === 'true';
 
               const result = await command.getOrders(params);
               setGetOrdersResponse(JSON.stringify(result, null, 2));
