@@ -33,7 +33,7 @@ export interface AddProductToCartParams {
 
 export interface AddProductToCartResponse {
   success: boolean;
-  /** Set when the add was rejected (e.g. a required modifier is unanswered). */
+  /** Set when the add was rejected (e.g. a required modifier is unanswered, or `Marked unavailable` at this outlet). */
   reason?: string;
   productId: string;
   variantId: string;

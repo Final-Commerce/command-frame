@@ -339,6 +339,7 @@ Key fields:
 - **Metadata**: Array of key-value pairs for custom data.
 - **Variants**: Product variants with their own pricing, inventory, and attributes.
 - **Inventory**: Variant inventory is tracked per outlet in the `inventory` array.
+- **Unavailable**: `variant.unavailable` is `true` when the variant is marked "can't be sold here right now" at the active outlet (`setVariantUnavailable`). Independent of stock — show it as unavailable and don't offer add-to-cart; `addProductToCart` refuses it with `reason: 'Marked unavailable'`.
 - **ID fields**: Products and variants are keyed by `_id` (string).
 - **Pricing**: `price`, `salePrice`, `costPrice`, `minPrice`, and `maxPrice` are integers in minor currency units (e.g. cents for USD) — not decimal strings.
 

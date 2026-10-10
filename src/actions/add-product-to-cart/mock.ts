@@ -36,6 +36,22 @@ export const mockAddProductToCart: AddProductToCart = async (
     }
   }
 
+  // Same refusal as the host: the mark wins over stock and backorders, and no line is created.
+  if (variant.unavailable) {
+    return {
+      success: false,
+      reason: 'Marked unavailable',
+      productId: product._id,
+      variantId: variant._id,
+      internalId: '',
+      name: product.name,
+      quantity: 0,
+      rows: [],
+      modifiersTotal: 0,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   // A measured variant carries a resolved unit; the host does the same. What the unit can
   // express is its precision — 1.5 of a kilogram is a sale, 1.5 of a piece is a typo.
   const unit = variant.unitId ? resolveUnit(variant.unitId) : undefined;

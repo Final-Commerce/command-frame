@@ -316,6 +316,7 @@ const createSimpleProduct = (
         salePrice: 0,
         isOnSale: false,
         manageStock: true,
+        unavailable: false,
         externalId: `ext_${id}_var`,
         attributes: [],
         inventory: createInventory(100),
@@ -360,6 +361,7 @@ const createVariableProduct = (
         salePrice: 0,
         isOnSale: false,
         manageStock: true,
+        unavailable: false,
         externalId: `ext_${id}_var_s`,
         attributes: [{ name: 'Size', value: 'Small' }],
         inventory: createInventory(50),
@@ -371,6 +373,7 @@ const createVariableProduct = (
         salePrice: 0,
         isOnSale: false,
         manageStock: true,
+        unavailable: false,
         externalId: `ext_${id}_var_l`,
         attributes: [{ name: 'Size', value: 'Large' }],
         inventory: createInventory(30),
@@ -397,6 +400,8 @@ export const MOCK_PRODUCT_BEER = createVariableProduct(
   [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY],
   'Unique paste infused with dark lager.',
 );
+// Demo of `setVariantUnavailable`: the large jar is marked unavailable at the outlet, so `addProductToCart` refuses it.
+MOCK_PRODUCT_BEER.variants[1].unavailable = true;
 
 export const MOCK_PRODUCT_BEET = createSimpleProduct(
   'prod_beet',
