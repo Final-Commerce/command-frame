@@ -229,6 +229,9 @@ export function compositePicksRefusal(composite: CFComposite, picks: CFComposite
     const blocking = composite.parts.find(
       (part) => part.min > 0 && !part.items.some((item) => !item.unavailable || item.unavailable === 'by_date'),
     );
+    // FT-151: a part blocked by the sold-out mark says so, as the host does.
+    const marked = blocking?.items.find((item) => item.unavailable === 'marked_sold_out');
+    if (marked) return `${marked.name}: marked sold out`;
     return blocking
       ? `${blocking.name ?? 'Choose'}: nothing can be picked at this outlet`
       : 'This composite is unavailable: a part it needs has nothing to pick';
@@ -242,6 +245,7 @@ export function compositePicksRefusal(composite: CFComposite, picks: CFComposite
     if (!Number.isInteger(quantity) || quantity <= 0) return `${item.name}: quantity must be a positive whole number`;
     if (item.unavailable === 'by_date') return `${item.name}: choose a date and time`;
     if (item.unavailable === 'fully_booked') return `${item.name} is fully booked at that time`;
+    if (item.unavailable === 'marked_sold_out') return `${item.name}: marked sold out`;
     if (item.unavailable) return `${item.name} is not available`;
     const choice = item.choices.find((candidate) => candidate.variantId === pick.variantId);
     if (!choice) return `${item.name}: that variant is not one of its choices`;
