@@ -118,3 +118,8 @@ A line's modifier selections apply to every unit, so changing the quantity
 rescales each selection's extended total automatically (`unitPrice × choice
 quantity × new line quantity`) — the caller never re-sends selections.
 Setting quantity to 0 removes the line and its selections together.
+
+## Composite lines (FT-83)
+
+Nothing to rescale on the flow side: `components[]` and their modifier rows are per ONE composite, and the host
+multiplies them by the new line quantity.

@@ -24,7 +24,7 @@ export interface GetProductsParams {
     sku?: string | { $regex?: string; $options?: string };
     status?: string;
     /**
-     * `simple` | `variable` | `booking`. Naming it at all switches OFF the default exclusion
+     * `simple` | `variable` | `booking` | `composite`. Naming it at all switches OFF the default exclusion
      * of bookable services — including `{ $ne: 'booking' }`, which then means what it says.
      */
     productType?: string | { $in?: string[]; $ne?: string };

@@ -242,3 +242,10 @@ The demo mock (`mock.ts`) derives the rows from the mock order's payment
 methods but, lacking a refund ledger and `emv` data, always reports
 `refundedAmount`/`totalRefunded` of `0` and no `cardNumber` — shape only, not
 real capacity.
+
+## Composite lines (FT-83)
+
+A composite line is refunded as ONE line by quantity, like any other: its `components[]` come along as sold, without the
+component tax fields (`taxTableId`, `totalTax`, `taxes` — the refund's tax is on the line; B30), per ONE composite so
+the refunded quantity multiplies them, and its modifier rows, `componentIndex` included, are prorated
+like any modifier row. A single component cannot be addressed — there is no parameter for it.

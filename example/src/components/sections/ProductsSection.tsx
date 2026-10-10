@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { renderClient as command } from '@final-commerce/command-frame';
+import { renderClient as command, type CFComposite } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -17,6 +17,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [variantId, setVariantId] = useState<string>('');
   const [productId, setProductId] = useState<string>('');
   const [modifiers, setModifiers] = useState<any[]>([]);
+  const [composite, setComposite] = useState<CFComposite | null>(null);
 
   const [addProductLoading, setAddProductLoading] = useState(false);
   const [addProductResponse, setAddProductResponse] = useState<string>('');
@@ -131,10 +132,17 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       // The host always sets this, even to [] — an empty table means "no modifiers",
       // not "the join did not run".
       setModifiers(Array.isArray(product.modifiers) ? product.modifiers : []);
+      // null on every product that is not a composite (the host sets it on all of them).
+      setComposite(product.composite ?? null);
     }
   };
 
   const getProductPrice = (product: any): string => {
+    // A composite's price is the host's: never the variant's, never a min() over them.
+    if (product.composite) {
+      const { available, fromPrice } = product.composite as CFComposite;
+      return available && fromPrice != null ? `From ${fromPrice}` : 'Unavailable';
+    }
     if (product.variants && product.variants.length > 0) {
       const prices = product.variants
         .map((v: any) => v.price)
@@ -343,6 +351,63 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           <p className="no-data-message">
             Select a product to view modifiers. An empty table means the product&apos;s categories carry none.
           </p>
+        )}
+      </CommandSection>
+
+      <CommandSection title="Composite (Select from list above)">
+        <p className="section-description">
+          <code>product.composite</code> — the picker the host serves for a composite product: parts, their items, what
+          one pick adds (<code>cost</code>) and why an item cannot be picked (<code>unavailable</code>). Render it as
+          is; a pick is an item&apos;s <code>Item ID</code> plus one of its <code>Choices</code>, sent with{' '}
+          <code>addProductToCart(&#123; variantId, composite &#125;)</code> (Cart tab). Prices are in minor units.
+        </p>
+
+        {composite ? (
+          <div className="data-table-wrapper">
+            <p>
+              <strong>{composite.available ? 'Available' : 'Unavailable'}</strong> · base price{' '}
+              {composite.basePrice ?? '—'} · from {composite.fromPrice ?? '—'}
+            </p>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Part</th>
+                  <th>Rules</th>
+                  <th>Item</th>
+                  <th>Item ID</th>
+                  <th className="text-right">Cost</th>
+                  <th>Unavailable</th>
+                  <th>Choices (variant IDs)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {composite.parts.flatMap((part) =>
+                  part.items.map((item, itemIndex) => (
+                    <tr key={item._id}>
+                      <td>{itemIndex === 0 ? (part.name ?? 'Choose') : ''}</td>
+                      <td className="text-muted">
+                        {itemIndex === 0
+                          ? `${part.required ? 'required' : 'optional'} · min ${part.min} · max ${part.max}`
+                          : ''}
+                      </td>
+                      <td>
+                        {item.name || '—'}
+                        {part.defaultPick?.itemId === item._id ? ' (default)' : ''}
+                      </td>
+                      <td className="text-muted">{item._id}</td>
+                      <td className="text-right">{item.cost}</td>
+                      <td className="text-muted">{item.unavailable ?? ''}</td>
+                      <td className="text-muted">
+                        {item.choices.map((choice) => `${choice.name} (${choice.variantId})`).join(', ') || '—'}
+                      </td>
+                    </tr>
+                  )),
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="no-data-message">Select a composite product to view its parts.</p>
         )}
       </CommandSection>
 
