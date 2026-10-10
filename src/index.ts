@@ -36,6 +36,7 @@ import { setActiveProductDiscount } from './actions/set-active-product-discount/
 import { getActiveProduct } from './actions/get-active-product/action';
 import { setActiveProduct } from './actions/set-active-product/action';
 import { adjustInventory } from './actions/adjust-inventory/action';
+import { setVariantUnavailable } from './actions/set-variant-unavailable/action';
 // Order Actions
 import { addOrderNote } from './actions/add-order-note/action';
 import { addCartFee } from './actions/add-cart-fee/action';
@@ -189,6 +190,7 @@ export const command = {
   getActiveProduct,
   setActiveProduct,
   adjustInventory,
+  setVariantUnavailable,
   // Order Actions
   addOrderNote,
   addCartFee,
@@ -417,6 +419,13 @@ export type {
   RefundPlanSource,
   RefundPlanAllocation,
   RefundPlanLeg,
+  RefundPlanRowType,
+  RefundPlanTaxLine,
+  RefundPlanAmounts,
+  RefundPlanRow,
+  RefundPlanSelectedRow,
+  RefundPlanTotals,
+  RefundPlanBreakdown,
 } from './actions/get-refund-plan/types';
 export type { CheckPermission, CheckPermissionParams, CheckPermissionResponse } from './actions/check-permission/types';
 // Refund Actions
@@ -506,6 +515,11 @@ export type {
   SetActiveProductResponse,
 } from './actions/set-active-product/types';
 export type { AdjustInventory, AdjustInventoryParams, AdjustInventoryResponse } from './actions/adjust-inventory/types';
+export type {
+  SetVariantUnavailable,
+  SetVariantUnavailableParams,
+  SetVariantUnavailableResponse,
+} from './actions/set-variant-unavailable/types';
 // Order Actions
 export type { AddOrderNote, AddOrderNoteParams, AddOrderNoteResponse } from './actions/add-order-note/types';
 export type { AddCartFee, AddCartFeeParams, AddCartFeeResponse } from './actions/add-cart-fee/types';

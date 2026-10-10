@@ -29,6 +29,7 @@ import type {
   GetActiveProduct,
   SetActiveProduct,
   AdjustInventory,
+  SetVariantUnavailable,
   AddOrderNote,
   AddCartFee,
   ClearCart,
@@ -158,6 +159,7 @@ export interface RenderProviderActions {
   getActiveProduct: GetActiveProduct;
   setActiveProduct: SetActiveProduct;
   adjustInventory: AdjustInventory;
+  setVariantUnavailable: SetVariantUnavailable;
   addOrderNote: AddOrderNote;
   addCartFee: AddCartFee;
   clearCart: ClearCart;

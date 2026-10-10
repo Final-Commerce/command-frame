@@ -104,8 +104,13 @@ export type CFAttributeOption = AttributeOption;
 export type CFAttribute = Attribute;
 export type CFTransaction = Transaction;
 export type CFCategory = Category;
-export type CFProductVariant = ProductVariant;
-export type CFProduct = FullProduct;
+/**
+ * FT-151 `unavailable`: `true` when the variant is marked "can't be sold here right now" at the ACTIVE outlet
+ * (`setVariantUnavailable`). Independent of stock; `addProductToCart` refuses it even with backorders. The host always
+ * sets it on `getProducts`. INTERIM here until `common/pos-types` ProductVariant carries it (ob_agent).
+ */
+export type CFProductVariant = ProductVariant & { unavailable?: boolean };
+export type CFProduct = Omit<FullProduct, 'variants'> & { variants: CFProductVariant[] };
 /** Composite products (FT-83): `CFProduct.composite`, the picks `addProductToCart` takes, the cart/order line's
  *  components. The host decides availability, prices and tax; a flow renders them and sends picks. */
 /**

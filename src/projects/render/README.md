@@ -53,6 +53,7 @@ The library provides a `command` namespace object containing all available comma
 - **[addProductNote](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-note/README.md)** - Add a note to a specific product in the cart (using `internalId`)
 - **[addProductFee](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/add-product-fee/README.md)** - Add a fee to a specific product in the cart (using `internalId`)
 - **[adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)** - Adjust inventory/stock level for a specific product variant
+- **[setVariantUnavailable](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-variant-unavailable/README.md)** - Mark or unmark a variant as unavailable at the active outlet
 - **[getCompositePrice](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-composite-price/README.md)** - Price a composite's current picks before adding it (a picker's running total)
 - **[getCompositeAvailability](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-composite-availability/README.md)** - The start times every bookable pick of a composite is free at (one date picker for the whole composite)
 - **[setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)** - Set a product as the active product in the POS interface by variant ID
@@ -345,6 +346,10 @@ Adds a fee to a specific product in the cart (identified by `internalId`). Suppo
 ### [adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)
 
 Adjusts the inventory/stock level for a specific product variant. Supports adding, subtracting, or setting stock to a specific value.
+
+### [setVariantUnavailable](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-variant-unavailable/README.md)
+
+Marks a variant "can't be sold here right now" at the active outlet, or removes the mark. `getProducts` returns it as `variant.unavailable`; `addProductToCart` refuses a marked variant.
 
 ### [setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)
 
@@ -733,6 +738,9 @@ import type {
   AdjustInventoryParams,
   AdjustInventoryResponse,
   AdjustInventory,
+  SetVariantUnavailableParams,
+  SetVariantUnavailableResponse,
+  SetVariantUnavailable,
   SetActiveProductParams,
   SetActiveProductResponse,
   SetActiveProduct,

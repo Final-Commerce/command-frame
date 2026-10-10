@@ -53,6 +53,22 @@ export const mockAddProductToCart: AddProductToCart = async (
     }
   }
 
+  // Same refusal as the host: the mark wins over stock and backorders, and no line is created.
+  if (variant.unavailable) {
+    return {
+      success: false,
+      reason: 'Marked unavailable',
+      productId: product._id,
+      variantId: variant._id,
+      internalId: '',
+      name: product.name,
+      quantity: 0,
+      rows: [],
+      modifiersTotal: 0,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   // Composites: the host's refusals with its texts, then the same line it builds (kaching `buildCompositeLine`).
   let compositeLine: MockCompositeLine | undefined;
   if (product.composite || params?.composite?.length) {
