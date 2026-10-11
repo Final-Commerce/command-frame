@@ -18,6 +18,15 @@ Retrieves a list of products from the parent application's local database.
 >
 > Any query that names `productType` is used exactly as written — the default exclusion switches
 > off entirely, so `{ $ne: 'booking' }` also means what it says.
+
+> **Products not sold in this channel are excluded unless `includeUnlisted: true` (or the query names the
+> channel's flag).** The flag follows the host channel: `notSoldInPos` on a till, `notSoldOnline` on a
+> storefront. Such a product is left out of the grid, name search and sku/barcode search. With
+> `includeUnlisted: true` it is returned, but it still cannot be sold: `addProductToCart` and
+> `addBookingToCart` refuse a product or a variant with the flag. Variants with the flag are stripped
+> from `variants[]`, and a product whose every variant has it is left out too (also only without
+> `includeUnlisted`).
+
 > A variant sold by measure carries `unitId` (and a resolved `unit`), and its `inventory[].stock` is ALREADY in that selling unit — the host converts its base-unit ledger before the variant reaches you. Show it as `${stock} ${unit.abbreviation}`; never divide or multiply it by `unit.ratioToBase`.
 
 ## Parameters
@@ -36,8 +45,14 @@ interface GetProductsParams {
     tags?: string | { $in?: string[] };
     supplier?: string;
     externalId?: string;
+    /** `true` = flagged only; `false` = not flagged (missing counts). Switches off the default exclusion. */
+    notSoldInPos?: boolean;
+    /** `true` = flagged only; `false` = sold online (missing counts). */
+    notSoldOnline?: boolean;
     [key: string]: any;
   };
+  /** Also return products with the channel's flag (`notSoldInPos` on a till, `notSoldOnline` on a storefront). Defaults to false. */
+  includeUnlisted?: boolean;
   offset?: number;
   limit?: number;
 }
@@ -50,6 +65,17 @@ A query object to filter products. The actual supported query operators depend o
 **Note:** The handler always restricts results to `status: 'active'` products, regardless of any `status` value passed here — draft and inactive products are never returned by this command.
 
 **Note:** When `query.sku` (or a `sku` field inside a `$or` branch) is supplied, the handler also matches it against variant SKUs and against the product's `barcode` field (case-insensitive) — not just the product-level `sku` field. This means a scanned barcode or a variant-level SKU will still return the parent product.
+
+**Note — sales-channel filters.** `query.notSoldInPos` and `query.notSoldOnline` are optional product-level filters with one rule: `true` returns only products with the flag set, `false` returns only products without it — a missing field counts as `false`, and almost every product has none. Leave them out for the default behaviour. Naming the channel's flag (either value) replaces its default exclusion — `notSoldInPos` on a till, `notSoldOnline` on a storefront — so on a till `{ notSoldInPos: true }` returns them without `includeUnlisted`.
+
+```typescript
+getProducts({ query: { notSoldOnline: false } }); // sold online (flag missing or false)
+getProducts({ query: { notSoldInPos: true } }); // only products not sold at the POS
+```
+
+#### `includeUnlisted` (optional)
+
+`true` also returns products with the channel's flag (`notSoldInPos` on a till, `notSoldOnline` on a storefront), keeps flagged variants in `variants[]` and keeps products whose every variant is flagged. Defaults to `false`. It does not make them sellable — `addProductToCart` and `addBookingToCart` still refuse them. Without it, the variant stripping applies whatever the query says.
 
 #### `offset` (optional)
 
@@ -377,5 +403,6 @@ The handler does not catch or swallow errors. If the underlying query fails (e.g
 - Results are limited to 100 products per request by default
 - Deleted products (`isDeleted: true`) are automatically excluded
 - Only products with `status: 'active'` are returned — draft and inactive products are excluded, even if requested via `query.status`
+- Products with the channel's flag (`notSoldInPos` on a till, `notSoldOnline` on a storefront) are excluded unless `includeUnlisted: true`; so are products whose every variant has it, and flagged variants are stripped from `variants[]`
 - Results are scoped to the currently active outlet: products not assigned to that outlet, or explicitly hidden there via catalog visibility, are excluded
 - Variants are included in the response; soft-deleted variants (sync tombstones) are stripped out before the response is returned

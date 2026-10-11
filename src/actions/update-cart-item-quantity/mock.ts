@@ -1,5 +1,5 @@
 import { UpdateCartItemQuantity, UpdateCartItemQuantityParams, UpdateCartItemQuantityResponse } from './types';
-import { MOCK_CART, mockPublishEvent } from '../../demo/database';
+import { MOCK_CART, MOCK_PRODUCTS, mockPublishEvent } from '../../demo/database';
 import { extendPrice, isValidQuantity } from '@final-commerce/common';
 export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   params?: UpdateCartItemQuantityParams,
@@ -61,6 +61,13 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
       quantity: 0,
       timestamp: new Date().toISOString(),
     });
+  }
+
+  // Same refusal and text as the host: raising a line not sold in POS (lowering always works).
+  const source = MOCK_PRODUCTS.find((p) => p.variants.some((v) => v._id === product.variantId));
+  const variant = source?.variants.find((v) => v._id === product.variantId);
+  if (quantity > previousQuantity && (source?.notSoldInPos || variant?.notSoldInPos)) {
+    throw new Error(`${source?.name} is not sold in POS`);
   }
 
   // Update quantity
