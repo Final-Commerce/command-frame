@@ -123,7 +123,7 @@ not created.
 
 - `"variantId is required"` — `variantId` was not provided.
 - `` `Variant with ID ${variantId} not found` `` — no product/variant matches the given `variantId`.
-- `` `${name} is not sold in POS` `` — the product or the chosen variant has `notSoldInPos: true`.
+- `` `${name} is not sold in POS` `` — on a till, the product or the chosen variant has `notSoldInPos: true`. On a storefront the flag is `notSoldOnline` and the text `` `${name} is not sold online` ``.
 - `"Product is out of stock"` — the variant is not unlimited-stock and has 0 or negative stock.
 - `"Variant not found in product"`, `"Failed to build active product"`, `"Product creation failed"`, `"Product lost during processing"` — internal state-consistency guards; should not occur under normal use.
 
