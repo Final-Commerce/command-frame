@@ -21,6 +21,18 @@ export const mockGetProducts: GetProducts = async (params?: GetProductsParams): 
     products = products.filter((p) => (p as { productType?: string }).productType !== 'booking');
   }
 
+  // Same as the host: `true` = flagged, `false` = not flagged (missing counts).
+  for (const flag of ['notSoldInPos', 'notSoldOnline'] as const) {
+    if (typeof query[flag] === 'boolean') products = products.filter((p) => !!p[flag] === query[flag]);
+  }
+  if (!params?.includeUnlisted) {
+    // Same as the host: flagged variants are stripped, a product left with none is dropped.
+    if (query.notSoldInPos === undefined) products = products.filter((p) => !p.notSoldInPos);
+    products = products
+      .filter((p) => !p.variants.length || p.variants.some((v) => !v.notSoldInPos))
+      .map((p) => ({ ...p, variants: p.variants.filter((v) => !v.notSoldInPos) }));
+  }
+
   if (query.searchValue) {
     const search = String(query.searchValue).toLowerCase();
     products = products.filter((p) => p.name.toLowerCase().includes(search) || p.sku?.toLowerCase().includes(search));

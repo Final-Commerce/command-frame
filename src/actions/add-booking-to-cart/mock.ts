@@ -8,15 +8,6 @@ export const mockAddBookingToCart: AddBookingToCart = async (
 ): Promise<AddBookingToCartResponse> => {
   console.log('[Mock] addBookingToCart called', params);
 
-  // One call, two effects — the window is claimed AND the service is in the cart. The claim goes
-  // first and its refusal propagates: a cart line for a window somebody else took is worse than
-  // no line at all.
-  const held = await mockHoldBooking(params);
-  if (!held.success || !held.booking) {
-    return { success: false, reason: held.reason, timestamp: new Date().toISOString() };
-  }
-  const booking = held.booking;
-
   // An unknown product used to be sold as "Booking" at zero. The host refuses it, and a mock that
   // quietly sells something no catalogue contains teaches a screen a case that cannot happen.
   const product = MOCK_PRODUCTS.find(({ _id }) => _id === params.productId);
@@ -34,6 +25,19 @@ export const mockAddBookingToCart: AddBookingToCart = async (
       timestamp: new Date().toISOString(),
     };
   }
+  // Same refusal and text as the host (kaching add-booking-to-cart).
+  if (product.notSoldInPos || variant?.notSoldInPos) {
+    return { success: false, reason: `${product.name} is not sold in POS`, timestamp: new Date().toISOString() };
+  }
+  // One call, two effects — the window is claimed AND the service is in the cart. Like the host, the
+  // claim comes after the product checks and before the line; its refusal propagates: a cart line for
+  // a window somebody else took is worse than no line at all.
+  const held = await mockHoldBooking(params);
+  if (!held.success || !held.booking) {
+    return { success: false, reason: held.reason, timestamp: new Date().toISOString() };
+  }
+  const booking = held.booking;
+
   const price = variant?.price ?? product.minPrice ?? 0;
 
   const reservation: CFCartReservation = {
