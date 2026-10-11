@@ -90,6 +90,7 @@ try {
 - `"quantity is required"` — `quantity` is `undefined` or `null`
 - `"quantity must be a non-negative integer"` — `quantity` is negative, fractional, or not parseable as an integer
 - `"Insufficient stock. Available: {stock}, Requested: {requested}"` — increasing quantity would push the combined quantity of that variant across all cart lines past available stock
+- `"{name} is not sold in POS"` — increasing the quantity of a line whose product or variant has `notSoldInPos: true` (lowering it or setting 0 always works)
 - `"Cart item with internalId {internalId} not found"` — no matching product or custom sale line exists in the cart
 
 ## Events
