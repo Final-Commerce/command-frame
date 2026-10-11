@@ -32,10 +32,26 @@ export interface GetProductsParams {
     tags?: string | { $in?: string[] };
     supplier?: string;
     externalId?: string;
+    /**
+     * Product-level flag filter. `true` = only products flagged `notSoldInPos`; `false` = only
+     * products NOT flagged (a missing field counts as not flagged). Naming it switches off the
+     * default `notSoldInPos` exclusion, so `true` works without `includeUnlisted`.
+     */
+    notSoldInPos?: boolean;
+    /** Product-level flag filter: `true` = flagged `notSoldOnline`; `false` = sold online (missing counts). */
+    notSoldOnline?: boolean;
     // Text search (searches across name, sku)
     // This is handled by the handler, not directly in query
     [key: string]: any;
   };
+  /**
+   * Products flagged `notSoldInPos` are left out unless this is `true` (default `false`) or the
+   * query names `notSoldInPos`. They still cannot be sold: `addProductToCart` / `addBookingToCart`
+   * refuse a product or a variant flagged `notSoldInPos`. Without it, flagged variants are also
+   * stripped from `variants[]` and a product whose every variant is flagged is left out — whatever
+   * `query.notSoldInPos` says.
+   */
+  includeUnlisted?: boolean;
   /** Defaults to 0. */
   offset?: number;
   /** Defaults to 100. */

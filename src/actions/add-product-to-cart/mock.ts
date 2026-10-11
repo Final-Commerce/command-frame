@@ -36,6 +36,11 @@ export const mockAddProductToCart: AddProductToCart = async (
     }
   }
 
+  // Same refusal and text as the host (kaching add-product-to-cart).
+  if (product.notSoldInPos || variant.notSoldInPos) {
+    throw new Error(`${product.name} is not sold in POS`);
+  }
+
   // A measured variant carries a resolved unit; the host does the same. What the unit can
   // express is its precision — 1.5 of a kilogram is a sale, 1.5 of a piece is a typo.
   const unit = variant.unitId ? resolveUnit(variant.unitId) : undefined;
