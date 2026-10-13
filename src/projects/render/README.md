@@ -71,6 +71,7 @@ The library provides a `command` namespace object containing all available comma
 - **[resumeOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-order/README.md)** - Resume any open order (parked or not) into the cart; in-cart, completed, refunded and cancelled orders are rejected
 - **[setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)** - Set or remove free-form key/value metadata on an order or the live cart (e.g. a delivery note); syncs with the order
 - **[setOrderType](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-type/README.md)** - Label an order (or the live cart) with a free-text type such as `delivery`; display and `getOrders` filtering only, no logic
+- **[setScheduledFor](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-scheduled-for/README.md)** - When the customer wants the order (e.g. a pizza for 7 pm), on an order or the live cart; `null` = as soon as possible; `getOrders` filters and sorts by it
 - **[setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)** - Set one of the company's custom order statuses on an order; bound statuses move the fulfillment state, and can require a payment state
 - **[getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)** - The company's custom order statuses
 - **[assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)** - Assign a user (e.g. the driver) to an order, or unassign; one assignee at a time, synced with the order
@@ -401,6 +402,10 @@ Sets (string) or removes (`null`) metadata keys on an order by id, or on the liv
 ### [setOrderType](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-type/README.md)
 
 Sets `order.orderType` — free text (`takeout`, `pickup`, `delivery`, …) or `null` to clear — on an order by id or on the live cart, carried onto the order when it's created. A label for display and `getOrders({ orderType })` only; nothing in the POS logic reads it.
+
+### [setScheduledFor](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-scheduled-for/README.md)
+
+Sets `order.scheduledFor` — when the customer wants the order, an ISO 8601 date-time stored in UTC, or `null` for as soon as possible — on an order by id or on the live cart, carried onto the order when it's created. `getOrders` filters by it (`scheduled`, `scheduledFrom`, `scheduledTo`) and sorts by it (`sortBy: 'scheduledFor'`); nothing in the POS logic acts on it, and the paid-order lock doesn't apply.
 
 ### [setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)
 
@@ -809,6 +814,9 @@ import type {
   SetOrderTypeParams,
   SetOrderTypeResponse,
   SetOrderType,
+  SetScheduledForParams,
+  SetScheduledForResponse,
+  SetScheduledFor,
   SetOrderStatusParams,
   SetOrderStatusResponse,
   SetOrderStatus,

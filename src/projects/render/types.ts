@@ -38,6 +38,7 @@ import type {
   AssignOrderUser,
   ReleaseFromCart,
   SetOrderType,
+  SetScheduledFor,
   SetOrderStatus,
   GetOrderStatuses,
   DeleteParkedOrder,
@@ -174,6 +175,7 @@ export interface RenderProviderActions {
   assignOrderUser: AssignOrderUser;
   releaseFromCart: ReleaseFromCart;
   setOrderType: SetOrderType;
+  setScheduledFor: SetScheduledFor;
   setOrderStatus: SetOrderStatus;
   getOrderStatuses: GetOrderStatuses;
   deleteParkedOrder: DeleteParkedOrder;

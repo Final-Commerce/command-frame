@@ -26,12 +26,18 @@ export interface GetOrdersParams {
   orderType?: string | string[];
   /** Custom status id(s) set with setOrderStatus, e.g. 'in-kitchen'. A list matches any of them. */
   customStatusId?: string | string[];
+  /** true: only orders with a time (setScheduledFor); false: only "as soon as possible" orders (no time). */
+  scheduled?: boolean;
+  /** Only orders scheduled at or after this ISO 8601 date-time. Orders with no time never match. */
+  scheduledFrom?: string;
+  /** Only orders scheduled at or before this ISO 8601 date-time. Orders with no time never match. */
+  scheduledTo?: string;
   /** Default: 50. */
   limit?: number;
   /** Default: 0. */
   offset?: number;
   searchValue?: string;
-  /** Default: 'createdAt'. */
+  /** Default: 'createdAt'. 'scheduledFor' sorts by the customer's requested time — orders with no time come first ascending. */
   sortBy?: string;
   /** Default: 'descending'. */
   sortDirection?: 'ascending' | 'descending';
