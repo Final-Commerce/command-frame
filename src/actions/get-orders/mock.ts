@@ -27,6 +27,9 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       inCart,
       orderType,
       customStatusId,
+      scheduled,
+      scheduledFrom,
+      scheduledTo,
       searchValue,
       limit,
       offset,
@@ -79,6 +82,20 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       if (ids.length) orders = orders.filter((o) => !!o.customStatus && ids.includes(o.customStatus.id));
     }
 
+    // Requested time (setScheduledFor). ISO strings in UTC compare correctly as strings.
+    const scheduledOf = (o: (typeof orders)[number]) => o.scheduledFor ?? null;
+    if (typeof scheduled === 'boolean') {
+      orders = orders.filter((o) => (scheduledOf(o) !== null) === scheduled);
+    }
+    if (scheduledFrom) {
+      const from = new Date(scheduledFrom).toISOString();
+      orders = orders.filter((o) => (scheduledOf(o) ?? '') !== '' && scheduledOf(o)! >= from);
+    }
+    if (scheduledTo) {
+      const to = new Date(scheduledTo).toISOString();
+      orders = orders.filter((o) => (scheduledOf(o) ?? '') !== '' && scheduledOf(o)! <= to);
+    }
+
     if (typeof inCart === 'boolean') {
       // Mirrors common's isInCart: the flag when present, else the legacy reading.
       const orderInCart = (o: (typeof orders)[number]) =>
@@ -112,6 +129,11 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       orders.sort((a: any, b: any) => {
         let valA = a[sortBy];
         let valB = b[sortBy];
+        // Like the host: a missing time sorts as '' (first when ascending).
+        if (sortBy === 'scheduledFor') {
+          valA = valA ?? '';
+          valB = valB ?? '';
+        }
 
         // Handle nested sort fields if necessary, basic support for now
         if (!valA && sortBy === 'createdAt') valA = a.createdAt || '';

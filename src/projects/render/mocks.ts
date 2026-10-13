@@ -73,6 +73,7 @@ import { mockSetOrderMetadata } from '../../actions/set-order-metadata/mock';
 import { mockAssignOrderUser } from '../../actions/assign-order-user/mock';
 import { mockReleaseFromCart } from '../../actions/release-from-cart/mock';
 import { mockSetOrderType } from '../../actions/set-order-type/mock';
+import { mockSetScheduledFor } from '../../actions/set-scheduled-for/mock';
 import { mockSetOrderStatus } from '../../actions/set-order-status/mock';
 import { mockGetOrderStatuses } from '../../actions/get-order-statuses/mock';
 import { mockSelectAllRefundItems } from '../../actions/select-all-refund-items/mock';
@@ -190,6 +191,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   assignOrderUser: mockAssignOrderUser,
   releaseFromCart: mockReleaseFromCart,
   setOrderType: mockSetOrderType,
+  setScheduledFor: mockSetScheduledFor,
   setOrderStatus: mockSetOrderStatus,
   getOrderStatuses: mockGetOrderStatuses,
   selectAllRefundItems: mockSelectAllRefundItems,

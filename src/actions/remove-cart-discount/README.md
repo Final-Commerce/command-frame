@@ -36,3 +36,7 @@ In the demo mock, these effects (resetting the mock cart’s `total`, `amountToB
 ## Error Handling
 
 The kaching handler does not throw — it always returns `success: true`, even when there was no cart discount to remove (same idempotent behavior as the demo mock).
+
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `removeCartDiscount: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.

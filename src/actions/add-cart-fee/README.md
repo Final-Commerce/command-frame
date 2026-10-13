@@ -50,6 +50,10 @@ await command.addCartFee({
 - Throws `Cart fee amount must be greater than 0` if `amount` is `0` or negative
 - Throws `Fee amount must be an integer in minor currency units (e.g. 1575 = $15.75)` if `isPercent` is `false` and `amount` is not an integer (e.g. `15.75`)
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `addCartFee: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Events
 
 This action publishes a `cart-fee-added` event on the `cart` topic when a fee is successfully added.
