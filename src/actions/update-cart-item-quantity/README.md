@@ -92,6 +92,10 @@ try {
 - `"Insufficient stock. Available: {stock}, Requested: {requested}"` — increasing quantity would push the combined quantity of that variant across all cart lines past available stock
 - `"Cart item with internalId {internalId} not found"` — no matching product or custom sale line exists in the cart
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `updateCartItemQuantity: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Events
 
 - If quantity is updated (quantity > 0): Publishes a `product-updated` event on the `cart` topic

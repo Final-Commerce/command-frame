@@ -10,17 +10,22 @@ None.
 
 `Promise<GetCurrentCartResponse>`
 
-| Field       | Type         | Description                                                                                                           |
-| :---------- | :----------- | :-------------------------------------------------------------------------------------------------------------------- |
-| `success`   | `boolean`    | `true` if the cart was retrieved successfully.                                                                        |
-| `cart`      | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
-| `timestamp` | `string`     | ISO date string of when the action occurred.                                                                          |
+| Field         | Type                 | Description                                                                                                                         |
+| :------------ | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `success`     | `boolean`            | `true` if the cart was retrieved successfully.                                                                                      |
+| `cart`        | `ActiveCart`         | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details.               |
+| `itemsLocked` | `boolean` (optional) | `true` while the order in this cart has any payment on it — see [Paid orders](#paid-orders). Absent on hosts that predate the lock. |
+| `timestamp`   | `string`             | ISO date string of when the action occurred.                                                                                        |
 
 **Tip:** You can import [`CFActiveCart`](../../types/README.md#cfactivecart), [`CFActiveProduct`](../../types/README.md#cfactiveproduct), and [`CFActiveCustomSales`](../../types/README.md#cfactivecustomsales) types directly from the library:
 
 ```typescript
 import { type CFActiveCart, type CFActiveProduct } from '@final-commerce/command-frame';
 ```
+
+## Paid orders
+
+Once the order in this cart has any payment on it — a split leg, a part payment, or paid in full — its items, amounts and customer can no longer be changed: adding, removing or re-quantifying products, custom sales, modifiers, discounts, fees, non-revenue items, bookings, changing or removing the customer, and `clearCart` are all refused. `itemsLocked: true` says so up front, so a flow can disable those controls instead of waiting for the refusal. The order can still be released ([`releaseFromCart`](../release-from-cart/README.md)), paid, voided, and labelled (notes, type, status, assignee, metadata). A completed sale never locks the next one.
 
 ## Cart Object Structure
 

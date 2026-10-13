@@ -79,6 +79,10 @@ await command.addProductDiscount({
 - `No cart item with internalId "<id>". Pass the internalId returned by addProductToCart (a productId or variantId will not match — internalId is the per-cart-line identifier).` — `internalId` was passed but no matching line item exists in the cart.
 - `"No product context. Provide internalId (to update an existing cart item) or use addProductToCart(...) with discounts."` — `internalId` was omitted and there is no active product context.
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `addProductDiscount: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Events
 
 Publishes a `product-discount-added` event on the `cart` topic, with the updated product, the applied `discount` (`{ amount, isPercent, label }`), and `internalId` when one was passed in.
