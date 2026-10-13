@@ -83,7 +83,7 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
     }
 
     // Requested time (setScheduledFor). ISO strings in UTC compare correctly as strings.
-    const scheduledOf = (o: (typeof orders)[number]) => (o as { scheduledFor?: string | null }).scheduledFor ?? null;
+    const scheduledOf = (o: (typeof orders)[number]) => o.scheduledFor ?? null;
     if (typeof scheduled === 'boolean') {
       orders = orders.filter((o) => (scheduledOf(o) !== null) === scheduled);
     }

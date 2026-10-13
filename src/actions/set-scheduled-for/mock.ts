@@ -1,9 +1,6 @@
 import type { SetScheduledFor, SetScheduledForParams, SetScheduledForResponse } from './types';
 import { MOCK_ORDERS, MOCK_PARKED_ORDERS, mockPublishEvent } from '../../demo/database';
 
-/** The field this command owns. (On CFOrder from the next @final-commerce/common release.) */
-type Scheduled = { scheduledFor?: string | null };
-
 /** Time for the demo's live cart, which has no order until it is paid or parked. */
 let mockCartScheduledFor: string | null = null;
 
@@ -53,7 +50,7 @@ export const mockSetScheduledFor: SetScheduledFor = async (
     throw new Error(`Order with ID ${params.orderId} not found`);
   }
 
-  (order as Scheduled).scheduledFor = scheduledFor;
+  order.scheduledFor = scheduledFor;
   mockPublishEvent('orders', 'order-updated', { order });
 
   return { success: true, orderId: order._id!, scheduledFor, timestamp };
