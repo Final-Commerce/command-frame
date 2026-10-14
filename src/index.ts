@@ -37,6 +37,7 @@ import { getActiveProduct } from './actions/get-active-product/action';
 import { setActiveProduct } from './actions/set-active-product/action';
 import { adjustInventory } from './actions/adjust-inventory/action';
 import { setVariantUnavailable } from './actions/set-variant-unavailable/action';
+import { getCustomStockActions } from './actions/get-custom-stock-actions/action';
 // Order Actions
 import { addOrderNote } from './actions/add-order-note/action';
 import { addCartFee } from './actions/add-cart-fee/action';
@@ -191,6 +192,7 @@ export const command = {
   setActiveProduct,
   adjustInventory,
   setVariantUnavailable,
+  getCustomStockActions,
   // Order Actions
   addOrderNote,
   addCartFee,
@@ -514,12 +516,22 @@ export type {
   SetActiveProductParams,
   SetActiveProductResponse,
 } from './actions/set-active-product/types';
-export type { AdjustInventory, AdjustInventoryParams, AdjustInventoryResponse } from './actions/adjust-inventory/types';
 export type {
   SetVariantUnavailable,
   SetVariantUnavailableParams,
   SetVariantUnavailableResponse,
 } from './actions/set-variant-unavailable/types';
+export type {
+  AdjustInventory,
+  AdjustInventoryParams,
+  AdjustInventoryResponse,
+  ManualStockReason,
+} from './actions/adjust-inventory/types';
+export type {
+  CustomStockActionPayload,
+  GetCustomStockActions,
+  GetCustomStockActionsResponse,
+} from './actions/get-custom-stock-actions/types';
 // Order Actions
 export type { AddOrderNote, AddOrderNoteParams, AddOrderNoteResponse } from './actions/add-order-note/types';
 export type { AddCartFee, AddCartFeeParams, AddCartFeeResponse } from './actions/add-cart-fee/types';

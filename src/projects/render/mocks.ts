@@ -29,6 +29,7 @@ import { mockRemoveCartDiscount } from '../../actions/remove-cart-discount/mock'
 import { mockUpdateCartItemQuantity } from '../../actions/update-cart-item-quantity/mock';
 import { mockAdjustInventory } from '../../actions/adjust-inventory/mock';
 import { mockSetVariantUnavailable } from '../../actions/set-variant-unavailable/mock';
+import { mockGetCustomStockActions } from '../../actions/get-custom-stock-actions/mock';
 import { mockAssignCustomer } from '../../actions/assign-customer/mock';
 import { mockAuthenticateUser } from '../../actions/authenticate-user/mock';
 import { mockCalculateRefundTotal } from '../../actions/calculate-refund-total/mock';
@@ -140,6 +141,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   updateCartItemQuantity: mockUpdateCartItemQuantity,
   adjustInventory: mockAdjustInventory,
   setVariantUnavailable: mockSetVariantUnavailable,
+  getCustomStockActions: mockGetCustomStockActions,
   assignCustomer: mockAssignCustomer,
   authenticateUser: mockAuthenticateUser,
   calculateRefundTotal: mockCalculateRefundTotal,
