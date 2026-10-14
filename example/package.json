@@ -1,7 +1,7 @@
 {
   "name": "command-frame-example-web-app",
   "private": true,
-  "version": "0.1.75",
+  "version": "0.1.76",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -46,6 +46,6 @@
   },
   "overrides": {
     "@final-commerce/command-frame": "^0.10.0-staging.3",
-    "@final-commerce/common": "2.6.0-staging.2"
+    "@final-commerce/common": "2.6.0-staging.3"
   }
 }
