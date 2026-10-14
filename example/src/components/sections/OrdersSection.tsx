@@ -45,7 +45,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
   const [ordersPaymentState, setOrdersPaymentState] = useState<string>('');
   const [ordersFulfillmentState, setOrdersFulfillmentState] = useState<string>('');
   const [ordersOrderType, setOrdersOrderType] = useState<string>('');
-  const [ordersCustomStatusId, setOrdersCustomStatusId] = useState<string>('');
+  const [ordersCustomStatusKey, setOrdersCustomStatusKey] = useState<string>('');
   const [ordersAssignedUserId, setOrdersAssignedUserId] = useState<string>('');
   const [ordersUnassigned, setOrdersUnassigned] = useState(false);
   const [ordersInCart, setOrdersInCart] = useState<string>('');
@@ -385,11 +385,11 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
             />
           </div>
           <div className="form-field">
-            <label>Custom status ID (optional):</label>
+            <label>Custom status key (optional):</label>
             <input
               type="text"
-              value={ordersCustomStatusId}
-              onChange={(e) => setOrdersCustomStatusId(e.target.value)}
+              value={ordersCustomStatusKey}
+              onChange={(e) => setOrdersCustomStatusKey(e.target.value)}
               placeholder="ready-for-driver"
             />
           </div>
@@ -444,7 +444,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
               if (ordersPaymentState) params.paymentState = ordersPaymentState;
               if (ordersFulfillmentState) params.fulfillmentState = ordersFulfillmentState;
               if (ordersOrderType.trim()) params.orderType = ordersOrderType.trim();
-              if (ordersCustomStatusId.trim()) params.customStatusId = ordersCustomStatusId.trim();
+              if (ordersCustomStatusKey.trim()) params.customStatusKey = ordersCustomStatusKey.trim();
               if (ordersUnassigned) params.assignedUserId = null;
               else if (ordersAssignedUserId.trim()) params.assignedUserId = ordersAssignedUserId.trim();
               if (ordersInCart) params.inCart = ordersInCart === 'true';

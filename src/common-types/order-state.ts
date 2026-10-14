@@ -38,13 +38,18 @@ export interface CFAvailableTransition {
 }
 
 /**
- * A merchant-defined order status (per company). Mirrors common's OrderStatusDefinition.
- * `fulfillmentState`: setting the status moves the order there (normal state-machine
- * rules). `requiresPaymentState`: setting it fails unless the order's payment state is
- * one of these — a status never moves money. Neither set = a label-only status.
+ * An order status the running flow defines (authored in the flow builder, shipped with
+ * each deployed version). `fulfillmentState`: setting the status moves the order there
+ * (normal state-machine rules). `requiresPaymentState`: setting it fails unless the
+ * order's payment state is one of these — a status never moves money. Neither set = a
+ * label-only status.
  */
 export interface CFOrderStatusDefinition {
+  /** Durable id; survives a renamed key or label. */
   id: string;
+  /** What flow code passes to setOrderStatus and getOrders({ customStatusKey }), e.g. 'in-kitchen'. */
+  key: string;
+  /** What staff see. */
   label: string;
   color?: string;
   icon?: string;

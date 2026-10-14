@@ -941,13 +941,31 @@ function resolveMockOrderCurrency(): CurrencyCode {
   return CurrencyCode.USD;
 }
 
-/** The demo company's order statuses (getOrderStatuses / setOrderStatus). */
+/** The demo flow's order statuses (getOrderStatuses / setOrderStatus). */
 export const MOCK_ORDER_STATUSES: CFOrderStatusDefinition[] = [
-  { id: 'in-kitchen', label: 'In kitchen', color: '#f59e0b', fulfillmentState: 'pending' },
-  { id: 'ready-for-pickup', label: 'Ready for pickup', color: '#10b981', fulfillmentState: 'in_progress' },
-  { id: 'out-for-delivery', label: 'Out for delivery', color: '#3b82f6', fulfillmentState: 'partially_fulfilled' },
-  { id: 'delivered', label: 'Delivered', fulfillmentState: 'fulfilled', requiresPaymentState: ['paid'] },
-  { id: 'driver-called', label: 'Driver called' },
+  { id: 'status_1', key: 'in-kitchen', label: 'In kitchen', color: '#f59e0b', fulfillmentState: 'pending' },
+  {
+    id: 'status_2',
+    key: 'ready-for-pickup',
+    label: 'Ready for pickup',
+    color: '#10b981',
+    fulfillmentState: 'in_progress',
+  },
+  {
+    id: 'status_3',
+    key: 'out-for-delivery',
+    label: 'Out for delivery',
+    color: '#3b82f6',
+    fulfillmentState: 'partially_fulfilled',
+  },
+  {
+    id: 'status_4',
+    key: 'delivered',
+    label: 'Delivered',
+    fulfillmentState: 'fulfilled',
+    requiresPaymentState: ['paid'],
+  },
+  { id: 'status_5', key: 'driver-called', label: 'Driver called' },
 ];
 
 /**

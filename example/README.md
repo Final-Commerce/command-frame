@@ -139,10 +139,10 @@ await command.setOrderType({ orderType: 'delivery' }); // live cart; pass orderI
 await command.setOrderMetadata({ orderId: 'order-123', metadata: { gateCode: '4512' } });
 await command.assignOrderUser({ orderId: 'order-123', userId: 'driver-user-id' });
 const { statuses } = await command.getOrderStatuses();
-await command.setOrderStatus({ orderId: 'order-123', statusId: 'ready-for-driver' }); // may move fulfillment
+await command.setOrderStatus({ orderId: 'order-123', key: 'ready-for-driver' }); // may move fulfillment
 const { orders } = await command.getOrders({
   orderType: 'delivery',
-  customStatusId: 'ready-for-driver',
+  customStatusKey: 'ready-for-driver',
   assignedUserId: null,
 });
 await command.recordExternalPayment({ label: 'Paid online' }); // payment taken outside the terminal

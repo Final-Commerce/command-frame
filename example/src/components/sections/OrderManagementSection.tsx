@@ -75,7 +75,7 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
   // Order Statuses
   const getStatuses = useCommandRunner(isInIframe);
   const [statusOrderId, setStatusOrderId] = useState<string>('');
-  const [statusId, setStatusId] = useState<string>('');
+  const [statusKey, setStatusKey] = useState<string>('');
   const setStatus = useCommandRunner(isInIframe);
 
   return (
@@ -299,8 +299,8 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
       {/* Get Order Statuses */}
       <CommandSection title="Get Order Statuses">
         <p className="section-description">
-          The company's custom order statuses (set up in hub-api). Each may move the order to a fulfillment state and
-          may require a payment state.
+          The running flow's custom order statuses (authored in the flow builder, shipped with each version). Each may
+          move the order to a fulfillment state and may require a payment state.
         </p>
         <button
           onClick={() => getStatuses.run(() => command.getOrderStatuses())}
@@ -315,9 +315,9 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
       {/* Set Order Status */}
       <CommandSection title="Set Order Status">
         <p className="section-description">
-          Sets one of the company's statuses on the order. A status tied to a fulfillment state moves the order there;
-          one that requires a payment state is refused until the order is paid. Never moves money. Leave the status ID
-          blank to clear it.
+          Sets one of the flow's statuses on the order, by key. A status tied to a fulfillment state moves the order
+          there; one that requires a payment state is refused until the order is paid. Never moves money. Leave the
+          status key blank to clear it.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -330,11 +330,11 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
             />
           </div>
           <div className="form-field">
-            <label>Status ID:</label>
+            <label>Status key:</label>
             <input
               type="text"
-              value={statusId}
-              onChange={(e) => setStatusId(e.target.value)}
+              value={statusKey}
+              onChange={(e) => setStatusKey(e.target.value)}
               placeholder="in-kitchen"
             />
           </div>
@@ -342,7 +342,7 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
         <button
           onClick={() =>
             setStatus.run(() =>
-              command.setOrderStatus({ orderId: optionalId(statusOrderId), statusId: statusId.trim() || null }),
+              command.setOrderStatus({ orderId: optionalId(statusOrderId), key: statusKey.trim() || null }),
             )
           }
           disabled={setStatus.loading}

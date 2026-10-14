@@ -17,12 +17,18 @@ export const mockSetOrderStatus: SetOrderStatus = async (
 
   const from = { payment: order.paymentState ?? 'unpaid', fulfillment: order.fulfillmentState ?? 'draft' };
 
-  if (params.statusId === null) {
+  const requested = params.key !== undefined ? params.key : params.statusId;
+  if (requested === undefined) {
+    throw new Error('setOrderStatus: pass a status key, or null to clear the status');
+  }
+  if (requested === null) {
     order.customStatus = null;
   } else {
-    const def = MOCK_ORDER_STATUSES.find((s) => s.id === params.statusId);
+    const def =
+      MOCK_ORDER_STATUSES.find((s) => s.key === requested) ??
+      (params.key === undefined ? MOCK_ORDER_STATUSES.find((s) => s.id === requested) : undefined);
     if (!def) {
-      throw new Error(`setOrderStatus: unknown status "${params.statusId}"`);
+      throw new Error(`setOrderStatus: unknown status "${requested}"`);
     }
     if (def.requiresPaymentState && !def.requiresPaymentState.includes(from.payment)) {
       throw new Error(
@@ -30,7 +36,7 @@ export const mockSetOrderStatus: SetOrderStatus = async (
       );
     }
     if (def.fulfillmentState) order.fulfillmentState = def.fulfillmentState as typeof order.fulfillmentState;
-    order.customStatus = { id: def.id, label: def.label, setAt: new Date().toISOString(), setBy: null };
+    order.customStatus = { id: def.id, key: def.key, label: def.label, setAt: new Date().toISOString(), setBy: null };
   }
 
   mockPublishEvent('orders', 'order-updated', { order });

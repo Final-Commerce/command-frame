@@ -2,7 +2,7 @@ import type { CFOrderStatusDefinition } from '../../common-types/order-state';
 
 export interface GetOrderStatusesResponse {
   success: boolean;
-  /** The company's order statuses, in the order they were defined. Empty when none are defined. */
+  /** The running flow's order statuses, in the order they were defined. Empty when it defines none. */
   statuses: CFOrderStatusDefinition[];
   timestamp: string;
 }
