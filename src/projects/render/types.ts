@@ -11,6 +11,7 @@ import type {
   GetOrders,
   GetRefunds,
   GetTaxTables,
+  GetCustomStockActions,
   AddProductDiscount,
   AddProductToCart,
   RemoveProductFromCart,
@@ -159,6 +160,7 @@ export interface RenderProviderActions {
   getActiveProduct: GetActiveProduct;
   setActiveProduct: SetActiveProduct;
   adjustInventory: AdjustInventory;
+  getCustomStockActions: GetCustomStockActions;
   addOrderNote: AddOrderNote;
   addCartFee: AddCartFee;
   clearCart: ClearCart;

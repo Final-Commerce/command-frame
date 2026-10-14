@@ -1,6 +1,6 @@
 {
   "name": "@final-commerce/command-frame",
-  "version": "0.8.1-online.1",
+  "version": "0.9.0-online.1",
   "description": "Commands Frame library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -57,7 +57,7 @@
     "ignoreBranchesMissingTickets": true
   },
   "dependencies": {
-    "@final-commerce/common": "2.4.1-online.3"
+    "@final-commerce/common": "2.5.1-online.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",

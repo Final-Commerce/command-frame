@@ -344,7 +344,11 @@ Adds a fee to a specific product in the cart (identified by `internalId`). Suppo
 
 ### [adjustInventory](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/adjust-inventory/README.md)
 
-Adjusts the inventory/stock level for a specific product variant. Supports adding, subtracting, or setting stock to a specific value.
+Adjusts the inventory/stock level for a specific product variant. Supports adding, subtracting, or setting stock to a specific value, optionally under one of the company's custom stock actions (`customActionId`).
+
+### [getCustomStockActions](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-custom-stock-actions/README.md)
+
+Lists the stock adjustment actions the company created for itself (`_id`, `name`, `baseAction`).
 
 ### [setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)
 
@@ -406,7 +410,7 @@ Charges a keyed (card-not-present) MOTO sale for the current cart. Card fields a
 
 ### [startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)
 
-Takes an **online** payment on a published website. Creates a server-priced order from the current cart (the page never sends a price) and mounts the provider's hosted card fields into an element named by a **CSS selector** — not a DOM node, which cannot cross the `postMessage` boundary. It resolves when the shopper *can* pay, not when they have: the outcome arrives on the [`checkout`](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/checkout/README.md) topic, where `payment-completed` is an authorisation rather than a settlement. This is the only tender available on a storefront; the till tenders above are refused there.
+Takes an **online** payment on a published website. Creates a server-priced order from the current cart (the page never sends a price) and mounts the provider's hosted card fields into an element named by a **CSS selector** — not a DOM node, which cannot cross the `postMessage` boundary. It resolves when the shopper _can_ pay, not when they have: the outcome arrives on the [`checkout`](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/checkout/README.md) topic, where `payment-completed` is an authorisation rather than a settlement. This is the only tender available on a storefront; the till tenders above are refused there.
 
 ### [resumeCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-checkout/README.md)
 
