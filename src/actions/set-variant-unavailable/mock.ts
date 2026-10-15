@@ -5,10 +5,21 @@ export const mockSetVariantUnavailable: SetVariantUnavailable = async (
   params?: SetVariantUnavailableParams,
 ): Promise<SetVariantUnavailableResponse> => {
   console.log('[Mock] setVariantUnavailable called', params);
-  if (!params?.variantId) throw new Error('variantId is required');
+  const answer = (success: boolean, reason?: string) => ({
+    success,
+    reason,
+    variantId: params?.variantId ?? '',
+    outletId: MOCK_OUTLET.id,
+    unavailable: !!params?.unavailable,
+    timestamp: new Date().toISOString(),
+  });
+  // Same refusals and texts as the host, resolved instead of thrown.
+  if (!params?.variantId || typeof params.unavailable !== 'boolean') {
+    return answer(false, 'variantId and unavailable are required');
+  }
   const { variantId, unavailable } = params;
   const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find((v) => v._id === variantId);
-  if (!variant) throw new Error(`Variant with ID ${variantId} not found`);
+  if (!variant) return answer(false, `Variant with ID ${variantId} not found`);
   variant.unavailable = unavailable;
-  return { success: true, variantId, outletId: MOCK_OUTLET.id, unavailable, timestamp: new Date().toISOString() };
+  return answer(true);
 };

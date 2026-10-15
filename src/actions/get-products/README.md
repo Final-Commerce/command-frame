@@ -112,7 +112,7 @@ See the [Real Data Examples](#real-data-examples) section below for actual produ
 
 **Composite products** (`productType: 'composite'`) carry `composite: CFComposite` — `null` on every other product.
 It is the whole picker, decided by the host: `parts[]` (`name`, `required`, `min`, `max`) → `items[]` (`name`, `cost` =
-what one pick adds on top of the composite's price — its upcharge × quantity (B31), `unavailable` = null or `'deleted' | 'inactive' | 'empty' | 'out_of_stock' | 'by_date' | 'fully_booked'`, `choices[]` = the variants a pick may
+what one pick adds on top of the composite's price — its upcharge × quantity (B31), `unavailable` = null or `'deleted' | 'inactive' | 'empty' | 'out_of_stock' | 'by_date' | 'fully_booked' | 'marked_sold_out'`, `choices[]` = the variants a pick may
 name), plus
 `available` (false = show the composite Unavailable; `fromPrice` is then null when nothing is left to price), `basePrice` (the composite's own price, set by the merchant, in every tax mode) and
 `fromPrice` (the "from" price for the card).

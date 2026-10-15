@@ -10,7 +10,9 @@ export interface SetVariantUnavailableParams {
 }
 
 export interface SetVariantUnavailableResponse {
+  /** False when the host refused: missing params, no active outlet or company, unknown variant, offline. */
   success: boolean;
+  reason?: string;
   variantId: string;
   outletId: string;
   unavailable: boolean;
