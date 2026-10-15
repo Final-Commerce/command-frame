@@ -18,6 +18,7 @@ backorders.
 ```typescript
 {
   success: boolean;
+  reason?: string; // why the host refused, when success is false
   variantId: string;
   outletId: string; // the active outlet the mark applies to
   unavailable: boolean;
@@ -30,16 +31,20 @@ backorders.
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
-await command.setVariantUnavailable({ variantId: 'variant-123', unavailable: true });
+const result = await command.setVariantUnavailable({ variantId: 'variant-123', unavailable: true });
+if (!result.success) console.warn(result.reason);
 await command.setVariantUnavailable({ variantId: 'variant-123', unavailable: false });
 ```
 
 ## Error Handling
 
-The host needs a connection — the mark is written by the server and reaches every till through sync. It throws when:
+The host needs a connection — the mark is written by the server and reaches every till through sync. It does not
+throw: a failure resolves `{ success: false, reason }` when
 
-- `variantId` or `unavailable` is missing, or the variant cannot be found;
+- `variantId` or `unavailable` is missing, or `unavailable` is not a boolean;
 - there is no active outlet or company;
+- the variant cannot be found;
 - the device is offline, or the API call fails.
 
-After success, the new state shows in `getProducts` once the change has synced back to the till.
+Success means the server took the mark, not that `getProducts` shows it yet. When the mark syncs back to the till the
+host publishes `products` / `variant-unavailability-changed`; refetch `getProducts` on it to show the new state.

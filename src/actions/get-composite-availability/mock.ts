@@ -10,8 +10,9 @@ export const mockGetCompositeAvailability: GetCompositeAvailability = async (
   console.log('[Mock] getCompositeAvailability called', params);
   const timestamp = new Date().toISOString();
   const refuse = (reason: string) => ({ success: false, reason, slots: [], timeZone: null, timestamp });
-  const product = MOCK_PRODUCTS.find((candidate) => candidate.variants.some((v) => v._id === params?.variantId));
-  if (!product) throw new Error(`Variant with ID ${params?.variantId} not found`);
+  if (!params?.variantId) return refuse('variantId is required');
+  const product = MOCK_PRODUCTS.find((candidate) => candidate.variants.some((v) => v._id === params.variantId));
+  if (!product) return refuse(`Variant with ID ${params.variantId} not found`);
   if (!product.composite) return refuse(`${product.name} is not a composite: it takes no composite picks`);
   const composite = mockCompositeAtOutlet(product.composite);
   const picks =

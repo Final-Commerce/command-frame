@@ -1,6 +1,12 @@
 import { UpdateCartItemQuantity, UpdateCartItemQuantityParams, UpdateCartItemQuantityResponse } from './types';
-import { MOCK_CART, MOCK_PRODUCTS, mockPublishEvent } from '../../demo/database';
-import { extendPrice, isValidQuantity } from '@final-commerce/common';
+import {
+  MOCK_BOOKINGS,
+  MOCK_CART,
+  MOCK_PRODUCTS,
+  mockCompositeStockRefusal,
+  mockPublishEvent,
+} from '../../demo/database';
+import { ReservationStatus, extendPrice, isValidQuantity } from '@final-commerce/common';
 export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   params?: UpdateCartItemQuantityParams,
 ): Promise<UpdateCartItemQuantityResponse> => {
@@ -26,6 +32,13 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   const product = MOCK_CART.products[productIndex];
   const previousQuantity = product.quantity;
 
+  // Same refusal and text as the host: a line holding bookings keeps its quantity — its holds are that many seats.
+  if (quantity !== 0 && MOCK_CART.reservations?.some((reservation) => reservation.lineItemInternalId === internalId)) {
+    throw new Error(
+      `${product.name} holds a booking — its quantity is the seats held: remove the line and add it again with the new quantity (addProductToCart with compositeSlot)`,
+    );
+  }
+
   // The line resolved its unit when it was added; a piece-sold line has none and stays whole.
   if (
     quantity !== 0 &&
@@ -41,6 +54,14 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   // If quantity is 0, remove the item
   if (quantity === 0) {
     MOCK_CART.products.splice(productIndex, 1);
+    // Like the host's `dropCompositeLine`: the line's reservations leave with it and their holds are released.
+    const linked = (MOCK_CART.reservations ?? []).filter(
+      (reservation) => reservation.lineItemInternalId === internalId,
+    );
+    MOCK_CART.reservations = (MOCK_CART.reservations ?? []).filter((reservation) => !linked.includes(reservation));
+    for (const booking of MOCK_BOOKINGS.filter(({ id }) => linked.some(({ bookingId }) => bookingId === id))) {
+      booking.status = ReservationStatus.CANCELLED;
+    }
 
     // Recalculate totals
     const lineTotal = extendPrice(product.price, previousQuantity);
@@ -68,6 +89,13 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   const variant = source?.variants.find((v) => v._id === product.variantId);
   if (quantity > previousQuantity && (source?.notSoldInPos || variant?.notSoldInPos)) {
     throw new Error(`${source?.name} is not sold in POS`);
+  }
+  // A raised composite line draws on its components' shelves, like the host's `compositeStockRefusal`.
+  if (quantity > previousQuantity && product.components?.length) {
+    const refusal = mockCompositeStockRefusal(
+      MOCK_CART.products.map((line) => (line.internalId === internalId ? { ...line, quantity } : line)),
+    );
+    if (refusal) throw new Error(refusal);
   }
 
   // Update quantity

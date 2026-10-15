@@ -112,7 +112,7 @@ See the [Real Data Examples](#real-data-examples) section below for actual produ
 
 **Composite products** (`productType: 'composite'`) carry `composite: CFComposite` — `null` on every other product.
 It is the whole picker, decided by the host: `parts[]` (`name`, `required`, `min`, `max`) → `items[]` (`name`, `cost` =
-what one pick adds on top of the composite's price — its upcharge × quantity (B31), `unavailable` = null or `'deleted' | 'inactive' | 'empty' | 'out_of_stock' | 'by_date' | 'fully_booked'`, `choices[]` = the variants a pick may
+what one pick adds on top of the composite's price — its upcharge × quantity (B31), `unavailable` = null or `'deleted' | 'inactive' | 'hidden' | 'empty' | 'out_of_stock' | 'by_date' | 'fully_booked' | 'marked_sold_out'`, `choices[]` = the variants a pick may
 name), plus
 `available` (false = show the composite Unavailable; `fromPrice` is then null when nothing is left to price), `basePrice` (the composite's own price, set by the merchant, in every tax mode) and
 `fromPrice` (the "from" price for the card).
@@ -146,7 +146,7 @@ A category item never hands out bookables.
 Each part's `defaultPick` (`{ itemId, variantId }`) is the pick to show
 preselected (B29 = D36): only on a required "pick 1" part (`required`, `min = max = 1`) — its cheapest available item
 (lowest `cost`, ties to the first listed); `null` on every other part, and when the cheapest is a category item. Parts
-without a default show how many picks they still need (`getCompositePrice().missing`). A part with `max = 1` is a
+without a default show how many picks they still need (`getCompositePrice().missing`); parts in `fullPartIds` take no more. A part with `max = 1` is a
 radio: picking another item replaces the pick. Show these; do not recompute prices, availability or defaults. Send the picks with
 `addProductToCart({ variantId, composite: [{ itemId, variantId, quantity? }] })`.
 
