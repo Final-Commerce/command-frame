@@ -72,8 +72,8 @@ The library provides a `command` namespace object containing all available comma
 - **[setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)** - Set or remove free-form key/value metadata on an order or the live cart (e.g. a delivery note); syncs with the order
 - **[setOrderType](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-type/README.md)** - Label an order (or the live cart) with a free-text type such as `delivery`; display and `getOrders` filtering only, no logic
 - **[setScheduledFor](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-scheduled-for/README.md)** - When the customer wants the order (e.g. a pizza for 7 pm), on an order or the live cart; `null` = as soon as possible; `getOrders` filters and sorts by it
-- **[setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)** - Set one of the company's custom order statuses on an order; bound statuses move the fulfillment state, and can require a payment state
-- **[getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)** - The company's custom order statuses
+- **[setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)** - Set one of the flow's custom order statuses on an order (by key); bound statuses move the fulfillment state, and can require a payment state
+- **[getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)** - The running flow's custom order statuses
 - **[assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)** - Assign a user (e.g. the driver) to an order, or unassign; one assignee at a time, synced with the order
 - **[releaseFromCart](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/release-from-cart/README.md)** - Take the order out of the cart unchanged (saved with `inCart.active: false`) and clear the terminal; resume it later with `resumeOrder`
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
@@ -409,11 +409,11 @@ Sets `order.scheduledFor` — when the customer wants the order, an ISO 8601 dat
 
 ### [setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)
 
-Sets `order.customStatus` to one of the company's statuses (or clears it). A status bound to a fulfillment state moves the order there through the state machine; one with `requiresPaymentState` fails until the order is paid accordingly. State changes elsewhere never touch the status.
+Sets `order.customStatus` to one of the running flow's statuses, by `key` (or clears it). A status bound to a fulfillment state moves the order there through the state machine; one with `requiresPaymentState` fails until the order is paid accordingly. State changes elsewhere never touch the status.
 
 ### [getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)
 
-Returns the company's status definitions `{ id, label, color?, icon?, fulfillmentState?, requiresPaymentState? }`.
+Returns the running flow's status definitions `{ id, key, label, color?, icon?, fulfillmentState?, requiresPaymentState? }`, shipped with each deployed version.
 
 ### [assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)
 

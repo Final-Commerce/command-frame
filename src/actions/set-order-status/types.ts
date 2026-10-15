@@ -4,8 +4,13 @@ import type { CFStatePair } from '../../common-types/order-state';
 export interface SetOrderStatusParams {
   /** Order to set the status on. Omit for the live cart's order. */
   orderId?: string;
-  /** Id of one of the company's statuses (see getOrderStatuses), or null to clear the status. */
-  statusId: string | null;
+  /** Key of one of the flow's statuses (see getOrderStatuses), or null to clear the status. */
+  key?: string | null;
+  /**
+   * @deprecated Use `key`. Kept for flows written before keys: matched against a status's
+   * key, then its id. Ignored when `key` is given.
+   */
+  statusId?: string | null;
 }
 
 export interface SetOrderStatusResponse {

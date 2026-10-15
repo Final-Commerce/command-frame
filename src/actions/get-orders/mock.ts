@@ -27,6 +27,7 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       inCart,
       orderType,
       customStatusId,
+      customStatusKey,
       scheduled,
       scheduledFrom,
       scheduledTo,
@@ -77,9 +78,20 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       if (types.length) orders = orders.filter((o) => types.includes(o.orderType ?? ''));
     }
 
+    if (customStatusKey !== undefined) {
+      const keys = Array.isArray(customStatusKey) ? customStatusKey : [customStatusKey];
+      if (keys.length) orders = orders.filter((o) => !!o.customStatus?.key && keys.includes(o.customStatus.key));
+    }
+
     if (customStatusId !== undefined) {
       const ids = Array.isArray(customStatusId) ? customStatusId : [customStatusId];
-      if (ids.length) orders = orders.filter((o) => !!o.customStatus && ids.includes(o.customStatus.id));
+      if (ids.length) {
+        orders = orders.filter(
+          (o) =>
+            !!o.customStatus &&
+            (ids.includes(o.customStatus.id) || (!!o.customStatus.key && ids.includes(o.customStatus.key))),
+        );
+      }
     }
 
     // Requested time (setScheduledFor). ISO strings in UTC compare correctly as strings.

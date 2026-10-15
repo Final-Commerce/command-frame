@@ -36,7 +36,7 @@ await command.setScheduledFor({ scheduledFor: at });
 // Kitchen: orders due in the next 30 minutes, soonest first
 const now = new Date();
 const { orders } = await command.getOrders({
-  customStatusId: 'in-kitchen',
+  customStatusKey: 'in-kitchen',
   scheduledTo: new Date(now.getTime() + 30 * 60 * 1000).toISOString(),
   sortBy: 'scheduledFor',
   sortDirection: 'ascending',

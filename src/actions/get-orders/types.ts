@@ -24,7 +24,12 @@ export interface GetOrdersParams {
   inCart?: boolean;
   /** Order type label(s) set with setOrderType, e.g. 'delivery' or ['pickup', 'takeout']. Exact match; a list matches any. */
   orderType?: string | string[];
-  /** Custom status id(s) set with setOrderStatus, e.g. 'in-kitchen'. A list matches any of them. */
+  /** Custom status key(s) set with setOrderStatus, e.g. 'in-kitchen'. A list matches any of them. */
+  customStatusKey?: string | string[];
+  /**
+   * Durable custom status id(s) (getOrderStatuses `id`). Also matches a status's key, for
+   * flows written before keys — prefer `customStatusKey`. A list matches any of them.
+   */
   customStatusId?: string | string[];
   /** true: only orders with a time (setScheduledFor); false: only "as soon as possible" orders (no time). */
   scheduled?: boolean;
