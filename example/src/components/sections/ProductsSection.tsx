@@ -154,7 +154,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const getProductPrice = (product: any): string => {
     // A composite's price is the host's: never the variant's, never a min() over them.
     if (product.composite) {
-      const { available, fromPrice } = product.composite;
+      const { available, fromPrice } = product.composite as CFComposite;
       return available && fromPrice != null ? `From ${fromPrice}` : 'Unavailable';
     }
     if (product.variants && product.variants.length > 0) {

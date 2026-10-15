@@ -908,7 +908,6 @@ export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
     available: true,
     basePrice: 2700,
     fromPrice: 2800,
-    needsDate: false,
     parts: [
       {
         _id: 'part_paste',
