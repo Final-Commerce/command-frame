@@ -73,18 +73,8 @@ export const mockGetProducts: GetProducts = async (params?: GetProductsParams): 
     }),
   }));
 
-  // Same as the host: the flags resolved, so a flow decides nothing (FT-151 tile, FT-196 channel).
-  const resolved = withUnits.map((product: any) => {
-    const variants = product.variants.map((variant: any) => ({
-      ...variant,
-      unavailable: !!variant.unavailable,
-      notSellableInPos: !!(product.notSoldInPos || variant.notSoldInPos),
-    }));
-    return { ...product, variants, unavailable: variants.length > 0 && variants.every((v: any) => v.unavailable) };
-  });
-
   return {
-    products: resolved,
+    products: withUnits,
     total,
     timestamp: new Date().toISOString(),
   };
