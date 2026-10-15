@@ -104,31 +104,19 @@ export type CFAttributeOption = AttributeOption;
 export type CFAttribute = Attribute;
 export type CFTransaction = Transaction;
 export type CFCategory = Category;
-/**
- * FT-151 `unavailable`: `true` when the variant is marked "can't be sold here right now" at the ACTIVE outlet
- * (`setVariantUnavailable`). Independent of stock; `addProductToCart` refuses it even with backorders. The host always
- * sets it on `getProducts`. INTERIM here until `common/pos-types` ProductVariant carries it (ob_agent).
- */
-export type CFProductVariant = ProductVariant & { unavailable?: boolean };
-export type CFProduct = Omit<FullProduct, 'variants'> & { variants: CFProductVariant[] };
+export type CFProductVariant = ProductVariant;
+export type CFProduct = Omit<FullProduct, 'variants' | 'composite'> & {
+  variants: CFProductVariant[];
+  composite?: CFComposite | null;
+};
 /** Composite products (FT-83): `CFProduct.composite`, the picks `addProductToCart` takes, the cart/order line's
  *  components. The host decides availability, prices and tax; a flow renders them and sends picks. */
-/**
- * B41: `needsDate: true` — the composite holds a bookable item and CANNOT be sold without a time. Show "By date" and a
- * date and time picker filled from `getCompositeAvailability`, then pass the chosen `compositeSlot` to `addProductToCart`.
- * Until a time is chosen its bookable items read `unavailable: 'by_date'` — still pickable, never greyed out.
- * INTERIM here until `common/pos-types` Composite carries it (ob_agent).
- */
-export type CFComposite = Composite & { needsDate: boolean };
+export type CFComposite = Composite;
 export type CFCompositePart = CompositePart;
 export type CFCompositeItem = CompositeItem;
 export type CFCompositeChoice = CompositeChoice;
 export type CFCompositeItemUnavailable = CompositeItemUnavailable;
-/**
- * B41: `resourceId` — on a bookable pick only: the resource that must serve it. Omitted = the host takes the first one
- * free in that window. INTERIM here until `common/pos-types` CompositePick carries it (ob_agent).
- */
-export type CFCompositePick = CompositePick & { resourceId?: string };
+export type CFCompositePick = CompositePick;
 export type CFCartLineComponent = CartLineComponent;
 export type CFOrderLineItemComponent = OrderLineItemComponent;
 export type CFBookingAvailability = BookingAvailability;
