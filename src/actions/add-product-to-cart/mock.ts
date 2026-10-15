@@ -310,17 +310,23 @@ function mockSelectionsRefusal(modifiers: CFResolvedModifier[], selections: Modi
   return null;
 }
 
+const mockPartPicks = (part: CFComposite['parts'][number], picks: CFCompositePick[]) =>
+  picks
+    .filter((pick) => part.items.some((item) => item._id === pick.itemId))
+    .reduce((sum, pick) => sum + (pick.quantity ?? 1), 0);
+
 /** The host's `picksStillNeeded` (kaching `resolveComposite.ts`): per part, what is left of its min; an Optional part
  *  left empty is not listed. A copy — change both in one step. */
 export function mockPicksStillNeeded(composite: CFComposite, picks: CFCompositePick[]) {
   return composite.parts.flatMap((part) => {
-    const count = picks
-      .filter((pick) => part.items.some((item) => item._id === pick.itemId))
-      .reduce((sum, pick) => sum + (pick.quantity ?? 1), 0);
-    const needed = Math.max(0, part.min - count);
-    return needed > 0 ? [{ partId: part._id, needed }] : [];
+    const needed = Math.max(0, part.min - mockPartPicks(part, picks));
+    return needed > 0 ? [{ partId: part._id, name: part.name, needed }] : [];
   });
 }
+
+/** The parts whose picks already reach their `max` — a picker disables "+" on them. A copy of the host's. */
+export const mockFullPartIds = (composite: CFComposite, picks: CFCompositePick[]) =>
+  composite.parts.filter((part) => mockPartPicks(part, picks) >= part.max).map((part) => part._id);
 
 type MockCompositeLine = { price: number; components: CFCartLineComponent[]; modifiers: CFCartLineModifier[] };
 
