@@ -24,7 +24,8 @@ Retrieves a list of products from the parent application's local database. A com
 > `includeUnlisted: true` it is returned, but it still cannot be sold: `addProductToCart` and
 > `addBookingToCart` refuse a product or a variant flagged `notSoldInPos`. Variants flagged `notSoldInPos` are
 > stripped from `variants[]`, and a product whose every variant is flagged is left out too (also
-> only without `includeUnlisted`).
+> only without `includeUnlisted`). The host resolves the rule for you: `variant.notSellableInPos` is `true` when the
+> product OR the variant is flagged — read it, never combine the raw flags yourself.
 
 > A variant sold by measure carries `unitId` (and a resolved `unit`), and its `inventory[].stock` is ALREADY in that selling unit — the host converts its base-unit ledger before the variant reaches you. Show it as `${stock} ${unit.abbreviation}`; never divide or multiply it by `unit.ratioToBase`.
 
@@ -404,7 +405,8 @@ Key fields:
 - **Metadata**: Array of key-value pairs for custom data.
 - **Variants**: Product variants with their own pricing, inventory, and attributes.
 - **Inventory**: Variant inventory is tracked per outlet in the `inventory` array.
-- **Unavailable**: `variant.unavailable` is `true` when the variant is marked "can't be sold here right now" at the active outlet (`setVariantUnavailable`). Independent of stock — show it as unavailable and don't offer add-to-cart; `addProductToCart` refuses it with `reason: 'Marked unavailable'`.
+- **Unavailable**: `variant.unavailable` is `true` when the variant is marked "can't be sold here right now" at the active outlet (`setVariantUnavailable`). Independent of stock — show it as unavailable and don't offer add-to-cart; `addProductToCart` refuses it with `reason: 'Marked unavailable'`. `product.unavailable` is `true` when every variant
+  returned is — dim the whole tile on it; dim single variants in a picker on `variant.unavailable`.
 - **ID fields**: Products and variants are keyed by `_id` (string).
 - **Pricing**: `price`, `salePrice`, `costPrice`, `minPrice`, and `maxPrice` are integers in minor currency units (e.g. cents for USD) — not decimal strings.
 
