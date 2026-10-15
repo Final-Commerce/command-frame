@@ -46,4 +46,5 @@ throw: a failure resolves `{ success: false, reason }` when
 - the variant cannot be found;
 - the device is offline, or the API call fails.
 
-After success, the new state shows in `getProducts` once the change has synced back to the till.
+Success means the server took the mark, not that `getProducts` shows it yet. When the mark syncs back to the till the
+host publishes an event on the `products` topic; refetch `getProducts` on it to show the new state.
