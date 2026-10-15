@@ -47,4 +47,4 @@ throw: a failure resolves `{ success: false, reason }` when
 - the device is offline, or the API call fails.
 
 Success means the server took the mark, not that `getProducts` shows it yet. When the mark syncs back to the till the
-host publishes an event on the `products` topic; refetch `getProducts` on it to show the new state.
+host publishes `products` / `variant-unavailability-changed`; refetch `getProducts` on it to show the new state.

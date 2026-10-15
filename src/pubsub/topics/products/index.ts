@@ -31,6 +31,11 @@ export const productsTopic: TopicDefinition = {
       description: 'Published when a product is hidden or shown at an outlet; re-ask getProducts',
     },
     {
+      id: 'variant-unavailability-changed',
+      name: 'Variant Unavailability Changed',
+      description: 'Published when a variant is marked sold out at an outlet or unmarked; re-ask getProducts',
+    },
+    {
       id: 'inventory-changed',
       name: 'Inventory Changed',
       description: "Published when a variant's stock at an outlet syncs; re-ask getProducts",
