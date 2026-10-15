@@ -1,6 +1,12 @@
 import { UpdateCartItemQuantity, UpdateCartItemQuantityParams, UpdateCartItemQuantityResponse } from './types';
-import { MOCK_CART, MOCK_PRODUCTS, mockCompositeStockRefusal, mockPublishEvent } from '../../demo/database';
-import { extendPrice, isValidQuantity } from '@final-commerce/common';
+import {
+  MOCK_BOOKINGS,
+  MOCK_CART,
+  MOCK_PRODUCTS,
+  mockCompositeStockRefusal,
+  mockPublishEvent,
+} from '../../demo/database';
+import { ReservationStatus, extendPrice, isValidQuantity } from '@final-commerce/common';
 export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   params?: UpdateCartItemQuantityParams,
 ): Promise<UpdateCartItemQuantityResponse> => {
@@ -48,6 +54,14 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   // If quantity is 0, remove the item
   if (quantity === 0) {
     MOCK_CART.products.splice(productIndex, 1);
+    // Like the host's `dropCompositeLine`: the line's reservations leave with it and their holds are released.
+    const linked = (MOCK_CART.reservations ?? []).filter(
+      (reservation) => reservation.lineItemInternalId === internalId,
+    );
+    MOCK_CART.reservations = (MOCK_CART.reservations ?? []).filter((reservation) => !linked.includes(reservation));
+    for (const booking of MOCK_BOOKINGS.filter(({ id }) => linked.some(({ bookingId }) => bookingId === id))) {
+      booking.status = ReservationStatus.CANCELLED;
+    }
 
     // Recalculate totals
     const lineTotal = extendPrice(product.price, previousQuantity);

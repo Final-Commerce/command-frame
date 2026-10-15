@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { ReservationStatus } from '@final-commerce/common';
 import {
   MOCK_BOOKINGS,
   MOCK_CART,
@@ -22,7 +23,7 @@ afterEach(() => {
 });
 
 describe('updateCartItemQuantity mock mirrors the host', () => {
-  it('a line holding bookings keeps its quantity, but can be removed', async () => {
+  it('a line holding bookings keeps its quantity; removing it drops and releases its holds', async () => {
     const line = await mockAddProductToCart({ variantId: MOCK_PRODUCT_BASIL_ALMOND.variants[0]._id });
     await mockAddBookingToCart({
       productId: MOCK_PRODUCT_HAIRCUT._id ?? '',
@@ -40,6 +41,8 @@ describe('updateCartItemQuantity mock mirrors the host', () => {
       success: true,
       quantity: 0,
     });
+    expect(MOCK_CART.reservations).toEqual([]);
+    expect(MOCK_BOOKINGS.at(-1)?.status).toBe(ReservationStatus.CANCELLED);
   });
 
   it('raising a composite line past a component shelf is refused — "only N left"; lowering is not', async () => {
