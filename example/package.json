@@ -46,6 +46,6 @@
   },
   "overrides": {
     "@final-commerce/command-frame": "^0.10.0-staging.6",
-    "@final-commerce/common": "2.6.0-staging.4"
+    "@final-commerce/common": "2.6.0"
   }
 }
