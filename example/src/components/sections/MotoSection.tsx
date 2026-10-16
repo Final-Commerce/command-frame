@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CustomCardConfiguration, OnChangeData } from '@adyen/adyen-web';
-import { renderClient as command, type ChargeMotoCardFields } from '@final-commerce/command-frame';
+import {
+  renderClient as command,
+  type ChargeMotoCardFields,
+  type GetMotoConfigResponse,
+} from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -26,10 +30,6 @@ const FIELD_KEYS = [
   'encryptedSecurityCode',
 ] as const;
 
-type MotoConfig =
-  | { available: true; clientKey: string; environment: 'test' | 'live'; countryCode: string }
-  | { available: false; reason: string };
-
 /** The four encrypted fields, once ALL are present — a partial set is not chargeable. */
 function completeFields(state: OnChangeData): ChargeMotoCardFields | null {
   const pm = state.data.paymentMethod as Record<string, unknown>;
@@ -44,7 +44,7 @@ function completeFields(state: OnChangeData): ChargeMotoCardFields | null {
 }
 
 export function MotoSection({ isInIframe }: { isInIframe: boolean }) {
-  const [config, setConfig] = useState<MotoConfig | null>(null);
+  const [config, setConfig] = useState<GetMotoConfigResponse | null>(null);
   const [configResponse, setConfigResponse] = useState('');
   const [card, setCard] = useState<ChargeMotoCardFields | null>(null);
   const [postalCode, setPostalCode] = useState('');
@@ -61,9 +61,7 @@ export function MotoSection({ isInIframe }: { isInIframe: boolean }) {
       return;
     }
     try {
-      // Called by name because this example pins a command-frame whose types predate getMotoConfig;
-      // once it pins the release that adds it, this is simply `command.getMotoConfig()`.
-      const result = (await command.call('getMotoConfig', undefined)) as MotoConfig & { success: boolean };
+      const result = await command.getMotoConfig();
       setConfigResponse(JSON.stringify(result, null, 2));
       setConfig(result);
     } catch (error) {
