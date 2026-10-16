@@ -121,6 +121,7 @@ import type {
   CancelBooking,
   CreatePaymentLink,
   ChargeMoto,
+  GetMotoConfig,
   GetTimeClockStatus,
 } from '../../index';
 
@@ -191,6 +192,7 @@ export interface RenderProviderActions {
   integrationPayment: IntegrationPayment;
   createPaymentLink: CreatePaymentLink;
   chargeMoto: ChargeMoto;
+  getMotoConfig: GetMotoConfig;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;
   removeCustomerNote: RemoveCustomerNote;

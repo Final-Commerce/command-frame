@@ -83,6 +83,7 @@ The library provides a `command` namespace object containing all available comma
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
+- **[getMotoConfig](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-moto-config/README.md)** - The Adyen client key, environment and country a flow needs to mount card fields for `chargeMoto` (host-injected; never bake a key into a build)
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
 - **[partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)** - Initiate a partial/split payment
@@ -450,6 +451,10 @@ Creates a hosted payment link for the current cart and texts or emails it to the
 ### [chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)
 
 Charges a keyed (card-not-present) MOTO sale for the current cart. Card fields are provider-encrypted (CSE) and opaque to the POS. Minimum charge is 50 minor units; `idempotencyKey` is held by the caller across retries, reuse it to replay, use a new one after changing the amount. Adyen-only.
+
+### [getMotoConfig](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-moto-config/README.md)
+
+Returns what a flow needs to mount Adyen's card-entry fields for `chargeMoto`: the host-injected client key and environment, and the company's country. Never rejects for a missing piece; `available: false` carries the reason (`provider-unsupported`, `no-client-key`, `no-country`, `no-company`) so the flow can hide its manual card tender. Never bake a client key into a flow build. Adyen-only.
 
 ### [tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)
 
