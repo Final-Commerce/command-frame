@@ -55,6 +55,10 @@ import { createPaymentLink } from './actions/create-payment-link/action';
 import { chargeMoto } from './actions/charge-moto/action';
 import { startCheckout } from './actions/start-checkout/action';
 import { attachCheckoutContact } from './actions/attach-checkout-contact/action';
+import { getAddressOptions } from './actions/get-address-options/action';
+import { setOrderAddress } from './actions/set-order-address/action';
+import { getShippingOptions } from './actions/get-shipping-options/action';
+import { selectShippingOption } from './actions/select-shipping-option/action';
 import { setOutlet } from './actions/set-outlet/action';
 import { resumeCheckout } from './actions/resume-checkout/action';
 // Customer Actions
@@ -211,6 +215,10 @@ export const command = {
   chargeMoto,
   startCheckout,
   attachCheckoutContact,
+  getAddressOptions,
+  setOrderAddress,
+  getShippingOptions,
+  selectShippingOption,
   setOutlet,
   resumeCheckout,
   // Customer Actions
@@ -582,6 +590,30 @@ export type {
   AttachCheckoutContactParams,
   AttachCheckoutContactResponse,
 } from './actions/attach-checkout-contact/types';
+export type {
+  GetAddressOptions,
+  GetAddressOptionsParams,
+  GetAddressOptionsResponse,
+  AddressCountryOption,
+  AddressProvinceOption,
+} from './actions/get-address-options/types';
+export type {
+  SetOrderAddress,
+  SetOrderAddressParams,
+  SetOrderAddressResponse,
+  OrderAddressType,
+} from './actions/set-order-address/types';
+export type {
+  GetShippingOptions,
+  GetShippingOptionsResponse,
+  ShippingOptionView,
+  ShippingPickupView,
+} from './actions/get-shipping-options/types';
+export type {
+  SelectShippingOption,
+  SelectShippingOptionParams,
+  SelectShippingOptionResponse,
+} from './actions/select-shipping-option/types';
 export type { SetOutlet, SetOutletParams, SetOutletResponse } from './actions/set-outlet/types';
 export type {
   ResumeCheckout,

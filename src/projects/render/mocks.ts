@@ -36,6 +36,10 @@ import { mockCreatePaymentLink } from '../../actions/create-payment-link/mock';
 import { mockChargeMoto } from '../../actions/charge-moto/mock';
 import { mockStartCheckout } from '../../actions/start-checkout/mock';
 import { mockAttachCheckoutContact } from '../../actions/attach-checkout-contact/mock';
+import { mockGetAddressOptions } from '../../actions/get-address-options/mock';
+import { mockSetOrderAddress } from '../../actions/set-order-address/mock';
+import { mockGetShippingOptions } from '../../actions/get-shipping-options/mock';
+import { mockSelectShippingOption } from '../../actions/select-shipping-option/mock';
 import { mockGetOutlets } from '../../actions/get-outlets/mock';
 import { mockSetOutlet } from '../../actions/set-outlet/mock';
 import { mockResumeCheckout } from '../../actions/resume-checkout/mock';
@@ -150,6 +154,10 @@ export const RENDER_MOCKS: RenderProviderActions = {
   chargeMoto: mockChargeMoto,
   startCheckout: mockStartCheckout,
   attachCheckoutContact: mockAttachCheckoutContact,
+  getAddressOptions: mockGetAddressOptions,
+  setOrderAddress: mockSetOrderAddress,
+  getShippingOptions: mockGetShippingOptions,
+  selectShippingOption: mockSelectShippingOption,
   getOutlets: mockGetOutlets,
   setOutlet: mockSetOutlet,
   resumeCheckout: mockResumeCheckout,

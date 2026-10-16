@@ -68,6 +68,8 @@ import type {
   Booking,
   CartReservation,
   OrderReservation,
+  CartAddress,
+  CartShipping,
 } from '@final-commerce/common/pos-types';
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
@@ -152,6 +154,8 @@ export type CFActiveOrder = ActiveOrder;
 export type CFActiveCustomSales = ActiveCustomSales;
 export type CFNonRevenueItem = NonRevenueItem;
 export type CFActiveCart = ActiveCart;
+export type CFCartAddress = CartAddress;
+export type CFCartShipping = CartShipping;
 export type CFActivePark = ActivePark;
 export type CFActiveCompany = ActiveCompany;
 
