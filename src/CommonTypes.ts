@@ -207,6 +207,7 @@ export interface CFActiveRefundDetails {
   buttonsDisabled?: Record<string, boolean>;
   isRefund?: boolean;
   customSalesQuantities?: Record<string, number>;
+  /** Keyed by cart-fee id, plus the reserved key `'shipping'` for the order's shipping. 0/1 each. */
   cartFeesRefunds?: Record<string, number>;
   tipsRefunds?: Record<string, number>;
   refundProcessingStatus?: CFRefundProcessingStatus | null;

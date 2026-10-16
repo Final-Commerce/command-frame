@@ -117,7 +117,7 @@ export function mockRefundBreakdown(rows: RefundPlanRow[], items?: GetRefundPlan
     })
     .filter((r) => r.quantity > 0);
 
-  const totals = { items: 0, discounts: 0, fees: 0, tax: 0, tip: 0, total: 0 };
+  const totals = { items: 0, discounts: 0, fees: 0, shipping: 0, tax: 0, tip: 0, total: 0 };
   for (const r of selected) {
     const a = r.amounts;
     if (r.type === 'fee') totals.fees += a.subtotal;

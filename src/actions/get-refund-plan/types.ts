@@ -33,12 +33,13 @@ export interface GetRefundPlanParams {
   items?: {
     /**
      * `internalId` / `variantId` for a product, `customSaleId`, cart-fee id, tip
-     * `transactionId`, or a booking's own `internalId` on `order.reservations[]`.
+     * `transactionId`, a booking's own `internalId` on `order.reservations[]`, or
+     * `'shipping'` for the order's shipping (all or nothing, like a fee).
      */
     itemKey: string;
     quantity: number;
     /** Optional hint; inferred from the order when omitted. */
-    type?: 'product' | 'customSale' | 'fee' | 'tip' | 'reservation';
+    type?: 'product' | 'customSale' | 'fee' | 'tip' | 'reservation' | 'shipping';
   }[];
 }
 
@@ -95,7 +96,7 @@ export interface RefundPlanLeg {
   };
 }
 
-export type RefundPlanRowType = 'product' | 'customSale' | 'fee' | 'tip';
+export type RefundPlanRowType = 'product' | 'customSale' | 'fee' | 'tip' | 'shipping';
 
 /** One tax rate's share of a row's refund (minor units). */
 export interface RefundPlanTaxLine {
@@ -126,7 +127,7 @@ export interface RefundPlanAmounts {
 }
 
 /**
- * One refundable row of the order — a line item, custom sale, cart fee or tip —
+ * One refundable row of the order — a line item, custom sale, cart fee, shipping or tip —
  * served ready to render. Rows with nothing left to refund are not listed.
  */
 export interface RefundPlanRow {
@@ -140,7 +141,7 @@ export interface RefundPlanRow {
   attributes?: string;
   /** Tip rows only: the tender that took the tip (`card`, `cash`, …). */
   paymentType?: string;
-  /** Quantity originally sold. Fees and tips are `1` — all or nothing. */
+  /** Quantity originally sold. Fees, shipping and tips are `1` — all or nothing. */
   quantity: number;
   /** Quantity still refundable — the stepper's max. */
   refundableQuantity: number;
@@ -158,7 +159,7 @@ export interface RefundPlanSelectedRow {
 
 /**
  * The selection's goods value broken down for display. Minor units;
- * `items − discounts + fees + tax + tip === total === allocation.itemTotal`.
+ * `items − discounts + fees + shipping + tax + tip === total === allocation.itemTotal`.
  */
 export interface RefundPlanTotals {
   /** Σ selected line subtotals (before discounts, tax excluded). */
@@ -167,6 +168,8 @@ export interface RefundPlanTotals {
   discounts: number;
   /** Σ selected cart fees, tax excluded. */
   fees: number;
+  /** The order's shipping when selected, tax excluded; 0 otherwise. */
+  shipping: number;
   tax: number;
   tip: number;
   total: number;
