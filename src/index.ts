@@ -62,6 +62,7 @@ import { redeemPayment } from './actions/redeem-payment/action';
 import { integrationPayment } from './actions/integration-payment/action';
 import { createPaymentLink } from './actions/create-payment-link/action';
 import { chargeMoto } from './actions/charge-moto/action';
+import { getMotoConfig } from './actions/get-moto-config/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
 import { removeCustomerNote } from './actions/remove-customer-note/action';
@@ -223,6 +224,7 @@ export const command = {
   integrationPayment,
   createPaymentLink,
   chargeMoto,
+  getMotoConfig,
   // Customer Actions
   addCustomerNote,
   removeCustomerNote,
@@ -605,6 +607,7 @@ export type {
   ChargeMotoResponse,
   ChargeMotoCardFields,
 } from './actions/charge-moto/types';
+export type { GetMotoConfig, GetMotoConfigResponse, MotoUnavailableReason } from './actions/get-moto-config/types';
 // Customer Actions
 export type {
   AddCustomerNote,
