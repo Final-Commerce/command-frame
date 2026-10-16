@@ -1,6 +1,6 @@
 # getProducts
 
-Retrieves a list of products from the parent application's local database.
+Retrieves a list of products from the parent application's local database. A composite whose `composite.needsDate` is true holds a bookable item: show "By date" instead of a ready Add button and route Add through a date and time picker (`getCompositeAvailability`); its items reading `unavailable: 'by_date'` stay pickable.
 
 > **Bookable services are excluded unless you ask for them.** A service is not catalogue stock:
 > it is sold by claiming a time with `addBookingToCart`, and `addProductToCart` refuses it
@@ -18,6 +18,14 @@ Retrieves a list of products from the parent application's local database.
 >
 > Any query that names `productType` is used exactly as written — the default exclusion switches
 > off entirely, so `{ $ne: 'booking' }` also means what it says.
+
+> **Products not sold in POS are excluded unless `includeUnlisted: true` (or the query names `notSoldInPos`).** A product with
+> `notSoldInPos: true` is left out of the grid, name search and sku/barcode search. With
+> `includeUnlisted: true` it is returned, but it still cannot be sold: `addProductToCart` and
+> `addBookingToCart` refuse a product or a variant flagged `notSoldInPos`. Variants flagged `notSoldInPos` are
+> stripped from `variants[]`, and a product whose every variant is flagged is left out too (also
+> only without `includeUnlisted`).
+
 > A variant sold by measure carries `unitId` (and a resolved `unit`), and its `inventory[].stock` is ALREADY in that selling unit — the host converts its base-unit ledger before the variant reaches you. Show it as `${stock} ${unit.abbreviation}`; never divide or multiply it by `unit.ratioToBase`.
 
 ## Parameters
@@ -36,8 +44,14 @@ interface GetProductsParams {
     tags?: string | { $in?: string[] };
     supplier?: string;
     externalId?: string;
+    /** `true` = flagged only; `false` = not flagged (missing counts). Switches off the default exclusion. */
+    notSoldInPos?: boolean;
+    /** `true` = flagged only; `false` = sold online (missing counts). */
+    notSoldOnline?: boolean;
     [key: string]: any;
   };
+  /** Also return products flagged `notSoldInPos`. Defaults to false. */
+  includeUnlisted?: boolean;
   offset?: number;
   limit?: number;
 }
@@ -50,6 +64,17 @@ A query object to filter products. The actual supported query operators depend o
 **Note:** The handler always restricts results to `status: 'active'` products, regardless of any `status` value passed here — draft and inactive products are never returned by this command.
 
 **Note:** When `query.sku` (or a `sku` field inside a `$or` branch) is supplied, the handler also matches it against variant SKUs and against the product's `barcode` field (case-insensitive) — not just the product-level `sku` field. This means a scanned barcode or a variant-level SKU will still return the parent product.
+
+**Note — sales-channel filters.** `query.notSoldInPos` and `query.notSoldOnline` are optional product-level filters with one rule: `true` returns only products with the flag set, `false` returns only products without it — a missing field counts as `false`, and almost every product has none. Leave them out for the default behaviour. Naming `query.notSoldInPos` (either value) replaces the default "hide `notSoldInPos` products" rule, so `{ notSoldInPos: true }` returns them without `includeUnlisted`.
+
+```typescript
+getProducts({ query: { notSoldOnline: false } }); // sold online (flag missing or false)
+getProducts({ query: { notSoldInPos: true } }); // only products not sold at the POS
+```
+
+#### `includeUnlisted` (optional)
+
+`true` also returns products with `notSoldInPos: true`, keeps flagged variants in `variants[]` and keeps products whose every variant is flagged. Defaults to `false`. It does not make them sellable — `addProductToCart` and `addBookingToCart` still refuse them. Without it, the variant stripping applies whatever `query.notSoldInPos` says.
 
 #### `offset` (optional)
 
@@ -84,6 +109,46 @@ import { type CFProduct, type CFProductVariant } from '@final-commerce/command-f
 ```
 
 See the [Real Data Examples](#real-data-examples) section below for actual product and variant object structures.
+
+**Composite products** (`productType: 'composite'`) carry `composite: CFComposite` — `null` on every other product.
+It is the whole picker, decided by the host: `parts[]` (`name`, `required`, `min`, `max`) → `items[]` (`name`, `cost` =
+what one pick adds on top of the composite's price — its upcharge × quantity (B31), `unavailable` = null or `'deleted' | 'inactive' | 'hidden' | 'empty' | 'out_of_stock' | 'by_date' | 'fully_booked' | 'marked_sold_out'`, `choices[]` = the variants a pick may
+name), plus
+`available` (false = show the composite Unavailable; `fromPrice` is then null when nothing is left to price), `basePrice` (the composite's own price, set by the merchant, in every tax mode) and
+`fromPrice` (the "from" price for the card).
+
+_At the till's outlet_ (catalog-visibility, per product): a composite hidden there is not returned at all (and
+`addProductToCart` / `getCompositePrice` refuse it: "<name> is not sold at this outlet"); an item whose product is hidden
+there is left out of its part; a category item keeps only the products sold there — none left → `unavailable: 'empty'`;
+an Optional part with nothing to pick there is not offered; a required part with nothing to pick makes the composite
+`available: false`, and the host's refusal names that part ("Drink: nothing can be picked at this outlet"). A pick of an
+item not offered is refused ("Composite item <id> is not offered here"). `'hidden'` stays in the type for the back office (an item hidden at an outlet), but the till leaves such items out —
+a flow never receives it. A hide or show
+arrives as `products` / `catalog-visibility-changed` — refetch.
+
+_Stock at the till's outlet_ (B35): an item whose variant is tracked, not on backorder, and short of one pick's
+quantity (in its pool's base units — `stockVariantId` shares a shelf) is `unavailable: 'out_of_stock'` — show it
+"Sold out"; it cannot be picked. A category item is in stock while any of its products is (its `choices` are those). A unit-sold, tracked choice carries
+`stockLeft` — how much its shelf still serves here, in its own unit, floored at the unit's precision (`availableIn`,
+B36e): show "2.35 kg left". Absent when sold by the piece or untracked; never compute it.
+Untracked variants are always in stock. A required part with nothing in stock makes the composite unavailable. At
+`addProductToCart` / `getCompositePrice`, and again at the first payment, the host adds up what the whole cart takes
+from each shelf (pick × item × line, plain lines on the same pool included) and refuses "<item>: only N left". A stock
+move arrives as `products` / `inventory-changed` — refetch.
+
+_Bookable items_ (B41): an item whose product is bookable is judged by seats, never stock. `composite.needsDate` is
+true when the composite offers one: show "By date" instead of a ready-to-add state. Until a date and time is chosen
+such an item reads `unavailable: 'by_date'` — it still has its `choices` and does NOT make the composite unavailable.
+Ask `getCompositeAvailability` for the start times free for all of them, then `getCompositePrice` /
+`addProductToCart` with `compositeSlot: { startAt }`; there an item without enough seats reads `'fully_booked'`.
+A category item never hands out bookables.
+
+Each part's `defaultPick` (`{ itemId, variantId }`) is the pick to show
+preselected (B29 = D36): only on a required "pick 1" part (`required`, `min = max = 1`) — its cheapest available item
+(lowest `cost`, ties to the first listed); `null` on every other part, and when the cheapest is a category item. Parts
+without a default show how many picks they still need (`getCompositePrice().missing`); parts in `fullPartIds` take no more. A part with `max = 1` is a
+radio: picking another item replaces the pick. Show these; do not recompute prices, availability or defaults. Send the picks with
+`addProductToCart({ variantId, composite: [{ itemId, variantId, quantity? }] })`.
 
 #### `total` (number, optional)
 
@@ -339,6 +404,7 @@ Key fields:
 - **Metadata**: Array of key-value pairs for custom data.
 - **Variants**: Product variants with their own pricing, inventory, and attributes.
 - **Inventory**: Variant inventory is tracked per outlet in the `inventory` array.
+- **Unavailable**: `variant.unavailable` is `true` when the variant is marked "can't be sold here right now" at the active outlet (`setVariantUnavailable`). Independent of stock — show it as unavailable and don't offer add-to-cart; `addProductToCart` refuses it with `reason: 'Marked unavailable'`.
 - **ID fields**: Products and variants are keyed by `_id` (string).
 - **Pricing**: `price`, `salePrice`, `costPrice`, `minPrice`, and `maxPrice` are integers in minor currency units (e.g. cents for USD) — not decimal strings.
 
@@ -377,5 +443,13 @@ The handler does not catch or swallow errors. If the underlying query fails (e.g
 - Results are limited to 100 products per request by default
 - Deleted products (`isDeleted: true`) are automatically excluded
 - Only products with `status: 'active'` are returned — draft and inactive products are excluded, even if requested via `query.status`
+- Products with `notSoldInPos: true` are excluded unless `includeUnlisted: true`; so are products whose every variant has it, and flagged variants are stripped from `variants[]`
 - Results are scoped to the currently active outlet: products not assigned to that outlet, or explicitly hidden there via catalog visibility, are excluded
 - Variants are included in the response; soft-deleted variants (sync tombstones) are stripped out before the response is returned
+
+### Composite choices carry their modifiers
+
+`composite.parts[].items[].choices[].modifiers` is the picked product's own modifier menu (same shape as
+`product.modifiers`, resolved by the host). Offer it inside the picker and send the answers as
+`composite[].modifiers`. A choice whose required modifier has nothing sold at this outlet is left out; an item with no
+choice left is `unavailable: 'empty'`.

@@ -22,12 +22,15 @@ import type {
   AddProductNote,
   AddProductFee,
   GetProductModifierSelections,
+  GetCompositePrice,
+  GetCompositeAvailability,
   SetProductModifierSelections,
   SetActiveProductFee,
   SetActiveProductDiscount,
   GetActiveProduct,
   SetActiveProduct,
   AdjustInventory,
+  SetVariantUnavailable,
   AddOrderNote,
   AddCartFee,
   ClearCart,
@@ -149,12 +152,15 @@ export interface RenderProviderActions {
   addProductNote: AddProductNote;
   addProductFee: AddProductFee;
   getProductModifierSelections: GetProductModifierSelections;
+  getCompositePrice: GetCompositePrice;
+  getCompositeAvailability: GetCompositeAvailability;
   setProductModifierSelections: SetProductModifierSelections;
   setActiveProductFee: SetActiveProductFee;
   setActiveProductDiscount: SetActiveProductDiscount;
   getActiveProduct: GetActiveProduct;
   setActiveProduct: SetActiveProduct;
   adjustInventory: AdjustInventory;
+  setVariantUnavailable: SetVariantUnavailable;
   getCustomStockActions: GetCustomStockActions;
   addOrderNote: AddOrderNote;
   addCartFee: AddCartFee;

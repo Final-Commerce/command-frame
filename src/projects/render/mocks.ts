@@ -13,6 +13,8 @@ import { mockRemoveOrderNote } from '../../actions/remove-order-note/mock';
 import { mockAddProductDiscount } from '../../actions/add-product-discount/mock';
 import { mockAddProductFee } from '../../actions/add-product-fee/mock';
 import { mockGetProductModifierSelections } from '../../actions/get-product-modifier-selections/mock';
+import { mockGetCompositePrice } from '../../actions/get-composite-price/mock';
+import { mockGetCompositeAvailability } from '../../actions/get-composite-availability/mock';
 import { mockSetProductModifierSelections } from '../../actions/set-product-modifier-selections/mock';
 import { mockRemoveProductDiscount } from '../../actions/remove-product-discount/mock';
 import { mockRemoveProductFee } from '../../actions/remove-product-fee/mock';
@@ -26,6 +28,7 @@ import { mockRemoveProductFromCart } from '../../actions/remove-product-from-car
 import { mockRemoveCartDiscount } from '../../actions/remove-cart-discount/mock';
 import { mockUpdateCartItemQuantity } from '../../actions/update-cart-item-quantity/mock';
 import { mockAdjustInventory } from '../../actions/adjust-inventory/mock';
+import { mockSetVariantUnavailable } from '../../actions/set-variant-unavailable/mock';
 import { mockGetCustomStockActions } from '../../actions/get-custom-stock-actions/mock';
 import { mockAssignCustomer } from '../../actions/assign-customer/mock';
 import { mockAuthenticateUser } from '../../actions/authenticate-user/mock';
@@ -125,6 +128,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   addProductDiscount: mockAddProductDiscount,
   addProductFee: mockAddProductFee,
   getProductModifierSelections: mockGetProductModifierSelections,
+  getCompositePrice: mockGetCompositePrice,
+  getCompositeAvailability: mockGetCompositeAvailability,
   setProductModifierSelections: mockSetProductModifierSelections,
   setActiveProductFee: mockSetActiveProductFee,
   setActiveProductDiscount: mockSetActiveProductDiscount,
@@ -135,6 +140,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   removeProductFromCart: mockRemoveProductFromCart,
   updateCartItemQuantity: mockUpdateCartItemQuantity,
   adjustInventory: mockAdjustInventory,
+  setVariantUnavailable: mockSetVariantUnavailable,
   getCustomStockActions: mockGetCustomStockActions,
   assignCustomer: mockAssignCustomer,
   authenticateUser: mockAuthenticateUser,
