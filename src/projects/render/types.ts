@@ -114,6 +114,10 @@ import type {
   ChargeMoto,
   StartCheckout,
   AttachCheckoutContact,
+  GetAddressOptions,
+  SetOrderAddress,
+  GetShippingOptions,
+  SelectShippingOption,
   GetOutlets,
   SetOutlet,
   ResumeCheckout,
@@ -185,6 +189,11 @@ export interface RenderProviderActions {
    */
   startCheckout: StartCheckout;
   attachCheckoutContact: AttachCheckoutContact;
+  /** Shipping, on the till (ship-to) and the website alike. The runtime prices; the flow renders. */
+  getAddressOptions: GetAddressOptions;
+  setOrderAddress: SetOrderAddress;
+  getShippingOptions: GetShippingOptions;
+  selectShippingOption: SelectShippingOption;
   getOutlets: GetOutlets;
   setOutlet: SetOutlet;
   /**
