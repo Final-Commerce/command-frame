@@ -7,7 +7,10 @@ import { commandFrameClient } from '../../client';
 import type { GetCheckoutStatus, GetCheckoutStatusParams, GetCheckoutStatusResponse } from './types';
 
 export const getCheckoutStatus: GetCheckoutStatus = async (
-  params: GetCheckoutStatusParams,
+  params?: GetCheckoutStatusParams,
 ): Promise<GetCheckoutStatusResponse> => {
-  return await commandFrameClient.call<GetCheckoutStatusParams, GetCheckoutStatusResponse>('getCheckoutStatus', params);
+  return await commandFrameClient.call<GetCheckoutStatusParams, GetCheckoutStatusResponse>(
+    'getCheckoutStatus',
+    params ?? {},
+  );
 };

@@ -3,13 +3,14 @@
 Where an online order stands now, as the server holds it. Storefront only.
 
 ```ts
-const { status, paid } = await renderClient.getCheckoutStatus({ orderPassword });
+const { status, paid } = await renderClient.getCheckoutStatus({ receiptId });
 ```
 
 Use it on a confirmation page: the browser only ever knows the payment provider ACCEPTED a
 payment, and the order becomes `paid` when the provider's notification reaches the server. Poll a
-few times (every few seconds) until `paid`, then stop. `status: null` means the order is unknown
-or the password has expired.
+few times (every few seconds) until `paid`, then stop. `receiptId` is the one `startCheckout`
+returned; leave it out to ask about the checkout in flight, else the last one this tab finished.
+`status: null` means this tab placed no such order, or the server could not be asked.
 
 | status                            | meaning for the shopper              |
 | --------------------------------- | ------------------------------------ |
