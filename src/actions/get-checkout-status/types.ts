@@ -5,8 +5,8 @@
 // landed, which the browser alone can never know: it only ever sees that the provider ACCEPTED
 // a payment.
 //
-// Keyed by the one-time order password `startCheckout` (or `resumeCheckout`, after a redirect)
-// returned, so a page can only ever ask about an order it created.
+// The runtime asks about a checkout THIS TAB placed (it keeps the checkout's key), so a page can
+// only ever ask about its own order. No password: the server no longer issues one.
 //
 // Served ONLY by the storefront runtime (a published website). On a register it does not exist.
 
@@ -22,18 +22,16 @@ export type CheckoutOrderStatus =
   | 'cancelled';
 
 export interface GetCheckoutStatusParams {
-  /** The order password from `startCheckout` or `resumeCheckout`. */
-  orderPassword: string;
   /**
-   * The provider's opaque `sessionResult` from the payment-completed event, when the page has it.
-   * Lets the server verify the payment with the provider while the notification is still on its way.
+   * The receipt `startCheckout` returned, to name which order. Omitted: the checkout in flight,
+   * else the last one this tab finished.
    */
-  sessionResult?: string;
+  receiptId?: string;
 }
 
 export interface GetCheckoutStatusResponse {
   success: boolean;
-  /** `null` when the order is unknown or the password has expired. */
+  /** `null` when this tab placed no such order, or the server could not be asked. */
   status: CheckoutOrderStatus | null;
   /** True once the money is in: `paid`, `fulfilled`, or refunded since. */
   paid: boolean;
@@ -42,4 +40,4 @@ export interface GetCheckoutStatusResponse {
 }
 
 /** Never throws for an unknown order: answers `status: null`. */
-export type GetCheckoutStatus = (params: GetCheckoutStatusParams) => Promise<GetCheckoutStatusResponse>;
+export type GetCheckoutStatus = (params?: GetCheckoutStatusParams) => Promise<GetCheckoutStatusResponse>;
