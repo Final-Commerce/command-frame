@@ -121,6 +121,7 @@ import type {
   GetOutlets,
   SetOutlet,
   ResumeCheckout,
+  GetCheckoutStatus,
   GetTimeClockStatus,
 } from '../../index';
 
@@ -202,6 +203,8 @@ export interface RenderProviderActions {
    * `startCheckout`, and safe to call on every page load.
    */
   resumeCheckout: ResumeCheckout;
+  /** Where an online order stands now, by its order password. Storefront-only. */
+  getCheckoutStatus: GetCheckoutStatus;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;
   removeCustomerNote: RemoveCustomerNote;
