@@ -43,6 +43,7 @@ import { mockSelectShippingOption } from '../../actions/select-shipping-option/m
 import { mockGetOutlets } from '../../actions/get-outlets/mock';
 import { mockSetOutlet } from '../../actions/set-outlet/mock';
 import { mockResumeCheckout } from '../../actions/resume-checkout/mock';
+import { mockGetCheckoutStatus } from '../../actions/get-checkout-status/mock';
 import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
 import { mockDeleteParkedOrder } from '../../actions/delete-parked-order/mock';
@@ -161,6 +162,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getOutlets: mockGetOutlets,
   setOutlet: mockSetOutlet,
   resumeCheckout: mockResumeCheckout,
+  getCheckoutStatus: mockGetCheckoutStatus,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
   voidOrder: mockVoidOrder,

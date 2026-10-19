@@ -61,6 +61,7 @@ import { getShippingOptions } from './actions/get-shipping-options/action';
 import { selectShippingOption } from './actions/select-shipping-option/action';
 import { setOutlet } from './actions/set-outlet/action';
 import { resumeCheckout } from './actions/resume-checkout/action';
+import { getCheckoutStatus } from './actions/get-checkout-status/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
 import { removeCustomerNote } from './actions/remove-customer-note/action';
@@ -221,6 +222,7 @@ export const command = {
   selectShippingOption,
   setOutlet,
   resumeCheckout,
+  getCheckoutStatus,
   // Customer Actions
   addCustomerNote,
   removeCustomerNote,
@@ -621,6 +623,12 @@ export type {
   ResumeCheckoutResponse,
   ResumeCheckoutResult,
 } from './actions/resume-checkout/types';
+export type {
+  GetCheckoutStatus,
+  GetCheckoutStatusParams,
+  GetCheckoutStatusResponse,
+  CheckoutOrderStatus,
+} from './actions/get-checkout-status/types';
 // Customer Actions
 export type {
   AddCustomerNote,
