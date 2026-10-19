@@ -1,12 +1,17 @@
 import { GetProducts, GetProductsParams, GetProductsResponse } from './types';
-import { MOCK_PRODUCTS, safeSerialize } from '../../demo/database';
+import { MOCK_PRODUCTS, mockCompositeAtOutlet, mockHiddenProductIds, safeSerialize } from '../../demo/database';
 import { resolveUnit } from '@final-commerce/common';
 
 export const mockGetProducts: GetProducts = async (params?: GetProductsParams): Promise<GetProductsResponse> => {
   console.log('[Mock] getProducts called', params);
 
-  // Simple filter simulation
-  let products = MOCK_PRODUCTS;
+  // Simple filter simulation. Like the host: a product hidden at this outlet is left out, and a composite offers only
+  // what is sold here.
+  const hidden = mockHiddenProductIds();
+  let products = MOCK_PRODUCTS.filter((p) => !hidden.has(p._id)).map((p) =>
+    // B43: the host never hands a composite modifiers of its own.
+    p.composite ? { ...p, modifiers: [], composite: mockCompositeAtOutlet(p.composite, hidden) } : p,
+  );
   const query = params?.query || {};
 
   // Same rule as the real host: a bookable service is not catalogue stock and is left out unless
@@ -14,6 +19,18 @@ export const mockGetProducts: GetProducts = async (params?: GetProductsParams): 
   // device withholds is how a flow gets built around a grid that cannot exist.
   if (!JSON.stringify(query).includes('productType')) {
     products = products.filter((p) => (p as { productType?: string }).productType !== 'booking');
+  }
+
+  // Same as the host: `true` = flagged, `false` = not flagged (missing counts).
+  for (const flag of ['notSoldInPos', 'notSoldOnline'] as const) {
+    if (typeof query[flag] === 'boolean') products = products.filter((p) => !!p[flag] === query[flag]);
+  }
+  if (!params?.includeUnlisted) {
+    // Same as the host: flagged variants are stripped, a product left with none is dropped.
+    if (query.notSoldInPos === undefined) products = products.filter((p) => !p.notSoldInPos);
+    products = products
+      .filter((p) => !p.variants.length || p.variants.some((v) => !v.notSoldInPos))
+      .map((p) => ({ ...p, variants: p.variants.filter((v) => !v.notSoldInPos) }));
   }
 
   if (query.searchValue) {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { renderClient as command } from '@final-commerce/command-frame';
+import { renderClient as command, type CFActiveProduct, type CFCompositePick } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -22,12 +22,21 @@ export function CartSection({ isInIframe }: CartSectionProps) {
   const [nrMetadataJson, setNrMetadataJson] = useState<string>('{"customTableId":"cards","cardName":"Demo"}');
   const [nrLoading, setNrLoading] = useState(false);
   const [nrResponse, setNrResponse] = useState<string>('');
-  
+
   const [addToCartLoading, setAddToCartLoading] = useState(false);
   const [addToCartResponse, setAddToCartResponse] = useState<string>('');
   const [addToCartQuantity, setAddToCartQuantity] = useState<string>('1');
   const [addToCartVariantId, setAddToCartVariantId] = useState<string>('');
-  
+
+  // Composite with picks — prefilled for the demo "Paste Trio"; ids come from the Products tab.
+  const [compositeVariantId, setCompositeVariantId] = useState<string>('prod_paste_trio_var_main');
+  const [compositePicksJson, setCompositePicksJson] = useState<string>(
+    '[{ "itemId": "item_basil", "variantId": "prod_basil_almond_var_main" }, { "itemId": "item_spicy", "variantId": "prod_habanero_var_main" }]',
+  );
+  const [addCompositeLoading, setAddCompositeLoading] = useState(false);
+  const [addCompositeResponse, setAddCompositeResponse] = useState<string>('');
+  const [compositeCartLine, setCompositeCartLine] = useState<CFActiveProduct | null>(null);
+
   const [cartDiscountAmount, setCartDiscountAmount] = useState<string>('10');
   const [cartDiscountIsPercent, setCartDiscountIsPercent] = useState<boolean>(false);
   const [cartDiscountLabel, setCartDiscountLabel] = useState<string>('Cart Discount');
@@ -105,7 +114,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
         price: parseInt(customSalePrice, 10) || 0,
         applyTaxes: applyTaxes,
       });
-      
+
       setCustomSaleResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setCustomSaleResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -127,14 +136,43 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       const quantity = parseFloat(addToCartQuantity) || 1;
       const result = await command.addProductToCart({
         quantity: quantity,
-        variantId: addToCartVariantId
+        variantId: addToCartVariantId,
       });
-      
+
       setAddToCartResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setAddToCartResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setAddToCartLoading(false);
+    }
+  };
+
+  const handleAddComposite = async () => {
+    if (!isInIframe) {
+      setAddCompositeResponse('Error: Not running in iframe');
+      return;
+    }
+    let picks: CFCompositePick[];
+    try {
+      picks = JSON.parse(compositePicksJson);
+      if (!Array.isArray(picks)) throw new Error('Picks must be a JSON array');
+    } catch (error) {
+      setAddCompositeResponse(`Error: ${error instanceof Error ? error.message : 'Invalid JSON'}`);
+      return;
+    }
+    setAddCompositeLoading(true);
+    setAddCompositeResponse('');
+    try {
+      // The host validates the picks and answers success:false with a reason — shown as is.
+      const result = await command.addProductToCart({ variantId: compositeVariantId, composite: picks });
+      setAddCompositeResponse(JSON.stringify(result, null, 2));
+      // The line as the host built it: its components and their modifier rows (componentIndex).
+      const { cart } = await command.getCurrentCart();
+      setCompositeCartLine(cart.products.find((line) => line.internalId === result.internalId) ?? null);
+    } catch (error) {
+      setAddCompositeResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setAddCompositeLoading(false);
     }
   };
 
@@ -157,9 +195,9 @@ export function CartSection({ isInIframe }: CartSectionProps) {
         // minor units unless isPercent (then 0-100)
         amount: parseFloat(cartDiscountAmount) || 0,
         isPercent: cartDiscountIsPercent,
-        label: cartDiscountLabel
+        label: cartDiscountLabel,
       });
-      
+
       setAddCartDiscountResponse(JSON.stringify(result, null, 2));
     } catch (error) {
       setAddCartDiscountResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -181,9 +219,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       const result = await command.removeCartDiscount();
       setRemoveCartDiscountResponse(JSON.stringify(result, null, 2));
     } catch (error) {
-      setRemoveCartDiscountResponse(
-        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      setRemoveCartDiscountResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setRemoveCartDiscountLoading(false);
     }
@@ -218,36 +254,26 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           </div>
           <div className="form-field">
             <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={applyTaxes}
-                onChange={(e) => setApplyTaxes(e.target.checked)}
-              />
+              <input type="checkbox" checked={applyTaxes} onChange={(e) => setApplyTaxes(e.target.checked)} />
               <span>Apply Taxes</span>
             </label>
           </div>
         </div>
-        <button
-          onClick={handleAddCustomSale}
-          disabled={customSaleLoading}
-          className="btn btn--primary"
-        >
+        <button onClick={handleAddCustomSale} disabled={customSaleLoading} className="btn btn--primary">
           {customSaleLoading ? 'Adding...' : 'Add Custom Sale'}
         </button>
         {customSaleResponse && (
-          <JsonViewer
-            data={customSaleResponse}
-            title={customSaleResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={customSaleResponse} title={customSaleResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Add non-revenue item (extension → host cart) */}
       <CommandSection title="Add non-revenue item (gift card load)">
         <p className="section-description">
-          Calls <code>addNonRevenueItem</code> — same API extensions use to add a liability line (e.g. gift card purchase).
-          The success payload includes <code>externalId</code> (unique line id) and <code>refId</code> (your param <code>id</code>).
-          Cart total updates; complete checkout from the <strong>Payments</strong> tab (e.g. Cash Payment).
+          Calls <code>addNonRevenueItem</code> — same API extensions use to add a liability line (e.g. gift card
+          purchase). The success payload includes <code>externalId</code> (unique line id) and <code>refId</code> (your
+          param <code>id</code>). Cart total updates; complete checkout from the <strong>Payments</strong> tab (e.g.
+          Cash Payment).
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -256,13 +282,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           </div>
           <div className="form-field">
             <label>amount:</label>
-            <input
-              type="number"
-              step="1"
-              min="0.01"
-              value={nrAmount}
-              onChange={(e) => setNrAmount(e.target.value)}
-            />
+            <input type="number" step="1" min="0.01" value={nrAmount} onChange={(e) => setNrAmount(e.target.value)} />
           </div>
           <div className="form-field">
             <label>label (optional):</label>
@@ -315,16 +335,12 @@ export function CartSection({ isInIframe }: CartSectionProps) {
         >
           {nrLoading ? 'Adding…' : 'Add non-revenue to cart'}
         </button>
-        {nrResponse && (
-          <JsonViewer data={nrResponse} title={nrResponse.startsWith('Error') ? 'Error' : 'Success'} />
-        )}
+        {nrResponse && <JsonViewer data={nrResponse} title={nrResponse.startsWith('Error') ? 'Error' : 'Success'} />}
       </CommandSection>
 
       {/* Add Product to Cart */}
       <CommandSection title="Add Product to Cart">
-        <p className="section-description">
-          Adds a product to the cart. Requires a Variant ID.
-        </p>
+        <p className="section-description">Adds a product to the cart. Requires a Variant ID.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Variant ID:</label>
@@ -345,26 +361,87 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             />
           </div>
         </div>
-        <button
-          onClick={handleAddProductToCart}
-          disabled={addToCartLoading}
-          className="btn btn--primary"
-        >
+        <button onClick={handleAddProductToCart} disabled={addToCartLoading} className="btn btn--primary">
           {addToCartLoading ? 'Adding...' : 'Add to Cart'}
         </button>
         {addToCartResponse && (
+          <JsonViewer data={addToCartResponse} title={addToCartResponse.startsWith('Error') ? 'Error' : 'Success'} />
+        )}
+      </CommandSection>
+
+      {/* Add Composite to Cart */}
+      <CommandSection title="Add Composite to Cart">
+        <p className="section-description">
+          <code>addProductToCart(&#123; variantId, composite &#125;)</code> — one pick per entry: an <code>itemId</code>{' '}
+          from <code>product.composite</code> and one of that item&apos;s choice <code>variantId</code>s, optional{' '}
+          <code>quantity</code>. The host checks each part&apos;s required / min / max and availability and answers{' '}
+          <code>success: false</code> with a <code>reason</code> when the picks cannot be sold.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Composite variant ID:</label>
+            <input
+              type="text"
+              value={compositeVariantId}
+              onChange={(e) => setCompositeVariantId(e.target.value)}
+              placeholder="Variant ID of the composite"
+            />
+          </div>
+          <div className="form-field">
+            <label>Picks (JSON):</label>
+            <textarea value={compositePicksJson} onChange={(e) => setCompositePicksJson(e.target.value)} rows={4} />
+          </div>
+        </div>
+        <button onClick={handleAddComposite} disabled={addCompositeLoading} className="btn btn--primary">
+          {addCompositeLoading ? 'Adding...' : 'Add Composite'}
+        </button>
+        {addCompositeResponse && (
           <JsonViewer
-            data={addToCartResponse}
-            title={addToCartResponse.startsWith('Error') ? 'Error' : 'Success'}
+            data={addCompositeResponse}
+            title={addCompositeResponse.startsWith('Error') ? 'Error' : 'Response'}
           />
         )}
+        {compositeCartLine?.components?.length ? (
+          <div className="data-table-wrapper">
+            <p>
+              <strong>{compositeCartLine.name}</strong> × {compositeCartLine.quantity} · price {compositeCartLine.price}
+            </p>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Part</th>
+                  <th>Component</th>
+                  <th className="text-right">Qty</th>
+                  <th className="text-right">Share</th>
+                  <th>Tax table</th>
+                  <th>Modifiers</th>
+                </tr>
+              </thead>
+              <tbody>
+                {compositeCartLine.components.map((component, index) => (
+                  <tr key={index}>
+                    <td>{component.partName ?? 'Choose'}</td>
+                    <td>{component.name}</td>
+                    <td className="text-right">{component.quantity}</td>
+                    <td className="text-right">{component.unitPrice}</td>
+                    <td className="text-muted">{component.taxTableId ?? '(line)'}</td>
+                    <td className="text-muted">
+                      {(compositeCartLine.modifiers ?? [])
+                        .filter((modifier) => modifier.componentIndex === index)
+                        .map((modifier) => `${modifier.label ?? modifier.choiceName} ×${modifier.quantity}`)
+                        .join(', ') || '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
       </CommandSection>
 
       {/* Add Cart Discount */}
       <CommandSection title="Add Cart Discount">
-        <p className="section-description">
-          Applies a discount to the entire cart.
-        </p>
+        <p className="section-description">Applies a discount to the entire cart.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Amount:</label>
@@ -395,11 +472,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             </label>
           </div>
         </div>
-        <button
-          onClick={handleAddCartDiscount}
-          disabled={addCartDiscountLoading}
-          className="btn btn--primary"
-        >
+        <button onClick={handleAddCartDiscount} disabled={addCartDiscountLoading} className="btn btn--primary">
           {addCartDiscountLoading ? 'Adding...' : 'Add Cart Discount'}
         </button>
         {addCartDiscountResponse && (
@@ -412,14 +485,8 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Remove Cart Discount */}
       <CommandSection title="Remove Cart Discount">
-        <p className="section-description">
-          Removes the cart discount
-        </p>
-        <button
-          onClick={handleRemoveCartDiscount}
-          disabled={removeCartDiscountLoading}
-          className="btn btn--primary"
-        >
+        <p className="section-description">Removes the cart discount</p>
+        <button onClick={handleRemoveCartDiscount} disabled={removeCartDiscountLoading} className="btn btn--primary">
           {removeCartDiscountLoading ? 'Removing...' : 'Remove Cart Discount'}
         </button>
         {removeCartDiscountResponse && (
@@ -432,9 +499,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Add Order Note */}
       <CommandSection title="Add Order Note">
-        <p className="section-description">
-          Adds a note to the current order/cart.
-        </p>
+        <p className="section-description">Adds a note to the current order/cart.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Note:</label>
@@ -482,9 +547,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Add Cart Fee */}
       <CommandSection title="Add Cart Fee">
-        <p className="section-description">
-          Adds a fee to the entire cart (e.g., service fee, delivery fee).
-        </p>
+        <p className="section-description">Adds a fee to the entire cart (e.g., service fee, delivery fee).</p>
         <div className="form-group">
           <div className="form-field">
             <label>Amount:</label>
@@ -540,7 +603,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
                 amount: parseFloat(cartFeeAmount) || 0,
                 isPercent: cartFeeIsPercent,
                 label: cartFeeLabel,
-                applyTaxes: cartFeeApplyTaxes
+                applyTaxes: cartFeeApplyTaxes,
               });
               setAddCartFeeResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -555,18 +618,13 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           {addCartFeeLoading ? 'Adding...' : 'Add Cart Fee'}
         </button>
         {addCartFeeResponse && (
-          <JsonViewer
-            data={addCartFeeResponse}
-            title={addCartFeeResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={addCartFeeResponse} title={addCartFeeResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Clear Cart */}
       <CommandSection title="Clear Cart">
-        <p className="section-description">
-          Clears all items from the current cart.
-        </p>
+        <p className="section-description">Clears all items from the current cart.</p>
         <button
           onClick={async () => {
             if (!isInIframe) {
@@ -590,17 +648,15 @@ export function CartSection({ isInIframe }: CartSectionProps) {
           {clearCartLoading ? 'Clearing...' : 'Clear Cart'}
         </button>
         {clearCartResponse && (
-          <JsonViewer
-            data={clearCartResponse}
-            title={clearCartResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={clearCartResponse} title={clearCartResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Get Current Cart */}
       <CommandSection title="Get Current Cart">
         <p className="section-description">
-          Retrieves the complete current cart object including products, custom sales, non-revenue lines, totals, discounts, fees, and customer information.
+          Retrieves the complete current cart object including products, custom sales, non-revenue lines, totals,
+          discounts, fees, and customer information.
         </p>
         <button
           onClick={async () => {
@@ -635,7 +691,8 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       {/* Remove Product from Cart */}
       <CommandSection title="Remove Product from Cart">
         <p className="section-description">
-          Removes a product from the cart by its internalId. Use getCurrentCart to find the internalId of items in the cart.
+          Removes a product from the cart by its internalId. Use getCurrentCart to find the internalId of items in the
+          cart.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -662,7 +719,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             setRemoveProductResponse('');
             try {
               const result = await command.removeProductFromCart({
-                internalId: removeProductInternalId
+                internalId: removeProductInternalId,
               });
               setRemoveProductResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -687,7 +744,8 @@ export function CartSection({ isInIframe }: CartSectionProps) {
       {/* Update Cart Item Quantity */}
       <CommandSection title="Update Cart Item Quantity">
         <p className="section-description">
-          Updates the quantity of a cart item by its internalId. Set quantity to 0 to remove the item. Stock validation is performed when increasing quantity.
+          Updates the quantity of a cart item by its internalId. Set quantity to 0 to remove the item. Stock validation
+          is performed when increasing quantity.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -730,7 +788,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
             try {
               const result = await command.updateCartItemQuantity({
                 internalId: updateQuantityInternalId,
-                quantity: quantity
+                quantity: quantity,
               });
               setUpdateQuantityResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -754,9 +812,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Remove Cart Fee */}
       <CommandSection title="Remove Cart Fee">
-        <p className="section-description">
-          Removes a fee from the cart by its index in the customFee array.
-        </p>
+        <p className="section-description">Removes a fee from the cart by its index in the customFee array.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Fee Index:</label>
@@ -801,9 +857,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Remove Order Note */}
       <CommandSection title="Remove Order Note">
-        <p className="section-description">
-          Removes the order note from the cart.
-        </p>
+        <p className="section-description">Removes the order note from the cart.</p>
         <button
           onClick={async () => {
             if (!isInIframe) {
@@ -836,9 +890,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Remove Custom Sale */}
       <CommandSection title="Remove Custom Sale">
-        <p className="section-description">
-          Removes a custom sale from the cart by its id.
-        </p>
+        <p className="section-description">Removes a custom sale from the cart by its id.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Custom Sale ID:</label>
@@ -886,9 +938,7 @@ export function CartSection({ isInIframe }: CartSectionProps) {
 
       {/* Remove Non-Revenue Item */}
       <CommandSection title="Remove Non-Revenue Item">
-        <p className="section-description">
-          Removes a non-revenue item from the cart by its externalId.
-        </p>
+        <p className="section-description">Removes a non-revenue item from the cart by its externalId.</p>
         <div className="form-group">
           <div className="form-field">
             <label>External ID:</label>
@@ -936,4 +986,3 @@ export function CartSection({ isInIframe }: CartSectionProps) {
     </div>
   );
 }
-

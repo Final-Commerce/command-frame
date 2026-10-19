@@ -51,6 +51,8 @@ const { booking } = await renderClient.addBookingToCart({
 
 - **Handle the refusal.** Two people booking the same window at once is normal, not exceptional:
   re-ask `getBookingAvailability` and let the customer pick again.
+- A service or variant with `notSoldInPos: true` is refused (`` `${name} is not sold in POS` ``)
+  before any window is claimed.
 - The booking stays `held` until the order is paid. An abandoned cart releases the window on its
   own when `expiresAt` passes — nothing to clean up.
 - There is no `confirmBooking` to call: only the host can know the sale completed.

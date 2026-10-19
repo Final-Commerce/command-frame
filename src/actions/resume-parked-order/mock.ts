@@ -1,5 +1,5 @@
 import { ResumeParkedOrder, ResumeParkedOrderParams, ResumeParkedOrderResponse } from './types';
-import { MOCK_PARKED_ORDERS, MOCK_CART, resetMockCart, mockPublishEvent } from '../../demo/database';
+import { MOCK_PARKED_ORDERS, MOCK_CART, MOCK_PRODUCTS, resetMockCart, mockPublishEvent } from '../../demo/database';
 import type { CFActiveOrder } from '../../CommonTypes';
 
 /**
@@ -56,6 +56,14 @@ export const mockResumeParkedOrder: ResumeParkedOrder = async (
   if (!orderToResume) {
     throw new Error('Parked order not found');
   }
+
+  // Same refusal and text as the host, before anything is restored: the parked order stays.
+  const notSoldNames = orderToResume.lineItems
+    .filter((li) =>
+      MOCK_PRODUCTS.some((p) => p.variants.some((v) => v._id === li.variantId && (p.notSoldInPos || v.notSoldInPos))),
+    )
+    .map((li) => li.name);
+  if (notSoldNames.length) throw new Error(`${notSoldNames.join(', ')} is not sold in POS`);
 
   restoreMockCartFromOrder(orderToResume);
 
