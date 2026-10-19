@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@adyen/adyen-web": "^6.44.0",
-    "@final-commerce-internal/kaching": "1.14.0-preprod.14",
-    "@final-commerce/command-frame": "0.9.0-preprod.5",
+    "@final-commerce-internal/kaching": "1.17.0-preprod.1",
+    "@final-commerce/command-frame": "0.11.0-preprod.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.12.0"
@@ -46,7 +46,7 @@
     ]
   },
   "overrides": {
-    "@final-commerce/command-frame": "0.9.0-preprod.5",
-    "@final-commerce/common": "2.5.1-preprod.9"
+    "@final-commerce/command-frame": "0.11.0-preprod.1",
+    "@final-commerce/common": "2.7.0-preprod.1"
   }
 }
