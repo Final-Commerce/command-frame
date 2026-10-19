@@ -28,12 +28,15 @@ import { updateCartItemQuantity } from './actions/update-cart-item-quantity/acti
 import { addProductNote } from './actions/add-product-note/action';
 import { addProductFee } from './actions/add-product-fee/action';
 import { getProductModifierSelections } from './actions/get-product-modifier-selections/action';
+import { getCompositePrice } from './actions/get-composite-price/action';
+import { getCompositeAvailability } from './actions/get-composite-availability/action';
 import { setProductModifierSelections } from './actions/set-product-modifier-selections/action';
 import { setActiveProductFee } from './actions/set-active-product-fee/action';
 import { setActiveProductDiscount } from './actions/set-active-product-discount/action';
 import { getActiveProduct } from './actions/get-active-product/action';
 import { setActiveProduct } from './actions/set-active-product/action';
 import { adjustInventory } from './actions/adjust-inventory/action';
+import { setVariantUnavailable } from './actions/set-variant-unavailable/action';
 import { getCustomStockActions } from './actions/get-custom-stock-actions/action';
 // Order Actions
 import { addOrderNote } from './actions/add-order-note/action';
@@ -190,12 +193,15 @@ export const command = {
   addProductNote,
   addProductFee,
   getProductModifierSelections,
+  getCompositePrice,
+  getCompositeAvailability,
   setProductModifierSelections,
   setActiveProductFee,
   setActiveProductDiscount,
   getActiveProduct,
   setActiveProduct,
   adjustInventory,
+  setVariantUnavailable,
   getCustomStockActions,
   // Order Actions
   addOrderNote,
@@ -499,6 +505,17 @@ export type {
   ModifierChoiceSelection,
 } from './actions/get-product-modifier-selections/types';
 export type {
+  GetCompositePrice,
+  GetCompositePriceParams,
+  GetCompositePriceResponse,
+} from './actions/get-composite-price/types';
+export type {
+  GetCompositeAvailability,
+  GetCompositeAvailabilityParams,
+  GetCompositeAvailabilityResponse,
+  CFCompositeSlot,
+} from './actions/get-composite-availability/types';
+export type {
   SetProductModifierSelections,
   SetProductModifierSelectionsParams,
   SetProductModifierSelectionsResponse,
@@ -519,6 +536,11 @@ export type {
   SetActiveProductParams,
   SetActiveProductResponse,
 } from './actions/set-active-product/types';
+export type {
+  SetVariantUnavailable,
+  SetVariantUnavailableParams,
+  SetVariantUnavailableResponse,
+} from './actions/set-variant-unavailable/types';
 export type {
   AdjustInventory,
   AdjustInventoryParams,
