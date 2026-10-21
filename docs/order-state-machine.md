@@ -164,15 +164,20 @@ stateDiagram-v2
     Refunded : Refunded<br/>(refunded × returned)
     CancelledU : Cancelled<br/>(unpaid × cancelled)
     CancelledV : Cancelled<br/>(voided × cancelled)
+    Paid : Paid<br/>(paid × pending)
+    RefundedC : Refunded<br/>(refunded × cancelled)
 
     [*] --> InCart : start cart
     InCart --> Completed : pay in full
+    InCart --> Paid : pay, send to kitchen
+    Paid --> Completed : hand over
     InCart --> PartPaid : deposit / split leg
     InCart --> Parked : park
     Parked --> InCart : resume (no money taken)
     PartPaid --> Completed : pay balance
     InCart --> CancelledU : cancel (nothing paid)
     PartPaid --> CancelledV : void
+    Paid --> RefundedC : void (never handed over)
     Completed --> PartRef : partial refund
     Completed --> Refunded : full refund
     PartRef --> Refunded : refund the rest
@@ -251,7 +256,7 @@ Because that's what the one reachable voided pair (`voided × cancelled`) always
 By design: the first captured payment advances the order off Draft — an order carrying money is no longer a cart (invariant #7).
 
 **Why can't I cancel this paid order?**
-Cancel is a fulfillment move, and fulfillment can't enter Cancelled while payment holds unreturned money (invariant #6). Refund it (→ Refunded, shown as such) or void it (→ Cancelled) instead.
+Cancel is a fulfillment move, and fulfillment can't enter Cancelled while payment holds unreturned money (invariant #6). If it was never handed over (fulfillment Draft / Pending / On Hold), void it: the payment is refunded and it lands Refunded × Cancelled. If it was handed over, refund it (→ Refunded, shown as such). A part-paid order is voided (→ Cancelled).
 
 **Why does this order say "Returned" but the money wasn't refunded?**
 That's a valid state — exchanges and store credit return the goods without returning the money. The refund flow, if and when it runs, moves the payment axis separately.
