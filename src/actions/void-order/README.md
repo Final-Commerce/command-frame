@@ -6,7 +6,7 @@ Void or cancel an order that hasn't been completed: an open order, or a paid ord
 
 | Name      | Type   | Required | Description                                                                                                                                                                                                                                        |
 | --------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `orderId` | string | No       | Order to void; defaults to the active order.                                                                                                                                                                                                       |
+| `orderId` | string | No       | Order to void. Omit for the live cart's order — the order in this register's cart (resumed, or part-paid). A finished sale kept for receipts after payment is not the cart's order: pass its `orderId`.                                            |
 | `reason`  | string | No       | Optional cashier-facing reason. Recorded on both branches — the void audit trail on a pure void, and (verbatim) on the persisted refund plus its own audit trail on the refund branch — and always carried on the `order-voided` event either way. |
 
 ## Response
@@ -30,7 +30,7 @@ Void or cancel an order that hasn't been completed: an open order, or a paid ord
 ```typescript
 import { command } from '@final-commerce/command-frame';
 
-// Void the active order
+// Void the order in the cart
 const result = await command.voidOrder({ reason: 'Customer request' });
 if (result.outcome === 'refunded') {
   // captured legs were refunded to their original tenders
@@ -53,9 +53,11 @@ Every other order — `paid` and already `in_progress` or further, `partially_re
 
 - Throws `ORDER_NOT_VOIDABLE: order {orderId} is '{paymentState}' — use the refund flow for completed orders` if the order is not voidable (see Eligibility): a paid order already in progress or further, `partially_refunded`, `refunded`, `voided`, or unknown.
 - Throws `Order with ID {orderId} not found` if an explicit `orderId` is given and doesn't resolve to an order.
-- Throws `No order selected. Please provide orderId.` if no `orderId` is given and there is no active order.
+- Throws `No order selected. Please provide orderId.` if no `orderId` is given and the cart holds no order of its own — including right after a sale, when the paid order is kept for receipts but has left the cart. An id-less void never acts on that order: since a paid order still in the kitchen is voidable, it would refund the last customer.
 - Throws (message from the blocking guard, or `Void blocked ({guard})` if the guard has no reason) if the state machine blocks the transition for any reason other than captured payments.
 
 ## Important Notes
+
+Voiding an order by `orderId` resets the cart only when that order is the one in the cart; voiding a finished sale by id leaves the next sale in the cart alone.
 
 Do **not** emulate a void with `applyTransition` — `voidOrder` keeps the refund-vs-void branching, the financial invariant, and the cart/split cleanup atomic.

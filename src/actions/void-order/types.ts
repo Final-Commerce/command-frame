@@ -2,7 +2,10 @@
 export type VoidOrderOutcome = 'voided' | 'refunded';
 
 export interface VoidOrderParams {
-  /** Order to void; defaults to the active order. */
+  /**
+   * Order to void. Omit for the live cart's order (resumed, or part-paid). A finished
+   * sale kept for receipts after payment is not the cart's order — pass its id.
+   */
   orderId?: string;
   /**
    * Optional cashier-facing reason. Recorded on both branches — the void audit
