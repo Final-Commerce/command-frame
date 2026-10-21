@@ -18,7 +18,8 @@ export interface VoidOrderResponse {
   orderId: string;
   /**
    * `voided`   — nothing was captured; pure state transition to voided × cancelled.
-   * `refunded` — captured split legs were refunded to their original tenders;
+   * `refunded` — captured payments (a deposit / split legs, or the whole
+   *              payment of a paid order never fulfilled) were refunded to their original tenders;
    *              order lands refunded × cancelled (financially equivalent to a
    *              void, but the capture + payout stay on the audit trail).
    */

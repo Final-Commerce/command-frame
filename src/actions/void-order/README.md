@@ -1,6 +1,6 @@
 # voidOrder
 
-Void or cancel an open order. For orders with captured payment legs, refunds the original tenders atomically; for draft orders, transitions to voided state.
+Void or cancel an order that hasn't been completed: an open order, or a paid order that was never fulfilled (e.g. paid and sent to the kitchen, not yet handed over). For orders with captured payments, refunds the original tenders atomically; for orders with nothing captured, transitions to voided state.
 
 ## Parameters
 
@@ -23,7 +23,7 @@ Void or cancel an open order. For orders with captured payment legs, refunds the
 ### Outcome Semantics
 
 - **`voided`** — nothing was captured; pure state transition to voided × cancelled.
-- **`refunded`** — captured split legs were refunded to their original tenders; order lands refunded × cancelled (financially equivalent to a void, but the capture + payout stay on the audit trail).
+- **`refunded`** — captured payments (a deposit or split legs, or the whole payment of a paid order never fulfilled) were refunded to their original tenders; order lands refunded × cancelled (financially equivalent to a void, but the capture + payout stay on the audit trail).
 
 ## Usage
 
@@ -42,11 +42,16 @@ const specific = await command.voidOrder({ orderId: '66b1c2d3e4f5a6b7c8d9e0f1', 
 
 ## Eligibility
 
-Only open orders (`unpaid`, `payment_pending`, or `partially_paid`) are voidable. Orders in any other payment state — `paid`, `partially_refunded`, `refunded`, `voided`, or unknown — must use the refund flow (`processPartialRefund` or full refund).
+Two kinds of order are voidable:
+
+- **Open orders** — payment state `unpaid`, `payment_pending`, or `partially_paid`, whatever their fulfillment.
+- **Paid orders never fulfilled** — payment state `paid` with fulfillment `draft`, `pending`, or `on_hold` (e.g. paid and sent to the kitchen, not yet handed over). The refund flow rejects these (`refund.partialNotAllowedOnUnfulfilled`), so void is how they are called off: the payment is refunded and the order lands refunded × cancelled.
+
+Every other order — `paid` and already `in_progress` or further, `partially_refunded`, `refunded`, `voided`, or unknown — must use the refund flow (`processPartialRefund` or full refund).
 
 ### Error Handling
 
-- Throws `ORDER_NOT_VOIDABLE: order {orderId} is '{paymentState}' — use the refund flow for completed orders` if the order is in any non-open state (`paid`, `partially_refunded`, `refunded`, `voided`, or unknown).
+- Throws `ORDER_NOT_VOIDABLE: order {orderId} is '{paymentState}' — use the refund flow for completed orders` if the order is not voidable (see Eligibility): a paid order already in progress or further, `partially_refunded`, `refunded`, `voided`, or unknown.
 - Throws `Order with ID {orderId} not found` if an explicit `orderId` is given and doesn't resolve to an order.
 - Throws `No order selected. Please provide orderId.` if no `orderId` is given and there is no active order.
 - Throws (message from the blocking guard, or `Void blocked ({guard})` if the guard has no reason) if the state machine blocks the transition for any reason other than captured payments.
