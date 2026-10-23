@@ -41,6 +41,18 @@ export const mockSetProductModifierSelections: SetProductModifierSelections = as
       timestamp: new Date().toISOString(),
     };
   }
+  // Like the host (FT-83): a composite line's modifiers belong to its components.
+  if (line.components?.length) {
+    return {
+      success: false,
+      reason: 'The modifiers of a composite line cannot be edited yet: remove the line and add it again with its picks',
+      internalId: line.internalId,
+      selections: [],
+      rows: [],
+      modifiersTotal: 0,
+      timestamp: new Date().toISOString(),
+    };
+  }
 
   // Full replacement — passing [] clears the rows. The line drops the product's resolved
   // stack when it is built, so the menu is re-read from the catalogue to price against.

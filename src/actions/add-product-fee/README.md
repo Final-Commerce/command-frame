@@ -82,3 +82,8 @@ await command.addProductFee({
 ## Events
 
 Publishes a `product-fee-added` event on the `cart` topic with the updated product and the fee that was applied.
+
+## Composite lines (FT-83)
+
+A taxable fee (`applyTaxes: true`) on a composite taxed by its items is refused: the line has no table for it to
+inherit. An untaxed fee, or any fee on a composite with a tax group, is added as usual.

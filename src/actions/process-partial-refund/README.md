@@ -380,3 +380,10 @@ on the state-event audit row, on every commit path (default allocation, `legs`,
 full refund) — same as `redeemRefund`. When omitted, the refund doc's `reason`
 stays unset and only the audit row carries the `'partial-refund'` /
 `'full-refund'` fallback label.
+
+## Composite lines (FT-83)
+
+A composite line is refunded as ONE line by quantity, like any other: its `components[]` come along as sold, without the
+component tax fields (`taxTableId`, `totalTax`, `taxes` — the refund's tax is on the line; B30), per ONE composite so
+the refunded quantity multiplies them, and its modifier rows, `componentIndex` included, are prorated
+like any modifier row. A single component cannot be addressed — there is no parameter for it.
