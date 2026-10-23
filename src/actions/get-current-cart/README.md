@@ -10,11 +10,12 @@ None.
 
 `Promise<GetCurrentCartResponse>`
 
-| Field       | Type         | Description                                                                                                           |
-| :---------- | :----------- | :-------------------------------------------------------------------------------------------------------------------- |
-| `success`   | `boolean`    | `true` if the cart was retrieved successfully.                                                                        |
-| `cart`      | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
-| `timestamp` | `string`     | ISO date string of when the action occurred.                                                                          |
+| Field        | Type                     | Description                                                                                                                                                                                                                                                     |
+| :----------- | :----------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `success`    | `boolean`                | `true` if the cart was retrieved successfully.                                                                                                                                                                                                                  |
+| `cart`       | `ActiveCart`             | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details.                                                                                                                                           |
+| `lineTotals` | `Record<string, number>` | What each line adds, minor units, keyed by `internalId` (products, bookings) or `id` (custom sales): price × quantity − own discounts + own fees + modifiers; before cart discount and tax. Σ = `subtotal` before non-revenue items. Show it; do not recompute. |
+| `timestamp`  | `string`                 | ISO date string of when the action occurred.                                                                                                                                                                                                                    |
 
 **Tip:** You can import [`CFActiveCart`](../../types/README.md#cfactivecart), [`CFActiveProduct`](../../types/README.md#cfactiveproduct), and [`CFActiveCustomSales`](../../types/README.md#cfactivecustomsales) types directly from the library:
 
@@ -97,3 +98,10 @@ total-computation time: fee-level money, not in grossSales, not reduced by
 the product discount, tax inherited from the product's tax table by default.
 Read one line's selections with `getProductModifierSelections` (read-only —
 flows never edit selections after add; the host's picker UI owns that).
+
+## Composite lines (FT-83)
+
+A composite line carries `components[]` — `{ partName?, productId, variantId, name, attributes?, quantity, unitPrice,
+taxTableId?, unit?, stockVariantId? }`, per ONE composite (`unitPrice` = the component's share, Σ = line `price`;
+the line `quantity` multiplies them). The picked items' modifiers sit in the line's flat `modifiers[]` with
+`componentIndex` → `components[i]`. Render them; do not recompute. The line's amount including those modifiers is `lineTotals[internalId]`.

@@ -85,3 +85,8 @@ await commandFrame.setProductModifierSelections({
   want one line resolved and extended by the host (active-line defaulting included).
 - `ProdModifierBreakdown` is re-exported as `CFProdModifierBreakdown`; it is common's
   type, not a command-frame invention.
+
+## Composite lines (FT-83)
+
+Refused with a `reason` for a composite line, like `setProductModifierSelections`; read its rows from the cart line's
+`modifiers[]` (`componentIndex`) instead.

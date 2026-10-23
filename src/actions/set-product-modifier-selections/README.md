@@ -74,3 +74,8 @@ console.log('Modifiers', formatMoney(result.modifiersTotal));
 - `getProductModifierSelections` — read the line's current selections
 - `addProductToCart({ modifiers })` — supply selections when the line is created
 - `addProductFee` / `removeProductFee` — the fee-editing actions this mirrors
+
+## Composite lines (FT-83)
+
+Refused with a `reason` for a composite line: its modifiers belong to its components (`componentIndex`), and editing
+them is not decided yet. Remove the line and add it again with its picks.
