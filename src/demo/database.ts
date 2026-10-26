@@ -3,6 +3,7 @@
  * Stores mock data that mimics the Render environment
  */
 
+import type { CFOrderStatusDefinition } from '../common-types/order-state';
 import {
   CFActiveCompany,
   CFActiveUser,
@@ -57,6 +58,7 @@ export interface MockDatabaseConfig {
   bookingResources?: CFBookingResource[];
   /** Windows already taken when the dataset loads, so a calendar does not open empty. */
   bookings?: CFBooking[];
+  orderStatuses?: CFOrderStatusDefinition[];
   /** Products hidden at an outlet (the host's `catalog-visibility`, product-level rows). Empty = sold everywhere. */
   catalogVisibility?: MockCatalogVisibility[];
 }
@@ -1194,11 +1196,41 @@ function resolveMockOrderCurrency(): CurrencyCode {
   return CurrencyCode.USD;
 }
 
+/** The demo flow's order statuses (getOrderStatuses / setOrderStatus). */
+export const MOCK_ORDER_STATUSES: CFOrderStatusDefinition[] = [
+  { id: 'status_1', key: 'in-kitchen', label: 'In kitchen', color: '#f59e0b', fulfillmentState: 'pending' },
+  {
+    id: 'status_2',
+    key: 'ready-for-pickup',
+    label: 'Ready for pickup',
+    color: '#10b981',
+    fulfillmentState: 'in_progress',
+  },
+  {
+    id: 'status_3',
+    key: 'out-for-delivery',
+    label: 'Out for delivery',
+    color: '#3b82f6',
+    fulfillmentState: 'partially_fulfilled',
+  },
+  {
+    id: 'status_4',
+    key: 'delivered',
+    label: 'Delivered',
+    fulfillmentState: 'fulfilled',
+    requiresPaymentState: ['paid'],
+  },
+  { id: 'status_5', key: 'driver-called', label: 'Driver called' },
+];
+
 /**
  * Replace in-memory mock data used by default mock handlers. Arrays are mutated in place
  * so existing imports from this module keep working.
  */
 export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
+  if (config.orderStatuses !== undefined) {
+    MOCK_ORDER_STATUSES.splice(0, MOCK_ORDER_STATUSES.length, ...config.orderStatuses);
+  }
   if (config.company !== undefined) {
     Object.assign(MOCK_COMPANY, config.company);
   }

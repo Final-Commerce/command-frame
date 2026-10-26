@@ -57,3 +57,7 @@ const { booking } = await renderClient.addBookingToCart({
 - The booking stays `held` until the order is paid. An abandoned cart releases the window on its
   own when `expiresAt` passes — nothing to clean up.
 - There is no `confirmBooking` to call: only the host can know the sale completed.
+
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call resolves with `success: false` and a `reason` starting `addBookingToCart: this order already has a payment on it` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
