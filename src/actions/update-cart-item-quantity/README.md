@@ -93,6 +93,10 @@ try {
 - `"{name} is not sold in POS"` — increasing the quantity of a line whose product or variant has `notSoldInPos: true` (lowering it or setting 0 always works)
 - `"Cart item with internalId {internalId} not found"` — no matching product or custom sale line exists in the cart
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `updateCartItemQuantity: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Events
 
 - If quantity is updated (quantity > 0): Publishes a `product-updated` event on the `cart` topic

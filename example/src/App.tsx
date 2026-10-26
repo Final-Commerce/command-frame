@@ -7,6 +7,7 @@ import { ProductsSection } from './components/sections/ProductsSection';
 import { CustomersSection } from './components/sections/CustomersSection';
 import { CartSection } from './components/sections/CartSection';
 import { OrdersSection } from './components/sections/OrdersSection';
+import { OrderManagementSection } from './components/sections/OrderManagementSection';
 import { BookingsSection } from './components/sections/BookingsSection';
 import { ModifiersSection } from './components/sections/ModifiersSection';
 import { OutletSection } from './components/sections/OutletSection';
@@ -51,6 +52,8 @@ function App() {
         return <CartSection isInIframe={isInIframe} />;
       case 'orders':
         return <OrdersSection isInIframe={isInIframe} />;
+      case 'order-management':
+        return <OrderManagementSection isInIframe={isInIframe} />;
       case 'bookings':
         return <BookingsSection isInIframe={isInIframe} />;
       case 'modifiers':
