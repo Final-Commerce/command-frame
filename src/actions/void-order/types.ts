@@ -2,7 +2,10 @@
 export type VoidOrderOutcome = 'voided' | 'refunded';
 
 export interface VoidOrderParams {
-  /** Order to void; defaults to the active order. */
+  /**
+   * Order to void. Omit for the live cart's order (resumed, or part-paid). A finished
+   * sale kept for receipts after payment is not the cart's order — pass its id.
+   */
   orderId?: string;
   /**
    * Optional cashier-facing reason. Recorded on both branches — the void audit
@@ -18,7 +21,8 @@ export interface VoidOrderResponse {
   orderId: string;
   /**
    * `voided`   — nothing was captured; pure state transition to voided × cancelled.
-   * `refunded` — captured split legs were refunded to their original tenders;
+   * `refunded` — captured payments (a deposit / split legs, or the whole
+   *              payment of a paid order never fulfilled) were refunded to their original tenders;
    *              order lands refunded × cancelled (financially equivalent to a
    *              void, but the capture + payout stay on the audit trail).
    */

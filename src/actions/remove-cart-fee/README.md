@@ -33,3 +33,7 @@ On success, kaching publishes **`cart` / `cart-fee-removed`** with payload `{ fe
 - Throws if `index` is missing, not an integer, or negative.
 - Throws if the cart has no `customFee` entries.
 - Throws if `index` is greater than or equal to the number of fees.
+
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `removeCartFee: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.

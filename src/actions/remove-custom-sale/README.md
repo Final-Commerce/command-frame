@@ -60,6 +60,10 @@ The handler throws in the following cases:
 - No custom sales currently in the cart: throws `"No custom sales to remove from cart"`
 - `id` does not match any custom sale in the cart: throws `` `Custom sale with id ${id} not found in cart` ``
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `removeCustomSale: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Events
 
 This action publishes a `product-deleted` event on the `cart` topic when a custom sale is successfully removed — there is currently no dedicated custom-sale-removed cart event; the removed custom sale is passed through as the event's `product` field.

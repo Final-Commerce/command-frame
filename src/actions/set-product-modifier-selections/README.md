@@ -75,6 +75,10 @@ console.log('Modifiers', formatMoney(result.modifiersTotal));
 - `addProductToCart({ modifiers })` — supply selections when the line is created
 - `addProductFee` / `removeProductFee` — the fee-editing actions this mirrors
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call resolves with `success: false` and a `reason` starting `setProductModifierSelections: this order already has a payment on it` (or `… is paid`), and the cart is left as it was. Selections on a product that is not in the cart yet are unaffected. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Composite lines (FT-83)
 
 Refused with a `reason` for a composite line: its modifiers belong to its components (`componentIndex`), and editing
