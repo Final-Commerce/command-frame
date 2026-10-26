@@ -53,3 +53,7 @@ console.log('Line id:', result.externalId);
 ## Notes
 
 - **Breaking change (0.2.0):** `AddNonRevenueItemResponse.id` was renamed to `externalId`. [`CFNonRevenueItem`](../../types/README.md#cfnonrevenueitem) cart lines use `externalId` as well.
+
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `addNonRevenueItem: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.

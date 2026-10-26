@@ -1,5 +1,37 @@
 import { ResumeParkedOrder, ResumeParkedOrderParams, ResumeParkedOrderResponse } from './types';
 import { MOCK_PARKED_ORDERS, MOCK_CART, MOCK_PRODUCTS, resetMockCart, mockPublishEvent } from '../../demo/database';
+import type { CFActiveOrder } from '../../CommonTypes';
+
+/**
+ * Best-effort Order -> MOCK_CART mapping shared by the resume mocks.
+ */
+export const restoreMockCartFromOrder = (orderToResume: CFActiveOrder): void => {
+  resetMockCart();
+
+  MOCK_CART.customer = orderToResume.customer as any; // Cast if needed
+
+  MOCK_CART.products = orderToResume.lineItems.map(
+    (li) =>
+      ({
+        id: li.productId,
+        name: li.name,
+        quantity: li.quantity,
+        price: li.price,
+        internalId: li.internalId || li.productId,
+        variantId: li.variantId,
+        sku: li.sku,
+        images: [li.image],
+        stock: 100,
+        taxTableId: '',
+        attributes: li.attributes,
+      }) as any,
+  );
+
+  MOCK_CART.subtotal = orderToResume.summary.subtotalAfterFees;
+  MOCK_CART.total = orderToResume.summary.total;
+  MOCK_CART.amountToBeCharged = MOCK_CART.total;
+  MOCK_CART.remainingBalance = MOCK_CART.total;
+};
 
 export const mockResumeParkedOrder: ResumeParkedOrder = async (
   params?: ResumeParkedOrderParams,
@@ -33,36 +65,7 @@ export const mockResumeParkedOrder: ResumeParkedOrder = async (
     .map((li) => li.name);
   if (notSoldNames.length) throw new Error(`${notSoldNames.join(', ')} is not sold in POS`);
 
-  // Restore to MOCK_CART
-  // Logic to convert Order back to Cart (simplified)
-  resetMockCart();
-
-  // Copy properties back
-  MOCK_CART.customer = orderToResume.customer as any; // Cast if needed
-  // MOCK_CART.products = orderToResume.lineItems... (Mapping needed)
-
-  // For Mock demo, we'll do a best effort mapping
-  MOCK_CART.products = orderToResume.lineItems.map(
-    (li) =>
-      ({
-        id: li.productId,
-        name: li.name,
-        quantity: li.quantity,
-        price: li.price,
-        internalId: li.internalId || li.productId,
-        variantId: li.variantId,
-        sku: li.sku,
-        images: [li.image],
-        stock: 100,
-        taxTableId: '',
-        attributes: li.attributes,
-      }) as any,
-  );
-
-  MOCK_CART.subtotal = orderToResume.summary.subtotalAfterFees;
-  MOCK_CART.total = orderToResume.summary.total;
-  MOCK_CART.amountToBeCharged = MOCK_CART.total;
-  MOCK_CART.remainingBalance = MOCK_CART.total;
+  restoreMockCartFromOrder(orderToResume);
 
   // Remove from parked
   MOCK_PARKED_ORDERS.splice(index, 1);

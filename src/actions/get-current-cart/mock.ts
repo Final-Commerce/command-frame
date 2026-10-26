@@ -17,6 +17,9 @@ export const mockGetCurrentCart: GetCurrentCart = async (): Promise<GetCurrentCa
   return {
     success: true,
     cart: safeSerialize(MOCK_CART),
+    // Every mock tender settles the whole sale and clears the cart, so the demo cart
+    // never holds an order with money on it — nothing to lock.
+    itemsLocked: false,
     lineTotals,
     timestamp: new Date().toISOString(),
   };

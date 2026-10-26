@@ -36,10 +36,19 @@ import type {
   ClearCart,
   ParkOrder,
   ResumeParkedOrder,
+  ResumeOrder,
+  SetOrderMetadata,
+  AssignOrderUser,
+  ReleaseFromCart,
+  SetOrderType,
+  SetScheduledFor,
+  SetOrderStatus,
+  GetOrderStatuses,
   DeleteParkedOrder,
   VoidOrder,
   InitiateRefund,
   CashPayment,
+  RecordExternalPayment,
   GetCashRoundingAmount,
   TapToPayPayment,
   TerminalPayment,
@@ -115,6 +124,7 @@ import type {
   CancelBooking,
   CreatePaymentLink,
   ChargeMoto,
+  GetMotoConfig,
   GetTimeClockStatus,
 } from '../../index';
 
@@ -167,10 +177,19 @@ export interface RenderProviderActions {
   clearCart: ClearCart;
   parkOrder: ParkOrder;
   resumeParkedOrder: ResumeParkedOrder;
+  resumeOrder: ResumeOrder;
+  setOrderMetadata: SetOrderMetadata;
+  assignOrderUser: AssignOrderUser;
+  releaseFromCart: ReleaseFromCart;
+  setOrderType: SetOrderType;
+  setScheduledFor: SetScheduledFor;
+  setOrderStatus: SetOrderStatus;
+  getOrderStatuses: GetOrderStatuses;
   deleteParkedOrder: DeleteParkedOrder;
   voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;
   cashPayment: CashPayment;
+  recordExternalPayment: RecordExternalPayment;
   getCashRoundingAmount: GetCashRoundingAmount;
   tapToPayPayment: TapToPayPayment;
   terminalPayment: TerminalPayment;
@@ -179,6 +198,7 @@ export interface RenderProviderActions {
   integrationPayment: IntegrationPayment;
   createPaymentLink: CreatePaymentLink;
   chargeMoto: ChargeMoto;
+  getMotoConfig: GetMotoConfig;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;
   removeCustomerNote: RemoveCustomerNote;
