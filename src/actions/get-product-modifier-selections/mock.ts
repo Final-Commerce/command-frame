@@ -23,6 +23,8 @@ export const mockGetProductModifierSelections: GetProductModifierSelections = as
       selections: [],
       rows: [],
       modifiersTotal: 0,
+      lineTotal: 0,
+      unitTotal: 0,
       timestamp: new Date().toISOString(),
     };
   }
@@ -35,6 +37,8 @@ export const mockGetProductModifierSelections: GetProductModifierSelections = as
       selections: [],
       rows: [],
       modifiersTotal: 0,
+      lineTotal: 0,
+      unitTotal: 0,
       timestamp: new Date().toISOString(),
     };
   }
@@ -42,6 +46,7 @@ export const mockGetProductModifierSelections: GetProductModifierSelections = as
   // The priced rows already sit on the line; extending them by the line quantity is
   // the host's job, not the flow's.
   const { rows, modifiersTotal } = buildModifierRows(line.modifiers, line.quantity);
+  const { modifiersTotal: unitModifiers } = buildModifierRows(line.modifiers, 1);
 
   return {
     success: true,
@@ -49,6 +54,8 @@ export const mockGetProductModifierSelections: GetProductModifierSelections = as
     selections: line.modifierSelections ?? [],
     rows,
     modifiersTotal,
+    lineTotal: line.price * line.quantity + modifiersTotal,
+    unitTotal: line.price + unitModifiers,
     timestamp: new Date().toISOString(),
   };
 };

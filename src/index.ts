@@ -65,6 +65,15 @@ import { redeemPayment } from './actions/redeem-payment/action';
 import { integrationPayment } from './actions/integration-payment/action';
 import { createPaymentLink } from './actions/create-payment-link/action';
 import { chargeMoto } from './actions/charge-moto/action';
+import { startCheckout } from './actions/start-checkout/action';
+import { attachCheckoutContact } from './actions/attach-checkout-contact/action';
+import { getAddressOptions } from './actions/get-address-options/action';
+import { setOrderAddress } from './actions/set-order-address/action';
+import { getShippingOptions } from './actions/get-shipping-options/action';
+import { selectShippingOption } from './actions/select-shipping-option/action';
+import { setOutlet } from './actions/set-outlet/action';
+import { resumeCheckout } from './actions/resume-checkout/action';
+import { getCheckoutStatus } from './actions/get-checkout-status/action';
 import { getMotoConfig } from './actions/get-moto-config/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
@@ -230,6 +239,15 @@ export const command = {
   integrationPayment,
   createPaymentLink,
   chargeMoto,
+  startCheckout,
+  attachCheckoutContact,
+  getAddressOptions,
+  setOrderAddress,
+  getShippingOptions,
+  selectShippingOption,
+  setOutlet,
+  resumeCheckout,
+  getCheckoutStatus,
   getMotoConfig,
   // Customer Actions
   addCustomerNote,
@@ -382,7 +400,7 @@ export type {
 
 export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from './actions/delete-product/types';
 
-export type { GetOutlets, GetOutletsResponse } from './actions/get-outlets/types';
+export type { GetOutlets, GetOutletsParams, GetOutletsResponse } from './actions/get-outlets/types';
 
 export type { GetStations, GetStationsParams, GetStationsResponse } from './actions/get-stations/types';
 
@@ -629,6 +647,55 @@ export type {
   ChargeMotoResponse,
   ChargeMotoCardFields,
 } from './actions/charge-moto/types';
+export type {
+  StartCheckout,
+  StartCheckoutParams,
+  StartCheckoutResponse,
+  StartCheckoutContact,
+  StartCheckoutOrder,
+} from './actions/start-checkout/types';
+export type {
+  AttachCheckoutContact,
+  AttachCheckoutContactParams,
+  AttachCheckoutContactResponse,
+} from './actions/attach-checkout-contact/types';
+export type {
+  GetAddressOptions,
+  GetAddressOptionsParams,
+  GetAddressOptionsResponse,
+  AddressCountryOption,
+  AddressProvinceOption,
+} from './actions/get-address-options/types';
+export type {
+  SetOrderAddress,
+  SetOrderAddressParams,
+  SetOrderAddressResponse,
+  OrderAddressType,
+} from './actions/set-order-address/types';
+export type {
+  GetShippingOptions,
+  GetShippingOptionsResponse,
+  ShippingOptionView,
+  ShippingPickupView,
+} from './actions/get-shipping-options/types';
+export type {
+  SelectShippingOption,
+  SelectShippingOptionParams,
+  SelectShippingOptionResponse,
+} from './actions/select-shipping-option/types';
+export type { SetOutlet, SetOutletParams, SetOutletResponse } from './actions/set-outlet/types';
+export type {
+  ResumeCheckout,
+  ResumeCheckoutParams,
+  ResumeCheckoutResponse,
+  ResumeCheckoutResult,
+} from './actions/resume-checkout/types';
+export type {
+  GetCheckoutStatus,
+  GetCheckoutStatusParams,
+  GetCheckoutStatusResponse,
+  CheckoutOrderStatus,
+} from './actions/get-checkout-status/types';
 export type { GetMotoConfig, GetMotoConfigResponse, MotoUnavailableReason } from './actions/get-moto-config/types';
 // Customer Actions
 export type {
@@ -774,6 +841,7 @@ export { refundsTopic } from './pubsub/topics/refunds';
 export { productsTopic } from './pubsub/topics/products';
 export { cartTopic } from './pubsub/topics/cart';
 export { paymentsTopic } from './pubsub/topics/payments';
+export { checkoutTopic } from './pubsub/topics/checkout';
 export { splitPaymentsTopic } from './pubsub/topics/split-payments';
 export { customTablesTopic } from './pubsub/topics/custom-tables';
 export { printTopic } from './pubsub/topics/print';
@@ -982,6 +1050,18 @@ export type {
   PaymentsEventType,
   PaymentsEventPayload,
 } from './pubsub/topics/payments/types';
+
+// Export Checkout Event Types
+export type {
+  CheckoutStartedPayload,
+  PaymentCompletedPayload,
+  PaymentFailedPayload,
+  CheckoutStartedEvent,
+  PaymentCompletedEvent,
+  PaymentFailedEvent,
+  CheckoutEventType,
+  CheckoutEventPayload,
+} from './pubsub/topics/checkout/types';
 
 // Export Split Payments Event Types
 export type {
