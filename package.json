@@ -57,7 +57,7 @@
     "ignoreBranchesMissingTickets": true
   },
   "dependencies": {
-    "@final-commerce/common": "2.8.1-online.1"
+    "@final-commerce/common": "2.8.1-preprod.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
