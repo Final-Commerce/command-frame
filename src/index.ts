@@ -611,6 +611,7 @@ export type {
   RecordExternalPayment,
   RecordExternalPaymentParams,
   RecordExternalPaymentResponse,
+  RecordExternalPaymentTip,
 } from './actions/record-external-payment/types';
 
 export type {
