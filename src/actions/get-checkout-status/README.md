@@ -20,3 +20,7 @@ returned; leave it out to ask about the checkout in flight, else the last one th
 | `paid` / `fulfilled`              | Paid                                 |
 | `partially_refunded` / `refunded` | Paid, then refunded                  |
 | `cancelled`                       | Cancelled                            |
+
+When the server cancelled the order itself, `cancelReason` says why. `sold_out` means the stock ran out
+before the payment was captured (another shopper's payment took the last one): the payment was released
+and the shopper was not charged. Say so in those words.
