@@ -1,4 +1,4 @@
-import type { TopicEvent } from "../../../types";
+import type { TopicEvent } from '../../../types';
 
 /**
  * Payload for payment-failed event
@@ -8,12 +8,15 @@ import type { TopicEvent } from "../../../types";
  * starting a new checkout.
  */
 export interface PaymentFailedPayload {
-    orderId: string;
-    receiptId: string;
-    /** The provider's result code, e.g. `Refused`, or an error name. */
-    resultCode: string;
-    /** Present when the failure carried a message worth showing. */
-    message?: string;
+  orderId: string;
+  receiptId: string;
+  /**
+   * The provider's result code, e.g. `Refused`, or an error name. `SoldOut`: the shopper pressed Pay
+   * and something in the cart can no longer be sold, so the card was never sent.
+   */
+  resultCode: string;
+  /** Present when the failure carried a message worth showing. */
+  message?: string;
 }
 
 /**
