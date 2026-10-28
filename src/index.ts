@@ -695,6 +695,7 @@ export type {
   GetCheckoutStatusParams,
   GetCheckoutStatusResponse,
   CheckoutOrderStatus,
+  CheckoutCancelReason,
 } from './actions/get-checkout-status/types';
 export type { GetMotoConfig, GetMotoConfigResponse, MotoUnavailableReason } from './actions/get-moto-config/types';
 // Customer Actions

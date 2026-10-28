@@ -21,6 +21,9 @@ export type CheckoutOrderStatus =
   | 'refunded'
   | 'cancelled';
 
+/** Why the server cancelled an order the shopper paid for. */
+export type CheckoutCancelReason = 'sold_out';
+
 export interface GetCheckoutStatusParams {
   /**
    * The receipt `startCheckout` returned, to name which order. Omitted: the checkout in flight,
@@ -35,6 +38,11 @@ export interface GetCheckoutStatusResponse {
   status: CheckoutOrderStatus | null;
   /** True once the money is in: `paid`, `fulfilled`, or refunded since. */
   paid: boolean;
+  /**
+   * Why a `cancelled` order was cancelled, when the server cancelled it. `sold_out`: the stock ran out
+   * before the payment was captured, so the payment was released and nothing was charged.
+   */
+  cancelReason?: CheckoutCancelReason;
   receiptId: string | null;
   timestamp: string;
 }
