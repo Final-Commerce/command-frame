@@ -19,21 +19,21 @@ failed — show the message and let them retry.
 
 ```typescript
 interface PaymentFailedPayload {
-    orderId: string;
-    receiptId: string;
-    resultCode: string;
-    message?: string;
+  orderId: string;
+  receiptId: string;
+  resultCode: string;
+  message?: string;
 }
 ```
 
 ### Payload Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `orderId` | `string` | The order the attempt was made against. |
-| `receiptId` | `string` | Human-facing receipt number. |
-| `resultCode` | `string` | The provider's result code (e.g. `Refused`) or an error name (e.g. `NETWORK_ERROR`). |
-| `message` | `string?` | Present when the failure carried a message worth showing. |
+| Field        | Type      | Description                                                                                                                                                                                                                                            |
+| ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `orderId`    | `string`  | The order the attempt was made against.                                                                                                                                                                                                                |
+| `receiptId`  | `string`  | Human-facing receipt number.                                                                                                                                                                                                                           |
+| `resultCode` | `string`  | The provider's result code (e.g. `Refused`) or an error name (e.g. `NETWORK_ERROR`). `SoldOut`: the shopper pressed Pay and something in the cart sold out, so the card was never sent; send them back to the cart instead of asking for another card. |
+| `message`    | `string?` | Present when the failure carried a message worth showing.                                                                                                                                                                                              |
 
 ## Example Usage
 
@@ -42,10 +42,10 @@ import { topics } from '@final-commerce/command-frame';
 import type { PaymentFailedEvent } from '@final-commerce/command-frame';
 
 const subscriptionId = topics.subscribe('checkout', (event: PaymentFailedEvent) => {
-    if (event.type === 'payment-failed') {
-        // Keep the mounted fields; the shopper retries right there.
-        showRetryMessage(event.data.message ?? 'That card was declined. Please try another.');
-    }
+  if (event.type === 'payment-failed') {
+    // Keep the mounted fields; the shopper retries right there.
+    showRetryMessage(event.data.message ?? 'That card was declined. Please try another.');
+  }
 });
 ```
 
