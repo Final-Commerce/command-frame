@@ -334,3 +334,133 @@ export interface CFContextManage {
 
 // Legacy alias for backward compatibility
 export type CFContext = CFContextRender;
+
+// ---------------------------------------------------------------------------
+// Loyalty (Engage). Engage keeps every programme, balance, reward and coupon;
+// the host asks it with the sign-in it already holds and puts what it answers
+// on the cart itself. A flow never sees a token, a key or a customer's email
+// or phone. See src/actions/get-loyalty/README.md.
+// ---------------------------------------------------------------------------
+
+/** What a reward or an offer takes off. Money is in minor units. */
+export interface CFLoyaltyDiscount {
+  kind: 'free_item' | 'amount_off' | 'percent_off';
+  /** amount_off, minor units. */
+  valueMinor: number | null;
+  /** percent_off, 1–100. */
+  percent: number | null;
+  /** free_item: one of these is free; percent_off: only these. Any item when empty. */
+  productIds: string[];
+  /** The most a free item or a percentage may take off, minor units. */
+  maxValueMinor: number | null;
+}
+
+export interface CFLoyaltyReward extends CFLoyaltyDiscount {
+  id: string;
+  name: string;
+  /** Stamps or points it takes. */
+  cost: number;
+  /** On a member: whether their balance pays for it now. */
+  available?: boolean;
+}
+
+export interface CFLoyaltyProgram {
+  id: string;
+  name: string;
+  kind: 'stamps' | 'points';
+  /** paused: nothing earns and nobody joins; rewards already earned can still be used. */
+  status: 'live' | 'paused';
+  unit: { one: string; many: string };
+  rewards: CFLoyaltyReward[];
+  card: { title: string; background: string; foreground: string; label: string };
+}
+
+/** An offer waiting on a member's card. */
+export interface CFLoyaltyOffer {
+  grantId: string;
+  offerId: string;
+  name: string;
+  code: string;
+  discount: CFLoyaltyDiscount;
+  minSpendMinor: number | null;
+  expiresAt: string | null;
+}
+
+/** A member as a till shows them. Never their email or phone. */
+export interface CFLoyaltyMember {
+  id: string;
+  name: string | null;
+  /** The nine digits on the card and in its barcode. */
+  number: string;
+  balance: number;
+  /** "7 of 10 stamps", "1,240 points". */
+  headline: string;
+  /** "3 more stamps for A drink on us", or null. */
+  next: string | null;
+  rewards: CFLoyaltyReward[];
+  offers: CFLoyaltyOffer[];
+}
+
+/** A reward or an offer on the cart: held at Engage, its discount on the cart under `label`. */
+export interface CFLoyaltyApplied {
+  redemptionId: string;
+  /** The exact name of the discount on the cart: "A drink on us [lr_…]". Engage finds the hold on the order by it. */
+  label: string;
+  name: string;
+  rewardId: string | null;
+  offerId: string | null;
+  discount: CFLoyaltyDiscount;
+  /** Where it went: the cart's discount, or a discount on the lines in `internalIds`. */
+  appliedTo: 'cart' | 'lines';
+  internalIds: string[];
+  /** The stamps or points go back on their own if the sale isn't done by then. */
+  expiresAt: string;
+}
+
+/**
+ * Who is in front of the screen. Decided by the host, never by the flow: `customer` on a website
+ * and on a station the shop set up for customers to use themselves (a kiosk, a self-checkout),
+ * where a card shows only after a code sent to its phone or email came back.
+ */
+export type CFLoyaltyMode = 'staff' | 'customer';
+
+export interface CFLoyaltyState {
+  /** Null when the company has no programme running. */
+  program: CFLoyaltyProgram | null;
+  /** The member on this sale: the cart's customer (staff), a card found or joined on it, or the card a code proved (customer). */
+  member: CFLoyaltyMember | null;
+  /** The customer on this sale isn't a member and may join. */
+  canJoin: boolean;
+  mode: CFLoyaltyMode;
+  /** Customer mode: a code was sent and is waiting to be typed back (confirmLoyaltyCheck). */
+  checkPending: boolean;
+  applied: CFLoyaltyApplied[];
+}
+
+/** Why a loyalty command said no. Every refusal also carries `reason`, in words for the person in front of the screen. */
+export type CFLoyaltyRefusal =
+  | 'offline'
+  | 'not_live'
+  | 'check_needed'
+  | 'staff_only'
+  | 'not_member'
+  | 'no_contact'
+  | 'too_many'
+  | 'cannot_send'
+  | 'wrong_code'
+  | 'expired'
+  | 'used_up'
+  | 'not_found'
+  | 'unavailable'
+  | 'cart_discount_taken'
+  | 'nothing_to_discount'
+  | 'bad_request';
+
+/** What every loyalty command answers besides its own fields. */
+export interface CFLoyaltyOutcome {
+  /** False when the command was refused: `reason` says why, `refusal` says which. */
+  success: boolean;
+  reason?: string;
+  refusal?: CFLoyaltyRefusal;
+  timestamp: string;
+}

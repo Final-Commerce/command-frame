@@ -66,6 +66,14 @@ import { integrationPayment } from './actions/integration-payment/action';
 import { createPaymentLink } from './actions/create-payment-link/action';
 import { chargeMoto } from './actions/charge-moto/action';
 import { getMotoConfig } from './actions/get-moto-config/action';
+// Loyalty (Engage)
+import { getLoyalty } from './actions/get-loyalty/action';
+import { findLoyaltyMember } from './actions/find-loyalty-member/action';
+import { startLoyaltyCheck } from './actions/start-loyalty-check/action';
+import { confirmLoyaltyCheck } from './actions/confirm-loyalty-check/action';
+import { joinLoyalty } from './actions/join-loyalty/action';
+import { applyLoyaltyReward } from './actions/apply-loyalty-reward/action';
+import { removeLoyaltyReward } from './actions/remove-loyalty-reward/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
 import { removeCustomerNote } from './actions/remove-customer-note/action';
@@ -231,6 +239,14 @@ export const command = {
   createPaymentLink,
   chargeMoto,
   getMotoConfig,
+  // Loyalty (Engage)
+  getLoyalty,
+  findLoyaltyMember,
+  startLoyaltyCheck,
+  confirmLoyaltyCheck,
+  joinLoyalty,
+  applyLoyaltyReward,
+  removeLoyaltyReward,
   // Customer Actions
   addCustomerNote,
   removeCustomerNote,
@@ -630,6 +646,33 @@ export type {
   ChargeMotoCardFields,
 } from './actions/charge-moto/types';
 export type { GetMotoConfig, GetMotoConfigResponse, MotoUnavailableReason } from './actions/get-moto-config/types';
+export type { GetLoyalty, GetLoyaltyParams, GetLoyaltyResponse } from './actions/get-loyalty/types';
+export type {
+  FindLoyaltyMember,
+  FindLoyaltyMemberParams,
+  FindLoyaltyMemberResponse,
+} from './actions/find-loyalty-member/types';
+export type {
+  StartLoyaltyCheck,
+  StartLoyaltyCheckParams,
+  StartLoyaltyCheckResponse,
+} from './actions/start-loyalty-check/types';
+export type {
+  ConfirmLoyaltyCheck,
+  ConfirmLoyaltyCheckParams,
+  ConfirmLoyaltyCheckResponse,
+} from './actions/confirm-loyalty-check/types';
+export type { JoinLoyalty, JoinLoyaltyParams, JoinLoyaltyResponse } from './actions/join-loyalty/types';
+export type {
+  ApplyLoyaltyReward,
+  ApplyLoyaltyRewardParams,
+  ApplyLoyaltyRewardResponse,
+} from './actions/apply-loyalty-reward/types';
+export type {
+  RemoveLoyaltyReward,
+  RemoveLoyaltyRewardParams,
+  RemoveLoyaltyRewardResponse,
+} from './actions/remove-loyalty-reward/types';
 // Customer Actions
 export type {
   AddCustomerNote,
@@ -786,6 +829,7 @@ export { transactionsTopic } from './pubsub/topics/transactions';
 export { categoriesTopic } from './pubsub/topics/categories';
 export { attributesTopic } from './pubsub/topics/attributes';
 export { bookingsTopic } from './pubsub/topics/bookings';
+export { loyaltyTopic } from './pubsub/topics/loyalty';
 // Export Pub/Sub Event Types
 export type {
   // Customer event payloads
@@ -922,6 +966,16 @@ export type {
   BookingsEventType,
   BookingsEventPayload,
 } from './pubsub/topics/bookings/types';
+export type {
+  LoyaltyMemberChangedPayload,
+  LoyaltyMemberChangedEvent,
+  LoyaltyRewardAppliedPayload,
+  LoyaltyRewardAppliedEvent,
+  LoyaltyRewardRemovedPayload,
+  LoyaltyRewardRemovedEvent,
+  LoyaltyEventType,
+  LoyaltyEventPayload,
+} from './pubsub/topics/loyalty/types';
 export type {
   CategoryCreatedPayload,
   CategoryCreatedEvent,
