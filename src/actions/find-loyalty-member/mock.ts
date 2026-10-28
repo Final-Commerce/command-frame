@@ -8,6 +8,7 @@ import {
   mockMemberView,
   mockSetSaleMember,
 } from '../../demo/loyalty';
+import { MOCK_CART } from '../../demo/database';
 
 export const mockFindLoyaltyMember: FindLoyaltyMember = async (
   params: FindLoyaltyMemberParams,
@@ -29,10 +30,15 @@ export const mockFindLoyaltyMember: FindLoyaltyMember = async (
     };
   }
   const found = mockFindMember(params);
+  // A card nobody is linked to, found while the sale has a customer: linked only when the cashier said so.
+  const customerId = (MOCK_CART.customer as { _id?: string } | null)?._id ?? null;
+  const unlinked = Boolean(found && customerId && !found.customerId);
+  if (found && unlinked && params.link) found.customerId = customerId;
   if (found) mockSetSaleMember(found);
   return {
     ...mockLoyaltyOutcome(),
     member: found ? mockMemberView(found) : null,
     canJoin: !found && mockLoyaltyState().canJoin,
+    canLink: unlinked && !params.link,
   };
 };

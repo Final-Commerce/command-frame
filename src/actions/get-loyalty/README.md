@@ -5,9 +5,9 @@ sale, whether the customer on it can join, who is in front of the screen, and th
 on the cart. Start every loyalty screen here, and again whenever the `loyalty` topic says something
 changed.
 
-Engage keeps the programme, every balance and every coupon. The host asks Engage with the sign-in it
-already holds and puts what Engage answers on the cart itself, so a flow never handles a token, a
-key, a label or a customer's email or phone. With no programme running, `program` is null: hide the
+Engage keeps the programme, every balance and every coupon. The host asks Hub with the sign-in it
+already holds, Hub asks Engage, and the host puts what Engage answers on the cart itself, so a flow
+never handles a token, a key, a hold's id or a customer's email or phone. With no programme running, `program` is null: hide the
 loyalty button.
 
 ## Parameters
@@ -53,19 +53,20 @@ if (loyalty.member) {
 
 ## Who is in front of the screen
 
-`mode` is the host's decision, never the flow's:
+`mode` is decided on the server, never by the host or the flow:
 
 - **`staff`** — a staffed till. The customer attached to the cart is looked up on their own
   (`cart`/`customer-assigned`), and [`findLoyaltyMember`](../find-loyalty-member/README.md) finds a
   card by its number, a phone or an email.
-- **`customer`** — a website, or a station the shop set up for customers to use themselves (a
-  kiosk, a self-checkout). Nobody's card shows until a code sent to its phone or email came back:
+- **`customer`** — a website, or a station the shop marked in Engage (Promote → Loyalty → Till) as
+  one customers use themselves (a kiosk, a self-checkout). Nobody's card shows until a code sent to its phone or email came back:
   [`startLoyaltyCheck`](../start-loyalty-check/README.md), then
   [`confirmLoyaltyCheck`](../confirm-loyalty-check/README.md). A card number is printed on the card
   and a phone number is no secret, so typing one proves nothing.
 
 ## Notes
 
-- Earning needs no command: Engage earns from the saved sale on its own, refunds included. Don't
-  keep balances, stamps or points in custom tables.
+- Earning and redeeming need no command: Engage earns from the saved sale and redeems the rewards on
+  it on its own. A refund takes back what the sale earned and gives back the rewards used on it.
+  Don't keep balances, stamps or points in custom tables.
 - Never block a sale on loyalty: offline or refused, carry on and say so.

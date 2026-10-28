@@ -337,9 +337,9 @@ export type CFContext = CFContextRender;
 
 // ---------------------------------------------------------------------------
 // Loyalty (Engage). Engage keeps every programme, balance, reward and coupon;
-// the host asks it with the sign-in it already holds and puts what it answers
-// on the cart itself. A flow never sees a token, a key or a customer's email
-// or phone. See src/actions/get-loyalty/README.md.
+// the host asks Hub with the sign-in it already holds, Hub asks Engage, and the
+// host puts what Engage answers on the cart itself. A flow never sees a token,
+// a key or a customer's email or phone. See src/actions/get-loyalty/README.md.
 // ---------------------------------------------------------------------------
 
 /** What a reward or an offer takes off. Money is in minor units. */
@@ -347,7 +347,7 @@ export interface CFLoyaltyDiscount {
   kind: 'free_item' | 'amount_off' | 'percent_off';
   /** amount_off, minor units. */
   valueMinor: number | null;
-  /** percent_off, 1–100. */
+  /** percent_off: more than 0, at most 100. The host refuses anything else. */
   percent: number | null;
   /** free_item: one of these is free; percent_off: only these. Any item when empty. */
   productIds: string[];
@@ -404,7 +404,11 @@ export interface CFLoyaltyMember {
 /** A reward or an offer on the cart: held at Engage, its discount on the cart under `label`. */
 export interface CFLoyaltyApplied {
   redemptionId: string;
-  /** The exact name of the discount on the cart: "A drink on us [lr_…]". Engage finds the hold on the order by it. */
+  /**
+   * The name of the discount on the cart: the reward's own ("A drink on us"). Engage finds the hold
+   * through the order's metadata, `engage.loyalty.<redemptionId>`, which the host writes; a flow
+   * leaves those keys alone.
+   */
   label: string;
   name: string;
   rewardId: string | null;
@@ -418,9 +422,9 @@ export interface CFLoyaltyApplied {
 }
 
 /**
- * Who is in front of the screen. Decided by the host, never by the flow: `customer` on a website
- * and on a station the shop set up for customers to use themselves (a kiosk, a self-checkout),
- * where a card shows only after a code sent to its phone or email came back.
+ * Who is in front of the screen. Decided on the server, never by the host or the flow: `customer`
+ * on a website and on a station the shop marked in Engage as one customers use themselves (a kiosk,
+ * a self-checkout), where a card shows only after a code sent to its phone or email came back.
  */
 export type CFLoyaltyMode = 'staff' | 'customer';
 

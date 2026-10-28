@@ -6,8 +6,8 @@ export interface GetLoyaltyParams {
 }
 
 export interface GetLoyaltyResponse extends CFLoyaltyOutcome {
-  /** Always present, also on a refusal (offline: what the host last knew). */
-  loyalty: CFLoyaltyState;
+  /** Present on every answer the host gives, a refusal included (offline: what it last knew). Missing only when the host itself failed; `reason` says why. */
+  loyalty?: CFLoyaltyState;
 }
 
 export type GetLoyalty = (params?: GetLoyaltyParams) => Promise<GetLoyaltyResponse>;

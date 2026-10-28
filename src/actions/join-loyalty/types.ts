@@ -8,10 +8,10 @@ export interface JoinLoyaltyParams {
 }
 
 export interface JoinLoyaltyResponse extends CFLoyaltyOutcome {
-  /** Now the member on this sale. */
-  member: CFLoyaltyMember | null;
+  /** Now the member on this sale. Missing only when the host itself failed. */
+  member?: CFLoyaltyMember | null;
   /** False when they were a member already. */
-  created: boolean;
+  created?: boolean;
 }
 
 export type JoinLoyalty = (params?: JoinLoyaltyParams) => Promise<JoinLoyaltyResponse>;

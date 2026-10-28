@@ -2,8 +2,13 @@
 
 Puts a reward, an offer on the member's card, or a coupon code on the cart, in ONE call: the host
 holds it at Engage (a reward's stamps or points come off now) and adds its discount to the cart
-itself, under the exact label Engage reads back off the saved order. A flow never writes a loyalty
-discount with `addCartDiscount` or `addProductDiscount`.
+itself, under the reward's name ("A drink on us"), and names the hold in the order's metadata
+(`engage.loyalty.<redemptionId>`): that is how Engage redeems it when the sale is saved, so a flow
+leaves those metadata keys alone. A flow never writes a loyalty discount with `addCartDiscount` or
+`addProductDiscount`.
+
+Anything the host can't put on a cart (a reward with no amount, a percentage outside 1 to 100) is
+refused with `unavailable` and its stamps go straight back.
 
 | Kind                                      | Where it goes                                                                                    |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------ |

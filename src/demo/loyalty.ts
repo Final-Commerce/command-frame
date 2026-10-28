@@ -6,6 +6,7 @@
  */
 
 import type {
+  CFActiveProduct,
   CFLoyaltyApplied,
   CFLoyaltyDiscount,
   CFLoyaltyMember,
@@ -75,6 +76,26 @@ const MEMBERS: MockMember[] = [
     ],
   },
 ];
+
+/** A coupon anyone can use, from a post or a printed voucher: a code needs no member on the sale. */
+const SHARED_OFFERS: CFLoyaltyOffer[] = [
+  {
+    grantId: 'lg_mock_shared',
+    offerId: 'lo_mock_welcome',
+    name: '$5 off your first order',
+    code: 'WELCOME5',
+    discount: discount({ kind: 'amount_off', valueMinor: 500 }),
+    minSpendMinor: null,
+    expiresAt: null,
+  },
+];
+
+/** The offer a typed or scanned code is: a shared code, or the code on any member's card. */
+export function mockOfferByCode(code: string | null | undefined): CFLoyaltyOffer | null {
+  const typed = (code ?? '').trim().toUpperCase();
+  if (!typed) return null;
+  return [...SHARED_OFFERS, ...MEMBERS.flatMap((m) => m.offers)].find((o) => o.code.toUpperCase() === typed) ?? null;
+}
 
 /** What the mock till knows about this sale. `mode` can be set to try a customer screen. */
 export const MOCK_LOYALTY: {
@@ -180,39 +201,80 @@ export function mockJoin(input: {
   return member;
 }
 
-/** Put a discount on the mock cart the way the host does: cart-wide kinds take the one cart slot, the rest go on lines. */
+/** A line a reward's `productIds` name, the way the host matches them: the line's product or its variant. */
+const matchesLine = (line: CFActiveProduct, productIds: string[]): boolean =>
+  !productIds.length || productIds.includes(line.id) || Boolean(line.variantId && productIds.includes(line.variantId));
+
+/** Why the host would refuse what Engage sent before touching the cart, or null when it can go on. */
+function unusable(d: CFLoyaltyDiscount): string | null {
+  if (d.kind === 'amount_off' && !(Number.isInteger(d.valueMinor) && (d.valueMinor ?? 0) > 0)) return 'no amount';
+  if (d.kind === 'percent_off' && !(d.percent != null && d.percent > 0 && d.percent <= 100)) return 'no percentage';
+  if (d.maxValueMinor != null && !(Number.isInteger(d.maxValueMinor) && d.maxValueMinor > 0)) return 'no cap';
+  return null;
+}
+
+/**
+ * Put a discount on the mock cart the way the host does. The cart has one discount slot: an amount
+ * off, and a percentage off everything (capped, it becomes the capped amount), take it, and are
+ * refused while it's taken. A percentage on some products goes on each matching line. A free item
+ * is the cheapest matching line: on that line when it holds one, on the cart slot when it holds
+ * more (a line discount comes off every unit).
+ */
 export function mockApplyToCart(
   name: string,
   d: CFLoyaltyDiscount,
   ids: { rewardId: string | null; offerId: string | null },
 ): CFLoyaltyApplied | CFLoyaltyOutcome {
+  if (unusable(d)) return mockLoyaltyRefusal('unavailable', `${name} can't go on this sale. Carry on without it.`);
   const redemptionId = `lr_mock${(redemptions += 1).toString(16).padStart(8, '0')}`;
-  const label = `${name} [${redemptionId}]`;
-  const lines = MOCK_CART.products.filter(
-    (p) => !d.productIds.length || d.productIds.includes((p as { productId?: string }).productId ?? ''),
-  );
-  const cartWide = d.kind === 'amount_off' || (d.kind === 'percent_off' && !d.productIds.length);
+  // The reward's own name, like the host; the host names the hold in the order's metadata.
+  const label = name;
+  const taken = () =>
+    mockLoyaltyRefusal(
+      'cart_discount_taken',
+      `The cart already has a discount (${MOCK_CART.discount?.label || 'Discount'}). Take it off first to use ${name}.`,
+    );
+  const toCart = (discount: { value: number; isPercent: boolean }): CFLoyaltyOutcome | null => {
+    if (MOCK_CART.discount) return taken();
+    MOCK_CART.discount = { ...discount, label };
+    mockPublishEvent('cart', 'cart-discount-added', { discount: MOCK_CART.discount });
+    return null;
+  };
+  const lines = MOCK_CART.products.filter((p) => (p.quantity ?? 0) > 0 && matchesLine(p, d.productIds));
   let appliedTo: CFLoyaltyApplied['appliedTo'] = 'cart';
   let internalIds: string[] = [];
-  if (cartWide) {
-    if (MOCK_CART.discount)
-      return mockLoyaltyRefusal('cart_discount_taken', 'The cart already has a discount. Take it off first.');
-    MOCK_CART.discount =
-      d.kind === 'amount_off'
-        ? { value: d.valueMinor ?? 0, isPercent: false, label }
-        : { value: (d.percent ?? 0) / 100, isPercent: true, label };
-    mockPublishEvent('cart', 'cart-discount-added', { discount: MOCK_CART.discount });
-  } else {
-    if (!lines.length) return mockLoyaltyRefusal('nothing_to_discount', `Nothing in the cart ${name} can go on yet.`);
-    const targets =
-      d.kind === 'free_item' ? [lines.reduce((a, b) => ((a.price ?? 0) <= (b.price ?? 0) ? a : b))] : lines;
-    for (const line of targets) {
-      const value =
-        d.kind === 'free_item' ? Math.min(line.price ?? 0, d.maxValueMinor ?? Infinity) : (d.percent ?? 0) / 100;
-      line.discounts = [...(line.discounts ?? []), { value, isPercent: d.kind !== 'free_item', label }];
-    }
+
+  if (d.kind === 'amount_off') {
+    const refused = toCart({ value: d.valueMinor!, isPercent: false });
+    if (refused) return refused;
+  } else if (d.kind === 'percent_off' && !d.productIds.length) {
+    const percent = d.percent!;
+    const refused =
+      d.maxValueMinor != null
+        ? toCart({
+            value: Math.min(Math.round(((MOCK_CART.subtotal ?? 0) * percent) / 100), d.maxValueMinor),
+            isPercent: false,
+          })
+        : toCart({ value: percent / 100, isPercent: true });
+    if (refused) return refused;
+  } else if (!lines.length) {
+    return mockLoyaltyRefusal('nothing_to_discount', `Nothing in the cart ${name} can go on yet.`);
+  } else if (d.kind === 'percent_off') {
+    for (const line of lines)
+      line.discounts = [...(line.discounts ?? []), { value: d.percent! / 100, isPercent: true, label }];
     appliedTo = 'lines';
-    internalIds = targets.map((t) => t.internalId ?? '').filter(Boolean);
+    internalIds = lines.map((l) => l.internalId ?? '').filter(Boolean);
+  } else {
+    const line = lines.reduce((a, b) => ((b.price ?? 0) < (a.price ?? 0) ? b : a));
+    const value = Math.min(line.price ?? 0, d.maxValueMinor ?? Number.POSITIVE_INFINITY);
+    if ((line.quantity ?? 0) === 1) {
+      line.discounts = [...(line.discounts ?? []), { value, isPercent: false, label }];
+      appliedTo = 'lines';
+      internalIds = line.internalId ? [line.internalId] : [];
+    } else {
+      const refused = toCart({ value, isPercent: false });
+      if (refused) return refused;
+    }
   }
   const applied: CFLoyaltyApplied = {
     redemptionId,
@@ -230,12 +292,16 @@ export function mockApplyToCart(
 }
 
 export function mockRemoveFromCart(applied: CFLoyaltyApplied): void {
-  if (MOCK_CART.discount?.label === applied.label) {
+  if (applied.appliedTo === 'cart' && MOCK_CART.discount?.label === applied.label) {
     delete MOCK_CART.discount;
     mockPublishEvent('cart', 'cart-discount-removed', {});
   }
-  for (const line of MOCK_CART.products)
-    line.discounts = (line.discounts ?? []).filter((x) => x.label !== applied.label);
+  // Only where it went, and only one of its name per line: a cashier's discount of the same name stays.
+  for (const line of MOCK_CART.products) {
+    if (applied.appliedTo !== 'lines' || !applied.internalIds.includes(line.internalId ?? '')) continue;
+    const at = (line.discounts ?? []).findIndex((x) => x.label === applied.label);
+    if (at >= 0) line.discounts = (line.discounts ?? []).filter((_, i) => i !== at);
+  }
   MOCK_LOYALTY.applied = MOCK_LOYALTY.applied.filter((a) => a.redemptionId !== applied.redemptionId);
   mockPublishEvent('loyalty', 'reward-removed', { redemptionId: applied.redemptionId, why: 'removed' });
 }

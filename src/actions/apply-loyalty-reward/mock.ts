@@ -5,6 +5,7 @@ import {
   mockGiveBack,
   mockLoyaltyOutcome,
   mockLoyaltyRefusal,
+  mockOfferByCode,
   mockSaleMember,
   mockSpend,
 } from '../../demo/loyalty';
@@ -34,9 +35,11 @@ export const mockApplyLoyaltyReward: ApplyLoyaltyReward = async (
     return { ...mockLoyaltyOutcome(), applied };
   }
 
+  // An offer on the card needs its member; a typed code needs nobody, like the host.
+  if (params.grantId && !member) return mockLoyaltyRefusal('check_needed', "There's no member on this sale.");
   const offer = params.grantId
     ? member?.offers.find((o) => o.grantId === params.grantId)
-    : member?.offers.find((o) => o.code.toUpperCase() === params.code?.trim().toUpperCase());
+    : mockOfferByCode(params.code);
   if (!offer)
     return mockLoyaltyRefusal(
       'not_found',
