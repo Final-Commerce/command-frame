@@ -127,6 +127,24 @@ describe('the loyalty mock behaves like the host', () => {
     expect(MOCK_CART.discount).toMatchObject({ value: 500, isPercent: false });
   });
 
+  it('waits for a coupon’s minimum spend, measured without a gift card on the sale', () => {
+    MOCK_CART.subtotal = 7_000;
+    MOCK_CART.nonRevenueItems = [{ amount: 5_000 }] as never;
+    const tenOff = {
+      ...percentOff(20, null),
+      kind: 'amount_off' as const,
+      valueMinor: 1_000,
+      percent: null,
+      minSpendMinor: 3_000,
+    };
+    expect(mockApplyToCart('Ten off', tenOff, noIds)).toMatchObject({
+      refusal: 'nothing_to_discount',
+      reason: 'Ten off needs a sale of at least 30.00. Add 10.00 more to use it.',
+    });
+    MOCK_CART.nonRevenueItems = [];
+    expect(mockApplyToCart('Ten off', tenOff, noIds)).toMatchObject({ appliedTo: 'cart' });
+  });
+
   it('refuses a discount no till would put on a cart', () => {
     expect(mockApplyToCart('Nothing off', { ...percentOff(20, null), kind: 'amount_off' }, noIds)).toMatchObject({
       refusal: 'unavailable',

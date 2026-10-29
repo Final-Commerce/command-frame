@@ -1,4 +1,4 @@
-import type { CFLoyaltyMember } from '../../../../CommonTypes';
+import type { CFLoyaltyMember, CFLoyaltyOffer } from '../../../../CommonTypes';
 import type { TopicEvent } from '../../../types';
 
 /**
@@ -8,6 +8,8 @@ import type { TopicEvent } from '../../../types';
 export interface LoyaltyMemberChangedPayload {
   member: CFLoyaltyMember | null;
   canJoin: boolean;
+  /** Coupons waiting on the sale's customer when they have no card. */
+  offers?: CFLoyaltyOffer[];
 }
 
 export type LoyaltyMemberChangedEvent = TopicEvent<LoyaltyMemberChangedPayload>;
