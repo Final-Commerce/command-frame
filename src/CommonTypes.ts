@@ -353,6 +353,12 @@ export interface CFLoyaltyDiscount {
   productIds: string[];
   /** The most a free item or a percentage may take off, minor units. */
   maxValueMinor: number | null;
+  /**
+   * A coupon's minimum spend, minor units: what the customer spends on the sale (the subtotal
+   * without a gift card loaded on it) has to reach it before the host places the discount, and the
+   * host takes it off again if the cart drops under it.
+   */
+  minSpendMinor?: number | null;
 }
 
 export interface CFLoyaltyReward extends CFLoyaltyDiscount {
@@ -375,7 +381,7 @@ export interface CFLoyaltyProgram {
   card: { title: string; background: string; foreground: string; label: string };
 }
 
-/** An offer waiting on a member's card. */
+/** A coupon waiting on a member's card, or on the sale's customer when they have none (`CFLoyaltyState.offers`). */
 export interface CFLoyaltyOffer {
   grantId: string;
   offerId: string;
@@ -383,6 +389,10 @@ export interface CFLoyaltyOffer {
   code: string;
   discount: CFLoyaltyDiscount;
   minSpendMinor: number | null;
+  /** Their own free item, for a coupon for their usual: the discount names only it. */
+  item?: { productId: string; name: string } | null;
+  /** Goes on a sale beside other coupons. Engage checks it when the coupon is applied. */
+  combines?: boolean;
   expiresAt: string | null;
 }
 
@@ -431,8 +441,16 @@ export type CFLoyaltyMode = 'staff' | 'customer';
 export interface CFLoyaltyState {
   /** Null when the company has no programme running. */
   program: CFLoyaltyProgram | null;
+  /** Coupons are on for this company: the host looks the sale's customer up for theirs, programme or not. */
+  coupons?: boolean;
   /** The member on this sale: the cart's customer (staff), a card found or joined on it, or the card a code proved (customer). */
   member: CFLoyaltyMember | null;
+  /**
+   * Coupons waiting on the sale's customer when they have no card (a member's are on `member.offers`).
+   * `applyLoyaltyReward({ grantId })` takes one without a member; they come off the cart if the
+   * customer leaves the sale or is swapped.
+   */
+  offers?: CFLoyaltyOffer[];
   /** The customer on this sale isn't a member and may join. */
   canJoin: boolean;
   mode: CFLoyaltyMode;
