@@ -36,6 +36,7 @@ topics.unsubscribe('customers', subscriptionId);
 | [station](./topics/station/README.md)               | Active station context                                                 | 2 events  | [View Details](./topics/station/README.md)        |
 | [session](./topics/session/README.md)               | Register session context                                               | 2 events  | [View Details](./topics/session/README.md)        |
 | [users](./topics/users/README.md)                   | Active POS user context                                                | 2 events  | [View Details](./topics/users/README.md)          |
+| [loyalty](./topics/loyalty/README.md)               | The member on this sale and the rewards on the cart (Engage)           | 3 events  | [View Details](./topics/loyalty/README.md)        |
 
 ## API Reference
 

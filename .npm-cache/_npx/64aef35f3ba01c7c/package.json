@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "google-artifactregistry-auth": "^3.5.0"
+  }
+}

@@ -87,6 +87,13 @@ The library provides a `command` namespace object containing all available comma
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
 - **[getMotoConfig](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-moto-config/README.md)** - The Adyen client key, environment and country a flow needs to mount card fields for `chargeMoto` (host-injected; never bake a key into a build)
+- **[getLoyalty](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-loyalty/README.md)** - The programme, the member on this sale, whether they can join, staff or customer mode, and the rewards on the cart (Engage)
+- **[findLoyaltyMember](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/find-loyalty-member/README.md)** - Staff mode: find a card by its number, a phone or an email and make it the member on this sale
+- **[startLoyaltyCheck](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-loyalty-check/README.md)** - Send a code to prove a card is theirs on a screen the customer uses (website, kiosk)
+- **[confirmLoyaltyCheck](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/confirm-loyalty-check/README.md)** - The code typed back: the card it proved becomes the member on this sale
+- **[joinLoyalty](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/join-loyalty/README.md)** - Join the customer on this sale (customer mode: with what their code proved)
+- **[applyLoyaltyReward](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/apply-loyalty-reward/README.md)** - Hold a reward, an offer or a coupon code and put its discount on the cart, in one call
+- **[removeLoyaltyReward](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-loyalty-reward/README.md)** - Take an applied reward off the cart and give its stamps or points back
 - **[tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)** - Initiate a tap-to-pay payment
 - **[terminalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/terminal-payment/README.md)** - Initiate a terminal payment
 - **[partialPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/partial-payment/README.md)** - Initiate a partial/split payment
@@ -462,6 +469,34 @@ Charges a keyed (card-not-present) MOTO sale for the current cart. Card fields a
 ### [getMotoConfig](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-moto-config/README.md)
 
 Returns what a flow needs to mount Adyen's card-entry fields for `chargeMoto`: the host-injected client key and environment, and the company's country. Never rejects for a missing piece; `available: false` carries the reason (`provider-unsupported`, `no-client-key`, `no-country`, `no-company`) so the flow can hide its manual card tender. Never bake a client key into a flow build. Adyen-only.
+
+### [getLoyalty](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-loyalty/README.md)
+
+Everything a loyalty screen needs about this sale: the company's programme (null when none is running), the member on the sale with their balance, rewards (`available`) and offers, `canJoin`, `mode` (`staff` at a staffed till; `customer` on a website or a station customers use themselves, where a card shows only after a code), `checkPending`, and the rewards already applied. Engage keeps every balance; the host asks it with its own sign-in. A flow never sees a token, a label, or a customer's email or phone.
+
+### [findLoyaltyMember](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/find-loyalty-member/README.md)
+
+Staff mode only: finds a card by its nine-digit number (typed or scanned), a phone or an email, makes it the member on this sale and links it to the cart's customer when it has none. Refused with `check_needed` in customer mode.
+
+### [startLoyaltyCheck](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-loyalty-check/README.md)
+
+Sends a 6-digit code to the phone or email typed, or to the contact on the card whose number was typed, so a customer can prove a card is theirs. Answers how the code went, never where. Limited per contact and per sale.
+
+### [confirmLoyaltyCheck](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/confirm-loyalty-check/README.md)
+
+Checks the code. Right: the proved card is the member on this sale for the rest of it; `member: null` with `canJoin` for someone who isn't a member yet. Five wrong codes use the check up.
+
+### [joinLoyalty](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/join-loyalty/README.md)
+
+Joins the customer on this sale. Staff mode: the cart's customer, with their details. Customer mode: the phone or email a confirmed check proved, and the name typed; anything else is ignored.
+
+### [applyLoyaltyReward](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/apply-loyalty-reward/README.md)
+
+Holds a reward (`rewardId`), an offer on the member's card (`grantId`) or a coupon `code` at Engage and puts its discount on the cart in one call, under the label Engage reads back off the saved order. Cart-wide kinds take the cart's one discount slot and are refused (`cart_discount_taken`) rather than overwrite another discount; product kinds go on lines. The host releases it when it comes off the cart and settles it when the sale is paid.
+
+### [removeLoyaltyReward](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/remove-loyalty-reward/README.md)
+
+Takes an applied reward or offer off the cart and gives its stamps or points back.
 
 ### [tapToPayPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/tap-to-pay-payment/README.md)
 
