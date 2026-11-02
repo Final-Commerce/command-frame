@@ -49,9 +49,44 @@ function scale(a: RefundPlanAmounts, share: number): RefundPlanAmounts {
   return { ...out, total: out.subtotal - out.itemDiscount - out.cartDiscount + out.tax };
 }
 
-/** Every row of a demo order. The demo has no refund ledger, so everything is refundable. */
+/**
+ * What the order's earlier refunds took of one row, by quantity (kaching utils/index.ts:26-43, refundLedger.ts) — the
+ * demo has no units, so no base-unit tally. Fees and tips are 0/1.
+ */
+export function mockRefundedQuantity(order: CFActiveOrder, type: RefundPlanRow['type'], itemKey: string): number {
+  return (order.refund ?? []).reduce((sum, refund) => {
+    if (type === 'product')
+      return (
+        sum +
+        (refund.lineItems ?? [])
+          .filter((l) => (l.internalId || l.variantId) === itemKey)
+          .reduce((q, l) => q + l.quantity, 0)
+      );
+    if (type === 'customSale')
+      return (
+        sum + (refund.customSales ?? []).filter((s) => s.customSaleId === itemKey).reduce((q, s) => q + s.quantity, 0)
+      );
+    if (type === 'fee') return sum + (refund.cartFees ?? []).filter((f) => f.id === itemKey).length;
+    return sum + (refund.tips ?? []).filter((t) => t.transactionId === itemKey).length;
+  }, 0);
+}
+
+/** A source's capture (principal + tip) less what earlier refund legs returned to it (kaching planRefund.ts:155-189). */
+export function mockRemainingOnSource(order: CFActiveOrder, transactionId: string): number {
+  const source = (order.paymentMethods ?? []).find((pm) => pm.transactionId === transactionId);
+  if (!source) return 0;
+  const refunded = (order.refund ?? [])
+    .flatMap((refund) => refund.refundPayment ?? [])
+    .filter((leg) => leg.saleId === transactionId)
+    .reduce((sum, leg) => sum + minor(leg.amount), 0);
+  return Math.max(0, minor(source.amount) + minor(source.tip?.amount) - refunded);
+}
+
+/** Every row of a demo order, less what its earlier refunds took. */
 export function mockRefundRows(order: CFActiveOrder): RefundPlanRow[] {
   const rows: RefundPlanRow[] = [];
+  const left = (type: RefundPlanRow['type'], itemKey: string, quantity: number) =>
+    Math.max(0, quantity - mockRefundedQuantity(order, type, itemKey));
   for (const li of order.lineItems ?? []) {
     const itemKey = String(li.internalId || li.variantId || '');
     if (!itemKey || !(li.quantity > 0)) continue;
@@ -62,7 +97,7 @@ export function mockRefundRows(order: CFActiveOrder): RefundPlanRow[] {
       ...(li.sku ? { sku: li.sku } : {}),
       ...(li.attributes ? { attributes: li.attributes } : {}),
       quantity: li.quantity,
-      refundableQuantity: li.quantity,
+      refundableQuantity: left('product', itemKey, li.quantity),
       amounts: lineAmounts(li),
     });
   }
@@ -73,7 +108,7 @@ export function mockRefundRows(order: CFActiveOrder): RefundPlanRow[] {
       itemKey: cs.customSaleId,
       label: String(cs.name ?? 'Custom sale'),
       quantity: cs.quantity,
-      refundableQuantity: cs.quantity,
+      refundableQuantity: left('customSale', cs.customSaleId, cs.quantity),
       amounts: lineAmounts(cs),
     });
   }
@@ -85,7 +120,7 @@ export function mockRefundRows(order: CFActiveOrder): RefundPlanRow[] {
       itemKey: String(fee.id),
       label: String(fee.label || 'Cart fee'),
       quantity: 1,
-      refundableQuantity: 1,
+      refundableQuantity: left('fee', String(fee.id), 1),
       amounts: { subtotal: amount, itemDiscount: 0, cartDiscount: 0, tax, taxes: [], total: amount + tax },
     });
   }
@@ -98,7 +133,7 @@ export function mockRefundRows(order: CFActiveOrder): RefundPlanRow[] {
       label: 'Tip',
       paymentType: pm.paymentType,
       quantity: 1,
-      refundableQuantity: 1,
+      refundableQuantity: left('tip', pm.transactionId, 1),
       amounts: { subtotal: tip, itemDiscount: 0, cartDiscount: 0, tax: 0, taxes: [], total: tip },
     });
   }

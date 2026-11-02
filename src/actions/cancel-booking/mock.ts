@@ -1,5 +1,5 @@
 import { CancelBooking, CancelBookingParams, CancelBookingResponse } from './types';
-import { MOCK_BOOKINGS, MOCK_CART, mockPublishEvent } from '../../demo/database';
+import { MOCK_BOOKINGS, MOCK_CART, mockPublishEvent, recalculateMockCart } from '../../demo/database';
 import { ReservationStatus } from '@final-commerce/common';
 
 export const mockCancelBooking: CancelBooking = async (params: CancelBookingParams): Promise<CancelBookingResponse> => {
@@ -22,12 +22,8 @@ export const mockCancelBooking: CancelBooking = async (params: CancelBookingPara
   // does this, and a mock that left the line behind sold time that had just been released.
   const index = (MOCK_CART.reservations ?? []).findIndex((entry) => entry.bookingId === params.bookingId);
   if (index >= 0) {
-    const [removed] = MOCK_CART.reservations!.splice(index, 1);
-    const line = removed.total || removed.price * (removed.quantity ?? 1);
-    MOCK_CART.subtotal -= line;
-    MOCK_CART.total -= line;
-    MOCK_CART.amountToBeCharged = MOCK_CART.total;
-    MOCK_CART.remainingBalance = MOCK_CART.total;
+    MOCK_CART.reservations!.splice(index, 1);
+    recalculateMockCart();
     mockPublishEvent('cart', 'cart-created', { cart: MOCK_CART });
   }
 

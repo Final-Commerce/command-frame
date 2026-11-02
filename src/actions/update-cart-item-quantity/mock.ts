@@ -4,9 +4,11 @@ import {
   MOCK_CART,
   MOCK_PRODUCTS,
   mockCompositeStockRefusal,
+  mockPlainLineStockRefusal,
   mockPublishEvent,
+  recalculateMockCart,
 } from '../../demo/database';
-import { ReservationStatus, extendPrice, isValidQuantity } from '@final-commerce/common';
+import { ReservationStatus, isValidQuantity } from '@final-commerce/common';
 export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   params?: UpdateCartItemQuantityParams,
 ): Promise<UpdateCartItemQuantityResponse> => {
@@ -63,12 +65,7 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
       booking.status = ReservationStatus.CANCELLED;
     }
 
-    // Recalculate totals
-    const lineTotal = extendPrice(product.price, previousQuantity);
-    MOCK_CART.subtotal -= lineTotal;
-    MOCK_CART.total -= lineTotal;
-    MOCK_CART.amountToBeCharged = MOCK_CART.total;
-    MOCK_CART.remainingBalance = MOCK_CART.total;
+    recalculateMockCart();
 
     // Publish product-deleted event
     mockPublishEvent('cart', 'product-deleted', {
@@ -87,27 +84,27 @@ export const mockUpdateCartItemQuantity: UpdateCartItemQuantity = (
   // Same refusal and text as the host: raising a line not sold in POS (lowering always works).
   const source = MOCK_PRODUCTS.find((p) => p.variants.some((v) => v._id === product.variantId));
   const variant = source?.variants.find((v) => v._id === product.variantId);
-  if (quantity > previousQuantity && (source?.notSoldInPos || variant?.notSoldInPos)) {
+  // Same refusal and text as the host (handler.ts:82-84): no quantity change on a variant that cannot be read.
+  if (!variant) {
+    throw new Error(`Cannot change the quantity of ${product.variantId}: its variant could not be read.`);
+  }
+  if (quantity > previousQuantity && (source?.notSoldInPos || variant.notSoldInPos)) {
     throw new Error(`${source?.name} is not sold in POS`);
   }
-  // A raised composite line draws on its components' shelves, like the host's `compositeStockRefusal`.
-  if (quantity > previousQuantity && product.components?.length) {
-    const refusal = mockCompositeStockRefusal(
-      MOCK_CART.products.map((line) => (line.internalId === internalId ? { ...line, quantity } : line)),
-    );
+  // A raised line draws on the shelf like the host's (handler.ts:88-105): a composite on its components', a plain line on
+  // its variant's, counting everything the cart takes from it.
+  if (quantity > previousQuantity) {
+    const nextCart = MOCK_CART.products.map((line) => (line.internalId === internalId ? { ...line, quantity } : line));
+    const refusal = product.components?.length
+      ? mockCompositeStockRefusal(nextCart)
+      : mockPlainLineStockRefusal(nextCart, variant);
     if (refusal) throw new Error(refusal);
   }
 
   // Update quantity
   product.quantity = quantity;
 
-  // Difference of the two ROUNDED extensions — rounding the delta itself would let the
-  // line's running total drift from what extendPrice(price, quantity) says it is.
-  const lineTotalDelta = extendPrice(product.price, quantity) - extendPrice(product.price, previousQuantity);
-  MOCK_CART.subtotal += lineTotalDelta;
-  MOCK_CART.total += lineTotalDelta;
-  MOCK_CART.amountToBeCharged = MOCK_CART.total;
-  MOCK_CART.remainingBalance = MOCK_CART.total;
+  recalculateMockCart();
 
   // Publish product-updated event
   mockPublishEvent('cart', 'product-updated', {

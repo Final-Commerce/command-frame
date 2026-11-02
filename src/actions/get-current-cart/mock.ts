@@ -1,18 +1,14 @@
 import { GetCurrentCart, GetCurrentCartResponse } from './types';
-import { MOCK_CART, buildModifierRows, safeSerialize } from '../../demo/database';
-import { extendPrice } from '@final-commerce/common';
+import { MOCK_CART, MOCK_CART_MATH, safeSerialize } from '../../demo/database';
 
 export const mockGetCurrentCart: GetCurrentCart = async (): Promise<GetCurrentCartResponse> => {
   console.log('[Mock] getCurrentCart called');
 
-  // The mock keeps no discounts or fees per line: a line is its price × quantity plus its modifier rows.
-  const lineTotals = Object.fromEntries([
-    ...MOCK_CART.products.map((line) => [
-      line.internalId ?? line.id,
-      extendPrice(line.price, line.quantity) + buildModifierRows(line.modifiers, line.quantity).modifiersTotal,
-    ]),
-    ...(MOCK_CART.customSales ?? []).map((sale) => [sale.id, extendPrice(sale.price, sale.quantity)]),
-  ]);
+  // What each line adds, as the cart's recompute summed it into `subtotal` — products and bookings by internalId,
+  // custom sales by id (kaching get-current-cart/handler.ts).
+  const lineTotals = Object.fromEntries(
+    Object.entries(MOCK_CART_MATH?.lines ?? {}).map(([lineId, line]) => [lineId, line.lineDisplayWithFee]),
+  );
 
   return {
     success: true,

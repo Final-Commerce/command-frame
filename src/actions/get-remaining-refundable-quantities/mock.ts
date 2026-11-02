@@ -7,8 +7,8 @@ import type { RefundPlanRowType } from '../get-refund-plan/types';
 import { MOCK_ORDERS } from '../../demo/database';
 import { mockRefundRows } from '../get-refund-plan/mockRows';
 
-/** Same rows as `mockGetRefundPlan`; the demo has no refund ledger, so nothing is subtracted. The demo has no
- * active order either, so `orderId` is required. */
+/** Same rows as `mockGetRefundPlan`, less what the order's earlier refunds took. The demo has no active order, so
+ * `orderId` is required. */
 export const mockGetRemainingRefundableQuantities: GetRemainingRefundableQuantities = async (
   params?: GetRemainingRefundableQuantitiesParams,
 ): Promise<GetRemainingRefundableQuantitiesResponse> => {
@@ -29,7 +29,15 @@ export const mockGetRemainingRefundableQuantities: GetRemainingRefundableQuantit
   };
   for (const row of mockRefundRows(order)) remaining[row.type][row.itemKey] = row.refundableQuantity;
   const reservations: Record<string, number> = {};
-  for (const r of order.reservations ?? []) reservations[r.internalId] = r.quantity ?? 1;
+  for (const r of order.reservations ?? []) {
+    const refunded = (order.refund ?? [])
+      .flatMap((refund) => refund.reservations ?? [])
+      .filter((x) => x.internalId === r.internalId);
+    reservations[r.internalId] = Math.max(
+      0,
+      (r.quantity ?? 1) - refunded.reduce((sum, x) => sum + (x.quantity ?? 1), 0),
+    );
+  }
 
   return {
     success: true,

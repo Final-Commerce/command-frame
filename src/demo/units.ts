@@ -29,3 +29,18 @@ export function requireMinorUnitsInteger(amount: number | string, what: string):
 export function percentToFraction(amount: number): number {
   return Number(amount) / 100;
 }
+
+/** kaching adjustmentValue.ts:25-38 — non-numeric, negative/zero and (for a percent) >100% discounts are refused. */
+export function assertValidDiscount(amount: number, isPercent: boolean): number {
+  const n = Number(amount);
+  if (!Number.isFinite(n)) throw new Error('Discount amount must be a valid number');
+  if (isPercent && (n <= 0 || n > 100)) throw new Error('Discount percentage must be between 0 and 100');
+  if (!isPercent && n <= 0) throw new Error('Discount amount must be greater than 0');
+  return n;
+}
+
+/** kaching adjustmentValue.ts:56-59 — the stored value: a fraction for a percent, minor units for a fixed amount. */
+export function resolveDiscountValue(amount: number, isPercent: boolean): number {
+  const n = assertValidDiscount(amount, isPercent);
+  return isPercent ? n / 100 : requireMinorUnitsInteger(n, 'Discount amount');
+}

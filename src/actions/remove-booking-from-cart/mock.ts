@@ -1,5 +1,5 @@
 import { ReservationStatus } from '@final-commerce/common';
-import { MOCK_BOOKINGS, MOCK_CART, mockPublishEvent } from '../../demo/database';
+import { MOCK_BOOKINGS, MOCK_CART, mockPublishEvent, recalculateMockCart } from '../../demo/database';
 import { RemoveBookingFromCart, RemoveBookingFromCartParams, RemoveBookingFromCartResponse } from './types';
 
 export const mockRemoveBookingFromCart: RemoveBookingFromCart = async (
@@ -12,11 +12,7 @@ export const mockRemoveBookingFromCart: RemoveBookingFromCart = async (
   const [removed] = cartIndex >= 0 ? reservations.splice(cartIndex, 1) : [];
 
   if (removed) {
-    const line = removed.total || removed.price * (removed.quantity ?? 1);
-    MOCK_CART.subtotal -= line;
-    MOCK_CART.total -= line;
-    MOCK_CART.amountToBeCharged = MOCK_CART.total;
-    MOCK_CART.remainingBalance = MOCK_CART.total;
+    recalculateMockCart();
     mockPublishEvent('cart', 'cart-created', { cart: MOCK_CART });
   }
 

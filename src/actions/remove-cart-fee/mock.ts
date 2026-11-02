@@ -1,16 +1,5 @@
 import type { RemoveCartFee, RemoveCartFeeParams, RemoveCartFeeResponse } from './types';
-import type { CFCustomFee } from '../../CommonTypes';
-import { MOCK_CART, mockPublishEvent } from '../../demo/database';
-
-function feeContributionToTotal(fee: CFCustomFee, subtotal: number): number {
-  // A percent fee is STORED as a fraction (10% -> 0.1), so it scales the
-  // subtotal directly. Dividing by 100 again credited back a hundredth of the
-  // fee, leaving the total permanently inflated after a remove.
-  if (fee.isPercent) {
-    return subtotal * fee.amount;
-  }
-  return fee.amount;
-}
+import { MOCK_CART, mockPublishEvent, recalculateMockCart } from '../../demo/database';
 
 export const mockRemoveCartFee: RemoveCartFee = (params: RemoveCartFeeParams): Promise<RemoveCartFeeResponse> => {
   console.log('[Mock] removeCartFee called', params);
@@ -29,17 +18,12 @@ export const mockRemoveCartFee: RemoveCartFee = (params: RemoveCartFeeParams): P
     throw new Error(`Cart fee index ${index} is out of range (0–${fees.length - 1})`);
   }
 
-  const removed = fees[index];
-  const delta = feeContributionToTotal(removed, MOCK_CART.subtotal);
-
   fees.splice(index, 1);
   if (fees.length === 0) {
     MOCK_CART.customFee = undefined;
   }
 
-  MOCK_CART.total -= delta;
-  MOCK_CART.amountToBeCharged = MOCK_CART.total;
-  MOCK_CART.remainingBalance = MOCK_CART.total;
+  recalculateMockCart();
 
   mockPublishEvent('cart', 'cart-fee-removed', { feeIndex: index });
 

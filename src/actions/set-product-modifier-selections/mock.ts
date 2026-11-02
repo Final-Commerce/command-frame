@@ -3,7 +3,13 @@ import {
   SetProductModifierSelectionsParams,
   SetProductModifierSelectionsResponse,
 } from './types';
-import { MOCK_CART, MOCK_PRODUCTS, buildCartLineModifiers, buildModifierRows } from '../../demo/database';
+import {
+  MOCK_CART,
+  MOCK_PRODUCTS,
+  buildCartLineModifiers,
+  buildModifierRows,
+  recalculateMockCart,
+} from '../../demo/database';
 
 export const mockSetProductModifierSelections: SetProductModifierSelections = async (
   params?: SetProductModifierSelectionsParams,
@@ -56,11 +62,10 @@ export const mockSetProductModifierSelections: SetProductModifierSelections = as
 
   // Full replacement — passing [] clears the rows. The line drops the product's resolved
   // stack when it is built, so the menu is re-read from the catalogue to price against.
-  // Cart totals are not touched, for the same reason addProductToCart does not move them
-  // for modifiers: this mock does not accumulate per-line money.
   const source = MOCK_PRODUCTS.find((product) => product._id === line.id);
   line.modifierSelections = params.selections;
   line.modifiers = buildCartLineModifiers(source?.modifiers, params.selections, source?.taxTable);
+  recalculateMockCart();
 
   const { rows, modifiersTotal } = buildModifierRows(line.modifiers, line.quantity);
 

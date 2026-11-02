@@ -1,5 +1,5 @@
 import { CFCartReservation } from '../../CommonTypes';
-import { MOCK_CART, MOCK_PRODUCTS, mockPublishEvent } from '../../demo/database';
+import { MOCK_CART, MOCK_PRODUCTS, mockPublishEvent, recalculateMockCart } from '../../demo/database';
 import { AddBookingToCart, AddBookingToCartParams, AddBookingToCartResponse } from './types';
 import { mockHoldBooking } from '../hold-booking/mock';
 
@@ -61,10 +61,7 @@ export const mockAddBookingToCart: AddBookingToCart = async (
   if (!MOCK_CART.reservations) MOCK_CART.reservations = [];
   MOCK_CART.reservations.push(reservation);
 
-  MOCK_CART.subtotal += price;
-  MOCK_CART.total += price;
-  MOCK_CART.amountToBeCharged = MOCK_CART.total;
-  MOCK_CART.remainingBalance = MOCK_CART.total;
+  recalculateMockCart();
 
   // The cart topic, not the bookings one: a screen that only watches bookings still has to
   // repaint its cart, and every other cart mutation announces itself the same way.

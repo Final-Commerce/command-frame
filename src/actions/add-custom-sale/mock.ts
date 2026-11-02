@@ -1,5 +1,5 @@
 import { CFActiveCustomSales } from '../../CommonTypes';
-import { MOCK_CART, mockPublishEvent } from '../../demo/database';
+import { MOCK_CART, mockPublishEvent, recalculateMockCart } from '../../demo/database';
 import { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from './types';
 import { requireMinorUnitsInteger } from '../../demo/units';
 
@@ -32,11 +32,7 @@ export const mockAddCustomSale: AddCustomSale = async (
 
   MOCK_CART.customSales.push(customSale);
 
-  // Update Cart Totals
-  MOCK_CART.subtotal += price * quantity;
-  MOCK_CART.total += price * quantity;
-  MOCK_CART.amountToBeCharged = MOCK_CART.total;
-  MOCK_CART.remainingBalance = MOCK_CART.total;
+  recalculateMockCart();
 
   // Publish custom-sale-added event so cart subscribers refresh
   mockPublishEvent('cart', 'custom-sale-added', { customSale });
