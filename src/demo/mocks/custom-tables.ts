@@ -147,7 +147,8 @@ export interface CustomTableDataRow {
     updatedAt: string;
 }
 
-export const MOCK_CUSTOM_TABLE_DATA: Record<string, CustomTableDataRow[]> = {
+/** Rows by table name — what getCustomTableData reads and upsertCustomTableData writes. */
+export const MOCK_CUSTOM_TABLE_DATA: Record<string, (Record<string, unknown> & { _id: string })[]> = {
     users: [
         {
             _id: "user_data_1",

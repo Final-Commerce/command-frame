@@ -61,6 +61,18 @@ export interface MockDatabaseConfig {
   orderStatuses?: CFOrderStatusDefinition[];
   /** Products hidden at an outlet (the host's `catalog-visibility`, product-level rows). Empty = sold everywhere. */
   catalogVisibility?: MockCatalogVisibility[];
+  /** MOCK ONLY — the switch a test flips to make the host refuse. Absent = everything succeeds. */
+  declines?: MockDeclines;
+}
+
+/** MOCK ONLY: what the mock host refuses, so a test can see how a flow treats a failure. A real till never reads this. */
+export interface MockDeclines {
+  /** Card payments that are declined: `terminalPayment` (cloud or reader) and `tapToPayPayment`. Cash never declines. */
+  payments?: ('terminal' | 'tapToPay')[];
+  /** Every `processPartialRefund` fails. */
+  refunds?: boolean;
+  /** Every `upsertCustomTableData` / `deleteCustomTableData` rejects with the till's only refusal text for a table write. */
+  customTableWrites?: boolean;
 }
 
 export interface MockCatalogVisibility {
@@ -1267,6 +1279,7 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   if (config.catalogVisibility !== undefined) {
     MOCK_CATALOG_VISIBILITY.splice(0, MOCK_CATALOG_VISIBILITY.length, ...config.catalogVisibility);
   }
+  if (config.declines !== undefined) MOCK_DECLINES = config.declines;
 
   if (MOCK_OUTLETS.length > 0) {
     Object.assign(MOCK_OUTLET_MAIN, MOCK_OUTLETS[0]);
@@ -1295,6 +1308,22 @@ export const safeSerialize = <T>(data: T): T => {
 
 type MockEventCallback = (event: any) => void;
 const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
+
+export let MOCK_DECLINES: MockDeclines = {};
+
+/** MOCK ONLY: the dataset's `declines.payments` switch, failing with the till processor's text (kaching `dispatchPay.ts:208-220`). */
+export const assertMockPaymentNotDeclined = (paymentType: 'terminal' | 'tapToPay', cloud: boolean) => {
+  if (!MOCK_DECLINES.payments?.includes(paymentType)) return;
+  console.warn(`[Mock] ${paymentType}Payment declined — the mock dataset sets declines.payments`);
+  throw new Error(`${cloud ? 'CLOUD_PAYMENT_FAILED' : 'NATIVE_PAYMENT_FAILED'}: Card declined`);
+};
+
+/** MOCK ONLY: the dataset's `declines.customTableWrites` switch, refusing with the till's text (kaching `customTables.ts:131,291`). */
+export const assertMockCustomTableWriteNotDeclined = (tableName: string) => {
+  if (!MOCK_DECLINES.customTableWrites) return;
+  console.warn('[Mock] custom table write refused — the mock dataset sets declines.customTableWrites');
+  throw new Error(`Table "${tableName}" not found`);
+};
 
 export const mockPublishEvent = (topic: string, eventType: string, data: any) => {
   const subscribers = mockTopicSubscribers[topic] || [];

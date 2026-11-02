@@ -2,6 +2,8 @@
 
 Adds a fee to the entire cart. Supports both fixed amount and percentage-based fees.
 
+**Action label:** a control whose press calls `addCartFee` carries `data-final-action="add-cart-fee"`.
+
 ## Parameters
 
 - `amount` (number, required): The fee amount. Fixed fees are integer minor currency units (e.g., `500` = $5.00); percentage fees are 0-100

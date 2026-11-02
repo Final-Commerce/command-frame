@@ -2,6 +2,8 @@
 
 Initiates an extension-defined payment flow in the host by calling the `extensionPayment` command action. Use this when your extension supports non-core payment methods and you need to tell the host which `paymentType` to process.
 
+**Action label:** a control whose press calls `extensionPayment` carries `data-final-action="extension-payment"`.
+
 ## Parameters
 
 `params?: ExtensionPaymentParams`

@@ -147,6 +147,16 @@ Each client comes with built-in mock data for local development.
 const client = new RenderClient({ mockMode: true, debug: true });
 ```
 
+**Declines — mock only.** A test that needs to see how a flow treats a refusal sets `declines` in the dataset; a real till never reads it:
+
+```typescript
+setMockDatabase({ declines: { payments: ['terminal', 'tapToPay'], refunds: true, customTableWrites: true } });
+```
+
+- `payments`: those card commands reject with `CLOUD_PAYMENT_FAILED: Card declined` (cloud terminal) or `NATIVE_PAYMENT_FAILED: Card declined`.
+- `refunds: true`: `processPartialRefund` rejects with `Cloud refund failed`.
+- `customTableWrites: true`: `upsertCustomTableData` and `deleteCustomTableData` reject with `Table "<name>" not found`.
+
 ### Debugging
 
 Enable debug logging to see all message passing activity in the console:

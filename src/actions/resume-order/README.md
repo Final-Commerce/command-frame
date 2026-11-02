@@ -2,6 +2,8 @@
 
 Loads an order back into the cart — parked or not, paid or not — as long as it isn't already in a cart and isn't finished. The general form of [`resumeParkedOrder`](../resume-parked-order/README.md): same cart rehydration, but the order keeps its state and is marked `inCart.active: true`.
 
+**Action label:** a control whose press calls `resumeOrder` carries `data-final-action="resume-order"`.
+
 > Full state model in the [Order state machine reference](../../../docs/order-state-machine.md).
 
 ## Parameters

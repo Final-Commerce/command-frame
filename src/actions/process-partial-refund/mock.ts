@@ -1,4 +1,5 @@
 import { ProcessPartialRefund, ProcessPartialRefundParams, ProcessPartialRefundResponse } from './types';
+import { MOCK_DECLINES } from '../../demo/database';
 
 export const mockProcessPartialRefund: ProcessPartialRefund = async (
   params?: ProcessPartialRefundParams,
@@ -15,6 +16,11 @@ export const mockProcessPartialRefund: ProcessPartialRefund = async (
     throw new Error(
       'refund.giftCardAndLegs: pass either `legs` (you allocate) or `giftCard` (the engine allocates), not both',
     );
+  }
+
+  if (MOCK_DECLINES.refunds) {
+    console.warn('[Mock] processPartialRefund failed — the mock dataset sets declines.refunds');
+    throw new Error('Cloud refund failed');
   }
 
   console.log('[Mock] processPartialRefund called', {

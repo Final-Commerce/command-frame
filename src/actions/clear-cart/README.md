@@ -2,6 +2,8 @@
 
 Clears all items from the current cart and resets cart-related state.
 
+**Action label:** a control whose press calls `clearCart` carries `data-final-action="clear-cart"`.
+
 ## Parameters
 
 None

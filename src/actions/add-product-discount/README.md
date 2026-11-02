@@ -2,6 +2,8 @@
 
 Adds a discount to a product in the cart. Applies to a specific line item when `internalId` is given, or to the current active product context otherwise.
 
+**Action label:** a control whose press calls `addProductDiscount` carries `data-final-action="add-product-discount"`.
+
 ## Parameters
 
 ### `AddProductDiscountParams`

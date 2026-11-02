@@ -2,6 +2,8 @@
 
 Initiates a redeem payment by calling `extensionPayment` with `paymentType: "redeem"`.
 
+**Action label:** a control whose press calls `redeemPayment` carries `data-final-action="redeem-payment"`.
+
 Use this when your extension handles a custom tender (for example gift card / wallet) and you want the host to record it as a redeem payment.
 
 ## Parameters

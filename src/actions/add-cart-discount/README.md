@@ -2,6 +2,8 @@
 
 Adds a discount to the entire cart in the parent application. Cart discounts apply to the cart subtotal and affect all items in the cart.
 
+**Action label:** a control whose press calls `addCartDiscount` carries `data-final-action="add-cart-discount"`.
+
 ## Parameters
 
 ### `AddCartDiscountParams`

@@ -2,6 +2,8 @@
 
 Processes a partial refund based on the current refund selections in the refund details state.
 
+**Action label:** a control whose press calls `processPartialRefund` carries `data-final-action="process-partial-refund"`.
+
 ## Parameters
 
 `params?: ProcessPartialRefundParams`

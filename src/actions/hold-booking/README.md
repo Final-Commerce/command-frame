@@ -4,6 +4,8 @@ Claims a window for one customer. **This is the only way to find out whether a s
 free** — availability is a snapshot that can be a second out of date, and two customers looking
 at the same screen will both see the same free slot.
 
+**Action label:** a control whose press calls `holdBooking` carries `data-final-action="hold-booking"`.
+
 The claim is written ON THE DEVICE, from the booking rules and holds the till already syncs
 down, and it works with no connection — a till that cannot sell while its line is down is a till
 that stops working exactly when a shop needs it.
@@ -47,7 +49,6 @@ const { booking } = await renderClient.holdBooking({
   startAt: slot.startAt,
   endAt: slot.endAt,
 });
-
 ```
 
 To SELL that window, use [`addBookingToCart`](../add-booking-to-cart/README.md) instead of this
