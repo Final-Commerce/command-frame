@@ -12,7 +12,6 @@
   ],
   "scripts": {
     "preinstall": "node -e \"if(process.cwd()===process.env.INIT_CWD&&!process.env.NPM_REGISTRY_TOKEN){try{require('child_process').execSync('npx google-artifactregistry-auth',{stdio:'inherit'})}catch(e){}}\"",
-    "prebuild": "node scripts/gen-action-labels.mjs",
     "build": "tsc",
     "build:clean": "rm -rf dist && npm run build",
     "dev": "tsc --watch",

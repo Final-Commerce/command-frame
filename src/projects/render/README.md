@@ -714,8 +714,8 @@ carries the attribute `data-final-action` with the exact command name:
 <Button data-final-action="addCartFee cashPayment" onClick={payWithFee}>Pay with fee</Button>
 ```
 
-- A command carries a label when its own README has an **Action label:** line — the only place to
-  add or drop one. `npm run build` generates `ACTION_LABEL_COMMANDS` in [`action-labels.ts`](./action-labels.ts) from those lines.
+- The list of commands is `ACTION_LABEL_COMMANDS` (with `ACTION_LABEL_ATTRIBUTE`) in
+  [`action-labels.ts`](./action-labels.ts); each of their READMEs carries an **Action label:** line.
 - The value is a string literal: one command name, or several separated by spaces — every command
   the handler can call (`cond ? "a" : "b"` is written `"a b"`).
 - The label goes on the element whose press calls the command: the confirm button inside a dialog,
