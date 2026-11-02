@@ -1,5 +1,5 @@
 import { RemoveProductDiscount, RemoveProductDiscountParams, RemoveProductDiscountResponse } from './types';
-import { MOCK_CART, mockPublishEvent, recalculateMockCart } from '../../demo/database';
+import { MOCK_CART, mockPublishEvent } from '../../demo/database';
 
 export const mockRemoveProductDiscount: RemoveProductDiscount = (
   params?: RemoveProductDiscountParams,
@@ -12,7 +12,6 @@ export const mockRemoveProductDiscount: RemoveProductDiscount = (
 
   if (item) {
     item.discounts = [];
-    recalculateMockCart();
     // Publish so cart subscribers refresh.
     mockPublishEvent('cart', 'product-discount-removed', { internalId: params?.internalId });
   }

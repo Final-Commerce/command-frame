@@ -1,5 +1,5 @@
 import { AddCartFee, AddCartFeeParams, AddCartFeeResponse } from './types';
-import { MOCK_CART, recalculateMockCart } from '../../demo/database';
+import { MOCK_CART } from '../../demo/database';
 import { percentToFraction, requireMinorUnitsInteger } from '../../demo/units';
 
 export const mockAddCartFee: AddCartFee = async (params?: AddCartFeeParams): Promise<AddCartFeeResponse> => {
@@ -20,7 +20,11 @@ export const mockAddCartFee: AddCartFee = async (params?: AddCartFeeParams): Pro
       applyTaxes: params.applyTaxes || false,
       taxTableId: params.taxTableId,
     });
-    recalculateMockCart();
+
+    const feeAmount = params.isPercent ? MOCK_CART.subtotal * storedAmount : storedAmount;
+    MOCK_CART.total += feeAmount;
+    MOCK_CART.amountToBeCharged = MOCK_CART.total;
+    MOCK_CART.remainingBalance = MOCK_CART.total;
   }
 
   return {

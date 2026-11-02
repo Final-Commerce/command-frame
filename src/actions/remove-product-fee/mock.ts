@@ -1,5 +1,5 @@
 import { RemoveProductFee, RemoveProductFeeParams, RemoveProductFeeResponse } from './types';
-import { MOCK_CART, mockPublishEvent, recalculateMockCart } from '../../demo/database';
+import { MOCK_CART, mockPublishEvent } from '../../demo/database';
 
 export const mockRemoveProductFee: RemoveProductFee = (
   params?: RemoveProductFeeParams,
@@ -12,7 +12,6 @@ export const mockRemoveProductFee: RemoveProductFee = (
 
   if (item) {
     item.fees = [];
-    recalculateMockCart();
     // Publish so cart subscribers refresh.
     mockPublishEvent('cart', 'product-fee-removed', { internalId: params?.internalId });
   }

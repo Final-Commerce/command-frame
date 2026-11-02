@@ -38,16 +38,8 @@ import {
   extendPrice,
   resolveUnit,
   toBase,
-  toMinorUnits,
 } from '@final-commerce/common';
 import { BookingRatePeriod, BookingResourceKind, BookingType, ReservationStatus } from '@final-commerce/common';
-import {
-  calculateMockCartTax,
-  cashRoundToIncrement,
-  type MockCartMath,
-  type MockLineMath,
-  type MockTaxRate,
-} from './cart-math';
 
 export * from './mocks';
 
@@ -69,26 +61,15 @@ export interface MockDatabaseConfig {
   orderStatuses?: CFOrderStatusDefinition[];
   /** Products hidden at an outlet (the host's `catalog-visibility`, product-level rows). Empty = sold everywhere. */
   catalogVisibility?: MockCatalogVisibility[];
-  /**
-   * The active outlet's tax tables as the host resolves them (kaching `activeEntities.tax.tables`): table id → its rates,
-   * `rate` a decimal (0.13 = 13%). A product's `taxTable` names its table. Tax-inclusive comes from
-   * `company.settings.isTaxInclusive` (absent = inclusive, as the host reads it). Empty = no tax anywhere.
-   */
-  taxTables?: Record<string, MockTaxRate[]>;
-  /** The company's `cash_rounding` setting, a major-unit string ("0.05"). Absent or null = cash is not rounded. */
-  cashRounding?: string | null;
-  /** MOCK ONLY — the switch a test flips to make the host refuse. Absent = every payment and refund settles. */
+  /** MOCK ONLY — the switch a test flips to make the host refuse. Absent = everything succeeds. */
   declines?: MockDeclines;
 }
 
-/**
- * MOCK ONLY: what the mock host refuses, so a test can see how a flow treats a failure. A real till never reads this;
- * the failure is the host's own: the command REJECTS with the host's error text and records nothing.
- */
+/** MOCK ONLY: what the mock host refuses, so a test can see how a flow treats a failure. A real till never reads this. */
 export interface MockDeclines {
   /** Card payments that are declined: `terminalPayment` (cloud or reader) and `tapToPayPayment`. Cash never declines. */
   payments?: ('terminal' | 'tapToPay')[];
-  /** Every `processPartialRefund` fails at the processor, after its checks passed. */
+  /** Every `processPartialRefund` fails. */
   refunds?: boolean;
   /** Every `upsertCustomTableData` / `deleteCustomTableData` rejects with the till's only refusal text for a table write. */
   customTableWrites?: boolean;
@@ -1077,46 +1058,6 @@ export function mockCompositeStockRefusal(
   return null;
 }
 
-/**
- * The host's stock check for a plain line (kaching add-product-to-cart/handler.ts:152-165, `plainLineStockRefusal`
- * compositeStock.ts:135-152), over the demo shelves — a copy: the active outlet's shelf; untracked never short; backorder
- * may go below zero; what the whole cart takes of the variant (lines and components) against it. The demo has no pools or
- * units, so it counts per variant in the selling unit. Throws the host's texts.
- */
-export function assertMockPlainLineStock(
-  products: { variantId: string; quantity: number; components?: CFCartLineComponent[] }[],
-  variant: CFProduct['variants'][number],
-): void {
-  if (!variant.manageStock || variant.allowBackorder) return;
-  if ((variant.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock ?? 0) <= 0) {
-    throw new Error('Product is out of stock');
-  }
-  const refusal = mockPlainLineStockRefusal(products, variant);
-  if (refusal) throw new Error(refusal);
-}
-
-/** kaching `plainLineStockRefusal` (compositeStock.ts:135-152) alone — what updateCartItemQuantity checks on a raise. */
-export function mockPlainLineStockRefusal(
-  products: { variantId: string; quantity: number; components?: CFCartLineComponent[] }[],
-  variant: CFProduct['variants'][number],
-): string | null {
-  if (!variant.manageStock || variant.allowBackorder) return null;
-  const available = variant.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock ?? 0;
-  const requested = products.reduce(
-    (sum, line) =>
-      sum +
-      (line.components
-        ? line.components
-            .filter((component) => component.variantId === variant._id)
-            .reduce((part, component) => part + component.quantity * line.quantity, 0)
-        : line.variantId === variant._id
-          ? line.quantity
-          : 0),
-    0,
-  );
-  return requested > available ? `Insufficient stock. Available: ${available}, Requested: ${requested}` : null;
-}
-
 /** Product ids hidden at the demo's active outlet. */
 export const mockHiddenProductIds = (): Set<string> =>
   new Set(MOCK_CATALOG_VISIBILITY.filter((row) => row.outletId === MOCK_OUTLET.id).map((row) => row.productId));
@@ -1243,104 +1184,6 @@ export const setMockActiveProduct = (activeProduct: CFActiveProduct) => {
 // round-trip layouts within a session.
 export const MOCK_SMART_GRID_LAYOUTS: Record<string, CFSmartGridLayout> = {};
 
-/** Set by `setMockDatabase` (see `MockDatabaseConfig`). */
-export let MOCK_TAX_TABLES: Record<string, MockTaxRate[]> = {};
-export let MOCK_CASH_ROUNDING: string | null = null;
-export let MOCK_DECLINES: MockDeclines = {};
-/** The last `recalculateMockCart` result: what each line and the cart add up to, as the host's tax engine left it. */
-export let MOCK_CART_MATH: MockCartMath | null = null;
-
-/** kaching `db/syncTaxes.ts:33-34`: the company setting, inclusive when it is absent. */
-const mockTaxInclusive = (): boolean =>
-  (MOCK_COMPANY.settings as { isTaxInclusive?: boolean } | undefined)?.isTaxInclusive ?? true;
-
-/**
- * Recompute the cart's money after every change, as the host's reducer does (kaching
- * `redux/slices/activeEntitiesSlice.ts:62-74`): bookings are lines too, non-revenue items count toward what is owed
- * untaxed. Every mock that changes the cart calls this instead of adding to the totals itself.
- */
-export const recalculateMockCart = () => {
-  const bookings = (MOCK_CART.reservations ?? []).map(
-    (r) =>
-      ({
-        id: r.internalId,
-        internalId: r.internalId,
-        name: r.name,
-        price: r.price,
-        quantity: r.quantity ?? 1,
-        taxTableId: r.taxTableId,
-        discounts: r.discounts ?? [],
-        fees: r.fees ?? [],
-      }) as unknown as CFActiveProduct,
-  );
-  const math = calculateMockCartTax(MOCK_CART, { taxIncl: mockTaxInclusive(), tables: MOCK_TAX_TABLES }, [
-    ...MOCK_CART.products,
-    ...bookings,
-  ]);
-  const nonRevenue = (MOCK_CART.nonRevenueItems ?? []).reduce((sum, item) => sum + Math.round(Number(item.amount)), 0);
-  MOCK_CART_MATH = math;
-  MOCK_CART.taxes = math.totalTaxes;
-  MOCK_CART.tax = math.tax;
-  MOCK_CART.subtotal = math.subtotal + nonRevenue;
-  MOCK_CART.total = math.total + nonRevenue;
-  MOCK_CART.amountToBeCharged = MOCK_CART.total;
-  MOCK_CART.remainingBalance = MOCK_CART.total;
-};
-
-/**
- * What every payment command refuses before money moves (kaching `handlerHelpers.ts:148-186`): an empty cart, a missing
- * or non-positive amount, an amount above the balance due. A $0 cart settles with no amount. Returns the leg amount.
- */
-export const assertMockPaymentAmount = (command: string, amount: number | undefined): number => {
-  const lines = [MOCK_CART.products, MOCK_CART.customSales, MOCK_CART.nonRevenueItems, MOCK_CART.reservations];
-  if (lines.every((rows) => !rows?.length)) throw new Error('Cart is empty. Cannot process payment.');
-  const balanceDue = Math.round(MOCK_CART.amountToBeCharged ?? MOCK_CART.total);
-  if (balanceDue !== 0 && (amount === undefined || amount === null)) {
-    throw new Error(`${command}: amount is required (integer minor currency units)`);
-  }
-  const leg = Math.round(amount ?? 0);
-  if (balanceDue === 0 && leg < 0) throw new Error(`${command}: amount must not be negative (minor units)`);
-  if (balanceDue !== 0 && (!Number.isFinite(leg) || leg <= 0)) {
-    throw new Error(`${command}: amount must be a positive integer (minor units)`);
-  }
-  if (leg > balanceDue) throw new Error(`${command}: amount ${leg} exceeds the balance due ${balanceDue}`);
-  return leg;
-};
-
-/** MOCK ONLY: the dataset's `declines` switch, failing the way the host's processor does (kaching `dispatchPay.ts:208-220`). */
-export const assertMockPaymentNotDeclined = (paymentType: 'terminal' | 'tapToPay', cloud: boolean) => {
-  if (!MOCK_DECLINES.payments?.includes(paymentType)) return;
-  console.warn(`[Mock] ${paymentType}Payment declined — the mock dataset sets declines.payments`);
-  throw new Error(`${cloud ? 'CLOUD_PAYMENT_FAILED' : 'NATIVE_PAYMENT_FAILED'}: Card declined`);
-};
-
-/** MOCK ONLY: the dataset's `declines.customTableWrites` switch, refusing the way the till does (kaching `customTables.ts:131,291`). */
-export const assertMockCustomTableWriteNotDeclined = (tableName: string) => {
-  if (!MOCK_DECLINES.customTableWrites) return;
-  console.warn('[Mock] custom table write refused — the mock dataset sets declines.customTableWrites');
-  throw new Error(`Table "${tableName}" not found`);
-};
-
-/** The refund selection `selectAllRefundItems` staged, for a `processPartialRefund` without `items` (the host's `refundDetails`). */
-export let MOCK_STAGED_REFUND: {
-  orderId: string;
-  items: { itemKey: string; quantity: number; type: string }[];
-} | null = null;
-export const stageMockRefund = (stage: typeof MOCK_STAGED_REFUND) => {
-  MOCK_STAGED_REFUND = stage;
-};
-
-/** kaching `money/cashRounding.ts:31-47`: the company's increment applied to a cash amount; no setting = unchanged. */
-export const mockCashRounding = (amountMinor: number): { rounded: number; cashRoundingAmount: number } => {
-  const amount = Math.round(amountMinor);
-  const major = Number(MOCK_CASH_ROUNDING);
-  if (!MOCK_CASH_ROUNDING || !Number.isFinite(major) || major <= 0) return { rounded: amount, cashRoundingAmount: 0 };
-  const increment = toMinorUnits(major, resolveMockOrderCurrency());
-  if (increment <= 0) return { rounded: amount, cashRoundingAmount: 0 };
-  const rounded = cashRoundToIncrement(amount, increment);
-  return { rounded, cashRoundingAmount: rounded - amount };
-};
-
 // Helper to reset cart
 export const resetMockCart = () => {
   MOCK_CART = {
@@ -1354,7 +1197,6 @@ export const resetMockCart = () => {
     nonRevenueItems: [],
     customer: null,
   };
-  MOCK_CART_MATH = null;
 };
 
 function resolveMockOrderCurrency(): CurrencyCode {
@@ -1437,8 +1279,6 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   if (config.catalogVisibility !== undefined) {
     MOCK_CATALOG_VISIBILITY.splice(0, MOCK_CATALOG_VISIBILITY.length, ...config.catalogVisibility);
   }
-  if (config.taxTables !== undefined) MOCK_TAX_TABLES = config.taxTables;
-  if (config.cashRounding !== undefined) MOCK_CASH_ROUNDING = config.cashRounding;
   if (config.declines !== undefined) MOCK_DECLINES = config.declines;
 
   if (MOCK_OUTLETS.length > 0) {
@@ -1469,6 +1309,22 @@ export const safeSerialize = <T>(data: T): T => {
 type MockEventCallback = (event: any) => void;
 const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
 
+export let MOCK_DECLINES: MockDeclines = {};
+
+/** MOCK ONLY: the dataset's `declines.payments` switch, failing with the till processor's text (kaching `dispatchPay.ts:208-220`). */
+export const assertMockPaymentNotDeclined = (paymentType: 'terminal' | 'tapToPay', cloud: boolean) => {
+  if (!MOCK_DECLINES.payments?.includes(paymentType)) return;
+  console.warn(`[Mock] ${paymentType}Payment declined — the mock dataset sets declines.payments`);
+  throw new Error(`${cloud ? 'CLOUD_PAYMENT_FAILED' : 'NATIVE_PAYMENT_FAILED'}: Card declined`);
+};
+
+/** MOCK ONLY: the dataset's `declines.customTableWrites` switch, refusing with the till's text (kaching `customTables.ts:131,291`). */
+export const assertMockCustomTableWriteNotDeclined = (tableName: string) => {
+  if (!MOCK_DECLINES.customTableWrites) return;
+  console.warn('[Mock] custom table write refused — the mock dataset sets declines.customTableWrites');
+  throw new Error(`Table "${tableName}" not found`);
+};
+
 export const mockPublishEvent = (topic: string, eventType: string, data: any) => {
   const subscribers = mockTopicSubscribers[topic] || [];
   const event = {
@@ -1494,67 +1350,8 @@ export const mockSubscribeToTopic = (topic: string, callback: MockEventCallback)
   mockTopicSubscribers[topic].push(callback);
 };
 
-/**
- * kaching buildOrderFromCart.ts:121-140,223 — the cart's modifier rows become the order line's, money and tax COPIED from
- * the recompute; without it the row is extended from the cart row with tax 0, as there.
- */
-const orderLineModifiers = (line: CFActiveProduct, math: MockLineMath | undefined) => {
-  const modifiers = (line.modifiers ?? []).map((m, i) => {
-    const row = math?.modifiers[i] ?? {
-      amount: extendPrice(m.unitPrice * m.quantity, line.quantity),
-      tax: 0,
-      taxes: [],
-    };
-    return {
-      modifierId: m.modifierId,
-      modifierName: m.modifierName,
-      choiceId: m.choiceId,
-      choiceName: m.choiceName,
-      unitPrice: Math.round(m.unitPrice),
-      quantity: m.quantity,
-      total: Math.round(row.amount),
-      totalTax: Math.round(row.tax),
-      ...(row.taxes.length > 0 ? { taxes: row.taxes } : {}),
-      ...(m.componentIndex !== undefined ? { componentIndex: m.componentIndex } : {}),
-    };
-  });
-  return modifiers.length > 0 ? { modifiers } : {};
-};
-
-/**
- * kaching buildOrderFromCart.ts:142-170,224 — what a composite line picked, per ONE composite. The engine's per-component
- * tax (own-tax composites) is not tracked by the mock, so `taxes`/`totalTax` are left off the components.
- */
-const orderLineComponents = (line: CFActiveProduct) => {
-  const components = (line.components ?? []).map((component) => ({
-    productId: component.productId,
-    variantId: component.variantId,
-    name: component.name,
-    ...(component.attributes?.length ? { attributes: component.attributes.map((attr) => attr.value).join(', ') } : {}),
-    ...(component.partName ? { partName: component.partName } : {}),
-    quantity: component.quantity,
-    price: component.unitPrice,
-    ...(component.unit
-      ? {
-          unitId: component.unit.unitId,
-          unitAbbreviation: component.unit.abbreviation,
-          unitRatioToBase: component.unit.ratioToBase,
-          stockQuantity: toBase(component.quantity, component.unit),
-        }
-      : {}),
-    ...(component.stockVariantId ? { stockVariantId: component.stockVariantId } : {}),
-    ...(component.taxTableId ? { taxTableId: component.taxTableId } : {}),
-  }));
-  return components.length > 0 ? { components } : {};
-};
-
 // Helper to create order from cart
-export const createOrderFromCart = (
-  paymentType: string,
-  amount: number,
-  processor: string = 'cash',
-  cashRounding: number = 0,
-): CFActiveOrder => {
+export const createOrderFromCart = (paymentType: string, amount: number, processor: string = 'cash'): CFActiveOrder => {
   const primaryOutlet = MOCK_OUTLETS[0] ?? MOCK_OUTLET_MAIN;
   const primaryStation = MOCK_STATIONS[0] ?? MOCK_STATION;
   const employeeUser = MOCK_USERS.find((u) => u.type === CFUserTypes.CASHIER) ?? MOCK_USERS[0] ?? MOCK_USER;
@@ -1567,14 +1364,12 @@ export const createOrderFromCart = (
   // Map cart products to line items
   const lineItems = MOCK_CART.products.map((p) => {
     // The cart line resolved its unit when it was added; the ORDER line freezes it, exactly
-    // as production does. Money is COPIED from the cart's last recompute, never re-derived
-    // (kaching buildOrderFromCart.ts:86-107).
-    const math = MOCK_CART_MATH?.lines[p.internalId || p.id];
-    const lineTotal = math?.total ?? extendPrice(p.price, p.quantity);
+    // as production does. extendPrice for the same reason as everywhere: fractional
+    // quantities must not leave fractional cents on an order.
+    const lineTotal = extendPrice(p.price, p.quantity);
     return {
       productId: p.id,
       variantId: p.variantId,
-      internalId: p.internalId,
       name: p.name,
       quantity: p.quantity,
       price: p.price,
@@ -1586,21 +1381,15 @@ export const createOrderFromCart = (
             stockQuantity: toBase(p.quantity, p.unit),
           }
         : {}),
-      taxes: math?.taxes ?? [],
+      taxes: [],
       discount: {
-        itemDiscounts: (math?.prodDiscounts ?? []).map((d) => ({
-          label: d.label ?? '',
-          percentage: d.percentage,
-          amount: d.amount,
-        })),
-        cartDiscount: { percentage: math?.cartDiscountPercentage ?? 0, amount: math?.cartDiscountAllocated ?? 0 },
+        itemDiscounts: [],
+        cartDiscount: { percentage: 0, amount: 0 },
       },
       fee: { itemFees: [] },
-      ...orderLineModifiers(p, math),
-      ...orderLineComponents(p),
-      totalTax: math?.tax ?? 0,
+      totalTax: 0,
       total: lineTotal,
-      lineNetWithFees: math?.lineDisplayWithFee ?? lineTotal,
+      lineNetWithFees: lineTotal,
       metadata: [],
       image: p.images?.[0] || '',
       sku: p.sku || '',
@@ -1626,18 +1415,14 @@ export const createOrderFromCart = (
     summary: {
       total: totalNum,
       subtotalAfterFees: totalNum,
-      discountTotal: MOCK_CART_MATH?.totalDiscount ?? 0,
+      discountTotal: 0,
       shippingTotal: 0,
-      totalTaxes: MOCK_CART.tax ?? 0,
-      taxes: MOCK_CART.taxes ?? [],
-      isTaxInclusive: mockTaxInclusive(),
+      totalTaxes: 0,
+      taxes: [],
+      isTaxInclusive: false,
     },
     cartDiscount: MOCK_CART.discount
-      ? {
-          label: MOCK_CART.discount.label || 'Discount',
-          amount: MOCK_CART_MATH?.discountAmount ?? 0,
-          percentage: MOCK_CART.discount.value,
-        }
+      ? { label: MOCK_CART.discount.label || 'Discount', amount: 0, percentage: MOCK_CART.discount.value }
       : null,
     cartFees: [],
     paymentMethods: [
@@ -1645,8 +1430,6 @@ export const createOrderFromCart = (
         transactionId: `trans_${Date.now()}`,
         paymentType,
         amount,
-        // A cash-rounded leg records the drawer amount and the signed difference (kaching dispatchPay.ts:384-396).
-        ...(cashRounding ? { cashRounding } : {}),
         timestamp: new Date().toISOString(),
         processor,
       },
@@ -1680,8 +1463,8 @@ export const createOrderFromCart = (
       startAt: reservation.startAt,
       endAt: reservation.endAt,
       bufferEndAt: reservation.bufferEndAt,
-      // Copied from the cart's recompute, like a line item's.
-      taxes: MOCK_CART_MATH?.lines[reservation.internalId]?.taxes ?? [],
+      // The mock computes no tax anywhere — line items ship `taxes: []` too.
+      taxes: [],
       // Neither `expiresAt` nor a status comes along: a booking's state lives on its own
       // row — which is what `getBookings` reads — and a copy frozen on the order would be
       // wrong from the next moment on.
@@ -1727,7 +1510,6 @@ export const applyMockPayment = (
   amount: number,
   paymentType: string,
   processor: string = 'cash',
-  cashRounding: number = 0,
 ): CFActiveOrder | null => {
   const remainingBefore = MOCK_CART.remainingBalance ?? MOCK_CART.total;
   const charge = Math.min(Math.max(0, amount || remainingBefore), remainingBefore);
@@ -1743,7 +1525,7 @@ export const applyMockPayment = (
 
   // Fully paid — create the completed order (this also resets the cart).
   const orderTotal = MOCK_CART.total;
-  const order = createOrderFromCart(paymentType, orderTotal + cashRounding, processor, cashRounding);
+  const order = createOrderFromCart(paymentType, orderTotal, processor);
   mockPublishEvent('payments', 'payment-done', { order });
   return order;
 };

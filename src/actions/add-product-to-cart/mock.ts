@@ -4,8 +4,6 @@ import {
   MOCK_OUTLET,
   mockCompositeAtOutlet,
   mockCompositeStockRefusal,
-  assertMockPlainLineStock,
-  recalculateMockCart,
   mockHiddenProductIds,
   MOCK_PRODUCTS,
   buildCartLineModifiers,
@@ -26,7 +24,7 @@ import {
   CFResolvedModifier,
 } from '../../CommonTypes';
 import type { ModifierSelection } from '../get-product-modifier-selections/types';
-import { isValidQuantity, resolveUnit } from '@final-commerce/common';
+import { extendPrice, isValidQuantity, resolveUnit } from '@final-commerce/common';
 
 export const mockAddProductToCart: AddProductToCart = async (
   params?: AddProductToCartParams,
@@ -165,8 +163,9 @@ export const mockAddProductToCart: AddProductToCart = async (
   // Same for the catalogue's `composite` picker: a cart line carries `components`, never the menu.
   delete (activeProduct as { composite?: unknown }).composite;
 
-  // Keep the raw answers AND the priced rows, the same pair the real host writes; the cart's
-  // recompute below extends them by the line quantity, as the host's tax engine does.
+  // Keep the raw answers AND the priced rows, the same pair the real host writes. The cart
+  // TOTAL is deliberately left alone: like a product fee (see add-product-fee), per-line
+  // money is not accumulated by this mock — `total` stays Σ extendPrice(price, quantity).
   if (params?.modifiers?.length) {
     activeProduct.modifierSelections = params.modifiers;
     activeProduct.modifiers = buildCartLineModifiers(product.modifiers, params.modifiers, product.taxTable);
@@ -178,9 +177,6 @@ export const mockAddProductToCart: AddProductToCart = async (
       activeProduct.modifiers = [...(activeProduct.modifiers ?? []), ...compositeLine.modifiers];
     }
   }
-
-  // The host's stock rule for a plain line: this line with everything the cart already takes of the variant.
-  if (!compositeLine) assertMockPlainLineStock([...MOCK_CART.products, activeProduct], variant);
 
   // B41: every bookable component held in one step, or the add is refused and nothing is kept.
   const booked = compositeLine && (await mockHoldCompositeBookings(compositeLine, quantity, internalId, params));
@@ -201,7 +197,15 @@ export const mockAddProductToCart: AddProductToCart = async (
   if (booked?.length) MOCK_CART.reservations = [...(MOCK_CART.reservations ?? []), ...booked];
 
   MOCK_CART.products.push(activeProduct);
-  recalculateMockCart();
+
+  // Recalculate totals. extendPrice, not a raw multiply: a fractional quantity times an
+  // integer-minor price leaves fractional cents, which no order may carry.
+  const lineTotal = extendPrice(activeProduct.price, quantity);
+  MOCK_CART.subtotal += lineTotal;
+  // Simple total calculation (ignoring taxes/fees for mock simplicity unless needed)
+  MOCK_CART.total += lineTotal;
+  MOCK_CART.amountToBeCharged = MOCK_CART.total;
+  MOCK_CART.remainingBalance = MOCK_CART.total;
 
   // Publish cart event to simulate real behavior
   mockPublishEvent('cart', 'product-added', { product: activeProduct });

@@ -1,66 +1,70 @@
 import { CashPayment, CashPaymentParams, CashPaymentResponse } from './types';
-import { applyMockPayment, assertMockPaymentAmount, MOCK_CART, mockCashRounding } from '../../demo/database';
+import { applyMockPayment, MOCK_CART } from '../../demo/database';
 
-/**
- * The host's cash payment (kaching handlerHelpers.ts:144-258, dispatchPay.ts:338-375): the leg is cash-rounded with the
- * company's setting, the change is counted against the ROUNDED charge, and every refusal rejects with the host's text.
- */
 export const mockCashPayment: CashPayment = async (params: CashPaymentParams): Promise<CashPaymentResponse> => {
   console.log('[Mock] cashPayment called', params);
 
-  const amount = assertMockPaymentAmount('cashPayment', params?.amount);
-  const { rounded: charge, cashRoundingAmount } = mockCashRounding(amount);
+  const fail = (reason: string): CashPaymentResponse => {
+    console.warn(`[Mock] cashPayment rejected: ${reason}`);
+    return {
+      success: false,
+      amount: 0,
+      openChangeCalculator: params?.openChangeCalculator ?? false,
+      change: 0,
+      cashRounding: 0,
+      paymentType: 'cash',
+      order: null,
+      timestamp: new Date().toISOString(),
+      saleFinalized: false,
+      remainingBalance: 0,
+    };
+  };
 
+  // Contract: `amount` is required, integer MINOR currency units — same
+  // scale as the mock cart's totals, so comparisons are direct.
+  if (params?.amount === undefined || params.amount === null) {
+    return fail('amount is required (integer minor currency units)');
+  }
+  const balanceDue = MOCK_CART.amountToBeCharged ?? MOCK_CART.total;
+  if (params.amount > balanceDue) {
+    return fail(`amount ${params.amount} exceeds balance due ${balanceDue}`);
+  }
+
+  // Flow-owned tender: compute change here (no rounding in the mock).
   let change = 0;
   if (params.tenderedAmount !== undefined) {
-    const tendered = Math.round(params.tenderedAmount);
-    if (tendered < charge) {
-      throw new Error(`cashPayment: tenderedAmount ${tendered} is less than the (cash-rounded) charge ${charge}`);
+    if (params.tenderedAmount < params.amount) {
+      return fail(`tenderedAmount ${params.tenderedAmount} is less than amount ${params.amount}`);
     }
-    change = tendered - charge;
-  } else if (params.openChangeCalculator && charge > 0) {
-    // Deprecated legacy path: simulate the POS-owned change calculator. A cancel charges nothing and, as on the host
-    // (dispatchPay.ts:359-364), still resolves — with no order.
-    let input: string | null = '';
+    change = params.tenderedAmount - params.amount;
+  } else if (params.openChangeCalculator) {
+    // Deprecated legacy path: simulate the POS-owned change calculator.
     try {
-      input = window.prompt(
-        `Amount due: $${(charge / 100).toFixed(2)}\nEnter amount tendered (dollars):`,
-        (charge / 100).toFixed(2),
+      const input = window.prompt(
+        `Amount due: $${(params.amount / 100).toFixed(2)}\nEnter amount tendered (dollars):`,
+        (params.amount / 100).toFixed(2),
       );
+      if (input === null) return fail('cancelled');
+      const tendered = parseFloat(input);
+      if (!isNaN(tendered)) change = Math.round(tendered * 100) - params.amount;
     } catch (e) {
       console.warn('Could not open prompt/alert (possibly in non-interactive environment)', e);
     }
-    if (input === null) {
-      return {
-        success: true,
-        amount,
-        openChangeCalculator: true,
-        change: 0,
-        cashRounding: 0,
-        paymentType: 'cash',
-        order: null,
-        timestamp: new Date().toISOString(),
-        saleFinalized: false,
-        remainingBalance: 0,
-      };
-    }
-    const tendered = parseFloat(input);
-    if (!isNaN(tendered)) change = Math.round(tendered * 100) - charge;
   }
 
-  const order = applyMockPayment(amount, 'cash', 'cash', cashRoundingAmount);
+  const order = applyMockPayment(params.amount, 'cash', 'cash');
 
   return {
     success: true,
-    amount,
+    amount: params.amount,
     openChangeCalculator: params.openChangeCalculator ?? false,
     change,
-    ...(params.tenderedAmount !== undefined ? { tenderedAmount: Math.round(params.tenderedAmount) } : {}),
-    cashRounding: cashRoundingAmount,
+    tenderedAmount: params.tenderedAmount,
+    cashRounding: 0,
     paymentType: 'cash',
     order,
     timestamp: new Date().toISOString(),
-    saleFinalized: !!order,
-    remainingBalance: order ? 0 : (MOCK_CART.remainingBalance ?? 0),
+    saleFinalized: true,
+    remainingBalance: 0,
   };
 };

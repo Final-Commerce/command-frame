@@ -1,4 +1,4 @@
-import { MOCK_CART, recalculateMockCart } from '../../demo/database';
+import { MOCK_CART } from '../../demo/database';
 import { AddNonRevenueItem, AddNonRevenueItemParams, AddNonRevenueItemResponse } from './types';
 
 export const mockAddNonRevenueItem: AddNonRevenueItem = async (
@@ -31,7 +31,10 @@ export const mockAddNonRevenueItem: AddNonRevenueItem = async (
   }
   MOCK_CART.nonRevenueItems.push(row);
 
-  recalculateMockCart();
+  MOCK_CART.total += amount;
+  MOCK_CART.amountToBeCharged = MOCK_CART.total;
+  MOCK_CART.remainingBalance = MOCK_CART.total;
+  MOCK_CART.subtotal = (MOCK_CART.subtotal ?? 0) + amount;
 
   return {
     success: true,

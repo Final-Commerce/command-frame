@@ -1,6 +1,5 @@
 import { AddProductFee, AddProductFeeParams, AddProductFeeResponse } from './types';
-import { MOCK_CART, recalculateMockCart } from '../../demo/database';
-import { percentToFraction, requireMinorUnitsInteger } from '../../demo/units';
+import { MOCK_CART } from '../../demo/database';
 
 export const mockAddProductFee: AddProductFee = async (
   params?: AddProductFeeParams,
@@ -23,15 +22,11 @@ export const mockAddProductFee: AddProductFee = async (
       item.fees = [
         {
           label: params.label || 'Fee',
-          // Stored as the host stores it (kaching adjustmentValue.ts:62-65): minor units, or a fraction for a percent.
-          amount: params.isPercent
-            ? percentToFraction(params.amount)
-            : requireMinorUnitsInteger(params.amount, 'Fee amount'),
+          amount: params.amount,
           isPercent: params.isPercent || false,
           applyTaxes: params.applyTaxes || false,
         },
       ];
-      recalculateMockCart();
     }
   }
 

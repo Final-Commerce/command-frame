@@ -1,5 +1,5 @@
 import { RemoveCustomSale, RemoveCustomSaleParams, RemoveCustomSaleResponse } from './types';
-import { MOCK_CART, mockPublishEvent, recalculateMockCart } from '../../demo/database';
+import { MOCK_CART, mockPublishEvent } from '../../demo/database';
 
 export const mockRemoveCustomSale: RemoveCustomSale = (
   params: RemoveCustomSaleParams,
@@ -23,7 +23,12 @@ export const mockRemoveCustomSale: RemoveCustomSale = (
   // Remove from cart
   sales.splice(index, 1);
 
-  recalculateMockCart();
+  // Recalculate totals
+  const lineTotal = sale.price * sale.quantity;
+  MOCK_CART.subtotal -= lineTotal;
+  MOCK_CART.total -= lineTotal;
+  MOCK_CART.amountToBeCharged = MOCK_CART.total;
+  MOCK_CART.remainingBalance = MOCK_CART.total;
 
   // Publish custom-sale-removed event so cart subscribers refresh
   mockPublishEvent('cart', 'custom-sale-removed', { customSale: sale, id });

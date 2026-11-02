@@ -1,18 +1,23 @@
 import { GetRefundPlan, GetRefundPlanParams, GetRefundPlanResponse, RefundPlanLeg, RefundPlanSource } from './types';
 import { MOCK_ORDERS } from '../../demo/database';
-import { mockRefundBreakdown, mockRefundRows, mockRemainingOnSource } from './mockRows';
+import { mockRefundBreakdown, mockRefundRows } from './mockRows';
 
 /**
  * Demo derivation of the runtime `getRefundPlan`. Builds the per-source rows
  * from the mock order's `paymentMethods`, mirroring the runtime's capacity
  * definition (principal + captured tip).
  *
- * Refunded amounts come from the order's `refund[]` legs, as on the host. The
- * mock captures carry no `emv`, so `cardNumber` is always undefined.
+ * HONEST INERTNESS: the demo DB records no prior-refund ledger and no `emv`
+ * blocks on its mock captures, so this mock reports `refundedAmount: 0` /
+ * `totalRefunded: 0` and `cardNumber: undefined` for every source, and treats
+ * `maxRefundable` as the full captured amount. Against real kaching those
+ * numbers come from `order.refund[]` and the capture's `emv` JSON. Use this
+ * only to shape UI in local/standalone mode — never to assert real capacity.
  *
- * `allocation` is shape-only: it always describes a FULL refund of what is
- * left, with `rounding: 0` and no cash `payout`. Against real kaching the
- * allocation tracks the live selection and carries the drawer snap.
+ * `allocation` is likewise shape-only: the demo has no refund SELECTION state
+ * and no company cash-rounding setting, so it always describes a FULL refund
+ * with `rounding: 0` and no cash `payout`. Against real kaching the allocation
+ * tracks the live selection and carries the drawer snap.
  *
  * `rows` / `allocation.breakdown` follow the engine's reading of the order
  * (`line.total` includes the line's tax) but prorate by plain quantity share;
@@ -48,15 +53,15 @@ export const mockGetRefundPlan: GetRefundPlan = async (
       paymentType: pm.paymentType,
       processor: pm.processor ?? undefined,
       capturedAmount: captured,
-      refundedAmount: captured - mockRemainingOnSource(order, pm.transactionId),
-      maxRefundable: mockRemainingOnSource(order, pm.transactionId),
+      // Demo DB has no refund ledger — nothing has been refunded yet here.
+      refundedAmount: 0,
+      maxRefundable: captured,
       refundableToSource: pm.paymentType !== 'redeem',
       cardNumber,
     };
   });
 
   const totalCaptured = sources.reduce((sum, s) => sum + s.capturedAmount, 0);
-  const totalRefunded = sources.reduce((sum, s) => sum + s.refundedAmount, 0);
   const nonRefundableLiability = order.summary?.nonRevenueTotal ?? 0;
 
   // Full-refund legs: every source returns its whole capture (the demo's
@@ -86,10 +91,11 @@ export const mockGetRefundPlan: GetRefundPlan = async (
       legs,
       breakdown: mockRefundBreakdown(rows, params?.items),
     },
-    remainingRefundable: Math.max(0, totalCaptured - totalRefunded - nonRefundableLiability),
+    // Demo: no prior refunds, so remaining = captured minus the non-revenue load.
+    remainingRefundable: Math.max(0, totalCaptured - nonRefundableLiability),
     nonRefundableLiability,
     totalCaptured,
-    totalRefunded,
+    totalRefunded: 0,
     timestamp: new Date().toISOString(),
   };
 };

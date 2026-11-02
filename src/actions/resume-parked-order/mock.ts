@@ -1,12 +1,5 @@
 import { ResumeParkedOrder, ResumeParkedOrderParams, ResumeParkedOrderResponse } from './types';
-import {
-  MOCK_PARKED_ORDERS,
-  MOCK_CART,
-  MOCK_PRODUCTS,
-  resetMockCart,
-  mockPublishEvent,
-  recalculateMockCart,
-} from '../../demo/database';
+import { MOCK_PARKED_ORDERS, MOCK_CART, MOCK_PRODUCTS, resetMockCart, mockPublishEvent } from '../../demo/database';
 import type { CFActiveOrder } from '../../CommonTypes';
 
 /**
@@ -34,8 +27,6 @@ export const restoreMockCartFromOrder = (orderToResume: CFActiveOrder): void => 
       }) as any,
   );
 
-  // Lines first (for lineTotals), then the stored order's own totals, which the mock's parked data carries as is.
-  recalculateMockCart();
   MOCK_CART.subtotal = orderToResume.summary.subtotalAfterFees;
   MOCK_CART.total = orderToResume.summary.total;
   MOCK_CART.amountToBeCharged = MOCK_CART.total;

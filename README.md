@@ -147,53 +147,15 @@ Each client comes with built-in mock data for local development.
 const client = new RenderClient({ mockMode: true, debug: true });
 ```
 
-#### What the mock host does like the till
-
-The mock cart computes its money the way the till (kaching) does, so a screen built on the mock shows the till's numbers: tax per rate rounded once over the cart, a cart discount split over the lines, product discounts that stack, `lineTotals`, and the order's `taxes` / `totalTax` / `discountTotal` copied from the cart. Payments, refunds and stock refuse like the till, with its error texts:
-
-- `cashPayment`, `terminalPayment`, `tapToPayPayment` reject an empty cart, a missing or non-positive `amount`, or one above the balance due; a partial leg returns `order: null` and the `remainingBalance`.
-- `cashPayment` rounds the leg with the company's cash rounding, counts the change against the rounded charge, and rejects a `tenderedAmount` below it.
-- `addProductToCart` rejects a tracked variant past its stock at the active outlet (`Insufficient stock. Available: 2, Requested: 3`, `Product is out of stock`); `updateCartItemQuantity` rejects a raise past it the same way.
-- `processPartialRefund` refunds only what is left (`getRemainingRefundableQuantities` drops after it), raises the split-payment modal for a multi-tender order unless `openUI: false`, checks `legs` against each source and the budget, and uses the selection `selectAllRefundItems({ orderId })` staged when no `items` are passed. The order then reads `partially_refunded` / `partially_returned` (`status: 'partial-refund'`), or `refunded` / `returned` once everything paid is back, with its `balance`.
-- A paid order keeps each line's `modifiers` (with their own `total` / `totalTax` / `taxes`) and a composite line's `components`.
-- `upsertCustomTableData` stores the row (an existing `_id` updates it) and `getCustomTableData` reads it back; the mock filters by plain field equality only and does not check the table's fields.
-
-The dataset passed to `setMockDatabase` supplies what the till reads from the company:
+**Declines — mock only.** A test that needs to see how a flow treats a refusal sets `declines` in the dataset; a real till never reads it:
 
 ```typescript
-setMockDatabase({
-  company: { settings: { currency: 'USD', isTaxInclusive: false } }, // absent isTaxInclusive = inclusive, as on the till
-  // The active outlet's tax tables, keyed by the id products name in `taxTable`; `rate` is a decimal (0.13 = 13%).
-  taxTables: {
-    tax_standard: [
-      {
-        id: 'gst',
-        name: 'GST',
-        rate: 0.05,
-        priority: 1,
-        compounding: false,
-        taxTableId: 'tax_standard',
-        taxTableName: 'Standard',
-      },
-    ],
-  },
-  cashRounding: '0.05', // the company's cash rounding, major units; absent = cash is not rounded
-});
+setMockDatabase({ declines: { payments: ['terminal', 'tapToPay'], refunds: true, customTableWrites: true } });
 ```
 
-No tax tables means no tax, as on a till whose outlet has none.
-
-**Declines — mock only.** A test that needs to see how a flow treats a failed payment or refund sets `declines` in the dataset. Nothing else triggers a decline, and a real till never reads it:
-
-```typescript
-setMockDatabase({ declines: { payments: ['terminal', 'tapToPay'], refunds: true } });
-```
-
-- `payments`: those card commands reject the way the till's processor does — `CLOUD_PAYMENT_FAILED: Card declined` for `terminalPayment({ paymentType: 'Cloud' })`, `NATIVE_PAYMENT_FAILED: Card declined` for the reader and tap to pay. Nothing is recorded; the cart stays open. Cash never declines.
-- `refunds: true`: `processPartialRefund` rejects with `Cloud refund failed` after its checks pass; nothing is recorded.
-- `customTableWrites: true`: `upsertCustomTableData` and `deleteCustomTableData` reject with `Table "<name>" not found` (the till's only refusal of a table write); nothing is stored.
-
-A flow receives these as a rejected command — the same as on the till — and must show the failure, never a completed sale.
+- `payments`: those card commands reject with `CLOUD_PAYMENT_FAILED: Card declined` (cloud terminal) or `NATIVE_PAYMENT_FAILED: Card declined`.
+- `refunds: true`: `processPartialRefund` rejects with `Cloud refund failed`.
+- `customTableWrites: true`: `upsertCustomTableData` and `deleteCustomTableData` reject with `Table "<name>" not found`.
 
 ### Debugging
 
