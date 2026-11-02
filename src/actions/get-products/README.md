@@ -126,6 +126,10 @@ item not offered is refused ("Composite item <id> is not offered here"). `'hidde
 a flow never receives it. A hide or show
 arrives as `products` / `catalog-visibility-changed` — refetch.
 
+Items and choices inside `composite` are offered whether or not their product is Unlisted (`notSoldInPos`): an Unlisted
+product is sold only through a composite. Render the picker from `composite`; never look its items up with `getProducts`,
+which leaves Unlisted products out.
+
 _Stock at the till's outlet_ (B35): an item whose variant is tracked, not on backorder, and short of one pick's
 quantity (in its pool's base units — `stockVariantId` shares a shelf) is `unavailable: 'out_of_stock'` — show it
 "Sold out"; it cannot be picked. A category item is in stock while any of its products is (its `choices` are those). A unit-sold, tracked choice carries
