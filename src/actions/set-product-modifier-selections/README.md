@@ -9,7 +9,7 @@ rejects the edit with a `reason` and the line is left unchanged. On success the
 line's priced modifier rows are rebuilt from the current modifier library
 snapshot and the line is repriced.
 
-**Action label:** a control whose press calls `setProductModifierSelections` carries `data-final-action="setProductModifierSelections"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `setProductModifierSelections` carries `data-final-action="set-product-modifier-selections"`.
 
 ## Parameters
 

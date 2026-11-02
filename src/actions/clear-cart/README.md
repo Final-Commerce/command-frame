@@ -2,7 +2,7 @@
 
 Clears all items from the current cart and resets cart-related state.
 
-**Action label:** a control whose press calls `clearCart` carries `data-final-action="clearCart"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `clearCart` carries `data-final-action="clear-cart"`.
 
 ## Parameters
 

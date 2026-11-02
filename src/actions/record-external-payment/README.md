@@ -2,7 +2,7 @@
 
 Records a payment that was taken **outside the terminal** — paid online, through a delivery app, with a voucher — under a label saying what it was. **No money is taken at the POS**: no card reader, no cash drawer, no change, no tip prompt, no cash rounding. A tip the customer already paid there can be recorded with it. Otherwise it behaves like any tender: the order is paid, moves through the order state machine normally (Completed once fulfilled), and reports show the amount under the label.
 
-**Action label:** a control whose press calls `recordExternalPayment` carries `data-final-action="recordExternalPayment"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `recordExternalPayment` carries `data-final-action="record-external-payment"`.
 
 Omit `amount` to record the whole balance and complete the order. Pass an `amount` to record part of it, and take the rest with another tender (e.g. a deposit paid online, the balance in cash).
 

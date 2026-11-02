@@ -2,7 +2,7 @@
 
 Initiates a partial/split payment for the current cart.
 
-**Action label:** a control whose press calls `partialPayment` carries `data-final-action="partialPayment"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `partialPayment` carries `data-final-action="partial-payment"`.
 
 ## Parameters
 

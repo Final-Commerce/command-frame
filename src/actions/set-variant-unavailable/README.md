@@ -4,7 +4,7 @@ Marks a variant "can't be sold here right now" at the **active outlet**, or remo
 mark, independent of stock and of catalog visibility: the variant stays listed and keeps its stock. Booking
 services are products too, so they are marked through their variant.
 
-**Action label:** a control whose press calls `setVariantUnavailable` carries `data-final-action="setVariantUnavailable"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `setVariantUnavailable` carries `data-final-action="set-variant-unavailable"`.
 
 The mark is read back on every variant `getProducts` returns, as `unavailable: boolean`, and `addProductToCart`
 refuses a marked variant with `success: false` and `reason: 'Marked unavailable'` — even when the variant allows

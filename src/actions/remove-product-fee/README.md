@@ -2,7 +2,7 @@
 
 Removes ONE fee (by 0-based `index`, in the order fees were added) or — when `index` is omitted — clears ALL fees from a specific cart line item, or from the current active product if no `internalId` is given. Fees stack (`addProductFee` appends), so per-fee removal is how a single fee is edited: remove at its index, then re-add.
 
-**Action label:** a control whose press calls `removeProductFee` carries `data-final-action="removeProductFee"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `removeProductFee` carries `data-final-action="remove-product-fee"`.
 
 ## Parameters
 

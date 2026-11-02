@@ -2,7 +2,7 @@
 
 Adds a fee to the entire cart. Supports both fixed amount and percentage-based fees.
 
-**Action label:** a control whose press calls `addCartFee` carries `data-final-action="addCartFee"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `addCartFee` carries `data-final-action="add-cart-fee"`.
 
 ## Parameters
 

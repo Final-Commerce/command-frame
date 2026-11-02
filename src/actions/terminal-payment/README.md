@@ -2,7 +2,7 @@
 
 Initiates a terminal payment for the current cart.
 
-**Action label:** a control whose press calls `terminalPayment` carries `data-final-action="terminalPayment"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `terminalPayment` carries `data-final-action="terminal-payment"`.
 
 ## Parameters
 

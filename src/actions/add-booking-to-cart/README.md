@@ -2,7 +2,7 @@
 
 Sells a service: claims the window on the device and puts it in the cart as a **reservation**.
 
-**Action label:** a control whose press calls `addBookingToCart` carries `data-final-action="addBookingToCart"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `addBookingToCart` carries `data-final-action="add-booking-to-cart"`.
 
 A bookable product does not become a line item. `lineItems[]` stays the goods array; services live
 in `reservations[]` with their own money, so a booking order can be reported and changed without

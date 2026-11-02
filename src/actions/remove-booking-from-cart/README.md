@@ -2,7 +2,7 @@
 
 Takes a booked service out of the cart and releases the window it was holding.
 
-**Action label:** a control whose press calls `removeBookingFromCart` carries `data-final-action="removeBookingFromCart"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `removeBookingFromCart` carries `data-final-action="remove-booking-from-cart"`.
 
 ```ts
 const { reservationInternalId } = await renderClient.removeBookingFromCart({

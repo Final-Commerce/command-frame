@@ -2,7 +2,7 @@
 
 Adjusts the inventory/stock level for a specific product variant.
 
-**Action label:** a control whose press calls `adjustInventory` carries `data-final-action="adjustInventory"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `adjustInventory` carries `data-final-action="adjust-inventory"`.
 
 ## Parameters
 

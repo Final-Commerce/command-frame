@@ -2,7 +2,7 @@
 
 Removes a product from the cart by its unique `internalId`. This action is useful for removing specific cart items when you know the exact cart item identifier.
 
-**Action label:** a control whose press calls `removeProductFromCart` carries `data-final-action="removeProductFromCart"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `removeProductFromCart` carries `data-final-action="remove-product-from-cart"`.
 
 `internalId` is also matched against custom sale line items already in the cart as a fallback (products are checked first) — so this action can remove either a regular product line item or a custom sale line item. To remove a custom sale explicitly, use [`removeCustomSale`](../remove-custom-sale/README.md).
 

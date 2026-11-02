@@ -4,7 +4,7 @@ Releases a booking — a hold the customer walked away from, or a confirmed appo
 is cancelling. The window becomes free for everybody immediately, and the cancellation is
 recorded on the booking's history.
 
-**Action label:** a control whose press calls `cancelBooking` carries `data-final-action="cancelBooking"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `cancelBooking` carries `data-final-action="cancel-booking"`.
 
 Written on the device and synced up, like the claim it releases. The order, if there is one, is **not**
 touched: cancelling a booking is not a refund.

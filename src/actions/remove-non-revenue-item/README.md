@@ -2,7 +2,7 @@
 
 Removes a non-revenue line from the cart (for example a gift-card load / liability previously added via [`addNonRevenueItem`](../add-non-revenue-item/README.md)) by its `externalId`.
 
-**Action label:** a control whose press calls `removeNonRevenueItem` carries `data-final-action="removeNonRevenueItem"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `removeNonRevenueItem` carries `data-final-action="remove-non-revenue-item"`.
 
 ## Parameters
 

@@ -2,7 +2,7 @@
 
 Updates the quantity of a cart item by its unique `internalId`. If the quantity is set to 0, the item will be removed from the cart. This action is useful for quantity selectors and cart management.
 
-**Action label:** a control whose press calls `updateCartItemQuantity` carries `data-final-action="updateCartItemQuantity"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `updateCartItemQuantity` carries `data-final-action="update-cart-item-quantity"`.
 
 ## Parameters
 

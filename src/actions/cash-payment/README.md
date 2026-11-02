@@ -3,7 +3,7 @@
 Pays (part of) the current cart with cash. All amounts are **integer MINOR
 currency units** (e.g. `1575` = $15.75 — see `getContext().minorUnits`).
 
-**Action label:** a control whose press calls `cashPayment` carries `data-final-action="cashPayment"` — see [Action labels](../../projects/render/README.md#action-labels).
+**Action label:** a control whose press calls `cashPayment` carries `data-final-action="cash-payment"`.
 
 The flow owns the tender UI: preview the cash-rounded total with
 [`getCashRoundingAmount`](../get-cash-rounding-amount/README.md), collect the
