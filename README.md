@@ -158,8 +158,6 @@ The mock cart computes its money the way the till (kaching) does, so a screen bu
 - A paid order keeps each line's `modifiers` (with their own `total` / `totalTax` / `taxes`) and a composite line's `components`.
 - `upsertCustomTableData` stores the row (an existing `_id` updates it) and `getCustomTableData` reads it back; the mock filters by plain field equality only and does not check the table's fields.
 
-`src/demo/fragments/combo-and-toppings.json` is a dataset fragment (`categories` + `products`, the Flow mock dataset format) with a pizza that has a toppings group and a pizza + drink composite, to add to a dataset's own.
-
 The dataset passed to `setMockDatabase` supplies what the till reads from the company:
 
 ```typescript
