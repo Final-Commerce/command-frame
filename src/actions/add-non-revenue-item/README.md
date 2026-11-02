@@ -2,6 +2,8 @@
 
 Adds a non-revenue line to the host cart (for example gift-card load / liability). The host generates a unique line id; your extension supplies a reference `id` (stored in cart metadata as `refId`).
 
+**Action label:** a control whose press calls `addNonRevenueItem` carries `data-final-action="addNonRevenueItem"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 `AddNonRevenueItemParams`

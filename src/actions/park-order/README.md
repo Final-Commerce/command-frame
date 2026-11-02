@@ -2,6 +2,8 @@
 
 Parks (saves) the current order for later retrieval. The cart is cleared after parking.
 
+**Action label:** a control whose press calls `parkOrder` carries `data-final-action="parkOrder"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 None

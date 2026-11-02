@@ -2,6 +2,8 @@
 
 Adds a product to the cart in the parent application. This atomic action handles product selection, application of options (discounts, fees, notes), and addition to the cart in a single step. `quantity` may be fractional when the variant carries a `unit` (1.509 kg is a sale) — build quantity inputs from `unit.precision`, never as a hardcoded integer stepper. A composite (`product.composite`) is added with its `composite` picks; when `composite.needsDate` is true it holds a bookable item and you MUST show a date and time picker first (`getCompositeAvailability`) and pass the chosen `compositeSlot: { startAt }` — without it the add is refused with a `reason`.
 
+**Action label:** a control whose press calls `addProductToCart` carries `data-final-action="addProductToCart"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 ### `AddProductToCartParams`

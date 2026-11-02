@@ -5,6 +5,8 @@ operator keys in the card themselves, this is for phone/mail orders and
 similar scenarios where the card is not physically present at a reader. All
 amounts are **integer MINOR currency units** (e.g. `1575` = $15.75).
 
+**Action label:** a control whose press calls `chargeMoto` carries `data-final-action="chargeMoto"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 **It charges the CURRENT CART, whatever is in it.** A flow with products in
 its cart charges exactly those products (modifiers, discounts and all), and the
 order is built from the cart like any other tender's. For an amount-only quick

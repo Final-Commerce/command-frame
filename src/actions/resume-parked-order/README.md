@@ -2,6 +2,8 @@
 
 Resumes a parked order by loading it back into the cart. The order status is updated to "in-cart".
 
+**Action label:** a control whose press calls `resumeParkedOrder` carries `data-final-action="resumeParkedOrder"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 `params: ResumeParkedOrderParams`

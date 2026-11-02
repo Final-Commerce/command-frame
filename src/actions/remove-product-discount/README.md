@@ -2,6 +2,8 @@
 
 Removes the discount(s) from a product in the cart. Applies to a specific line item when `internalId` is given, or to the current active product context otherwise.
 
+**Action label:** a control whose press calls `removeProductDiscount` carries `data-final-action="removeProductDiscount"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 ### `RemoveProductDiscountParams`

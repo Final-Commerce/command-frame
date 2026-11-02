@@ -2,6 +2,8 @@
 
 Adds a custom sale item to the cart in the parent window. This is useful for adding non-product items like service fees, surcharges, or custom charges.
 
+**Action label:** a control whose press calls `addCustomSale` carries `data-final-action="addCustomSale"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 ### `AddCustomSaleParams`

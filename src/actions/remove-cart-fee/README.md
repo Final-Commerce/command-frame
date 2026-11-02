@@ -2,6 +2,8 @@
 
 Removes a cart-level fee by its index in `cart.customFee`. Matches the order of fees returned by `getCurrentCart` (oldest fee first at index `0`).
 
+**Action label:** a control whose press calls `removeCartFee` carries `data-final-action="removeCartFee"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 - `index` (number, required): Zero-based index of the fee to remove from `customFee`.

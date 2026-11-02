@@ -2,6 +2,8 @@
 
 Initiates a tap-to-pay payment for the current cart.
 
+**Action label:** a control whose press calls `tapToPayPayment` carries `data-final-action="tapToPayPayment"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 `params?: TapToPayPaymentParams`

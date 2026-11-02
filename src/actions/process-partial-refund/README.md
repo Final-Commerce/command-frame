@@ -2,6 +2,8 @@
 
 Processes a partial refund based on the current refund selections in the refund details state.
 
+**Action label:** a control whose press calls `processPartialRefund` carries `data-final-action="processPartialRefund"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 `params?: ProcessPartialRefundParams`

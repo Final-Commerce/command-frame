@@ -2,6 +2,8 @@
 
 Removes a custom sale line item from the cart by its `id`. To add a custom sale item, use [`addCustomSale`](../add-custom-sale/README.md); to edit one in place, use [`editCustomSale`](../edit-custom-sale/README.md).
 
+**Action label:** a control whose press calls `removeCustomSale` carries `data-final-action="removeCustomSale"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 ### `RemoveCustomSaleParams`

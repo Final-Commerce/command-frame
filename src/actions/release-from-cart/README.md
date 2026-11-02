@@ -2,6 +2,8 @@
 
 Takes the order in the cart **out of the cart without changing it**, and clears the terminal for the next sale. The order keeps its payment and fulfillment state — nothing is parked, paid or voided — and is saved with `inCart.active: false`, so it can be picked up again later with [`resumeOrder`](../resume-order/README.md), on this station or another.
 
+**Action label:** a control whose press calls `releaseFromCart` carries `data-final-action="releaseFromCart"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 Use it instead of [`clearCart`](../clear-cart/README.md) when the cart's contents should survive: `clearCart` throws the cart away — an order that was already saved keeps its last saved contents (edits made since are lost) and is marked out of the cart. Use [`voidOrder`](../void-order/README.md) to cancel an order for good.
 
 ## Parameters

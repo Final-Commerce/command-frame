@@ -2,6 +2,8 @@
 
 Removes the cart-level discount from the current cart in the parent application. To apply a discount, use [`addCartDiscount`](../add-cart-discount/README.md).
 
+**Action label:** a control whose press calls `removeCartDiscount` carries `data-final-action="removeCartDiscount"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 None

@@ -2,6 +2,8 @@
 
 Adds a discount to the entire cart in the parent application. Cart discounts apply to the cart subtotal and affect all items in the cart.
 
+**Action label:** a control whose press calls `addCartDiscount` carries `data-final-action="addCartDiscount"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 ## Parameters
 
 ### `AddCartDiscountParams`

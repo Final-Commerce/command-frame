@@ -17,6 +17,7 @@ This package is available on the public NPM registry.
 - [Commands Documentation](#commands-documentation)
 - [Pub/Sub System](#pubsub-system)
 - [Examples](#examples)
+- [Action labels](#action-labels)
 - [Debugging](#debugging)
 - [Type Safety](#type-safety)
 - [License](#license)
@@ -701,6 +702,31 @@ To run the example:
 cd example
 npm install
 npm run dev
+```
+
+## Action labels
+
+A control whose press calls a command that moves money, the cart, an order, a booking or stock
+carries the attribute `data-final-action` with the exact command name:
+
+```tsx
+<Button data-test="charge-card" data-final-action="cashPayment" onClick={pay}>Pay</Button>
+<Button data-final-action="addCartFee cashPayment" onClick={payWithFee}>Pay with fee</Button>
+```
+
+- The list of commands is `ACTION_LABEL_COMMANDS` (with `ACTION_LABEL_ATTRIBUTE`) in
+  [`action-labels.ts`](./action-labels.ts); each of their READMEs carries an **Action label:** line.
+- The value is a string literal: one command name, or several separated by spaces — every command
+  the handler can call (`cond ? "a" : "b"` is written `"a b"`).
+- The label goes on the element whose press calls the command: the confirm button inside a dialog,
+  not the button that opens the dialog. Every tile of a product grid carries the same label; the
+  tile's identity stays in `data-test`.
+
+At startup the render client publishes the list on the page, so a test reading a running flow
+knows what this build expects:
+
+```typescript
+window.__COMMAND_FRAME__ = { actionLabelCommands: ACTION_LABEL_COMMANDS };
 ```
 
 ## Debugging

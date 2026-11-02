@@ -5,6 +5,8 @@ to the customer. Unlike a POS-owned tender, nobody keys in a card here: the
 shopper pays on the provider's own hosted page, and the sale completes
 asynchronously when they do.
 
+**Action label:** a control whose press calls `createPaymentLink` carries `data-final-action="createPaymentLink"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 **The caller rings the sale up first**, for an amount-only link, add a
 custom sale to the cart before calling this, exactly as a cashier would.
 Flows never compute money: the link is for the cart's own total, tax and line

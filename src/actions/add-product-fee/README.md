@@ -2,6 +2,8 @@
 
 Adds a fee to a specific product line item in the cart, or to the current active product if no `internalId` is given.
 
+**Action label:** a control whose press calls `addProductFee` carries `data-final-action="addProductFee"` — see [Action labels](../../projects/render/README.md#action-labels).
+
 **Fees STACK**: a product line can carry multiple fees — each call APPENDS another fee to the line (it never replaces an existing one). To change a fee, remove it first with `removeProductFee({ internalId, index })` (0-based, in the order fees were added), then add the new one. `removeProductFee` without `index` clears ALL fees on the line.
 
 ## Parameters
