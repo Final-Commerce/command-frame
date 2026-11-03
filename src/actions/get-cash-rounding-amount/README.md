@@ -5,6 +5,8 @@ amount a cash payment would actually charge. Read-only: no cart or order state
 changes. When the company has **no** cash-rounding setting, `roundedAmount`
 equals `amount` and `cashRounding` is `0`.
 
+**Action label:** a control whose press calls `getCashRoundingAmount` carries `data-final-action="get-cash-rounding-amount"`.
+
 Built for flow-owned cash tender UIs: fetch the rounded total, show it to the
 cashier, collect the tendered cash, then call
 `cashPayment({ amount, tenderedAmount })` — the response's `change` accounts

@@ -2,6 +2,8 @@
 
 Switches the current user to a different user.
 
+**Action label:** a control whose press calls `switchUser` carries `data-final-action="switch-user"`.
+
 ## Parameters
 
 - `mode` ('dialog' | 'role' | 'specific', required): The switch mode

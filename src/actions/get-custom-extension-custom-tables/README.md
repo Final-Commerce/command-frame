@@ -2,6 +2,8 @@
 
 Retrieves all custom tables associated with a specific custom extension from the parent application's local database.
 
+**Action label:** a control whose press calls `getCustomExtensionCustomTables` carries `data-final-action="get-custom-extension-custom-tables"`.
+
 ## Parameters
 
 ### `GetCustomExtensionCustomTablesParams`

@@ -2,6 +2,8 @@
 
 Retrieves the currently active order from the POS session. The active order is typically set via [`setActiveOrder`](../set-active-order/README.md) and is used for operations like printing receipts, processing refunds, or viewing order details.
 
+**Action label:** a control whose press calls `getActiveOrder` carries `data-final-action="get-active-order"`.
+
 ## Parameters
 
 None.

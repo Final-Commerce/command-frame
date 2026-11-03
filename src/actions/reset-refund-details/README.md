@@ -2,6 +2,8 @@
 
 Clears all refund selections (quantities, custom sales, cart fees, tips, and stock actions).
 
+**Action label:** a control whose press calls `resetRefundDetails` carries `data-final-action="reset-refund-details"`.
+
 ## Parameters
 
 None.

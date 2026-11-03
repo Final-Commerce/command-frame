@@ -2,6 +2,8 @@
 
 Retrieves a list of refunds from the system with optional filtering, sorting, and pagination.
 
+**Action label:** a control whose press calls `getRefunds` carries `data-final-action="get-refunds"`.
+
 ## Parameters
 
 `params?: GetRefundsParams`

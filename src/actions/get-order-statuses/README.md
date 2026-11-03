@@ -2,6 +2,8 @@
 
 Returns the running flow's **order statuses** — the list a flow sets with [`setOrderStatus`](../set-order-status/README.md) (e.g. `In kitchen`, `Ready for pickup`, `Out for delivery`). Authored in the flow builder and shipped with each deployed version, so a station returns the statuses of the version it is running.
 
+**Action label:** a control whose press calls `getOrderStatuses` carries `data-final-action="get-order-statuses"`.
+
 ## Parameters
 
 None.

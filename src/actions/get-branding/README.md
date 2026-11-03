@@ -2,6 +2,8 @@
 
 Returns the Manage host’s current visual theme (colors, radius, font, logo) so an extension iframe can match the shell.
 
+**Action label:** a control whose press calls `getBranding` carries `data-final-action="get-branding"`.
+
 ## Parameters
 
 None.

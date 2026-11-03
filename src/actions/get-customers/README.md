@@ -2,6 +2,8 @@
 
 Retrieves a list of customers from the parent application's local database.
 
+**Action label:** a control whose press calls `getCustomers` carries `data-final-action="get-customers"`.
+
 ## Parameters
 
 ### `GetCustomersParams`

@@ -2,6 +2,8 @@
 
 Adds a note to a specific product line item in the cart, or to the current active product context if `internalId` is omitted.
 
+**Action label:** a control whose press calls `addProductNote` carries `data-final-action="add-product-note"`.
+
 ## Parameters
 
 ### `AddProductNoteParams`

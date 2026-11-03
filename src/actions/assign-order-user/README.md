@@ -2,6 +2,8 @@
 
 Assigns a user to an order — e.g. the delivery driver — or unassigns it. The assignee is stored on the order as `assignedUser: { userId, assignedAt }`, separate from `posData.employee` (the user who rang the order up). One assignee at a time: assigning someone new replaces the current one. The assignment syncs with the order, so other stations see it in their `orders` / `order-updated` events.
 
+**Action label:** a control whose press calls `assignOrderUser` carries `data-final-action="assign-order-user"`.
+
 ## Parameters
 
 `params: AssignOrderUserParams`

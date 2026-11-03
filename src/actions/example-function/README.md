@@ -2,6 +2,8 @@
 
 **Note:** This is an example/template function for demonstration purposes. It shows the basic structure of how actions work in the command-frame library.
 
+**Action label:** a control whose press calls `exampleFunction` carries `data-final-action="example-function"`.
+
 ## Overview
 
 This function serves as a reference implementation for creating new actions. It demonstrates:

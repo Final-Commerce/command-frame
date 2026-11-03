@@ -2,6 +2,8 @@
 
 Retrieves a list of all custom extensions from the parent application's local database. Custom extensions are additional features or modules that can be installed in the Final Commerce ecosystem.
 
+**Action label:** a control whose press calls `getCustomExtensions` carries `data-final-action="get-custom-extensions"`.
+
 ## Parameters
 
 This command does not accept any parameters.

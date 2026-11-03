@@ -2,6 +2,8 @@
 
 Retrieves data from a specific custom table in the parent application's local database. Supports filtering, pagination, and MongoDB-style queries.
 
+**Action label:** a control whose press calls `getCustomTableData` carries `data-final-action="get-custom-table-data"`.
+
 ## Parameters
 
 ### `GetCustomTableDataParams`

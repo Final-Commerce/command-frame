@@ -5,6 +5,8 @@ the device** out of the merchant's rule set, the outlet's opening hours, the tur
 bookings and everything already taken — it is not a stored list you can read from the local
 database, and it changes the moment somebody else books.
 
+**Action label:** a control whose press calls `getBookingAvailability` carries `data-final-action="get-booking-availability"`.
+
 Ask for the range the user is looking at (a day, a week, a month) and re-ask after any hold or
 cancel. No connection needed — the rules and the holds are synced down, and the grid is
 computed from them locally. A till with no network can display existing bookings
