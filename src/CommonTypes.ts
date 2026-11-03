@@ -71,6 +71,8 @@ import type {
   Booking,
   CartReservation,
   OrderReservation,
+  CartAddress,
+  CartShipping,
   Composite,
   CompositePart,
   CompositeItem,
@@ -191,6 +193,8 @@ export type CFActiveOrder = ActiveOrder;
 export type CFActiveCustomSales = ActiveCustomSales;
 export type CFNonRevenueItem = NonRevenueItem;
 export type CFActiveCart = ActiveCart;
+export type CFCartAddress = CartAddress;
+export type CFCartShipping = CartShipping;
 export type CFActivePark = ActivePark;
 export type CFActiveCompany = ActiveCompany;
 
@@ -242,6 +246,7 @@ export interface CFActiveRefundDetails {
   buttonsDisabled?: Record<string, boolean>;
   isRefund?: boolean;
   customSalesQuantities?: Record<string, number>;
+  /** Keyed by cart-fee id, plus the reserved key `'shipping'` for the order's shipping. 0/1 each. */
   cartFeesRefunds?: Record<string, number>;
   tipsRefunds?: Record<string, number>;
   refundProcessingStatus?: CFRefundProcessingStatus | null;
@@ -317,9 +322,23 @@ export interface CFOutletInfo {
         state?: string;
         postCode?: string;
       };
+  address2?: string;
   city?: string;
   state?: string;
   country?: string;
+  postCode?: string;
+  phone?: string;
+  /** Short display alias, when the merchant set one (e.g. `DTWN`). */
+  alias?: string;
+  /**
+   * Whether this location can take an ONLINE payment. Storefront only — it is
+   * absent on a register, where it has no meaning.
+   *
+   * `false` means the outlet has no completed payment connection, so starting a
+   * checkout against it WILL fail. A pickup picker must not offer it as a
+   * selectable location, or must show it as unavailable.
+   */
+  connected?: boolean;
 }
 
 // Context for Manage/BuilderHub project
