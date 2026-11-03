@@ -16,6 +16,7 @@ import { TransactionsEventType, TransactionsEventPayload } from "./transactions/
 import { CategoriesEventType, CategoriesEventPayload } from "./categories/types";
 import { AttributesEventType, AttributesEventPayload } from "./attributes/types";
 import { BookingsEventType, BookingsEventPayload } from "./bookings/types";
+import { LoyaltyEventType, LoyaltyEventPayload } from "./loyalty/types";
 
 export interface TopicEventPayloadMap {
     customers: Record<CustomersEventType, CustomersEventPayload>;
@@ -38,4 +39,5 @@ export interface TopicEventPayloadMap {
     // Registered in the publisher since bookings shipped, but missing here — so a host could not
     // publish an occupancy change without casting past its own protocol.
     bookings: Record<BookingsEventType, BookingsEventPayload>;
+    loyalty: Record<LoyaltyEventType, LoyaltyEventPayload>;
 }
