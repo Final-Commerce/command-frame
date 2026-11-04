@@ -54,7 +54,7 @@ try {
 
 - Throws an error if `orderId` is not provided.
 - Throws an error if the order is not found.
-- Throws `"{names} is not sold in POS"` when any line's product or variant has `notSoldInPos: true`. Nothing is restored and the parked order is left as it was.
+- Throws `"{names} is not sold in POS"` when any line's product or variant has `notSoldInPos: true`. Nothing is restored and the parked order is left as it was. Till-only, like barcode scanning: the rule is always `notSoldInPos`.
 - Throws an error if the order can no longer be found immediately after the resume transition completes (e.g. it was deleted concurrently).
 
 ```typescript
