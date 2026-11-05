@@ -1,5 +1,13 @@
 import { CFOrder } from '../../CommonTypes';
 
+/** A tip the customer already paid wherever the money was taken (the website, a delivery app). */
+export interface RecordExternalPaymentTip {
+  /** Tip in integer MINOR currency units. Must be positive. */
+  amount: number;
+  /** User id the tip belongs to. Defaults to the cashier recording the payment. */
+  tipTo?: string;
+}
+
 export interface RecordExternalPaymentParams {
   /**
    * What the payment was — shown on the order and in reports, e.g. 'Paid online',
@@ -13,14 +21,22 @@ export interface RecordExternalPaymentParams {
    * the rest can be taken with any other tender. Above the balance due is an error.
    */
   amount?: number;
+  /**
+   * Tip paid along with it. Recorded ON TOP of `amount` — it never counts toward the
+   * balance due — and stored on the payment like a card tip, so reports and tip-outs
+   * see it. Omit for no tip.
+   */
+  tip?: RecordExternalPaymentTip;
   /** Fulfillment state to land on after full payment, e.g. 'pending' to keep the order going to the kitchen. */
   checkoutFulfillmentTarget?: string;
 }
 
 export interface RecordExternalPaymentResponse {
   success: boolean;
-  /** The amount recorded, in integer MINOR currency units. */
+  /** The amount recorded against the balance, in integer MINOR currency units. Excludes the tip. */
   amount: number;
+  /** The tip recorded on top of `amount`, in integer MINOR currency units; 0 when none. */
+  tip: number;
   /** The label, as recorded. */
   label: string;
   paymentType: 'external';

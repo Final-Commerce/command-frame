@@ -60,6 +60,27 @@ describe('recordExternalPayment mock', () => {
     expect(response).toMatchObject({ amount: 500, saleFinalized: false, remainingBalance: 1000 });
   });
 
+  it('records a tip on top of the balance', async () => {
+    const response = await mockRecordExternalPayment({ label: 'Uber Eats', tip: { amount: 300 } });
+
+    expect(response).toMatchObject({ amount: 1500, tip: 300, saleFinalized: true, remainingBalance: 0 });
+  });
+
+  it('reports no tip as 0', async () => {
+    const response = await mockRecordExternalPayment({ label: 'Paid online' });
+
+    expect(response.tip).toBe(0);
+  });
+
+  it('refuses a tip that is not a positive integer', async () => {
+    await expect(mockRecordExternalPayment({ label: 'Paid online', tip: { amount: 0 } })).rejects.toThrow(
+      'tip.amount must be a positive integer',
+    );
+    await expect(mockRecordExternalPayment({ label: 'Paid online', tip: { amount: 2.5 } })).rejects.toThrow(
+      'tip.amount must be a positive integer',
+    );
+  });
+
   it('refuses more than the balance due', async () => {
     await expect(mockRecordExternalPayment({ label: 'Paid online', amount: 2000 })).rejects.toThrow(
       'exceeds the balance due',
