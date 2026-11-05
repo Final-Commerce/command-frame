@@ -2,6 +2,8 @@
 
 Retrieves a list of all roles and their associated permissions for the current company from the parent application's backend.
 
+**Action label:** a control whose press calls `getRoles` carries `data-final-action="get-roles"`.
+
 ## Parameters
 
 ### `GetRolesParams`

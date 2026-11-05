@@ -2,6 +2,8 @@
 
 Sets a product as the active product in the POS interface by its variant ID. The active product represents the item currently being viewed or interacted with by the user.
 
+**Action label:** a control whose press calls `setActiveProduct` carries `data-final-action="set-active-product"`.
+
 ## Parameters
 
 ```typescript

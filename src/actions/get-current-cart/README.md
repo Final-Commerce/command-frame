@@ -2,6 +2,8 @@
 
 Retrieves the current cart object with all its contents including products, custom sales, discounts, fees, totals, and customer information.
 
+**Action label:** a control whose press calls `getCurrentCart` carries `data-final-action="get-current-cart"`.
+
 ## Parameters
 
 None.

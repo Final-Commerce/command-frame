@@ -2,6 +2,8 @@
 
 Creates a new product in the parent application's product catalog.
 
+**Action label:** a control whose press calls `addProduct` carries `data-final-action="add-product"`.
+
 **Manage-only command.** This runs in the Manage admin app, not the kaching POS runtime — there is no kaching command-frame handler for it.
 
 ## Parameters

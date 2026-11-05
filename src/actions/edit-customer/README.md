@@ -2,6 +2,8 @@
 
 Updates an existing customer's information. Only the provided fields in `changes` are modified; all other fields remain unchanged.
 
+**Action label:** a control whose press calls `editCustomer` carries `data-final-action="edit-customer"`.
+
 **Note:** the `changes` type allows any `CFCustomer` field, but the current handler only applies `firstName`, `lastName`, `email`, and `phone`. Other fields listed below (`tags`, `metadata`, `notes`, `billing`, `shipping`, `externalId`, `fromOliver`, `id`, `source`, `outletId`, `totalSpent`, `lastAction`) are accepted by the type but silently ignored by the handler.
 
 ## Parameters

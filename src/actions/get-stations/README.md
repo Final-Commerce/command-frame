@@ -2,6 +2,8 @@
 
 Retrieves POS stations for the current company. Optionally filter by outlet.
 
+**Action label:** a control whose press calls `getStations` carries `data-final-action="get-stations"`.
+
 > **Manage-scoped command.** This is a Manage administrative command (station/outlet admin), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
 
 ## Parameters

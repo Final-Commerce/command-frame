@@ -2,6 +2,8 @@
 
 Sets the stock handling option for a refunded line item (restock or mark as damaged).
 
+**Action label:** a control whose press calls `setRefundStockAction` carries `data-final-action="set-refund-stock-action"`.
+
 ## Parameters
 
 `params: SetRefundStockActionParams`

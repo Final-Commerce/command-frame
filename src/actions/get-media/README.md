@@ -2,6 +2,8 @@
 
 Lists media library items from the Manage host (pagination and filters are host-defined).
 
+**Action label:** a control whose press calls `getMedia` carries `data-final-action="get-media"`.
+
 ## Parameters
 
 ### `GetMediaParams` (all optional)

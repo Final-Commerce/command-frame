@@ -2,6 +2,8 @@
 
 Retrieves the current environment/context information from the parent application. This includes user, company, device, station, outlet, build, currency/formatting, and connectivity information.
 
+**Action label:** a control whose press calls `getContext` carries `data-final-action="get-context"`.
+
 ## Parameters
 
 This action takes no parameters.

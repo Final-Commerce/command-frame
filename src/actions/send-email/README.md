@@ -4,6 +4,8 @@ Emails the customer the **active order's receipt** (not an arbitrary email). Reu
 existing `POST /receipt/send/:companyId/:id` endpoint. Omitting all params emails the active
 order's receipt to the active customer. Online only.
 
+**Action label:** a control whose press calls `sendEmail` carries `data-final-action="send-email"`.
+
 ## Parameters
 
 - `email` (string, optional): Recipient email. Defaults to the active customer's email.

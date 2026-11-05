@@ -2,6 +2,8 @@
 
 Calculates and returns a preview of the refund total based on current refund selections, without processing the refund.
 
+**Action label:** a control whose press calls `calculateRefundTotal` carries `data-final-action="calculate-refund-total"`.
+
 ## Parameters
 
 | Field     | Type     | Required | Description                                                                                                                       |

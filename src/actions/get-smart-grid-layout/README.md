@@ -2,6 +2,8 @@
 
 Fetches a builder SmartGrid layout by `gridId` from the parent application's local smart grid settings.
 
+**Action label:** a control whose press calls `getSmartGridLayout` carries `data-final-action="get-smart-grid-layout"`.
+
 ## Parameters
 
 ### `GetSmartGridLayoutParams`

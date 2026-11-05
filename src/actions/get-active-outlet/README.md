@@ -2,6 +2,8 @@
 
 Returns the outlet currently active on the station (`activeShell.outlet`), or `null`.
 
+**Action label:** a control whose press calls `getActiveOutlet` carries `data-final-action="get-active-outlet"`.
+
 ## Parameters
 
 None.

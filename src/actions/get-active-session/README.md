@@ -2,6 +2,8 @@
 
 Returns the open cash-register session for the station, or `null` if none.
 
+**Action label:** a control whose press calls `getActiveSession` carries `data-final-action="get-active-session"`.
+
 ## Parameters
 
 None.

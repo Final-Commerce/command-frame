@@ -5,6 +5,8 @@ client key and environment, and the company's country, to mount Adyen's own card
 What those fields produce goes to [`chargeMoto`](../charge-moto/README.md), which charges the
 flow's current cart.
 
+**Action label:** a control whose press calls `getMotoConfig` carries `data-final-action="get-moto-config"`.
+
 The client key is Adyen's publishable key, but it is host environment config: the host injects it
 at runtime, so **never bake a key into a flow build**. Keyed charges are Adyen-only today.
 

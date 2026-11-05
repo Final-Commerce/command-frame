@@ -4,6 +4,8 @@ Read-only: what a composite with the current picks will cost, **before** it is a
 The host builds the same line `addProductToCart({ variantId, composite })` would (same picks checks, same refusals and
 texts) and adds nothing to the cart.
 
+**Action label:** a control whose press calls `getCompositePrice` carries `data-final-action="get-composite-price"`.
+
 ## Parameters
 
 ```typescript
