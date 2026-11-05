@@ -3,6 +3,7 @@
  * Stores mock data that mimics the Render environment
  */
 
+import type { CFOrderStatusDefinition } from '../common-types/order-state';
 import {
   CFActiveCompany,
   CFActiveUser,
@@ -11,6 +12,8 @@ import {
   CFActiveOrder,
   CFCustomer,
   CFProduct,
+  CFComposite,
+  CFCartLineComponent,
   CFProductType,
   CFUserTypes,
   CFActiveCart,
@@ -20,8 +23,23 @@ import {
   CFSession,
   CFActiveRefundDetails,
   CFSmartGridLayout,
+  CFBooking,
+  CFBookingAvailability,
+  CFBookingResource,
+  CFBookingSlot,
+  CFCartLineModifier,
+  CFProdModifierBreakdown,
+  CFModifierSelection,
+  CFResolvedModifier,
 } from '../CommonTypes';
-import { extendPrice, resolveUnit, toBase } from '@final-commerce/common';
+import {
+  cheapestCompositeItem,
+  cheapestCompositePrice,
+  extendPrice,
+  resolveUnit,
+  toBase,
+} from '@final-commerce/common';
+import { BookingRatePeriod, BookingResourceKind, BookingType, ReservationStatus } from '@final-commerce/common';
 
 export * from './mocks';
 
@@ -36,6 +54,18 @@ export interface MockDatabaseConfig {
   products?: CFProduct[];
   orders?: CFActiveOrder[];
   parkedOrders?: CFActiveOrder[];
+  /** Who is scarce: the staff, rooms or machines the dataset's services are booked against. */
+  bookingResources?: CFBookingResource[];
+  /** Windows already taken when the dataset loads, so a calendar does not open empty. */
+  bookings?: CFBooking[];
+  orderStatuses?: CFOrderStatusDefinition[];
+  /** Products hidden at an outlet (the host's `catalog-visibility`, product-level rows). Empty = sold everywhere. */
+  catalogVisibility?: MockCatalogVisibility[];
+}
+
+export interface MockCatalogVisibility {
+  productId: string;
+  outletId: string;
 }
 
 // Asset Imports - Using Remote URLs to avoid build complexity with asset copying
@@ -290,6 +320,7 @@ const createSimpleProduct = (
     maxPrice: price,
     status: 'active',
     productType: CFProductType.SIMPLE,
+    composite: null,
     taxTable: 'tax_standard',
     description,
     images: [image],
@@ -303,6 +334,7 @@ const createSimpleProduct = (
         salePrice: 0,
         isOnSale: false,
         manageStock: true,
+        unavailable: false,
         externalId: `ext_${id}_var`,
         attributes: [],
         inventory: createInventory(100),
@@ -334,6 +366,7 @@ const createVariableProduct = (
     maxPrice: largePrice,
     status: 'active',
     productType: CFProductType.VARIABLE,
+    composite: null,
     taxTable: 'tax_standard',
     description,
     images: [image],
@@ -347,6 +380,7 @@ const createVariableProduct = (
         salePrice: 0,
         isOnSale: false,
         manageStock: true,
+        unavailable: false,
         externalId: `ext_${id}_var_s`,
         attributes: [{ name: 'Size', value: 'Small' }],
         inventory: createInventory(50),
@@ -358,6 +392,7 @@ const createVariableProduct = (
         salePrice: 0,
         isOnSale: false,
         manageStock: true,
+        unavailable: false,
         externalId: `ext_${id}_var_l`,
         attributes: [{ name: 'Size', value: 'Large' }],
         inventory: createInventory(30),
@@ -384,6 +419,8 @@ export const MOCK_PRODUCT_BEER = createVariableProduct(
   [MOCK_CATEGORY_PASTES, MOCK_CATEGORY_SPECIALTY],
   'Unique paste infused with dark lager.',
 );
+// Demo of `setVariantUnavailable`: the large jar is marked unavailable at the outlet, so `addProductToCart` refuses it.
+MOCK_PRODUCT_BEER.variants[1].unavailable = true;
 
 export const MOCK_PRODUCT_BEET = createSimpleProduct(
   'prod_beet',
@@ -845,7 +882,123 @@ export const MOCK_CATEGORIES = [
   MOCK_CATEGORY_VEGAN,
   MOCK_CATEGORY_SPICY,
 ];
+// A service, not a thing on a shelf: no stock, sold as a slot of somebody's time.
+// `bookingRulesId` is what tells a catalogue screen to ask for slots instead of stock.
+export const MOCK_PRODUCT_HAIRCUT: CFProduct = {
+  ...createSimpleProduct('prod_haircut', 'Haircut', 4500, '', [MOCK_CATEGORY_SPECIALTY], 'Cut and finish, 30 minutes.'),
+  images: [],
+  productType: CFProductType.BOOKING,
+  bookingRulesId: 'rule_salon_30',
+};
+
+// A composite (FT-83) as the host serves it: the merchant's price 27.00, items add only their upcharges (B31); each item
+// keeps its own tax (`taxTable` empty). One item points at a deleted variant (unavailable), one is a whole category.
+export const MOCK_PRODUCT_PASTE_TRIO: CFProduct = {
+  ...createSimpleProduct(
+    'prod_paste_trio',
+    'Paste Trio',
+    2700,
+    basilAlmondImg,
+    [MOCK_CATEGORY_PASTES],
+    'Pick a paste and a spicy one.',
+  ),
+  productType: CFProductType.COMPOSITE,
+  taxTable: '',
+  // B43: a composite has no modifiers of its own; its items carry theirs.
+  modifiers: [],
+  composite: {
+    available: true,
+    basePrice: 2700,
+    fromPrice: 2800,
+    parts: [
+      {
+        _id: 'part_paste',
+        name: 'Paste',
+        required: true,
+        min: 1,
+        max: 1,
+        defaultPick: { itemId: 'item_basil', variantId: 'prod_basil_almond_var_main' },
+        items: [
+          {
+            _id: 'item_basil',
+            variantId: 'prod_basil_almond_var_main',
+            categoryId: null,
+            name: 'Basil Almond Paste',
+            extraCharge: 0,
+            quantity: 1,
+            cost: 0,
+            unavailable: null,
+            choices: [
+              {
+                productId: 'prod_basil_almond',
+                variantId: 'prod_basil_almond_var_main',
+                name: 'Basil Almond Paste',
+                attributes: [],
+                // The picked product's own modifiers (B28): taxed at its table, sent in the pick.
+                modifiers: [
+                  {
+                    _id: 'mod_texture',
+                    name: 'Texture',
+                    selectionType: 'single',
+                    required: false,
+                    sortOrder: 0,
+                    choices: [
+                      { _id: 'choice_smooth', name: 'Smooth', price: 0, sortOrder: 0 },
+                      { _id: 'choice_chunky', name: 'Chunky', price: 50, sortOrder: 1 },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            _id: 'item_gone',
+            variantId: 'prod_gone_var_main',
+            categoryId: null,
+            name: '',
+            extraCharge: 0,
+            quantity: 1,
+            cost: 0,
+            unavailable: 'deleted',
+            choices: [],
+          },
+        ],
+      },
+      {
+        _id: 'part_spicy',
+        name: null,
+        required: true,
+        min: 1,
+        max: 2,
+        // "Pick up to 2": no preselected pick (B29 = D36) — the till shows how many are still needed.
+        defaultPick: null,
+        items: [
+          {
+            _id: 'item_spicy',
+            variantId: null,
+            categoryId: MOCK_CATEGORY_SPICY.id,
+            name: 'Spicy',
+            extraCharge: 100,
+            quantity: 1,
+            cost: 100,
+            unavailable: null,
+            choices: [
+              {
+                productId: 'prod_habanero',
+                variantId: 'prod_habanero_var_main',
+                name: 'Habanero Paste',
+                attributes: [],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+};
+
 export const MOCK_PRODUCTS = [
+  MOCK_PRODUCT_PASTE_TRIO,
   MOCK_PRODUCT_BASIL_ALMOND,
   MOCK_PRODUCT_BEER,
   MOCK_PRODUCT_BEET,
@@ -860,8 +1013,135 @@ export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_CHILI_GARLIC,
   MOCK_PRODUCT_HABANERO,
   MOCK_PRODUCT_BLACK_GARLIC,
+  MOCK_PRODUCT_HAIRCUT,
 ];
 export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2, MOCK_ORDER_3, MOCK_ORDER_4];
+/** Nothing hidden by default; `setMockDatabase({ catalogVisibility })` hides products at an outlet. */
+export const MOCK_CATALOG_VISIBILITY: MockCatalogVisibility[] = [];
+
+/**
+ * The host's cart stock check for composites (kaching `compositeStockRefusal`), over the demo shelves — a copy: what the
+ * cart takes of each component's variant (plain lines and components × their line quantity) against its shelf here.
+ * The demo has no pools or units, so it counts per variant; untracked and backordered variants are never short.
+ */
+export function mockCompositeStockRefusal(
+  products: { variantId: string; quantity: number; components?: CFCartLineComponent[] }[],
+): string | null {
+  const components = products.flatMap((product) => product.components ?? []);
+  const demand = new Map<string, number>();
+  for (const product of products) {
+    if (product.components)
+      for (const component of product.components)
+        demand.set(component.variantId, (demand.get(component.variantId) ?? 0) + component.quantity * product.quantity);
+    else demand.set(product.variantId, (demand.get(product.variantId) ?? 0) + product.quantity);
+  }
+  for (const component of components) {
+    const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find(
+      (candidate) => candidate._id === component.variantId,
+    );
+    if (!variant?.manageStock || variant.allowBackorder) continue;
+    const left = variant.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock ?? 0;
+    if ((demand.get(component.variantId) ?? 0) > left) return `${component.name}: only ${left} left`;
+  }
+  return null;
+}
+
+/** Product ids hidden at the demo's active outlet. */
+export const mockHiddenProductIds = (): Set<string> =>
+  new Set(MOCK_CATALOG_VISIBILITY.filter((row) => row.outletId === MOCK_OUTLET.id).map((row) => row.productId));
+
+/**
+ * The host's outlet rules for a composite (kaching `resolveComposite`), over the demo's static view — a copy, change both
+ * in one step: an item whose product is hidden here is left out, a category item keeps only products sold here (none →
+ * `'empty'`), an Optional part with nothing to pick is not offered, a required one with nothing makes it unavailable,
+ * and the D36 default and "from" price are read off what is left.
+ */
+/** B41: the seats a bookable demo product has free in the slot starting at `startAt` — as the host reads them. */
+export function mockBookableWindow(productId: string, startAt: string): { free: number; slot: CFBookingSlot | null } {
+  const at = new Date(startAt);
+  const slot =
+    mockBookingAvailability(productId, at, new Date(+at + 86_400_000)).slots.find(
+      (candidate) => +new Date(candidate.startAt) === +at && candidate.canStart,
+    ) ?? null;
+  return { free: slot?.free ?? 0, slot };
+}
+
+export const mockIsBookable = (productId: string) =>
+  MOCK_PRODUCTS.find((product) => product._id === productId)?.productType === CFProductType.BOOKING;
+
+export function mockCompositeAtOutlet(
+  composite: Omit<CFComposite, 'needsDate'>,
+  hidden = mockHiddenProductIds(),
+  /** B41: the window bookable items are judged in; absent = `by_date`. */
+  slot?: { startAt: string },
+): CFComposite {
+  // B41: a bookable item is judged by seats in the window, never by stock; with no window it waits for a date.
+  const bookable = (item: CFComposite['parts'][number]['items'][number]) =>
+    !!item.variantId && item.choices.some((choice) => mockIsBookable(choice.productId));
+  const seatsFor = (item: CFComposite['parts'][number]['items'][number]) =>
+    !slot
+      ? ('by_date' as const)
+      : mockBookableWindow(item.choices[0].productId, slot.startAt).free >= item.quantity
+        ? null
+        : ('fully_booked' as const);
+  const offered = (item: { unavailable: CFComposite['parts'][number]['items'][number]['unavailable'] }) =>
+    !item.unavailable || item.unavailable === 'by_date';
+  // B35: a tracked variant without `quantity` on the demo shelf here (and no backorder) is sold out.
+  const soldOut = (variantId: string, quantity: number) => {
+    const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find(
+      (candidate) => candidate._id === variantId,
+    );
+    if (!variant?.manageStock || variant.allowBackorder) return false;
+    return (variant.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock ?? 0) < quantity;
+  };
+  // B36e: "N left" on a unit-sold tracked choice — the demo shelf already reads in the variant's own unit.
+  const withStockLeft = (choice: CFComposite['parts'][number]['items'][number]['choices'][number]) => {
+    const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find(
+      (candidate) => candidate._id === choice.variantId,
+    );
+    const onHand = variant?.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock;
+    return variant?.unitId && variant.manageStock && typeof onHand === 'number'
+      ? { ...choice, stockLeft: onHand }
+      : choice;
+  };
+  const upcharge = (item: CFComposite['parts'][number]['items'][number]) => ({
+    extraCharge: item.extraCharge,
+    quantity: item.quantity,
+    available: offered(item),
+  });
+  const parts = composite.parts
+    .map((part) => {
+      const items = part.items.flatMap((item) => {
+        if (item.variantId) {
+          if (item.choices.some((choice) => hidden.has(choice.productId))) return [];
+          if (!item.unavailable && bookable(item)) return [{ ...item, unavailable: seatsFor(item) }];
+          return item.unavailable || !soldOut(item.variantId, item.quantity)
+            ? [{ ...item, choices: item.choices.map(withStockLeft) }]
+            : [{ ...item, unavailable: 'out_of_stock' as const, choices: [] }];
+        }
+        const sold = item.choices.filter((choice) => !hidden.has(choice.productId));
+        const choices = sold.filter((choice) => !soldOut(choice.variantId, item.quantity));
+        const unavailable = item.unavailable ?? (!sold.length ? 'empty' : !choices.length ? 'out_of_stock' : null);
+        return [{ ...item, choices: unavailable ? [] : choices.map(withStockLeft), unavailable }];
+      });
+      const index = part.min === 1 && part.max === 1 ? cheapestCompositeItem(items.map(upcharge)) : undefined;
+      const cheapest = index === undefined ? undefined : items[index];
+      return {
+        ...part,
+        items,
+        defaultPick: cheapest?.variantId ? { itemId: cheapest._id, variantId: cheapest.variantId } : null,
+      };
+    })
+    .filter((part) => part.min > 0 || part.items.some(offered));
+  const cheapest = cheapestCompositePrice(parts.map((part) => ({ min: part.min, items: part.items.map(upcharge) })));
+  return {
+    ...composite,
+    available: composite.available && parts.every((part) => part.min === 0 || part.items.some(offered)),
+    needsDate: parts.some((part) => part.items.some(bookable)),
+    fromPrice: composite.basePrice === null || cheapest === undefined ? null : composite.basePrice + cheapest,
+    parts,
+  };
+}
 export const MOCK_PARKED_ORDERS: CFActiveOrder[] = [MOCK_PARKED_ORDER_1, MOCK_PARKED_ORDER_2];
 
 // Compatibility Exports (reassigned by setMockDatabase)
@@ -876,6 +1156,7 @@ export let MOCK_CART: CFActiveCart = {
   remainingBalance: 0,
   products: [],
   customSales: [],
+  reservations: [],
   nonRevenueItems: [],
   customer: null,
 };
@@ -900,6 +1181,7 @@ export const resetMockCart = () => {
     remainingBalance: 0,
     products: [],
     customSales: [],
+    reservations: [],
     nonRevenueItems: [],
     customer: null,
   };
@@ -914,11 +1196,41 @@ function resolveMockOrderCurrency(): CurrencyCode {
   return CurrencyCode.USD;
 }
 
+/** The demo flow's order statuses (getOrderStatuses / setOrderStatus). */
+export const MOCK_ORDER_STATUSES: CFOrderStatusDefinition[] = [
+  { id: 'status_1', key: 'in-kitchen', label: 'In kitchen', color: '#f59e0b', fulfillmentState: 'pending' },
+  {
+    id: 'status_2',
+    key: 'ready-for-pickup',
+    label: 'Ready for pickup',
+    color: '#10b981',
+    fulfillmentState: 'in_progress',
+  },
+  {
+    id: 'status_3',
+    key: 'out-for-delivery',
+    label: 'Out for delivery',
+    color: '#3b82f6',
+    fulfillmentState: 'partially_fulfilled',
+  },
+  {
+    id: 'status_4',
+    key: 'delivered',
+    label: 'Delivered',
+    fulfillmentState: 'fulfilled',
+    requiresPaymentState: ['paid'],
+  },
+  { id: 'status_5', key: 'driver-called', label: 'Driver called' },
+];
+
 /**
  * Replace in-memory mock data used by default mock handlers. Arrays are mutated in place
  * so existing imports from this module keep working.
  */
 export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
+  if (config.orderStatuses !== undefined) {
+    MOCK_ORDER_STATUSES.splice(0, MOCK_ORDER_STATUSES.length, ...config.orderStatuses);
+  }
   if (config.company !== undefined) {
     Object.assign(MOCK_COMPANY, config.company);
   }
@@ -945,6 +1257,15 @@ export function setMockDatabase(config: Partial<MockDatabaseConfig>): void {
   }
   if (config.parkedOrders !== undefined) {
     MOCK_PARKED_ORDERS.splice(0, MOCK_PARKED_ORDERS.length, ...config.parkedOrders);
+  }
+  if (config.bookingResources !== undefined) {
+    MOCK_BOOKING_RESOURCES.splice(0, MOCK_BOOKING_RESOURCES.length, ...config.bookingResources);
+  }
+  if (config.bookings !== undefined) {
+    MOCK_BOOKINGS.splice(0, MOCK_BOOKINGS.length, ...config.bookings);
+  }
+  if (config.catalogVisibility !== undefined) {
+    MOCK_CATALOG_VISIBILITY.splice(0, MOCK_CATALOG_VISIBILITY.length, ...config.catalogVisibility);
   }
 
   if (MOCK_OUTLETS.length > 0) {
@@ -1095,6 +1416,30 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
     billing: MOCK_CART.customer?.billing || null,
     shipping: MOCK_CART.customer?.shipping || null,
     lineItems,
+    // A paid booking is a sale: it belongs on the order (and thus the receipt),
+    // in its own array rather than among the line items, and CONFIRMED — payment
+    // is what turns a held window into a kept appointment.
+    reservations: (MOCK_CART.reservations ?? []).map((reservation) => ({
+      internalId: reservation.internalId,
+      bookingId: reservation.bookingId,
+      productId: reservation.productId,
+      variantId: reservation.variantId,
+      resourceId: reservation.resourceId,
+      name: reservation.name,
+      resourceName: reservation.resourceName,
+      price: reservation.price,
+      quantity: reservation.quantity,
+      total: reservation.total,
+      taxTableId: reservation.taxTableId,
+      startAt: reservation.startAt,
+      endAt: reservation.endAt,
+      bufferEndAt: reservation.bufferEndAt,
+      // The mock computes no tax anywhere — line items ship `taxes: []` too.
+      taxes: [],
+      // Neither `expiresAt` nor a status comes along: a booking's state lives on its own
+      // row — which is what `getBookings` reads — and a copy frozen on the order would be
+      // wrong from the next moment on.
+    })),
     customSales: [],
     balance: 0,
     user: employeeUser,
@@ -1104,6 +1449,20 @@ export const createOrderFromCart = (paymentType: string, amount: number, process
   };
 
   MOCK_ORDERS.push(newOrder);
+
+  // Payment is what turns a held window into a kept appointment, so the ROW moves too — the
+  // comment above said CONFIRMED while nothing set it. Left held, a paid appointment dropped out
+  // of `getBookings` when its deadline passed and the window could be taken again, which is the
+  // one transition a booking screen most needs to be able to test.
+  for (const reservation of newOrder.reservations ?? []) {
+    const row = MOCK_BOOKINGS.find(({ id }) => id === reservation.bookingId);
+    if (row) {
+      row.status = ReservationStatus.CONFIRMED;
+      row.orderId = newOrder._id;
+      row.expiresAt = undefined;
+    }
+  }
+
   resetMockCart();
 
   // Publish cart-created event after cart is reset (simulates new empty cart)
@@ -1140,4 +1499,251 @@ export const applyMockPayment = (
   const order = createOrderFromCart(paymentType, orderTotal, processor);
   mockPublishEvent('payments', 'payment-done', { order });
   return order;
+};
+
+// ── Booking (FT-0064) ────────────────────────────────────────────────────────────
+// A salon: one service, two people who can perform it, a 30-minute slot with a
+// 5-minute turnaround, open 9–18. Enough to click through a booking screen with no
+// server. Availability here is COMPUTED, exactly as the host computes it — a mock
+// that returned a fixed list of slots would hide the one behaviour that matters:
+// a slot disappears once somebody takes it.
+
+export const MOCK_BOOKING_RULES_ID = 'rule_salon_30';
+const SLOT_MINUTES = 30;
+const BUFFER_MINUTES = 5;
+const OPEN_HOUR = 9;
+const CLOSE_HOUR = 18;
+
+// Rooms, not people: a resource is whatever is scarce, and a room is the case that
+// reads the same in every vertical a dataset might describe.
+export const MOCK_BOOKING_RESOURCES: CFBookingResource[] = [
+  // Two different photos, from the assets this demo already ships: a screen that picks a
+  // resource by sight has to be fed two that look apart, not one repeated.
+  { id: 'res_room_1', name: 'Room 1', kind: BookingResourceKind.ROOM, image: beetImg },
+  { id: 'res_room_2', name: 'Room 2', kind: BookingResourceKind.ROOM, image: roastedTomatoImg },
+];
+
+/**
+ * The clock this mock shop keeps — the same one `getContext` reports. They used to disagree: the
+ * slot hours were built with `setHours`, which is the MACHINE's clock, while the context claimed
+ * Vancouver. On a machine in Paris a correct screen showed a salon open from midnight to nine.
+ */
+export const MOCK_SHOP_TIME_ZONE = 'America/Vancouver';
+
+const at = (dayOffset: number, hour: number, minute = 0): Date => {
+  // The shop's wall clock, not this machine's. Two passes, because the offset is a function of
+  // the instant and the instant is what we are solving for.
+  const naive = Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth(),
+    new Date().getUTCDate() + dayOffset,
+    hour,
+    minute,
+  );
+  const offsetAt = (instant: number): number => {
+    const parts: Record<string, string> = {};
+    for (const part of new Intl.DateTimeFormat('en-US', {
+      timeZone: MOCK_SHOP_TIME_ZONE,
+      hour12: false,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).formatToParts(new Date(instant))) {
+      parts[part.type] = part.value;
+    }
+    const asUtc = Date.UTC(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(parts.hour) % 24,
+      Number(parts.minute),
+    );
+    return asUtc - instant;
+  };
+  return new Date(naive - offsetAt(naive - offsetAt(naive)));
+};
+
+const booking = (
+  id: string,
+  resourceId: string,
+  start: Date,
+  status: ReservationStatus,
+  customerName?: string,
+): CFBooking => ({
+  id,
+  productId: MOCK_PRODUCT_HAIRCUT._id!,
+  resourceId,
+  startAt: start.toISOString(),
+  endAt: new Date(start.getTime() + SLOT_MINUTES * 60_000).toISOString(),
+  bufferEndAt: new Date(start.getTime() + (SLOT_MINUTES + BUFFER_MINUTES) * 60_000).toISOString(),
+  status,
+  productName: MOCK_PRODUCT_HAIRCUT.name,
+  resourceName: MOCK_BOOKING_RESOURCES.find((resource) => resource.id === resourceId)?.name,
+  customerName,
+});
+
+export const MOCK_BOOKINGS: CFBooking[] = [
+  booking('bk_1', 'res_room_1', at(0, 10), ReservationStatus.CONFIRMED, 'Alex Green'),
+  booking('bk_2', 'res_room_2', at(0, 11, 30), ReservationStatus.CONFIRMED, 'Dana White'),
+  booking('bk_3', 'res_room_1', at(1, 9, 30), ReservationStatus.CONFIRMED, 'Sam Blue'),
+];
+
+/** Live = confirmed, or held and not yet expired. An expired hold occupies nothing. */
+export const mockLiveBookings = (): CFBooking[] =>
+  MOCK_BOOKINGS.filter(
+    ({ status, expiresAt }) =>
+      status === ReservationStatus.CONFIRMED ||
+      (status === ReservationStatus.HELD && (!expiresAt || new Date(expiresAt) > new Date())),
+  );
+
+const takenBy = (resourceId: string, startAt: Date, bufferEndAt: Date): boolean =>
+  mockLiveBookings().some(
+    (entry) =>
+      entry.resourceId === resourceId && new Date(entry.startAt) < bufferEndAt && new Date(entry.bufferEndAt) > startAt,
+  );
+
+/** The mock's shop day for an instant, `YYYY-MM-DD`, built from parts so it never reads as D/M/Y. */
+const shopDayOf = (instant: Date): string => {
+  const parts: Record<string, string> = {};
+  for (const part of new Intl.DateTimeFormat('en-CA', {
+    timeZone: MOCK_SHOP_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(instant)) {
+    parts[part.type] = part.value;
+  }
+  return `${parts.year}-${parts.month}-${parts.day}`;
+};
+
+export const mockBookingAvailability = (
+  productId: string,
+  from: Date,
+  to: Date,
+  resourceId?: string,
+): CFBookingAvailability => {
+  const serving = resourceId
+    ? MOCK_BOOKING_RESOURCES.filter((resource) => resource.id === resourceId)
+    : MOCK_BOOKING_RESOURCES;
+  const slots: CFBookingSlot[] = [];
+  const step = (SLOT_MINUTES + BUFFER_MINUTES) * 60_000;
+
+  for (let day = 0; day < 14; day += 1) {
+    const open = at(day, OPEN_HOUR);
+    const close = at(day, CLOSE_HOUR);
+    // Overlap, not containment. Asking from noon used to return nothing for today, because the
+    // day's opening hour lay before the range start — so an afternoon question got an empty
+    // calendar and read as "fully booked".
+    if (close <= from || open >= to) continue;
+    for (let start = open.getTime(); start + SLOT_MINUTES * 60_000 <= close.getTime(); start += step) {
+      const startAt = new Date(start);
+      const endAt = new Date(start + SLOT_MINUTES * 60_000);
+      const bufferEndAt = new Date(start + (SLOT_MINUTES + BUFFER_MINUTES) * 60_000);
+      if (bufferEndAt < new Date()) continue;
+      const resources = serving.map((resource) => {
+        const free = takenBy(resource.id, startAt, bufferEndAt) ? 0 : 1;
+        return { resourceId: resource.id, name: resource.name, capacity: 1, booked: 1 - free, free };
+      });
+      slots.push({
+        startAt: startAt.toISOString(),
+        endAt: endAt.toISOString(),
+        bufferEndAt: bufferEndAt.toISOString(),
+        canStart: true,
+        capacity: resources.length,
+        booked: resources.reduce((sum, entry) => sum + entry.booked, 0),
+        free: resources.reduce((sum, entry) => sum + entry.free, 0),
+        resources,
+        // The shop day, as the real host stamps it. The mock keeps one shop on the machine's
+        // own clock, so here that is the machine's day — the point is that the FIELD is there,
+        // so a screen built against the mock never learns to work the day out for itself.
+        dayKey: shopDayOf(startAt),
+      });
+    }
+  }
+
+  return {
+    productId,
+    bookingRulesId: MOCK_BOOKING_RULES_ID,
+    bookingType: BookingType.APPOINTMENT,
+    ratePeriod: BookingRatePeriod.SLOT,
+    slots,
+    timeZone: MOCK_SHOP_TIME_ZONE,
+    days: [...new Set(slots.map((slot) => slot.dayKey!))],
+  };
+};
+
+/**
+ * Price the cashier's raw modifier answers into the rows a CART line carries (FT-0010).
+ *
+ * Here rather than in an action folder because two mocks need it — addProductToCart and
+ * setProductModifierSelections — and this module is already where the shared mock helpers
+ * live (`safeSerialize`, `resetMockCart`, `mockPublishEvent`).
+ *
+ * Note the two shapes that share the name `modifiers` and are NOT interchangeable:
+ * `FullProduct.modifiers` is `ResolvedModifier[]` (the menu — question + every choice),
+ * `ActiveProduct.modifiers` is `CartLineModifier[]` (one row per CHOSEN choice). The mock
+ * builds a cart line by spreading the product, so the menu must be stripped off the line
+ * before anything reads it, or every surface renders the catalogue as if it were picked.
+ *
+ * Names and unitPrice are snapshotted, as the real host does — a later rename never
+ * rewrites an open cart. No `total`: a cart row is per line UNIT, and the host extends it.
+ * Rule validation (required/min/max) is deliberately not mocked; the real host owns it.
+ */
+/** Extend a line's priced modifier rows by the line quantity. Mirrors kaching's `buildProdModifiers`. */
+export const buildModifierRows = (
+  modifiers: CFCartLineModifier[] | undefined,
+  lineQuantity: number | undefined,
+): { rows: CFProdModifierBreakdown[]; modifiersTotal: number } => {
+  const quantity = lineQuantity ?? 1;
+  const rows: CFProdModifierBreakdown[] = (modifiers ?? []).map((modifier) => ({
+    modifierId: modifier.modifierId,
+    modifierName: modifier.modifierName,
+    choiceId: modifier.choiceId,
+    choiceName: modifier.choiceName,
+    label: modifier.label ?? `${modifier.modifierName} - ${modifier.choiceName}`,
+    unitPrice: modifier.unitPrice,
+    quantity: modifier.quantity,
+    // extendPrice, not a raw multiply: a fractional line quantity (1.5 kg) must not
+    // leave fractional minor units on the row.
+    amount: extendPrice(modifier.unitPrice * modifier.quantity, quantity),
+    tax: 0,
+    ...(modifier.taxTableId ? { taxTableId: modifier.taxTableId } : {}),
+    ...(modifier.componentIndex !== undefined ? { componentIndex: modifier.componentIndex } : {}),
+  }));
+  return { rows, modifiersTotal: rows.reduce((sum, row) => sum + row.amount, 0) };
+};
+
+export const buildCartLineModifiers = (
+  menu: CFResolvedModifier[] | undefined,
+  selections: CFModifierSelection[] | undefined,
+  productTaxTableId?: string,
+): CFCartLineModifier[] => {
+  if (!menu?.length || !selections?.length) return [];
+  const byModifier = new Map(menu.map((modifier) => [modifier._id, modifier]));
+  const rows: CFCartLineModifier[] = [];
+  for (const selection of selections) {
+    const modifier = byModifier.get(selection.modifierId);
+    if (!modifier) continue;
+    const byChoice = new Map(modifier.choices.map((choice) => [choice._id, choice]));
+    for (const picked of selection.choices ?? []) {
+      const choice = byChoice.get(picked.choiceId);
+      // `quantity` is units per ONE line unit; 0 means "not chosen" and carries no row.
+      if (!choice || !(picked.quantity > 0)) continue;
+      rows.push({
+        modifierId: modifier._id,
+        modifierName: modifier.name,
+        choiceId: choice._id,
+        choiceName: choice.name,
+        // The cart's display label, like CustomFee.label — "Toppings - Avocado".
+        label: `${modifier.name} - ${choice.name}`,
+        unitPrice: choice.price,
+        quantity: picked.quantity,
+        // Modifier tax follows the parent product's table, as a fee's does.
+        ...(productTaxTableId ? { taxTableId: productTaxTableId } : {}),
+      });
+    }
+  }
+  return rows;
 };

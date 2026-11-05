@@ -1,6 +1,13 @@
 // Import actions from new folder structure
 import { exampleFunction } from './actions/example-function/action';
 import { getProducts } from './actions/get-products/action';
+import { getBookingResources } from './actions/get-booking-resources/action';
+import { getBookingAvailability } from './actions/get-booking-availability/action';
+import { getBookings } from './actions/get-bookings/action';
+import { holdBooking } from './actions/hold-booking/action';
+import { addBookingToCart } from './actions/add-booking-to-cart/action';
+import { removeBookingFromCart } from './actions/remove-booking-from-cart/action';
+import { cancelBooking } from './actions/cancel-booking/action';
 import { addCustomSale } from './actions/add-custom-sale/action';
 import { editCustomSale } from './actions/edit-custom-sale/action';
 import { addNonRevenueItem } from './actions/add-non-revenue-item/action';
@@ -20,11 +27,17 @@ import { updateCartItemQuantity } from './actions/update-cart-item-quantity/acti
 // Product Actions
 import { addProductNote } from './actions/add-product-note/action';
 import { addProductFee } from './actions/add-product-fee/action';
+import { getProductModifierSelections } from './actions/get-product-modifier-selections/action';
+import { getCompositePrice } from './actions/get-composite-price/action';
+import { getCompositeAvailability } from './actions/get-composite-availability/action';
+import { setProductModifierSelections } from './actions/set-product-modifier-selections/action';
 import { setActiveProductFee } from './actions/set-active-product-fee/action';
 import { setActiveProductDiscount } from './actions/set-active-product-discount/action';
 import { getActiveProduct } from './actions/get-active-product/action';
 import { setActiveProduct } from './actions/set-active-product/action';
 import { adjustInventory } from './actions/adjust-inventory/action';
+import { setVariantUnavailable } from './actions/set-variant-unavailable/action';
+import { getCustomStockActions } from './actions/get-custom-stock-actions/action';
 // Order Actions
 import { addOrderNote } from './actions/add-order-note/action';
 import { addCartFee } from './actions/add-cart-fee/action';
@@ -32,9 +45,18 @@ import { getCurrentCart } from './actions/get-current-cart/action';
 import { clearCart } from './actions/clear-cart/action';
 import { parkOrder } from './actions/park-order/action';
 import { resumeParkedOrder } from './actions/resume-parked-order/action';
+import { resumeOrder } from './actions/resume-order/action';
+import { setOrderMetadata } from './actions/set-order-metadata/action';
+import { assignOrderUser } from './actions/assign-order-user/action';
+import { releaseFromCart } from './actions/release-from-cart/action';
+import { setOrderType } from './actions/set-order-type/action';
+import { setScheduledFor } from './actions/set-scheduled-for/action';
+import { setOrderStatus } from './actions/set-order-status/action';
+import { getOrderStatuses } from './actions/get-order-statuses/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
 import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
+import { recordExternalPayment } from './actions/record-external-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
 import { terminalPayment } from './actions/terminal-payment/action';
@@ -43,6 +65,16 @@ import { redeemPayment } from './actions/redeem-payment/action';
 import { integrationPayment } from './actions/integration-payment/action';
 import { createPaymentLink } from './actions/create-payment-link/action';
 import { chargeMoto } from './actions/charge-moto/action';
+import { startCheckout } from './actions/start-checkout/action';
+import { attachCheckoutContact } from './actions/attach-checkout-contact/action';
+import { getAddressOptions } from './actions/get-address-options/action';
+import { setOrderAddress } from './actions/set-order-address/action';
+import { getShippingOptions } from './actions/get-shipping-options/action';
+import { selectShippingOption } from './actions/select-shipping-option/action';
+import { setOutlet } from './actions/set-outlet/action';
+import { resumeCheckout } from './actions/resume-checkout/action';
+import { getCheckoutStatus } from './actions/get-checkout-status/action';
+import { getMotoConfig } from './actions/get-moto-config/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
 import { removeCustomerNote } from './actions/remove-customer-note/action';
@@ -142,6 +174,13 @@ export const command = {
   exampleFunction,
   generateAPIKey,
   getProducts,
+  getBookingResources,
+  getBookingAvailability,
+  getBookings,
+  holdBooking,
+  addBookingToCart,
+  removeBookingFromCart,
+  cancelBooking,
   addCustomSale,
   editCustomSale,
   addNonRevenueItem,
@@ -162,11 +201,17 @@ export const command = {
   // Product Actions
   addProductNote,
   addProductFee,
+  getProductModifierSelections,
+  getCompositePrice,
+  getCompositeAvailability,
+  setProductModifierSelections,
   setActiveProductFee,
   setActiveProductDiscount,
   getActiveProduct,
   setActiveProduct,
   adjustInventory,
+  setVariantUnavailable,
+  getCustomStockActions,
   // Order Actions
   addOrderNote,
   addCartFee,
@@ -174,9 +219,18 @@ export const command = {
   clearCart,
   parkOrder,
   resumeParkedOrder,
+  resumeOrder,
+  setOrderMetadata,
+  assignOrderUser,
+  releaseFromCart,
+  setOrderType,
+  setScheduledFor,
+  setOrderStatus,
+  getOrderStatuses,
   deleteParkedOrder,
   voidOrder,
   cashPayment,
+  recordExternalPayment,
   getCashRoundingAmount,
   tapToPayPayment,
   terminalPayment,
@@ -185,6 +239,16 @@ export const command = {
   integrationPayment,
   createPaymentLink,
   chargeMoto,
+  startCheckout,
+  attachCheckoutContact,
+  getAddressOptions,
+  setOrderAddress,
+  getShippingOptions,
+  selectShippingOption,
+  setOutlet,
+  resumeCheckout,
+  getCheckoutStatus,
+  getMotoConfig,
   // Customer Actions
   addCustomerNote,
   removeCustomerNote,
@@ -281,6 +345,29 @@ export type { ExampleFunction, ExampleFunctionParams, ExampleFunctionResponse } 
 export type { GenerateAPIKey, GenerateAPIKeyParams, GenerateAPIKeyResponse } from './actions/generate-api-key/types';
 
 export type { GetProducts, GetProductsParams, GetProductsResponse } from './actions/get-products/types';
+export type {
+  GetBookingResources,
+  GetBookingResourcesParams,
+  GetBookingResourcesResponse,
+} from './actions/get-booking-resources/types';
+export type {
+  GetBookingAvailability,
+  GetBookingAvailabilityParams,
+  GetBookingAvailabilityResponse,
+} from './actions/get-booking-availability/types';
+export type { GetBookings, GetBookingsParams, GetBookingsResponse } from './actions/get-bookings/types';
+export type { HoldBooking, HoldBookingParams, HoldBookingResponse } from './actions/hold-booking/types';
+export type {
+  AddBookingToCart,
+  AddBookingToCartParams,
+  AddBookingToCartResponse,
+} from './actions/add-booking-to-cart/types';
+export type {
+  RemoveBookingFromCart,
+  RemoveBookingFromCartParams,
+  RemoveBookingFromCartResponse,
+} from './actions/remove-booking-from-cart/types';
+export type { CancelBooking, CancelBookingParams, CancelBookingResponse } from './actions/cancel-booking/types';
 
 export type { AddCustomSale, AddCustomSaleParams, AddCustomSaleResponse } from './actions/add-custom-sale/types';
 export type { EditCustomSale, EditCustomSaleParams, EditCustomSaleResponse } from './actions/edit-custom-sale/types';
@@ -313,7 +400,7 @@ export type {
 
 export type { DeleteProduct, DeleteProductParams, DeleteProductResponse } from './actions/delete-product/types';
 
-export type { GetOutlets, GetOutletsResponse } from './actions/get-outlets/types';
+export type { GetOutlets, GetOutletsParams, GetOutletsResponse } from './actions/get-outlets/types';
 
 export type { GetStations, GetStationsParams, GetStationsResponse } from './actions/get-stations/types';
 
@@ -372,6 +459,13 @@ export type {
   RefundPlanSource,
   RefundPlanAllocation,
   RefundPlanLeg,
+  RefundPlanRowType,
+  RefundPlanTaxLine,
+  RefundPlanAmounts,
+  RefundPlanRow,
+  RefundPlanSelectedRow,
+  RefundPlanTotals,
+  RefundPlanBreakdown,
 } from './actions/get-refund-plan/types';
 export type { CheckPermission, CheckPermissionParams, CheckPermissionResponse } from './actions/check-permission/types';
 // Refund Actions
@@ -422,6 +516,29 @@ export type { GetFinalContext, GetFinalContextResponse } from './actions/get-fin
 export type { AddProductNote, AddProductNoteParams, AddProductNoteResponse } from './actions/add-product-note/types';
 export type { AddProductFee, AddProductFeeParams, AddProductFeeResponse } from './actions/add-product-fee/types';
 export type {
+  GetProductModifierSelections,
+  GetProductModifierSelectionsParams,
+  GetProductModifierSelectionsResponse,
+  ModifierSelection,
+  ModifierChoiceSelection,
+} from './actions/get-product-modifier-selections/types';
+export type {
+  GetCompositePrice,
+  GetCompositePriceParams,
+  GetCompositePriceResponse,
+} from './actions/get-composite-price/types';
+export type {
+  GetCompositeAvailability,
+  GetCompositeAvailabilityParams,
+  GetCompositeAvailabilityResponse,
+  CFCompositeSlot,
+} from './actions/get-composite-availability/types';
+export type {
+  SetProductModifierSelections,
+  SetProductModifierSelectionsParams,
+  SetProductModifierSelectionsResponse,
+} from './actions/set-product-modifier-selections/types';
+export type {
   SetActiveProductFee,
   SetActiveProductFeeParams,
   SetActiveProductFeeResponse,
@@ -437,7 +554,22 @@ export type {
   SetActiveProductParams,
   SetActiveProductResponse,
 } from './actions/set-active-product/types';
-export type { AdjustInventory, AdjustInventoryParams, AdjustInventoryResponse } from './actions/adjust-inventory/types';
+export type {
+  SetVariantUnavailable,
+  SetVariantUnavailableParams,
+  SetVariantUnavailableResponse,
+} from './actions/set-variant-unavailable/types';
+export type {
+  AdjustInventory,
+  AdjustInventoryParams,
+  AdjustInventoryResponse,
+  ManualStockReason,
+} from './actions/adjust-inventory/types';
+export type {
+  CustomStockActionPayload,
+  GetCustomStockActions,
+  GetCustomStockActionsResponse,
+} from './actions/get-custom-stock-actions/types';
 // Order Actions
 export type { AddOrderNote, AddOrderNoteParams, AddOrderNoteResponse } from './actions/add-order-note/types';
 export type { AddCartFee, AddCartFeeParams, AddCartFeeResponse } from './actions/add-cart-fee/types';
@@ -448,6 +580,26 @@ export type {
   ResumeParkedOrderParams,
   ResumeParkedOrderResponse,
 } from './actions/resume-parked-order/types';
+export type { ResumeOrder, ResumeOrderParams, ResumeOrderResponse } from './actions/resume-order/types';
+export type {
+  SetOrderMetadata,
+  SetOrderMetadataParams,
+  SetOrderMetadataResponse,
+} from './actions/set-order-metadata/types';
+export type {
+  AssignOrderUser,
+  AssignOrderUserParams,
+  AssignOrderUserResponse,
+} from './actions/assign-order-user/types';
+export type { ReleaseFromCart, ReleaseFromCartResponse } from './actions/release-from-cart/types';
+export type { SetOrderType, SetOrderTypeParams, SetOrderTypeResponse } from './actions/set-order-type/types';
+export type {
+  SetScheduledFor,
+  SetScheduledForParams,
+  SetScheduledForResponse,
+} from './actions/set-scheduled-for/types';
+export type { SetOrderStatus, SetOrderStatusParams, SetOrderStatusResponse } from './actions/set-order-status/types';
+export type { GetOrderStatuses, GetOrderStatusesResponse } from './actions/get-order-statuses/types';
 export type {
   DeleteParkedOrder,
   DeleteParkedOrderParams,
@@ -455,6 +607,12 @@ export type {
 } from './actions/delete-parked-order/types';
 export type { VoidOrder, VoidOrderParams, VoidOrderResponse, VoidOrderOutcome } from './actions/void-order/types';
 export type { CashPayment, CashPaymentParams, CashPaymentResponse } from './actions/cash-payment/types';
+export type {
+  RecordExternalPayment,
+  RecordExternalPaymentParams,
+  RecordExternalPaymentResponse,
+  RecordExternalPaymentTip,
+} from './actions/record-external-payment/types';
 
 export type {
   GetCashRoundingAmount,
@@ -490,6 +648,57 @@ export type {
   ChargeMotoResponse,
   ChargeMotoCardFields,
 } from './actions/charge-moto/types';
+export type {
+  StartCheckout,
+  StartCheckoutParams,
+  StartCheckoutResponse,
+  StartCheckoutContact,
+  StartCheckoutOrder,
+} from './actions/start-checkout/types';
+export type {
+  AttachCheckoutContact,
+  AttachCheckoutContactParams,
+  AttachCheckoutContactResponse,
+} from './actions/attach-checkout-contact/types';
+export type {
+  GetAddressOptions,
+  GetAddressOptionsParams,
+  GetAddressOptionsResponse,
+  AddressCountryOption,
+  AddressProvinceOption,
+} from './actions/get-address-options/types';
+export type {
+  SetOrderAddress,
+  SetOrderAddressParams,
+  SetOrderAddressResponse,
+  OrderAddressType,
+} from './actions/set-order-address/types';
+export type {
+  GetShippingOptions,
+  GetShippingOptionsResponse,
+  ShippingOptionView,
+  ShippingPickupView,
+} from './actions/get-shipping-options/types';
+export type {
+  SelectShippingOption,
+  SelectShippingOptionParams,
+  SelectShippingOptionResponse,
+} from './actions/select-shipping-option/types';
+export type { SetOutlet, SetOutletParams, SetOutletResponse } from './actions/set-outlet/types';
+export type {
+  ResumeCheckout,
+  ResumeCheckoutParams,
+  ResumeCheckoutResponse,
+  ResumeCheckoutResult,
+} from './actions/resume-checkout/types';
+export type {
+  GetCheckoutStatus,
+  GetCheckoutStatusParams,
+  GetCheckoutStatusResponse,
+  CheckoutOrderStatus,
+  CheckoutCancelReason,
+} from './actions/get-checkout-status/types';
+export type { GetMotoConfig, GetMotoConfigResponse, MotoUnavailableReason } from './actions/get-moto-config/types';
 // Customer Actions
 export type {
   AddCustomerNote,
@@ -634,6 +843,7 @@ export { refundsTopic } from './pubsub/topics/refunds';
 export { productsTopic } from './pubsub/topics/products';
 export { cartTopic } from './pubsub/topics/cart';
 export { paymentsTopic } from './pubsub/topics/payments';
+export { checkoutTopic } from './pubsub/topics/checkout';
 export { splitPaymentsTopic } from './pubsub/topics/split-payments';
 export { customTablesTopic } from './pubsub/topics/custom-tables';
 export { printTopic } from './pubsub/topics/print';
@@ -645,6 +855,7 @@ export { variantsTopic } from './pubsub/topics/variants';
 export { transactionsTopic } from './pubsub/topics/transactions';
 export { categoriesTopic } from './pubsub/topics/categories';
 export { attributesTopic } from './pubsub/topics/attributes';
+export { bookingsTopic } from './pubsub/topics/bookings';
 // Export Pub/Sub Event Types
 export type {
   // Customer event payloads
@@ -772,6 +983,16 @@ export type {
   TransactionsEventPayload,
 } from './pubsub/topics/transactions/types';
 export type {
+  BookingCreatedPayload,
+  BookingCreatedEvent,
+  BookingUpdatedPayload,
+  BookingUpdatedEvent,
+  BookingSetupChangedPayload,
+  BookingSetupChangedEvent,
+  BookingsEventType,
+  BookingsEventPayload,
+} from './pubsub/topics/bookings/types';
+export type {
   CategoryCreatedPayload,
   CategoryCreatedEvent,
   CategoryUpdatedPayload,
@@ -831,6 +1052,18 @@ export type {
   PaymentsEventType,
   PaymentsEventPayload,
 } from './pubsub/topics/payments/types';
+
+// Export Checkout Event Types
+export type {
+  CheckoutStartedPayload,
+  PaymentCompletedPayload,
+  PaymentFailedPayload,
+  CheckoutStartedEvent,
+  PaymentCompletedEvent,
+  PaymentFailedEvent,
+  CheckoutEventType,
+  CheckoutEventPayload,
+} from './pubsub/topics/checkout/types';
 
 // Export Split Payments Event Types
 export type {

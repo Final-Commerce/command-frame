@@ -5,10 +5,12 @@
 
 export * from "./customers";
 export * from "./orders";
+export * from "./bookings";
 export * from "./refunds";
 export * from "./products";
 export * from "./cart";
 export * from "./payments";
+export * from "./checkout";
 export * from "./custom-tables";
 export * from "./print";
 export * from "./outlet";

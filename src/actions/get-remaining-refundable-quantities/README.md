@@ -63,3 +63,10 @@ try {
 - Quantities are calculated based on original order quantities minus any previously refunded quantities.
 - Cart fees and tips are single-shot refundables: their remaining quantity is `1` until they appear in a persisted refund's `cartFees`/`tips`, then `0`. Feed these maps straight into `processPartialRefund` `items` rows (`type: 'fee'` with the fee id, `type: 'tip'` with the transactionId) — the keys match by design.
 - A quantity of 0 means the item has been fully refunded and cannot be refunded again.
+
+## Composite lines (FT-83)
+
+A composite line is refunded as ONE line by quantity, like any other: its `components[]` come along as sold, without the
+component tax fields (`taxTableId`, `totalTax`, `taxes` — the refund's tax is on the line; B30), per ONE composite so
+the refunded quantity multiplies them, and its modifier rows, `componentIndex` included, are prorated
+like any modifier row. A single component cannot be addressed — there is no parameter for it.

@@ -200,6 +200,10 @@ When a cart discount is added:
 6. Taxes are recalculated based on the discounted subtotal
 7. A `cart-discount-added` event is published on the `cart` channel
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `addCartDiscount: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Events
 
 Adding a cart discount publishes a `cart-discount-added` event on the `cart` channel:

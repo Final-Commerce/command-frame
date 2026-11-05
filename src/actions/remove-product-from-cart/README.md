@@ -63,6 +63,10 @@ The handler throws in the following cases:
 - Missing `internalId`: throws `"internalId is required"`
 - `internalId` does not match any product or custom sale line item in the cart: throws `` `Cart item with internalId ${internalId} not found` ``
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `removeProductFromCart: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Events
 
 This action publishes a `product-deleted` event on the `cart` topic when a cart item is successfully removed. When the removed item is a custom sale (matched via the fallback described above), the event's `product` field is populated with the custom sale object rather than a product — there is currently no dedicated custom-sale-removed event for this path.

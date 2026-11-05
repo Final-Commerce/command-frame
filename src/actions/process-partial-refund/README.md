@@ -357,6 +357,22 @@ per-row dropdown produced), so hub-side inventory ingest applies the disposition
 `stockAction` is ignored for non-`product` items — custom sales, fees and tips
 carry no stock action, exactly as the popup only offered the choice on line items.
 
+## Modifiers on refunded lines
+
+Modifier choices are **not independently refundable** — there is no modifier
+`itemKey`. They ride on their line: refunding `quantity` units of a line
+automatically refunds that many units' share of the line's modifier money
+(the refund engine takes a proportion of the stored `line.total` / `totalTax`,
+which already **include** the modifier amounts — nothing to pass, nothing to
+add). The persisted refund line carries the rescaled rows as
+`modifiers?: OrderLineItemModifier[]` for receipts and reporting — `total`
+re-extended exactly for the refunded units, `totalTax` and each per-rate
+`taxes[]` bucket prorated by refundedQuantity ÷ original quantity; they are
+already inside the refund line's `total` / `totalTax` / `taxes[]` and must
+never be re-added.
+`calculateRefundTotal` previews the same behavior — its `refundedLineItems`
+expose the rescaled `modifiers` and its summary includes their money.
+
 ## `reason` persistence
 
 `reason` is recorded verbatim on the persisted `Refund` doc's `reason` field and
@@ -364,3 +380,10 @@ on the state-event audit row, on every commit path (default allocation, `legs`,
 full refund) — same as `redeemRefund`. When omitted, the refund doc's `reason`
 stays unset and only the audit row carries the `'partial-refund'` /
 `'full-refund'` fallback label.
+
+## Composite lines (FT-83)
+
+A composite line is refunded as ONE line by quantity, like any other: its `components[]` come along as sold, without the
+component tax fields (`taxTableId`, `totalTax`, `taxes` — the refund's tax is on the line; B30), per ONE composite so
+the refunded quantity multiplies them, and its modifier rows, `componentIndex` included, are prorated
+like any modifier row. A single component cannot be addressed — there is no parameter for it.

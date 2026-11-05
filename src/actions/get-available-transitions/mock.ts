@@ -3,8 +3,13 @@ import type { GetAvailableTransitions } from './types';
 /**
  * Mock implementation: returns a fixed set of plausible transitions
  * so the demo app has data to render. Mirrors an UNPAID order under the
- * default (empty cross-axis rules) config: fulfillment can advance without
- * payment (FI-6383), plus the classic park/void moves.
+ * default (empty cross-axis rules) config.
+ *
+ * FULFILLMENT-AXIS ONLY (common 2.1.4 contract): the payment axis never
+ * appears as an available transition — it moves exclusively through the
+ * money operations (pay / refund / void), which derive their own landing
+ * pairs. Every row keeps `to.payment` equal to the order's current payment
+ * state, exactly like the host's `getAvailableTransitions`.
  */
 export const getAvailableTransitionsMock: GetAvailableTransitions = () =>
   Promise.resolve({
@@ -25,13 +30,8 @@ export const getAvailableTransitionsMock: GetAvailableTransitions = () =>
         conditions: [{ met: true, description: 'Order is open' }],
       },
       {
-        to: { payment: 'paid', fulfillment: 'fulfilled' },
-        displayLabel: 'Complete Payment',
-        conditions: [{ met: true, description: 'Balance due > 0' }],
-      },
-      {
-        to: { payment: 'voided', fulfillment: 'cancelled' },
-        displayLabel: 'Void Order',
+        to: { payment: 'unpaid', fulfillment: 'cancelled' },
+        displayLabel: 'Cancel Order',
         conditions: [
           { met: true, description: 'Order exists' },
           { met: false, description: 'No payments captured (mock: skipped)' },

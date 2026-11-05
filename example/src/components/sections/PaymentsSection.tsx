@@ -8,6 +8,7 @@ import {
 } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
+import { MotoSection } from './MotoSection';
 import './Sections.css';
 
 interface PaymentsSectionProps {
@@ -354,6 +355,8 @@ export function PaymentsSection({ isInIframe }: PaymentsSectionProps) {
           <JsonViewer data={cloudResponse} title={cloudResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
+
+      <MotoSection isInIframe={isInIframe} />
 
       {/* Redeem payment (extension gift card, etc.) */}
       <CommandSection title="Redeem payment">

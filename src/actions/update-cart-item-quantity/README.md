@@ -90,7 +90,12 @@ try {
 - `"quantity is required"` — `quantity` is `undefined` or `null`
 - `"quantity must be a non-negative integer"` — `quantity` is negative, fractional, or not parseable as an integer
 - `"Insufficient stock. Available: {stock}, Requested: {requested}"` — increasing quantity would push the combined quantity of that variant across all cart lines past available stock
+- `"{name} is not sold in POS"` — increasing the quantity of a line whose product or variant has `notSoldInPos: true` (lowering it or setting 0 always works). On a storefront: `notSoldOnline` and `"{name} is not sold online"`.
 - `"Cart item with internalId {internalId} not found"` — no matching product or custom sale line exists in the cart
+
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `updateCartItemQuantity: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
 
 ## Events
 
@@ -111,3 +116,15 @@ When increasing quantity on a product line, this action validates stock availabi
 - `addProductToCart` - Add a product to the cart (returns `internalId`)
 - `removeProductFromCart` - Remove a product from the cart
 - `getCurrentCart` - Get all cart items with their `internalId` values
+
+## Modifiers
+
+A line's modifier selections apply to every unit, so changing the quantity
+rescales each selection's extended total automatically (`unitPrice × choice
+quantity × new line quantity`) — the caller never re-sends selections.
+Setting quantity to 0 removes the line and its selections together.
+
+## Composite lines (FT-83)
+
+Nothing to rescale on the flow side: `components[]` and their modifier rows are per ONE composite, and the host
+multiplies them by the new line quantity.

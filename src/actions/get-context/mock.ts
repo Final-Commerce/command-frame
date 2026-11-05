@@ -14,6 +14,10 @@ export const mockGetContext: GetContext = (): Promise<GetContextResponse> => {
         stationName: MOCK_STATION.name,
         outletId: MOCK_OUTLET.id,
         outletName: MOCK_OUTLET.name || null,
+        // Deliberately NOT the developer's own zone: an app that quietly formats with
+        // the machine's clock looks correct in preview and is wrong on every till that
+        // sits in a different city. Here it cannot look correct by accident.
+        timeZone: "America/Vancouver",
         buildId: "mock_build_id",
         buildName: "Mock Build",
         buildVersion: "1.0.0-mock",

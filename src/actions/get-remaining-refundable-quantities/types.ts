@@ -14,12 +14,25 @@ export interface GetRemainingRefundableQuantitiesResponse {
    */
   cartFees: Record<string, number>;
   /**
+   * The order's shipping: `1` = still refundable, `0` = already refunded or the order has none.
+   * Refunded with `itemKey: 'shipping'`, all or nothing.
+   */
+  shipping: number;
+  /**
    * Remaining refundable tips, keyed by the paying method's
    * `transactionId` — the same key `processPartialRefund` takes for
    * `type: 'tip'` items. Only payment methods that carry a tip appear.
    * 0/1 semantics: `1` = still refundable, `0` = already refunded.
    */
   tips: Record<string, number>;
+  /**
+   * Remaining refundable bookings, keyed by `order.reservations[].internalId` —
+   * the same key `processPartialRefund` takes for `type: 'reservation'` items.
+   * A service is sold as a reservation rather than a line item, so without this
+   * map a refund screen can show everything on the order EXCEPT the appointment.
+   * 0/1 semantics: `1` = still refundable, `0` = already refunded.
+   */
+  reservations: Record<string, number>;
   timestamp: string;
 }
 

@@ -4,6 +4,7 @@ import { RefundsEventType, RefundsEventPayload } from "./refunds/types";
 import { ProductsEventType, ProductsEventPayload } from "./products/types";
 import { CartEventType, CartEventPayload } from "./cart/types";
 import { PaymentsEventType, PaymentsEventPayload } from "./payments/types";
+import { CheckoutEventType, CheckoutEventPayload } from "./checkout/types";
 import { SplitPaymentsEventType, SplitPaymentsEventPayload } from "./split-payments/types";
 import { CustomTablesEventPayload, CustomTablesEventType } from "./custom-tables/types";
 import { PrintEventType, PrintEventPayload } from "./print/types";
@@ -15,6 +16,7 @@ import { VariantsEventType, VariantsEventPayload } from "./variants/types";
 import { TransactionsEventType, TransactionsEventPayload } from "./transactions/types";
 import { CategoriesEventType, CategoriesEventPayload } from "./categories/types";
 import { AttributesEventType, AttributesEventPayload } from "./attributes/types";
+import { BookingsEventType, BookingsEventPayload } from "./bookings/types";
 
 export interface TopicEventPayloadMap {
     customers: Record<CustomersEventType, CustomersEventPayload>;
@@ -23,6 +25,13 @@ export interface TopicEventPayloadMap {
     products: Record<ProductsEventType, ProductsEventPayload>;
     cart: Record<CartEventType, CartEventPayload>;
     payments: Record<PaymentsEventType, PaymentsEventPayload>;
+    /**
+     * ONLINE checkout only (a published website), where the POS `payments`
+     * topic never fires: `payments` reports a till tender settling in front of
+     * a cashier, while a web shopper's outcome arrives asynchronously and can
+     * only ever be an authorisation until the provider's webhook lands.
+     */
+    checkout: Record<CheckoutEventType, CheckoutEventPayload>;
     "split-payments": Record<SplitPaymentsEventType, SplitPaymentsEventPayload>;
     customTables: Record<CustomTablesEventType, CustomTablesEventPayload>;
     print: Record<PrintEventType, PrintEventPayload>;
@@ -34,4 +43,7 @@ export interface TopicEventPayloadMap {
     transactions: Record<TransactionsEventType, TransactionsEventPayload>;
     categories: Record<CategoriesEventType, CategoriesEventPayload>;
     attributes: Record<AttributesEventType, AttributesEventPayload>;
+    // Registered in the publisher since bookings shipped, but missing here — so a host could not
+    // publish an occupancy change without casting past its own protocol.
+    bookings: Record<BookingsEventType, BookingsEventPayload>;
 }

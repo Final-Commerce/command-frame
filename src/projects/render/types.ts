@@ -11,6 +11,7 @@ import type {
   GetOrders,
   GetRefunds,
   GetTaxTables,
+  GetCustomStockActions,
   AddProductDiscount,
   AddProductToCart,
   RemoveProductFromCart,
@@ -20,20 +21,34 @@ import type {
   GetFinalContext,
   AddProductNote,
   AddProductFee,
+  GetProductModifierSelections,
+  GetCompositePrice,
+  GetCompositeAvailability,
+  SetProductModifierSelections,
   SetActiveProductFee,
   SetActiveProductDiscount,
   GetActiveProduct,
   SetActiveProduct,
   AdjustInventory,
+  SetVariantUnavailable,
   AddOrderNote,
   AddCartFee,
   ClearCart,
   ParkOrder,
   ResumeParkedOrder,
+  ResumeOrder,
+  SetOrderMetadata,
+  AssignOrderUser,
+  ReleaseFromCart,
+  SetOrderType,
+  SetScheduledFor,
+  SetOrderStatus,
+  GetOrderStatuses,
   DeleteParkedOrder,
   VoidOrder,
   InitiateRefund,
   CashPayment,
+  RecordExternalPayment,
   GetCashRoundingAmount,
   TapToPayPayment,
   TerminalPayment,
@@ -100,14 +115,43 @@ import type {
   SaveSmartGridLayout,
   SendEmail,
   SendSms,
+  GetBookingResources,
+  GetBookingAvailability,
+  GetBookings,
+  HoldBooking,
+  AddBookingToCart,
+  RemoveBookingFromCart,
+  CancelBooking,
   CreatePaymentLink,
   ChargeMoto,
+  StartCheckout,
+  AttachCheckoutContact,
+  GetAddressOptions,
+  SetOrderAddress,
+  GetShippingOptions,
+  SelectShippingOption,
+  GetOutlets,
+  SetOutlet,
+  ResumeCheckout,
+  GetCheckoutStatus,
+  GetMotoConfig,
   GetTimeClockStatus,
 } from '../../index';
 
 export interface RenderProviderActions {
   exampleFunction: ExampleFunction;
   getProducts: GetProducts;
+  // Booking (FT-0064): every one of these is answered from the host's own synced data and works
+  // offline — availability is computed on the device from the rules, and a hold is written there
+  // too. What that costs is the guarantee: two tills with no line between them can both take the
+  // same window, and the shop resolves it afterwards like any other double booking.
+  getBookingResources: GetBookingResources;
+  getBookingAvailability: GetBookingAvailability;
+  getBookings: GetBookings;
+  holdBooking: HoldBooking;
+  addBookingToCart: AddBookingToCart;
+  removeBookingFromCart: RemoveBookingFromCart;
+  cancelBooking: CancelBooking;
   addCustomSale: AddCustomSale;
   editCustomSale: EditCustomSale;
   getCustomers: GetCustomers;
@@ -127,20 +171,35 @@ export interface RenderProviderActions {
   getFinalContext: GetFinalContext;
   addProductNote: AddProductNote;
   addProductFee: AddProductFee;
+  getProductModifierSelections: GetProductModifierSelections;
+  getCompositePrice: GetCompositePrice;
+  getCompositeAvailability: GetCompositeAvailability;
+  setProductModifierSelections: SetProductModifierSelections;
   setActiveProductFee: SetActiveProductFee;
   setActiveProductDiscount: SetActiveProductDiscount;
   getActiveProduct: GetActiveProduct;
   setActiveProduct: SetActiveProduct;
   adjustInventory: AdjustInventory;
+  setVariantUnavailable: SetVariantUnavailable;
+  getCustomStockActions: GetCustomStockActions;
   addOrderNote: AddOrderNote;
   addCartFee: AddCartFee;
   clearCart: ClearCart;
   parkOrder: ParkOrder;
   resumeParkedOrder: ResumeParkedOrder;
+  resumeOrder: ResumeOrder;
+  setOrderMetadata: SetOrderMetadata;
+  assignOrderUser: AssignOrderUser;
+  releaseFromCart: ReleaseFromCart;
+  setOrderType: SetOrderType;
+  setScheduledFor: SetScheduledFor;
+  setOrderStatus: SetOrderStatus;
+  getOrderStatuses: GetOrderStatuses;
   deleteParkedOrder: DeleteParkedOrder;
   voidOrder: VoidOrder;
   initiateRefund: InitiateRefund;
   cashPayment: CashPayment;
+  recordExternalPayment: RecordExternalPayment;
   getCashRoundingAmount: GetCashRoundingAmount;
   tapToPayPayment: TapToPayPayment;
   terminalPayment: TerminalPayment;
@@ -149,6 +208,29 @@ export interface RenderProviderActions {
   integrationPayment: IntegrationPayment;
   createPaymentLink: CreatePaymentLink;
   chargeMoto: ChargeMoto;
+  /**
+   * ONLINE checkout — served only by the storefront runtime (a published
+   * website). The till tenders above are refused there, and this is refused on
+   * a register, because the two declare different things to the card networks.
+   */
+  startCheckout: StartCheckout;
+  attachCheckoutContact: AttachCheckoutContact;
+  /** Shipping, on the till (ship-to) and the website alike. The runtime prices; the flow renders. */
+  getAddressOptions: GetAddressOptions;
+  setOrderAddress: SetOrderAddress;
+  getShippingOptions: GetShippingOptions;
+  selectShippingOption: SelectShippingOption;
+  getOutlets: GetOutlets;
+  setOutlet: SetOutlet;
+  /**
+   * The RETURN LEG of an online checkout, after a redirect payment method or
+   * 3-D Secure sent the shopper away and back. Storefront-only, like
+   * `startCheckout`, and safe to call on every page load.
+   */
+  resumeCheckout: ResumeCheckout;
+  /** Where an online order stands now, by its order password. Storefront-only. */
+  getCheckoutStatus: GetCheckoutStatus;
+  getMotoConfig: GetMotoConfig;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;
   removeCustomerNote: RemoveCustomerNote;

@@ -319,3 +319,7 @@ try {
 - Custom sales are treated as regular cart items and can be removed or modified like other items
 - If `applyTaxes` is `true`, tax is applied using an explicit `taxTableId` match or, otherwise, the organization's standard tax table; if neither is available, no tax is applied even though `applyTaxes` was `true`
 - The addition is published internally as a `product-added` event on the `cart` channel (there is currently no dedicated custom-sale cart event)
+
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `addCustomSale: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.

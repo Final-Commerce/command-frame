@@ -1,5 +1,6 @@
 import { GetRefundPlan, GetRefundPlanParams, GetRefundPlanResponse, RefundPlanLeg, RefundPlanSource } from './types';
 import { MOCK_ORDERS } from '../../demo/database';
+import { mockRefundBreakdown, mockRefundRows } from './mockRows';
 
 /**
  * Demo derivation of the runtime `getRefundPlan`. Builds the per-source rows
@@ -17,6 +18,10 @@ import { MOCK_ORDERS } from '../../demo/database';
  * and no company cash-rounding setting, so it always describes a FULL refund
  * with `rounding: 0` and no cash `payout`. Against real kaching the allocation
  * tracks the live selection and carries the drawer snap.
+ *
+ * `rows` / `allocation.breakdown` follow the engine's reading of the order
+ * (`line.total` includes the line's tax) but prorate by plain quantity share;
+ * the engine's remainder carry across earlier partial refunds is not modelled.
  */
 export const mockGetRefundPlan: GetRefundPlan = async (
   params?: GetRefundPlanParams,
@@ -71,17 +76,20 @@ export const mockGetRefundPlan: GetRefundPlan = async (
       requiresGiftCardDestination: s.paymentType === 'redeem',
     }));
   const budget = legs.reduce((sum, l) => sum + l.amount, 0);
+  const rows = mockRefundRows(order);
 
   return {
     success: true,
     orderId: order._id,
     sources,
+    rows,
     allocation: {
       budget,
       // No cash rounding in the demo, so the goods value and the budget agree.
       itemTotal: budget,
       rounding: 0,
       legs,
+      breakdown: mockRefundBreakdown(rows, params?.items),
     },
     // Demo: no prior refunds, so remaining = captured minus the non-revenue load.
     remainingRefundable: Math.max(0, totalCaptured - nonRefundableLiability),

@@ -50,6 +50,10 @@ await command.removeProductDiscount();
 - `Product with ID <id> not found in cart` — thrown when `internalId` is passed but no matching line item exists in the cart.
 - `"No active product. Provide internalId or use setActiveProduct first."` — thrown when `internalId` is omitted and there is no active product context.
 
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `removeProductDiscount: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.
+
 ## Events
 
 Publishes a `product-discount-removed` event on the `cart` topic. When `internalId` is passed, the payload includes the updated `product` and `internalId`; when omitted, the payload includes only the active `product`.

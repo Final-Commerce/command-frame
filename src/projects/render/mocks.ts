@@ -12,6 +12,10 @@ import { mockAddOrderNote } from '../../actions/add-order-note/mock';
 import { mockRemoveOrderNote } from '../../actions/remove-order-note/mock';
 import { mockAddProductDiscount } from '../../actions/add-product-discount/mock';
 import { mockAddProductFee } from '../../actions/add-product-fee/mock';
+import { mockGetProductModifierSelections } from '../../actions/get-product-modifier-selections/mock';
+import { mockGetCompositePrice } from '../../actions/get-composite-price/mock';
+import { mockGetCompositeAvailability } from '../../actions/get-composite-availability/mock';
+import { mockSetProductModifierSelections } from '../../actions/set-product-modifier-selections/mock';
 import { mockRemoveProductDiscount } from '../../actions/remove-product-discount/mock';
 import { mockRemoveProductFee } from '../../actions/remove-product-fee/mock';
 import { mockSetActiveProductFee } from '../../actions/set-active-product-fee/mock';
@@ -24,13 +28,27 @@ import { mockRemoveProductFromCart } from '../../actions/remove-product-from-car
 import { mockRemoveCartDiscount } from '../../actions/remove-cart-discount/mock';
 import { mockUpdateCartItemQuantity } from '../../actions/update-cart-item-quantity/mock';
 import { mockAdjustInventory } from '../../actions/adjust-inventory/mock';
+import { mockSetVariantUnavailable } from '../../actions/set-variant-unavailable/mock';
+import { mockGetCustomStockActions } from '../../actions/get-custom-stock-actions/mock';
 import { mockAssignCustomer } from '../../actions/assign-customer/mock';
 import { mockAuthenticateUser } from '../../actions/authenticate-user/mock';
 import { mockCalculateRefundTotal } from '../../actions/calculate-refund-total/mock';
 import { mockCashPayment } from '../../actions/cash-payment/mock';
+import { mockRecordExternalPayment } from '../../actions/record-external-payment/mock';
 import { mockGetCashRoundingAmount } from '../../actions/get-cash-rounding-amount/mock';
 import { mockCreatePaymentLink } from '../../actions/create-payment-link/mock';
 import { mockChargeMoto } from '../../actions/charge-moto/mock';
+import { mockStartCheckout } from '../../actions/start-checkout/mock';
+import { mockAttachCheckoutContact } from '../../actions/attach-checkout-contact/mock';
+import { mockGetAddressOptions } from '../../actions/get-address-options/mock';
+import { mockSetOrderAddress } from '../../actions/set-order-address/mock';
+import { mockGetShippingOptions } from '../../actions/get-shipping-options/mock';
+import { mockSelectShippingOption } from '../../actions/select-shipping-option/mock';
+import { mockGetOutlets } from '../../actions/get-outlets/mock';
+import { mockSetOutlet } from '../../actions/set-outlet/mock';
+import { mockResumeCheckout } from '../../actions/resume-checkout/mock';
+import { mockGetCheckoutStatus } from '../../actions/get-checkout-status/mock';
+import { mockGetMotoConfig } from '../../actions/get-moto-config/mock';
 import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
 import { mockDeleteParkedOrder } from '../../actions/delete-parked-order/mock';
@@ -42,6 +60,13 @@ import { mockGetCurrentCart } from '../../actions/get-current-cart/mock';
 import { mockGetCustomers } from '../../actions/get-customers/mock';
 import { mockGetOrders } from '../../actions/get-orders/mock';
 import { mockGetProducts } from '../../actions/get-products/mock';
+import { mockGetBookingResources } from '../../actions/get-booking-resources/mock';
+import { mockGetBookingAvailability } from '../../actions/get-booking-availability/mock';
+import { mockGetBookings } from '../../actions/get-bookings/mock';
+import { mockHoldBooking } from '../../actions/hold-booking/mock';
+import { mockAddBookingToCart } from '../../actions/add-booking-to-cart/mock';
+import { mockRemoveBookingFromCart } from '../../actions/remove-booking-from-cart/mock';
+import { mockCancelBooking } from '../../actions/cancel-booking/mock';
 import { mockGetRefunds } from '../../actions/get-refunds/mock';
 import { mockGetTaxTables } from '../../actions/get-tax-tables/mock';
 import { mockGetRemainingRefundableQuantities } from '../../actions/get-remaining-refundable-quantities/mock';
@@ -57,6 +82,14 @@ import { mockCheckPermission } from '../../actions/check-permission/mock';
 import { mockRemoveCustomerFromCart } from '../../actions/remove-customer-from-cart/mock';
 import { mockResetRefundDetails } from '../../actions/reset-refund-details/mock';
 import { mockResumeParkedOrder } from '../../actions/resume-parked-order/mock';
+import { mockResumeOrder } from '../../actions/resume-order/mock';
+import { mockSetOrderMetadata } from '../../actions/set-order-metadata/mock';
+import { mockAssignOrderUser } from '../../actions/assign-order-user/mock';
+import { mockReleaseFromCart } from '../../actions/release-from-cart/mock';
+import { mockSetOrderType } from '../../actions/set-order-type/mock';
+import { mockSetScheduledFor } from '../../actions/set-scheduled-for/mock';
+import { mockSetOrderStatus } from '../../actions/set-order-status/mock';
+import { mockGetOrderStatuses } from '../../actions/get-order-statuses/mock';
 import { mockSelectAllRefundItems } from '../../actions/select-all-refund-items/mock';
 import { mockSetRefundStockAction } from '../../actions/set-refund-stock-action/mock';
 import { mockShowConfirmation } from '../../actions/show-confirmation/mock';
@@ -114,6 +147,10 @@ export const RENDER_MOCKS: RenderProviderActions = {
   addOrderNote: mockAddOrderNote,
   addProductDiscount: mockAddProductDiscount,
   addProductFee: mockAddProductFee,
+  getProductModifierSelections: mockGetProductModifierSelections,
+  getCompositePrice: mockGetCompositePrice,
+  getCompositeAvailability: mockGetCompositeAvailability,
+  setProductModifierSelections: mockSetProductModifierSelections,
   setActiveProductFee: mockSetActiveProductFee,
   setActiveProductDiscount: mockSetActiveProductDiscount,
   getActiveProduct: mockGetActiveProduct,
@@ -123,13 +160,27 @@ export const RENDER_MOCKS: RenderProviderActions = {
   removeProductFromCart: mockRemoveProductFromCart,
   updateCartItemQuantity: mockUpdateCartItemQuantity,
   adjustInventory: mockAdjustInventory,
+  setVariantUnavailable: mockSetVariantUnavailable,
+  getCustomStockActions: mockGetCustomStockActions,
   assignCustomer: mockAssignCustomer,
   authenticateUser: mockAuthenticateUser,
   calculateRefundTotal: mockCalculateRefundTotal,
   cashPayment: mockCashPayment,
+  recordExternalPayment: mockRecordExternalPayment,
   getCashRoundingAmount: mockGetCashRoundingAmount,
   createPaymentLink: mockCreatePaymentLink,
   chargeMoto: mockChargeMoto,
+  startCheckout: mockStartCheckout,
+  attachCheckoutContact: mockAttachCheckoutContact,
+  getAddressOptions: mockGetAddressOptions,
+  setOrderAddress: mockSetOrderAddress,
+  getShippingOptions: mockGetShippingOptions,
+  selectShippingOption: mockSelectShippingOption,
+  getOutlets: mockGetOutlets,
+  setOutlet: mockSetOutlet,
+  resumeCheckout: mockResumeCheckout,
+  getCheckoutStatus: mockGetCheckoutStatus,
+  getMotoConfig: mockGetMotoConfig,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
   voidOrder: mockVoidOrder,
@@ -140,6 +191,13 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getCustomers: mockGetCustomers,
   getOrders: mockGetOrders,
   getProducts: mockGetProducts,
+  getBookingResources: mockGetBookingResources,
+  getBookingAvailability: mockGetBookingAvailability,
+  getBookings: mockGetBookings,
+  holdBooking: mockHoldBooking,
+  addBookingToCart: mockAddBookingToCart,
+  removeBookingFromCart: mockRemoveBookingFromCart,
+  cancelBooking: mockCancelBooking,
   getRefunds: mockGetRefunds,
   getTaxTables: mockGetTaxTables,
   getRemainingRefundableQuantities: mockGetRemainingRefundableQuantities,
@@ -156,6 +214,14 @@ export const RENDER_MOCKS: RenderProviderActions = {
   removeCartDiscount: mockRemoveCartDiscount,
   resetRefundDetails: mockResetRefundDetails,
   resumeParkedOrder: mockResumeParkedOrder,
+  resumeOrder: mockResumeOrder,
+  setOrderMetadata: mockSetOrderMetadata,
+  assignOrderUser: mockAssignOrderUser,
+  releaseFromCart: mockReleaseFromCart,
+  setOrderType: mockSetOrderType,
+  setScheduledFor: mockSetScheduledFor,
+  setOrderStatus: mockSetOrderStatus,
+  getOrderStatuses: mockGetOrderStatuses,
   selectAllRefundItems: mockSelectAllRefundItems,
   setRefundStockAction: mockSetRefundStockAction,
   showConfirmation: mockShowConfirmation,

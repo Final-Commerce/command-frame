@@ -67,3 +67,8 @@ const result = await command.editProductVariants({
 });
 console.log(result.success); // true
 ```
+
+## Composite lines (FT-83)
+
+Not for a composite line: its variant is the composite itself, and what was picked lives in `components[]`. Remove the
+line and add it again with new picks. (The kaching host does not implement this action.)

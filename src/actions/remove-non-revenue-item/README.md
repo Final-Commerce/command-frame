@@ -33,3 +33,7 @@ await command.removeNonRevenueItem({ externalId: 'abc123' });
 - `"Non-revenue item externalId is required"` — `externalId` is missing/empty.
 - `"No non-revenue items to remove from cart"` — the cart has no non-revenue items at all.
 - `` `Non-revenue item with externalId ${externalId} not found in cart` `` — the cart has non-revenue items, but none match the given `externalId`.
+
+## Paid orders
+
+Refused while the order in this cart has any payment on it — a split leg, a part payment, or paid in full: its items, amounts and customer can no longer be changed. The call rejects with `removeNonRevenueItem: this order already has a payment on it, so its items, amounts and customer can no longer be changed…` (or `… is paid`), and the cart is left as it was. Check `itemsLocked` from [`getCurrentCart`](../get-current-cart/README.md) to disable the control up front. To move on: [`releaseFromCart`](../release-from-cart/README.md) (saves the order as it is), finish paying, or void the order.

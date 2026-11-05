@@ -18,6 +18,8 @@ The library provides three main capabilities:
 
 Domain models (orders, cart, customers, products, and related types) are documented in **[Types reference](./src/types/README.md)**.
 
+The order lifecycle — payment × fulfillment state pairs, display labels, the transition guard chain, and the financial invariants — is documented in **[Order state machine reference](./docs/order-state-machine.md)**. Read it before building anything that reads or moves order state (`canTransition`, `getAvailableTransitions`, `applyTransition`, park/void/resume, payments, refunds).
+
 ## Installation
 
 ### From npm (public registry)

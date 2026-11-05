@@ -2,6 +2,8 @@
 
 Read-only query: would the order-state-machine allow moving to a given `{ payment, fulfillment }` state pair? Runs the same guard chain the runtime uses to gate real transitions — financial invariants, then cross-axis rules, then path rules, then transition conditions — without mutating anything.
 
+> Full state model — every state, display label, guard layer, and invariant — in the [Order state machine reference](../../../docs/order-state-machine.md).
+
 ## Parameters
 
 `params: CanTransitionParams`

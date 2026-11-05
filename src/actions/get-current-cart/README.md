@@ -10,17 +10,23 @@ None.
 
 `Promise<GetCurrentCartResponse>`
 
-| Field       | Type         | Description                                                                                                           |
-| :---------- | :----------- | :-------------------------------------------------------------------------------------------------------------------- |
-| `success`   | `boolean`    | `true` if the cart was retrieved successfully.                                                                        |
-| `cart`      | `ActiveCart` | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details. |
-| `timestamp` | `string`     | ISO date string of when the action occurred.                                                                          |
+| Field         | Type                     | Description                                                                                                                                                                                                                                                     |
+| :------------ | :----------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `success`     | `boolean`                | `true` if the cart was retrieved successfully.                                                                                                                                                                                                                  |
+| `cart`        | `ActiveCart`             | The current cart object containing products, custom sales, totals, discounts, fees, customer, and other cart details.                                                                                                                                           |
+| `itemsLocked` | `boolean` (optional)     | `true` while the order in this cart has any payment on it — see [Paid orders](#paid-orders). Absent on hosts that predate the lock.                                                                                                                             |
+| `lineTotals`  | `Record<string, number>` | What each line adds, minor units, keyed by `internalId` (products, bookings) or `id` (custom sales): price × quantity − own discounts + own fees + modifiers; before cart discount and tax. Σ = `subtotal` before non-revenue items. Show it; do not recompute. |
+| `timestamp`   | `string`                 | ISO date string of when the action occurred.                                                                                                                                                                                                                    |
 
 **Tip:** You can import [`CFActiveCart`](../../types/README.md#cfactivecart), [`CFActiveProduct`](../../types/README.md#cfactiveproduct), and [`CFActiveCustomSales`](../../types/README.md#cfactivecustomsales) types directly from the library:
 
 ```typescript
 import { type CFActiveCart, type CFActiveProduct } from '@final-commerce/command-frame';
 ```
+
+## Paid orders
+
+Once the order in this cart has any payment on it — a split leg, a part payment, or paid in full — its items, amounts and customer can no longer be changed: adding, removing or re-quantifying products, custom sales, modifiers, discounts, fees, non-revenue items, bookings, changing or removing the customer, and `clearCart` are all refused. `itemsLocked: true` says so up front, so a flow can disable those controls instead of waiting for the refusal. The order can still be released ([`releaseFromCart`](../release-from-cart/README.md)), paid, voided, and labelled (notes, type, status, assignee, metadata). A completed sale never locks the next one.
 
 ## Cart Object Structure
 
@@ -87,3 +93,20 @@ This action typically does not throw errors unless there's an underlying system 
 - Returns the complete cart object as it exists in the Redux store.
 - The cart includes all products, custom sales, discounts, fees, and calculated totals.
 - Useful for displaying cart contents, calculating totals, or syncing cart state with external systems.
+
+## Modifiers
+
+Each cart line (`cart.products[]`) exposes its modifier answers as
+`modifierSelections?: CFModifierSelection[]` — the pre-pricing shape
+(`{ modifierId, choices: [{ choiceId, quantity }] }`). Pricing happens at
+total-computation time: fee-level money, not in grossSales, not reduced by
+the product discount, tax inherited from the product's tax table by default.
+Read one line's selections with `getProductModifierSelections` (read-only —
+flows never edit selections after add; the host's picker UI owns that).
+
+## Composite lines (FT-83)
+
+A composite line carries `components[]` — `{ partName?, productId, variantId, name, attributes?, quantity, unitPrice,
+taxTableId?, unit?, stockVariantId? }`, per ONE composite (`unitPrice` = the component's share, Σ = line `price`;
+the line `quantity` multiplies them). The picked items' modifiers sit in the line's flat `modifiers[]` with
+`componentIndex` → `components[i]`. Render them; do not recompute. The line's amount including those modifiers is `lineTotals[internalId]`.

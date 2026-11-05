@@ -11,6 +11,9 @@ import type {
   Tip,
   Address,
   MetadataItem,
+  OrderAssignedUser,
+  OrderInCart,
+  OrderCustomStatus,
   PosDataItem,
   CartFeeTaxEntry,
   CartFeeItem,
@@ -47,12 +50,37 @@ import type {
   FullProduct,
   ProductVariant,
   Inventory,
+  ResolvedModifier,
+  ResolvedModifierChoice,
+  ModifierSelectionType,
+  ModifierSelection,
+  ModifierChoiceSelection,
+  CartLineModifier,
+  ProdModifierBreakdown,
+  OrderLineItemModifier,
   CustomerNote,
   Attribute,
   AttributeOption,
   Category,
   Transaction,
   ActiveSplitPayment,
+  BookingAvailability,
+  BookingSlot,
+  BookingSlotResource,
+  BookingResource,
+  Booking,
+  CartReservation,
+  OrderReservation,
+  CartAddress,
+  CartShipping,
+  Composite,
+  CompositePart,
+  CompositeItem,
+  CompositeChoice,
+  CompositeItemUnavailable,
+  CompositePick,
+  CartLineComponent,
+  OrderLineItemComponent,
 } from '@final-commerce/common/pos-types';
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
@@ -72,6 +100,9 @@ export type CFDiscount = Discount;
 export type CFCustomFee = CustomFee;
 export type CFAddress = Address;
 export type CFMetadataItem = MetadataItem;
+export type CFOrderAssignedUser = OrderAssignedUser;
+export type CFOrderInCart = OrderInCart;
+export type CFOrderCustomStatus = OrderCustomStatus;
 export type CFTax = Tax;
 export type CFCartFeeTaxEntry = CartFeeTaxEntry;
 export type CFInventory = Inventory;
@@ -81,8 +112,56 @@ export type CFAttributeOption = AttributeOption;
 export type CFAttribute = Attribute;
 export type CFTransaction = Transaction;
 export type CFCategory = Category;
-export type CFProductVariant = ProductVariant;
-export type CFProduct = FullProduct;
+/**
+ * FT-151 `unavailable`: `true` when the variant is marked "can't be sold here right now" at the ACTIVE outlet
+ * (`setVariantUnavailable`). Independent of stock; `addProductToCart` refuses it even with backorders. The host always
+ * sets it on `getProducts`. INTERIM here until `common/pos-types` ProductVariant carries it (ob_agent).
+ */
+export type CFProductVariant = ProductVariant & { unavailable?: boolean };
+export type CFProduct = Omit<FullProduct, 'variants'> & { variants: CFProductVariant[] };
+/** Composite products (FT-83): `CFProduct.composite`, the picks `addProductToCart` takes, the cart/order line's
+ *  components. The host decides availability, prices and tax; a flow renders them and sends picks. */
+/**
+ * B41: `needsDate: true` — the composite holds a bookable item and CANNOT be sold without a time. Show "By date" and a
+ * date and time picker filled from `getCompositeAvailability`, then pass the chosen `compositeSlot` to `addProductToCart`.
+ * Until a time is chosen its bookable items read `unavailable: 'by_date'` — still pickable, never greyed out.
+ * INTERIM here until `common/pos-types` Composite carries it (ob_agent).
+ */
+export type CFComposite = Composite & { needsDate: boolean };
+export type CFCompositePart = CompositePart;
+export type CFCompositeItem = CompositeItem;
+export type CFCompositeChoice = CompositeChoice;
+export type CFCompositeItemUnavailable = CompositeItemUnavailable;
+/**
+ * B41: `resourceId` — on a bookable pick only: the resource that must serve it. Omitted = the host takes the first one
+ * free in that window. INTERIM here until `common/pos-types` CompositePick carries it (ob_agent).
+ */
+export type CFCompositePick = CompositePick & { resourceId?: string };
+export type CFCartLineComponent = CartLineComponent;
+export type CFOrderLineItemComponent = OrderLineItemComponent;
+export type CFBookingAvailability = BookingAvailability;
+export type CFBookingSlot = BookingSlot;
+export type CFBookingSlotResource = BookingSlotResource;
+export type CFBookingResource = BookingResource;
+export type CFBooking = Booking;
+/** A service sitting in the cart, and the same sale once it is on an order. A flow that draws a
+ *  cart or a receipt needs both by name — reaching into the package's dist for them is not an
+ *  interface. */
+export type CFCartReservation = CartReservation;
+export type CFOrderReservation = OrderReservation;
+/** Modifier (the till question) resolved onto a product — `CFProduct.modifiers`. */
+export type CFResolvedModifier = ResolvedModifier;
+export type CFResolvedModifierChoice = ResolvedModifierChoice;
+export type CFModifierSelectionType = ModifierSelectionType;
+/** One selected modifier choice on an order line item (wire shape). */
+export type CFOrderLineItemModifier = OrderLineItemModifier;
+/** Cart-line modifier answer (pre-pricing) — `CFActiveProduct.modifierSelections`. */
+export type CFModifierSelection = ModifierSelection;
+export type CFModifierChoiceSelection = ModifierChoiceSelection;
+/** One selected choice PRICED onto a cart line — `CFActiveProduct.modifiers` (not the resolved stack). */
+export type CFCartLineModifier = CartLineModifier;
+/** A priced, line-extended modifier row: "Toppings - Avocado" x2, `amount` 1000. */
+export type CFProdModifierBreakdown = ProdModifierBreakdown;
 export type CFActiveProduct = ActiveProduct;
 export type CFCustomer = ActiveCustomer;
 export type CFActiveCustomer = ActiveCustomer;
@@ -114,6 +193,8 @@ export type CFActiveOrder = ActiveOrder;
 export type CFActiveCustomSales = ActiveCustomSales;
 export type CFNonRevenueItem = NonRevenueItem;
 export type CFActiveCart = ActiveCart;
+export type CFCartAddress = CartAddress;
+export type CFCartShipping = CartShipping;
 export type CFActivePark = ActivePark;
 export type CFActiveCompany = ActiveCompany;
 
@@ -165,6 +246,7 @@ export interface CFActiveRefundDetails {
   buttonsDisabled?: Record<string, boolean>;
   isRefund?: boolean;
   customSalesQuantities?: Record<string, number>;
+  /** Keyed by cart-fee id, plus the reserved key `'shipping'` for the order's shipping. 0/1 each. */
   cartFeesRefunds?: Record<string, number>;
   tipsRefunds?: Record<string, number>;
   refundProcessingStatus?: CFRefundProcessingStatus | null;
@@ -184,6 +266,21 @@ export interface CFContextRender {
   stationName: string | null;
   outletId: string | null;
   outletName: string | null;
+  /**
+   * IANA zone the SHOP keeps, resolved as the outlet's own zone, else the
+   * company's — never the device's. A booking is stored as an instant, so which
+   * hour and which DAY it reads as is decided entirely by the zone it is printed
+   * in, and the screen's own machine is the one zone that is certainly wrong: a
+   * 17:00 Monday appointment in Vancouver is 21:30 for a till in St John's, and
+   * for some viewers it lands on Tuesday. Without this an app cannot label a
+   * slot or an appointment honestly — it can only guess, and it guesses wrong
+   * for every business that does not sit in the same zone as its screen.
+   *
+   * `null` when neither the outlet nor the company has one configured. Say so
+   * rather than falling back to the device: a missing timezone is a setup
+   * problem, and printing the machine's clock hides it.
+   */
+  timeZone: string | null;
   buildId: string | null;
   buildName: string | null;
   buildVersion: string | null;
@@ -225,9 +322,23 @@ export interface CFOutletInfo {
         state?: string;
         postCode?: string;
       };
+  address2?: string;
   city?: string;
   state?: string;
   country?: string;
+  postCode?: string;
+  phone?: string;
+  /** Short display alias, when the merchant set one (e.g. `DTWN`). */
+  alias?: string;
+  /**
+   * Whether this location can take an ONLINE payment. Storefront only — it is
+   * absent on a register, where it has no meaning.
+   *
+   * `false` means the outlet has no completed payment connection, so starting a
+   * checkout against it WILL fail. A pickup picker must not offer it as a
+   * selectable location, or must show it as unavailable.
+   */
+  connected?: boolean;
 }
 
 // Context for Manage/BuilderHub project

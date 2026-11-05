@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { renderClient as command } from '@final-commerce/command-frame';
+import { renderClient as command, type CFComposite } from '@final-commerce/command-frame';
+import type { CustomStockActionPayload, ManualStockReason } from '@final-commerce/command-frame';
 import { CommandSection } from '../CommandSection';
 import { JsonViewer } from '../JsonViewer';
 import './Sections.css';
@@ -8,14 +9,26 @@ interface ProductsSectionProps {
   isInIframe: boolean;
 }
 
+const STOCK_TYPE_BY_BASE_ACTION = { ADD: 'add', REMOVE: 'subtract', RECOUNT: 'set' } as const;
+const STOCK_TYPE_BY_REASON: Record<ManualStockReason, 'add' | 'subtract' | 'set'> = {
+  STOCK_RECEIVED: 'add',
+  RESTOCK_RETURN: 'add',
+  DAMAGE: 'subtract',
+  THEFT: 'subtract',
+  LOSS: 'subtract',
+  INVENTORY_RECOUNT: 'set',
+};
+
 export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [productsError, setProductsError] = useState<string>('');
-  
+
   const [variants, setVariants] = useState<any[]>([]);
   const [variantId, setVariantId] = useState<string>('');
   const [productId, setProductId] = useState<string>('');
+  const [modifiers, setModifiers] = useState<any[]>([]);
+  const [composite, setComposite] = useState<CFComposite | null>(null);
 
   const [addProductLoading, setAddProductLoading] = useState(false);
   const [addProductResponse, setAddProductResponse] = useState<string>('');
@@ -46,6 +59,9 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   const [inventoryStockType, setInventoryStockType] = useState<'add' | 'subtract' | 'set'>('add');
   const [adjustInventoryLoading, setAdjustInventoryLoading] = useState(false);
   const [adjustInventoryResponse, setAdjustInventoryResponse] = useState<string>('');
+  const [customStockActions, setCustomStockActions] = useState<CustomStockActionPayload[]>([]);
+  const [customActionId, setCustomActionId] = useState<string>('');
+  const [stockReason, setStockReason] = useState<ManualStockReason | ''>('');
 
   // Add Product Discount (standalone)
   const [discountAmount, setDiscountAmount] = useState<string>('5.00');
@@ -97,14 +113,16 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
 
     try {
       const result = await command.getProducts({});
-      
+
       if (result && typeof result === 'object') {
         if (result.products && Array.isArray(result.products)) {
           setProducts(result.products);
         } else if (Array.isArray(result)) {
           setProducts(result);
         } else {
-          setProductsError(`Invalid response format. Expected products array, got: ${JSON.stringify(result).substring(0, 100)}`);
+          setProductsError(
+            `Invalid response format. Expected products array, got: ${JSON.stringify(result).substring(0, 100)}`,
+          );
         }
       } else {
         setProductsError('Invalid response format: result is not an object');
@@ -125,22 +143,30 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       } else {
         setVariants([]);
       }
+      // The host always sets this, even to [] — an empty table means "no modifiers",
+      // not "the join did not run".
+      setModifiers(Array.isArray(product.modifiers) ? product.modifiers : []);
+      // null on every product that is not a composite (the host sets it on all of them).
+      setComposite(product.composite ?? null);
     }
   };
 
   const getProductPrice = (product: any): string => {
+    // A composite's price is the host's: never the variant's, never a min() over them.
+    if (product.composite) {
+      const { available, fromPrice } = product.composite as CFComposite;
+      return available && fromPrice != null ? `From ${fromPrice}` : 'Unavailable';
+    }
     if (product.variants && product.variants.length > 0) {
       const prices = product.variants
         .map((v: any) => v.price)
         .filter((p: any): p is number => p != null && !isNaN(Number(p)))
         .map(Number);
-      
+
       if (prices.length > 0) {
         const minPrice = Math.min(...prices);
         const maxPrice = Math.max(...prices);
-        return minPrice === maxPrice 
-          ? `$${minPrice.toFixed(2)}` 
-          : `$${minPrice.toFixed(2)} - $${maxPrice.toFixed(2)}`;
+        return minPrice === maxPrice ? `$${minPrice.toFixed(2)}` : `$${minPrice.toFixed(2)} - $${maxPrice.toFixed(2)}`;
       }
     }
     return 'N/A';
@@ -156,18 +182,12 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
   return (
     <div className="section-content">
       <CommandSection title="Get Products">
-        <button 
-          onClick={handleGetProducts} 
-          disabled={productsLoading}
-          className="btn btn--primary"
-        >
+        <button onClick={handleGetProducts} disabled={productsLoading} className="btn btn--primary">
           {productsLoading ? 'Loading...' : 'Get Products'}
         </button>
-        
-        {productsError && (
-          <JsonViewer data={productsError} title="Error" />
-        )}
-        
+
+        {productsError && <JsonViewer data={productsError} title="Error" />}
+
         {products.length > 0 && (
           <div className="data-table-wrapper">
             <table className="data-table">
@@ -183,16 +203,16 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
                 {products.map((product, index) => {
                   const productId = product._id || product.id;
                   return (
-                    <tr 
+                    <tr
                       key={productId || index}
                       onClick={() => handleProductSelect(product)}
                       className="data-table__row--clickable"
                     >
                       <td>
                         {getProductImage(product) ? (
-                          <img 
-                            src={getProductImage(product)} 
-                            alt={product.name || 'Product'} 
+                          <img
+                            src={getProductImage(product)}
+                            alt={product.name || 'Product'}
                             className="product-image"
                             onError={(e) => {
                               (e.target as HTMLImageElement).style.display = 'none';
@@ -218,10 +238,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       </CommandSection>
 
       <CommandSection title="Product Variants (Select from list above)">
-        <p className="section-description">
-          Click on a product in the table above to see its variants.
-        </p>
-        
+        <p className="section-description">Click on a product in the table above to see its variants.</p>
+
         {variants.length > 0 ? (
           <div className="data-table-wrapper">
             <table className="data-table">
@@ -238,7 +256,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
                 {variants.map((variant, index) => {
                   const variantIdValue = variant._id || variant.id;
                   return (
-                    <tr 
+                    <tr
                       key={variantIdValue || index}
                       onClick={() => {
                         if (variantIdValue) {
@@ -248,8 +266,12 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
                       className="data-table__row--clickable"
                     >
                       <td>{variant.name || variant.sku || 'Unnamed Variant'}</td>
-                      <td className="text-right">{variant.price != null ? `$${Number(variant.price).toFixed(2)}` : '—'}</td>
-                      <td className="text-right">{variant.salePrice ? `$${Number(variant.salePrice).toFixed(2)}` : '—'}</td>
+                      <td className="text-right">
+                        {variant.price != null ? `$${Number(variant.price).toFixed(2)}` : '—'}
+                      </td>
+                      <td className="text-right">
+                        {variant.salePrice ? `$${Number(variant.salePrice).toFixed(2)}` : '—'}
+                      </td>
                       <td>{variant.barcode || '—'}</td>
                       <td className="text-muted">{variantIdValue || 'N/A'}</td>
                     </tr>
@@ -265,7 +287,144 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           <p className="no-data-message">Select a product to view variants</p>
         )}
       </CommandSection>
-      
+
+      <CommandSection title="Product Modifiers (Select from list above)">
+        <p className="section-description">
+          The selected product&apos;s resolved modifier menu — the same stack{' '}
+          <code>addProductToCart(&#123; modifiers &#125;)</code> and <code>setProductModifierSelections</code> validate
+          against. Copy a <code>Modifier ID</code> and a <code>Choice ID</code> into the Modifiers tab as{' '}
+          <code>
+            [&#123; &quot;modifierId&quot;: &quot;…&quot;, &quot;choices&quot;: [&#123; &quot;choiceId&quot;:
+            &quot;…&quot;, &quot;quantity&quot;: 1 &#125;] &#125;]
+          </code>
+          . Prices are in minor units.
+        </p>
+
+        {modifiers.length > 0 ? (
+          <div className="data-table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Modifier</th>
+                  <th>Rules</th>
+                  <th>Modifier ID</th>
+                  <th>Choice</th>
+                  <th className="text-right">Price</th>
+                  <th>Choice ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                {modifiers.flatMap((modifier, modifierIndex) => {
+                  const rules = [
+                    modifier.required ? 'required' : 'optional',
+                    modifier.selectionType,
+                    modifier.min != null ? `min ${modifier.min}` : null,
+                    modifier.max != null ? `max ${modifier.max}` : null,
+                    modifier.allowQuantity ? 'qty' : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ');
+                  const choices = Array.isArray(modifier.choices) ? modifier.choices : [];
+
+                  if (choices.length === 0) {
+                    return [
+                      <tr key={modifier._id || modifierIndex}>
+                        <td>{modifier.name || 'Unnamed Modifier'}</td>
+                        <td className="text-muted">{rules}</td>
+                        <td className="text-muted">{modifier._id || 'N/A'}</td>
+                        <td colSpan={3} className="text-muted">
+                          No choices
+                        </td>
+                      </tr>,
+                    ];
+                  }
+
+                  return choices.map((choice: any, choiceIndex: number) => (
+                    <tr key={`${modifier._id}-${choice._id || choiceIndex}`}>
+                      <td>{choiceIndex === 0 ? modifier.name || 'Unnamed Modifier' : ''}</td>
+                      <td className="text-muted">{choiceIndex === 0 ? rules : ''}</td>
+                      <td className="text-muted">{choiceIndex === 0 ? modifier._id || 'N/A' : ''}</td>
+                      <td>
+                        {choice.name || 'Unnamed Choice'}
+                        {choice.unavailableOutletIds?.length ? (
+                          <span className="text-muted"> (outlet-restricted)</span>
+                        ) : null}
+                      </td>
+                      <td className="text-right">{choice.price != null ? choice.price : '—'}</td>
+                      <td className="text-muted">{choice._id || 'N/A'}</td>
+                    </tr>
+                  ));
+                })}
+              </tbody>
+            </table>
+            <div className="data-table-footer">
+              <strong>Total: {modifiers.length} modifiers</strong>
+            </div>
+          </div>
+        ) : (
+          <p className="no-data-message">
+            Select a product to view modifiers. An empty table means the product&apos;s categories carry none.
+          </p>
+        )}
+      </CommandSection>
+
+      <CommandSection title="Composite (Select from list above)">
+        <p className="section-description">
+          <code>product.composite</code> — the picker the host serves for a composite product: parts, their items, what
+          one pick adds (<code>cost</code>) and why an item cannot be picked (<code>unavailable</code>). Render it as
+          is; a pick is an item&apos;s <code>Item ID</code> plus one of its <code>Choices</code>, sent with{' '}
+          <code>addProductToCart(&#123; variantId, composite &#125;)</code> (Cart tab). Prices are in minor units.
+        </p>
+
+        {composite ? (
+          <div className="data-table-wrapper">
+            <p>
+              <strong>{composite.available ? 'Available' : 'Unavailable'}</strong> · base price{' '}
+              {composite.basePrice ?? '—'} · from {composite.fromPrice ?? '—'}
+            </p>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Part</th>
+                  <th>Rules</th>
+                  <th>Item</th>
+                  <th>Item ID</th>
+                  <th className="text-right">Cost</th>
+                  <th>Unavailable</th>
+                  <th>Choices (variant IDs)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {composite.parts.flatMap((part) =>
+                  part.items.map((item, itemIndex) => (
+                    <tr key={item._id}>
+                      <td>{itemIndex === 0 ? (part.name ?? 'Choose') : ''}</td>
+                      <td className="text-muted">
+                        {itemIndex === 0
+                          ? `${part.required ? 'required' : 'optional'} · min ${part.min} · max ${part.max}`
+                          : ''}
+                      </td>
+                      <td>
+                        {item.name || '—'}
+                        {part.defaultPick?.itemId === item._id ? ' (default)' : ''}
+                      </td>
+                      <td className="text-muted">{item._id}</td>
+                      <td className="text-right">{item.cost}</td>
+                      <td className="text-muted">{item.unavailable ?? ''}</td>
+                      <td className="text-muted">
+                        {item.choices.map((choice) => `${choice.name} (${choice.variantId})`).join(', ') || '—'}
+                      </td>
+                    </tr>
+                  )),
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="no-data-message">Select a composite product to view its parts.</p>
+        )}
+      </CommandSection>
+
       <CommandSection title="Selected Variant">
         <p className="section-description">
           Select a variant from the table above or enter IDs manually to use for actions below.
@@ -296,9 +455,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
 
       {/* Set Active Product */}
       <CommandSection title="Set Active Product">
-        <p className="section-description">
-          Set an active product using the selected variant ID.
-        </p>
+        <p className="section-description">Set an active product using the selected variant ID.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Variant ID:</label>
@@ -342,9 +499,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
 
       {/* get active product */}
       <CommandSection title="Get Active Product">
-        <p className='section-description'> 
-          Get Active Product 
-        </p>
+        <p className="section-description">Get Active Product</p>
         <button
           onClick={async () => {
             setGetActiveProductLoading(true);
@@ -374,13 +529,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
         )}
       </CommandSection>
 
-
-
-
       <CommandSection title="Add Product to Cart">
-        <p className="section-description">
-          Adds the selected variant to cart (simple add).
-        </p>
+        <p className="section-description">Adds the selected variant to cart (simple add).</p>
         <button
           onClick={async () => {
             // if (!isInIframe) {
@@ -394,9 +544,9 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             setAddProductLoading(true);
             setAddProductResponse('');
             try {
-              const result = await command.addProductToCart({ 
+              const result = await command.addProductToCart({
                 variantId,
-                quantity: 1
+                quantity: 1,
               });
               setAddProductResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -411,17 +561,12 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           {addProductLoading ? 'Adding...' : 'Add to Cart'}
         </button>
         {addProductResponse && (
-          <JsonViewer
-            data={addProductResponse}
-            title={addProductResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={addProductResponse} title={addProductResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       <CommandSection title="Add Product to Cart with Note">
-        <p className="section-description">
-          Adds the selected variant to cart with a note attached.
-        </p>
+        <p className="section-description">Adds the selected variant to cart with a note attached.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Note:</label>
@@ -450,10 +595,10 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             setAddProductNoteLoading(true);
             setAddProductNoteResponse('');
             try {
-              const result = await command.addProductToCart({ 
+              const result = await command.addProductToCart({
                 variantId,
                 quantity: 1,
-                notes: productNote 
+                notes: productNote,
               });
               setAddProductNoteResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -476,9 +621,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       </CommandSection>
 
       <CommandSection title="Add Product to Cart with Fee">
-        <p className="section-description">
-          Adds the selected variant to cart with a fee attached.
-        </p>
+        <p className="section-description">Adds the selected variant to cart with a fee attached.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Amount:</label>
@@ -540,13 +683,15 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
               const result = await command.addProductToCart({
                 variantId,
                 quantity: 1,
-                fees: [{
-                  // minor units unless isPercent (then 0-100)
-                amount: parseFloat(productFeeAmount) || 0,
-                  isPercent: productFeeIsPercent,
-                  label: productFeeLabel,
-                  applyTaxes: productFeeApplyTaxes
-                }]
+                fees: [
+                  {
+                    // minor units unless isPercent (then 0-100)
+                    amount: parseFloat(productFeeAmount) || 0,
+                    isPercent: productFeeIsPercent,
+                    label: productFeeLabel,
+                    applyTaxes: productFeeApplyTaxes,
+                  },
+                ],
               });
               setAddProductFeeResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -569,9 +714,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       </CommandSection>
 
       <CommandSection title="Adjust Inventory">
-        <p className="section-description">
-          Adjusts the inventory/stock level for the selected variant.
-        </p>
+        <p className="section-description">Adjusts the inventory/stock level for the selected variant.</p>
         <div className="form-group">
           <div className="form-field">
             <label>Amount:</label>
@@ -583,9 +726,49 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             />
           </div>
           <div className="form-field">
+            <label>Reason (optional):</label>
+            <select
+              value={stockReason}
+              disabled={!!customActionId}
+              onChange={(e) => {
+                const reason = e.target.value as ManualStockReason | '';
+                setStockReason(reason);
+                // stockType must match the reason.
+                if (reason) setInventoryStockType(STOCK_TYPE_BY_REASON[reason]);
+              }}
+            >
+              <option value="">Default for stock type</option>
+              {(Object.keys(STOCK_TYPE_BY_REASON) as ManualStockReason[]).map((reason) => (
+                <option key={reason} value={reason}>
+                  {reason}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-field">
+            <label>Custom Action (optional):</label>
+            <select
+              value={customActionId}
+              onChange={(e) => {
+                const action = customStockActions.find((a) => a._id === e.target.value);
+                setCustomActionId(e.target.value);
+                // stockType must match the action's baseAction.
+                if (action) setInventoryStockType(STOCK_TYPE_BY_BASE_ACTION[action.baseAction]);
+              }}
+            >
+              <option value="">None</option>
+              {customStockActions.map((action) => (
+                <option key={action._id} value={action._id}>
+                  {action.name} ({action.baseAction})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-field">
             <label>Stock Type:</label>
             <select
               value={inventoryStockType}
+              disabled={!!customActionId || !!stockReason}
               onChange={(e) => setInventoryStockType(e.target.value as 'add' | 'subtract' | 'set')}
             >
               <option value="add">Add</option>
@@ -614,7 +797,9 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
               const result = await command.adjustInventory({
                 variantId,
                 amount: inventoryAmount,
-                stockType: inventoryStockType
+                stockType: inventoryStockType,
+                ...(customActionId && { customActionId }),
+                ...(stockReason && !customActionId && { specificAction: stockReason }),
               });
               setAdjustInventoryResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -628,6 +813,20 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
         >
           {adjustInventoryLoading ? 'Adjusting...' : 'Adjust Inventory'}
         </button>
+        <button
+          onClick={async () => {
+            try {
+              const { customStockActions } = await command.getCustomStockActions();
+              setCustomStockActions(customStockActions);
+              setAdjustInventoryResponse(JSON.stringify(customStockActions, null, 2));
+            } catch (error) {
+              setAdjustInventoryResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+          }}
+          className="btn btn--secondary"
+        >
+          Load Custom Actions
+        </button>
         {adjustInventoryResponse && (
           <JsonViewer
             data={adjustInventoryResponse}
@@ -639,7 +838,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       {/* Add Product Discount (standalone) */}
       <CommandSection title="Add Product Discount">
         <p className="section-description">
-          Adds a discount to a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+          Adds a discount to a product in the cart. Provide an internalId to target a specific cart item, or leave empty
+          to use the active product.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -695,7 +895,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
                 amount: parseFloat(discountAmount) || 0,
                 isPercent: discountIsPercent,
                 label: discountLabel,
-                ...(discountInternalId ? { internalId: discountInternalId } : {})
+                ...(discountInternalId ? { internalId: discountInternalId } : {}),
               });
               setAddDiscountResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -720,7 +920,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       {/* Remove Product Discount */}
       <CommandSection title="Remove Product Discount">
         <p className="section-description">
-          Removes a discount from a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+          Removes a discount from a product in the cart. Provide an internalId to target a specific cart item, or leave
+          empty to use the active product.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -739,7 +940,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             setRemoveDiscountResponse('');
             try {
               const result = await command.removeProductDiscount(
-                removeDiscountInternalId ? { internalId: removeDiscountInternalId } : undefined
+                removeDiscountInternalId ? { internalId: removeDiscountInternalId } : undefined,
               );
               setRemoveDiscountResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -764,7 +965,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       {/* Add Product Fee (standalone) */}
       <CommandSection title="Add Product Fee">
         <p className="section-description">
-          Adds a fee to a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+          Adds a fee to a product in the cart. Provide an internalId to target a specific cart item, or leave empty to
+          use the active product.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -831,7 +1033,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
                 isPercent: standaloneFeeIsPercent,
                 label: standaloneFeeLabel,
                 applyTaxes: standaloneFeeApplyTaxes,
-                ...(standaloneFeeInternalId ? { internalId: standaloneFeeInternalId } : {})
+                ...(standaloneFeeInternalId ? { internalId: standaloneFeeInternalId } : {}),
               });
               setAddStandaloneFeeResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -856,7 +1058,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       {/* Remove Product Fee */}
       <CommandSection title="Remove Product Fee">
         <p className="section-description">
-          Removes a fee from a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+          Removes a fee from a product in the cart. Provide an internalId to target a specific cart item, or leave empty
+          to use the active product.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -875,7 +1078,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             setRemoveFeeResponse('');
             try {
               const result = await command.removeProductFee(
-                removeFeeInternalId ? { internalId: removeFeeInternalId } : undefined
+                removeFeeInternalId ? { internalId: removeFeeInternalId } : undefined,
               );
               setRemoveFeeResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -890,17 +1093,15 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           {removeFeeLoading ? 'Removing...' : 'Remove Product Fee'}
         </button>
         {removeFeeResponse && (
-          <JsonViewer
-            data={removeFeeResponse}
-            title={removeFeeResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={removeFeeResponse} title={removeFeeResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
 
       {/* Add Product Note (standalone) */}
       <CommandSection title="Add Product Note">
         <p className="section-description">
-          Adds a note to a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+          Adds a note to a product in the cart. Provide an internalId to target a specific cart item, or leave empty to
+          use the active product.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -933,7 +1134,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             try {
               const result = await command.addProductNote({
                 note: standaloneNote,
-                ...(standaloneNoteInternalId ? { internalId: standaloneNoteInternalId } : {})
+                ...(standaloneNoteInternalId ? { internalId: standaloneNoteInternalId } : {}),
               });
               setAddStandaloneNoteResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -958,7 +1159,8 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
       {/* Remove Product Note */}
       <CommandSection title="Remove Product Note">
         <p className="section-description">
-          Removes a note from a product in the cart. Provide an internalId to target a specific cart item, or leave empty to use the active product.
+          Removes a note from a product in the cart. Provide an internalId to target a specific cart item, or leave
+          empty to use the active product.
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -977,7 +1179,7 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
             setRemoveNoteResponse('');
             try {
               const result = await command.removeProductNote(
-                removeNoteInternalId ? { internalId: removeNoteInternalId } : undefined
+                removeNoteInternalId ? { internalId: removeNoteInternalId } : undefined,
               );
               setRemoveNoteResponse(JSON.stringify(result, null, 2));
             } catch (error) {
@@ -992,13 +1194,9 @@ export function ProductsSection({ isInIframe: _ }: ProductsSectionProps) {
           {removeNoteLoading ? 'Removing...' : 'Remove Product Note'}
         </button>
         {removeNoteResponse && (
-          <JsonViewer
-            data={removeNoteResponse}
-            title={removeNoteResponse.startsWith('Error') ? 'Error' : 'Success'}
-          />
+          <JsonViewer data={removeNoteResponse} title={removeNoteResponse.startsWith('Error') ? 'Error' : 'Success'} />
         )}
       </CommandSection>
     </div>
   );
 }
-

@@ -14,7 +14,9 @@ export const mockGetRemainingRefundableQuantities: GetRemainingRefundableQuantit
     lineItems: {},
     customSales: {},
     cartFees: {},
+    shipping: 0,
     tips: {},
+    reservations: {},
     timestamp: new Date().toISOString(),
   };
 };

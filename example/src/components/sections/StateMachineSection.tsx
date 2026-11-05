@@ -18,6 +18,7 @@ const FULFILLMENT_STATES = [
   'in_progress',
   'on_hold',
   'fulfilled',
+  'partially_fulfilled',
   'partially_returned',
   'returned',
   'cancelled',
@@ -205,7 +206,8 @@ export function StateMachineSection({ isInIframe: _ }: { isInIframe: boolean }) 
       <CommandSection title="Get Available Transitions">
         <p className="section-description">
           Retrieve all transitions currently available for an order. Returns each target state pair with a display label
-          and condition statuses.
+          and condition statuses. Results are fulfillment-axis moves only — the payment axis changes exclusively through
+          the money operations (pay / refund / void), so it is never offered as an applyTransition target.
         </p>
         <div className="form-group">
           <div className="form-field">
