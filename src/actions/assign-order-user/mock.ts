@@ -1,3 +1,4 @@
+import { applyAssignment } from '@final-commerce/common';
 import type { AssignOrderUser, AssignOrderUserParams, AssignOrderUserResponse } from './types';
 import { MOCK_ORDERS, MOCK_PARKED_ORDERS, MOCK_USERS, mockPublishEvent } from '../../demo/database';
 
@@ -18,21 +19,21 @@ export const mockAssignOrderUser: AssignOrderUser = async (
     throw new Error(`Order with ID ${params.orderId} not found`);
   }
 
-  if (params.userId === null) {
-    order.assignedUser = null;
-  } else if (order.assignedUser?.userId !== params.userId) {
-    if (!MOCK_USERS.some((u) => u.id === params.userId)) {
-      throw new Error(`User with ID ${params.userId} not found`);
-    }
-    order.assignedUser = { userId: params.userId, assignedAt: new Date().toISOString() };
+  if (params.userId !== null && !MOCK_USERS.some((u) => u.id === params.userId)) {
+    throw new Error(`User with ID ${params.userId} not found`);
   }
+  order.assignedUser = applyAssignment(order, {
+    userId: params.userId,
+    label: params.label,
+    at: new Date().toISOString(),
+  });
 
   mockPublishEvent('orders', 'order-updated', { order });
 
   return {
     success: true,
     orderId: order._id!,
-    assignedUser: order.assignedUser ?? null,
+    assignedUser: order.assignedUser,
     timestamp: new Date().toISOString(),
   };
 };

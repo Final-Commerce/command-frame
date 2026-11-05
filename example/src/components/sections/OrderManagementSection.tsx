@@ -64,6 +64,7 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
   // Assign Order User
   const [assignOrderId, setAssignOrderId] = useState<string>('');
   const [assignUserId, setAssignUserId] = useState<string>('');
+  const [assignLabel, setAssignLabel] = useState<string>('delivery');
   const assign = useCommandRunner(isInIframe);
 
   // Record External Payment
@@ -212,8 +213,10 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
       {/* Assign Order User */}
       <CommandSection title="Assign Order User">
         <p className="section-description">
-          Assigns a user to the order (e.g. the delivery driver), replacing any current assignee. Leave the user ID
-          blank to unassign. The live cart's order must already be saved (parked, paid or transitioned).
+          Assigns a user to the order (e.g. the delivery driver) under an optional label, replacing the current assignee
+          with that label — the replaced one stays in the order's assignment record, ended. Leave the user ID blank to
+          unassign (only that label, or everyone when the label is blank). The live cart's order must already be saved
+          (parked, paid or transitioned).
         </p>
         <div className="form-group">
           <div className="form-field">
@@ -234,11 +237,24 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
               placeholder="blank = unassign"
             />
           </div>
+          <div className="form-field">
+            <label>Label (optional):</label>
+            <input
+              type="text"
+              value={assignLabel}
+              onChange={(e) => setAssignLabel(e.target.value)}
+              placeholder="e.g. delivery"
+            />
+          </div>
         </div>
         <button
           onClick={() =>
             assign.run(() =>
-              command.assignOrderUser({ orderId: optionalId(assignOrderId), userId: assignUserId.trim() || null }),
+              command.assignOrderUser({
+                orderId: optionalId(assignOrderId),
+                userId: assignUserId.trim() || null,
+                label: assignLabel.trim() || undefined,
+              }),
             )
           }
           disabled={assign.loading}
