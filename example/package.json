@@ -1,7 +1,7 @@
 {
   "name": "command-frame-example-web-app",
   "private": true,
-  "version": "0.1.90",
+  "version": "0.1.91",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@adyen/adyen-web": "^6.44.0",
-    "@final-commerce-internal/kaching": "1.19.1-preprod.5",
+    "@final-commerce-internal/kaching": "1.19.1-preprod.7",
     "@final-commerce/command-frame": "0.13.1-preprod.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -47,6 +47,6 @@
   },
   "overrides": {
     "@final-commerce/command-frame": "0.13.1-preprod.1",
-    "@final-commerce/common": "2.9.2-preprod.2"
+    "@final-commerce/common": "2.9.2-preprod.3"
   }
 }
