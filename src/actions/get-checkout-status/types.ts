@@ -45,8 +45,9 @@ export interface GetCheckoutStatusResponse {
   cancelReason?: CheckoutCancelReason;
   receiptId: string | null;
   /**
-   * The shopper account line for the confirmation page, when the shopper ticked "Track this order" or
-   * is signed in: "Added to your orders", or a prompt to get a code to open the account. Ready to display.
+   * The shopper account line for the confirmation page: "Added to your orders" when signed in, else
+   * (any guest who gave an email) a prompt to get a code; for `sign-in`, call requestShopperCode() with
+   * no params and it goes to that email. Ready to display.
    */
   account?: { label: string; action: 'none' | 'sign-in' };
   timestamp: string;

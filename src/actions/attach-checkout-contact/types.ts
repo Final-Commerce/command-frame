@@ -31,6 +31,11 @@ export interface AttachCheckoutContactParams {
   accountOptIn?: boolean;
   /** The news box ("Email me news and offers"): this store's consent, true or false. Omitted = not asked. */
   marketingOptIn?: boolean;
+  /**
+   * The "Save this address" box (signed-in shoppers): once the order is paid, its shipping address is
+   * saved to the shopper's account. Omitted = not ticked.
+   */
+  saveAddress?: boolean;
 }
 
 export interface AttachCheckoutContactResponse {
