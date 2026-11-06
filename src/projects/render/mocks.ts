@@ -48,6 +48,12 @@ import { mockGetOutlets } from '../../actions/get-outlets/mock';
 import { mockSetOutlet } from '../../actions/set-outlet/mock';
 import { mockResumeCheckout } from '../../actions/resume-checkout/mock';
 import { mockGetCheckoutStatus } from '../../actions/get-checkout-status/mock';
+import { mockGetShopperAccount } from '../../actions/get-shopper-account/mock';
+import { mockRequestShopperCode } from '../../actions/request-shopper-code/mock';
+import { mockSignInShopper } from '../../actions/sign-in-shopper/mock';
+import { mockSignOutShopper } from '../../actions/sign-out-shopper/mock';
+import { mockGetShopperOrders } from '../../actions/get-shopper-orders/mock';
+import { mockGetShopperOrder } from '../../actions/get-shopper-order/mock';
 import { mockGetMotoConfig } from '../../actions/get-moto-config/mock';
 import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
@@ -180,6 +186,12 @@ export const RENDER_MOCKS: RenderProviderActions = {
   setOutlet: mockSetOutlet,
   resumeCheckout: mockResumeCheckout,
   getCheckoutStatus: mockGetCheckoutStatus,
+  getShopperAccount: mockGetShopperAccount,
+  requestShopperCode: mockRequestShopperCode,
+  signInShopper: mockSignInShopper,
+  signOutShopper: mockSignOutShopper,
+  getShopperOrders: mockGetShopperOrders,
+  getShopperOrder: mockGetShopperOrder,
   getMotoConfig: mockGetMotoConfig,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,

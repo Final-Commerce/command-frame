@@ -15,8 +15,8 @@
 // `startCheckout` itself. On a register it does not exist.
 
 /**
- * Guest contact for the order. There is no shopper account, so this is the only
- * way to reach them — `email` is where the receipt goes and is required.
+ * Contact for the order. `email` is where the receipt goes and is required. The two boxes are the
+ * shopper account's (see `getShopperAccount`); a box never stops the payment, whatever happens to it.
  */
 export interface AttachCheckoutContactParams {
   email: string;
@@ -24,6 +24,13 @@ export interface AttachCheckoutContactParams {
   phone?: string;
   /** Defaults to the outlet the storefront booted against. */
   outletId?: string;
+  /**
+   * The checkout's account box ("Track this order and check out faster next time", from
+   * `getShopperAccount`): links this email to a shopper account at this store. Omitted = not ticked.
+   */
+  accountOptIn?: boolean;
+  /** The news box ("Email me news and offers"): this store's consent, true or false. Omitted = not asked. */
+  marketingOptIn?: boolean;
 }
 
 export interface AttachCheckoutContactResponse {
