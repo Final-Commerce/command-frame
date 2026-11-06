@@ -717,6 +717,7 @@ export type {
   GetShopperAccountResponse,
   ShopperCheckoutBox,
   ShopperAccountView,
+  ShopperAddressView,
 } from './actions/get-shopper-account/types';
 export type {
   RequestShopperCode,
