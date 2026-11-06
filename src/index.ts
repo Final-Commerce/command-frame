@@ -68,6 +68,8 @@ import { chargeMoto } from './actions/charge-moto/action';
 import { startCheckout } from './actions/start-checkout/action';
 import { attachCheckoutContact } from './actions/attach-checkout-contact/action';
 import { getAddressOptions } from './actions/get-address-options/action';
+import { searchAddresses } from './actions/search-addresses/action';
+import { getAddressDetails } from './actions/get-address-details/action';
 import { setOrderAddress } from './actions/set-order-address/action';
 import { getShippingOptions } from './actions/get-shipping-options/action';
 import { selectShippingOption } from './actions/select-shipping-option/action';
@@ -249,6 +251,8 @@ export const command = {
   startCheckout,
   attachCheckoutContact,
   getAddressOptions,
+  searchAddresses,
+  getAddressDetails,
   setOrderAddress,
   getShippingOptions,
   selectShippingOption,
@@ -726,6 +730,18 @@ export type {
 } from './actions/request-shopper-code/types';
 export type { SignInShopper, SignInShopperParams, SignInShopperResponse } from './actions/sign-in-shopper/types';
 export type { SignOutShopper, SignOutShopperParams, SignOutShopperResponse } from './actions/sign-out-shopper/types';
+export type {
+  SearchAddresses,
+  SearchAddressesParams,
+  SearchAddressesResponse,
+  AddressSuggestion,
+} from './actions/search-addresses/types';
+export type {
+  GetAddressDetails,
+  GetAddressDetailsParams,
+  GetAddressDetailsResponse,
+  AddressDetails,
+} from './actions/get-address-details/types';
 export type {
   GetShopperOrders,
   GetShopperOrdersParams,

@@ -53,6 +53,8 @@ import { mockRequestShopperCode } from '../../actions/request-shopper-code/mock'
 import { mockSignInShopper } from '../../actions/sign-in-shopper/mock';
 import { mockSignOutShopper } from '../../actions/sign-out-shopper/mock';
 import { mockGetShopperOrders } from '../../actions/get-shopper-orders/mock';
+import { mockSearchAddresses } from '../../actions/search-addresses/mock';
+import { mockGetAddressDetails } from '../../actions/get-address-details/mock';
 import { mockGetShopperOrder } from '../../actions/get-shopper-order/mock';
 import { mockGetMotoConfig } from '../../actions/get-moto-config/mock';
 import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
@@ -179,6 +181,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   startCheckout: mockStartCheckout,
   attachCheckoutContact: mockAttachCheckoutContact,
   getAddressOptions: mockGetAddressOptions,
+  searchAddresses: mockSearchAddresses,
+  getAddressDetails: mockGetAddressDetails,
   setOrderAddress: mockSetOrderAddress,
   getShippingOptions: mockGetShippingOptions,
   selectShippingOption: mockSelectShippingOption,
