@@ -38,7 +38,7 @@ interface CFBookingAvailability {
   productId: string;
   bookingRulesId: string;
   bookingType: BookingType; // rental | appointment | overnight | group
-  ratePeriod: BookingRatePeriod; // slot | day | night | week | month
+  ratePeriod: BookingRatePeriod; // slot | hour | day | night | week | month | session
   minimumToRun?: number; // label only — a group slot below this MAY be cancelled
   minStay?: number;
   maxStay?: number;
@@ -49,6 +49,15 @@ interface CFBookingAvailability {
    *  not in the UI: comparing a day against the window is a rule. */
   beyondWindow?: boolean;
   slots: CFBookingSlot[];
+  /** Session rules sold as a course only. Book it with `addBookingToCart({ ..., startAt, endAt, course: true })`
+   *  using these `startAt`/`endAt`. `free` per resource = the fewest places left over ALL sessions. */
+  course?: {
+    sessions: number;
+    alreadyStarted: boolean; // the first session is inside the notice: not bookable, every `free` is 0
+    startAt: string; // first session's start
+    endAt: string; // last session's end
+    resources: { resourceId: string; free: number }[];
+  };
 }
 
 interface CFBookingSlot {
