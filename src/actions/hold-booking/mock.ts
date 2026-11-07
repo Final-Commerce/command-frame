@@ -22,6 +22,10 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
       timestamp: new Date().toISOString(),
     };
   }
+  // The mock shop sells 30-minute slots, not a course: the host refuses `course` on such rules with this text.
+  if (params.course) {
+    return { success: false, reason: 'These rules do not sell a course', timestamp: new Date().toISOString() };
+  }
   const resourceName = MOCK_BOOKING_RESOURCES.find(({ id }) => id === params.resourceId)?.name;
   if (qty > 1) {
     return {

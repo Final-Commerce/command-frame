@@ -25,6 +25,12 @@ export interface AddBookingToCartParams {
    * no extra places and does not change the price. Refused above the rule's `maxPartySize`. Omit when not asked.
    */
   partySize?: number;
+  /**
+   * Book the whole course (session rules sold as a course): one hold per session, all or nothing. Pass the course's own
+   * `startAt` / `endAt` from `getBookingAvailability` (`availability.course`); other values are refused. Refused on rules
+   * that do not sell a course; a course rule refuses a booking without it.
+   */
+  course?: boolean;
 }
 
 export interface AddBookingToCartResponse {

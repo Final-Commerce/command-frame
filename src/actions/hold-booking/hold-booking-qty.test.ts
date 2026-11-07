@@ -52,6 +52,13 @@ describe('holdBooking mock — qty and partySize', () => {
     });
   });
 
+  it('refuses a course: the mock shop sells slots, as the host refuses on such rules', async () => {
+    expect(await mockHoldBooking({ ...freeSlot(), course: true })).toMatchObject({
+      success: false,
+      reason: 'These rules do not sell a course',
+    });
+  });
+
   it('addBookingToCart passes the refusal through and adds nothing', async () => {
     const result = await mockAddBookingToCart({ ...freeSlot(), qty: 2 });
     expect(result.success).toBe(false);

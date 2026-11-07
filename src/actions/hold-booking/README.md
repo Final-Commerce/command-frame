@@ -30,6 +30,7 @@ interface HoldBookingParams {
   customerId?: string;
   qty?: number; // places this booking takes (seats, spots); whole number, default 1
   partySize?: number; // people the booking is for; recorded, takes no places, no price change
+  course?: boolean; // session rules sold as a course: hold every session, all or nothing
 }
 ```
 
