@@ -16,6 +16,16 @@ export interface HoldBookingParams {
   variantId?: string;
   /** Whom the booking is for. Omit for a walk-in. */
   customerId?: string;
+  /**
+   * How many places of the resource this booking takes (seats in a class, spots in a session). A whole
+   * number, default 1. Refused above the resource's capacity and above the rule's `maxQtyPerBooking`.
+   */
+  qty?: number;
+  /**
+   * How many people the booking is for (a room for 3, a table for 4). A whole number. Recorded on the booking; it takes
+   * no extra places and does not change the price. Refused above the rule's `maxPartySize`. Omit when not asked.
+   */
+  partySize?: number;
 }
 
 export interface HoldBookingResponse {

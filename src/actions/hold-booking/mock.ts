@@ -10,6 +10,27 @@ let held = 0;
 export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): Promise<HoldBookingResponse> => {
   console.log('[Mock] holdBooking called', params);
 
+  // Same refusals and texts as the host (kaching `holdLocally`); every mock room holds one.
+  const qty = params.qty ?? 1;
+  if (!Number.isInteger(qty) || qty < 1) {
+    return { success: false, reason: 'qty must be a whole number of at least 1', timestamp: new Date().toISOString() };
+  }
+  if (params.partySize !== undefined && (!Number.isInteger(params.partySize) || params.partySize < 1)) {
+    return {
+      success: false,
+      reason: 'partySize must be a whole number of at least 1',
+      timestamp: new Date().toISOString(),
+    };
+  }
+  const resourceName = MOCK_BOOKING_RESOURCES.find(({ id }) => id === params.resourceId)?.name;
+  if (qty > 1) {
+    return {
+      success: false,
+      reason: `"${resourceName}" holds 1, ${qty} were asked for`,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   const startAt = new Date(params.startAt);
   const endAt = new Date(params.endAt);
   const bufferEndAt = new Date(endAt.getTime() + BUFFER_MINUTES * 60_000);
@@ -23,7 +44,11 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
       new Date(entry.bufferEndAt) > startAt,
   );
   if (clash) {
-    return { success: false, reason: 'That window has just been taken — pick another slot.', timestamp: new Date().toISOString() };
+    return {
+      success: false,
+      reason: 'That window has just been taken — pick another slot.',
+      timestamp: new Date().toISOString(),
+    };
   }
 
   const booking = {
@@ -39,7 +64,7 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
     customerId: params.customerId,
     status: ReservationStatus.HELD,
     expiresAt: new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString(),
-    resourceName: MOCK_BOOKING_RESOURCES.find(({ id }) => id === params.resourceId)?.name,
+    resourceName,
   };
 
   // Held in the same list availability reads, so the slot really does disappear.

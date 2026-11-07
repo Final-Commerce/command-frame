@@ -13,6 +13,18 @@ export interface AddBookingToCartParams {
   variantId?: string;
   /** Whom the booking is for. Omit for a walk-in. */
   customerId?: string;
+  /**
+   * How many places of the resource this booking takes (seats in a class, spots in a session). A whole
+   * number, default 1. Each place is charged: the reservation's `quantity` counts them and its `total` is
+   * `price × quantity`. Refused above the resource's capacity and above the rule's `maxQtyPerBooking`.
+   * A window of several nights or days (a date range on a till) is charged per period too: `quantity = qty × periods`.
+   */
+  qty?: number;
+  /**
+   * How many people the booking is for (a room for 3, a table for 4). A whole number. Recorded on the booking; it takes
+   * no extra places and does not change the price. Refused above the rule's `maxPartySize`. Omit when not asked.
+   */
+  partySize?: number;
 }
 
 export interface AddBookingToCartResponse {

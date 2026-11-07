@@ -23,6 +23,8 @@ interface AddBookingToCartParams {
   endAt: string; // that slot's endAt (or the last slot's, for a stay)
   variantId?: string; // defaults to the product's only variant
   customerId?: string;
+  qty?: number; // places this booking takes (seats, spots); whole number, default 1 — each one is charged
+  partySize?: number; // people the booking is for; recorded, takes no places, no price change
 }
 ```
 
@@ -50,6 +52,10 @@ const { booking } = await renderClient.addBookingToCart({
 ```
 
 ## Notes
+
+- **Several nights or days in one booking** (date-range rules, `ratePeriod` `night` / `day`, on a till): pass the first slot's
+  `startAt` and the last slot's `endAt`; the reservation is charged per period — `quantity = qty × periods`, `total = price ×
+quantity`. Time slots, weeks and months are still refused beyond one period (`A booking covers one period; …`).
 
 - **Handle the refusal.** Two people booking the same window at once is normal, not exceptional:
   re-ask `getBookingAvailability` and let the customer pick again.
