@@ -56,7 +56,8 @@ interface CFBookingAvailability {
     alreadyStarted: boolean; // the first session is inside the notice: not bookable, every `free` is 0
     startAt: string; // first session's start
     endAt: string; // last session's end
-    resources: { resourceId: string; free: number }[];
+    resources: { resourceId: string; free: number; unlimited?: true }[];
+    unlimited?: true;
   };
 }
 
@@ -68,7 +69,10 @@ interface CFBookingSlot {
   capacity: number; // seats across every serving resource
   booked: number;
   free: number;
-  resources: { resourceId: string; name: string; capacity: number; booked: number; free: number }[];
+  resources: { resourceId: string; name: string; capacity: number; booked: number; free: number; unlimited?: true }[];
+  /** A session rule with no spots limit: `capacity` and `free` read UNLIMITED_PLACES (Number.MAX_SAFE_INTEGER), so
+   *  `free > 0` keeps working. Show "no limit" when this is true — never print the number. */
+  unlimited?: true;
 }
 ```
 

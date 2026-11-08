@@ -54,9 +54,11 @@ const { booking } = await renderClient.addBookingToCart({
 
 ## Notes
 
-- **Several nights or days in one booking** (date-range rules, `ratePeriod` `night` / `day`, on a till): pass the first slot's
-  `startAt` and the last slot's `endAt`; the reservation is charged per period — `quantity = qty × periods`, `total = price ×
-quantity`. Time slots, weeks and months are still refused beyond one period (`A booking covers one period; …`).
+- **Several periods in one booking** (date-range rules on a till): pass the first slot's `startAt` and the last slot's
+  `endAt`; the reservation is charged per period — `quantity = qty × periods`, `total = price × quantity`. Hours, days and
+  nights chain cell by cell. Weeks and months take several days only on rules sold as whole periods (`wholePeriods`): whole
+  weeks / whole calendar months, else `Book whole weeks` / `Book whole months`. Time slots and per-day weeks/months are still
+  refused beyond one period (`A booking covers one period; …`).
 
 - **Handle the refusal.** Two people booking the same window at once is normal, not exceptional:
   re-ask `getBookingAvailability` and let the customer pick again.
