@@ -3,12 +3,22 @@ import { CFBooking } from '../../CommonTypes';
 export interface AddBookingToCartParams {
   /** The bookable product (`productType: 'booking'`). */
   productId: string;
-  /** Which resource serves it: a member of staff, a room, a scooter. */
-  resourceId: string;
+  /**
+   * Which resource serves it: a member of staff, a room, a scooter. Omit for "any free one": the host picks the first
+   * resource, in availability order, with `qty` places free for the whole window (or every session of a course).
+   * A storefront still needs it.
+   */
+  resourceId?: string;
   /** Must be the START of a slot getBookingAvailability offered, ISO 8601. */
   startAt: string;
-  /** End of the window — the slot's own `endAt`, or the last slot's for a stay. */
-  endAt: string;
+  /** End of the window — the slot's own `endAt`, or the last slot's for a stay. Omit it only when you pass `periods`. */
+  endAt?: string;
+  /**
+   * Instead of `endAt`, for date-range rules: how many periods from `startAt` — hours, nights, days, or whole weeks /
+   * months. The host reads the end off its own grid and refuses what the rules refuse (`minStay` / `maxStay`, whole
+   * periods). Pass exactly one of `endAt` and `periods`. A storefront still needs `endAt`.
+   */
+  periods?: number;
   /** The variant being sold. Defaults to the product's only variant. */
   variantId?: string;
   /** Whom the booking is for. Omit for a walk-in. */

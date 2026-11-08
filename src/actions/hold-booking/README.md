@@ -23,9 +23,10 @@ default), which is what stops an abandoned checkout from taking a resource off t
 ```typescript
 interface HoldBookingParams {
   productId: string;
-  resourceId: string;
+  resourceId?: string; // omit = any free resource (first in availability order with qty places for the whole window)
   startAt: string; // MUST be the startAt of a slot getBookingAvailability offered
-  endAt: string; // the slot's own endAt (or the last slot's, for a stay)
+  endAt?: string; // or:
+  periods?: number; // date ranges: N hours / nights / days / whole weeks or months from startAt — exactly one of endAt, periods
   variantId?: string;
   customerId?: string;
   qty?: number; // places this booking takes (seats, spots); whole number, default 1

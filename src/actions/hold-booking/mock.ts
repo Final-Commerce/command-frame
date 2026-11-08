@@ -1,6 +1,6 @@
 import { HoldBooking, HoldBookingParams, HoldBookingResponse } from './types';
-import { MOCK_BOOKINGS, MOCK_BOOKING_RESOURCES, mockLiveBookings } from '../../demo/database';
-import { ReservationStatus } from '@final-commerce/common';
+import { MOCK_BOOKINGS, MOCK_BOOKING_RESOURCES, mockBookingAvailability, mockLiveBookings } from '../../demo/database';
+import { ReservationStatus, pickFreeResource } from '@final-commerce/common';
 
 const BUFFER_MINUTES = 5;
 const HOLD_MINUTES = 10;
@@ -26,7 +26,36 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
   if (params.course) {
     return { success: false, reason: 'These rules do not sell a course', timestamp: new Date().toISOString() };
   }
-  const resourceName = MOCK_BOOKING_RESOURCES.find(({ id }) => id === params.resourceId)?.name;
+  // "Any free resource" and "N periods", decided the host's way: common's `pickFreeResource` over the mock's own
+  // availability; the mock shop sells single 30-minute slots, so only one period fits (the host's text otherwise).
+  if ((params.endAt === undefined) === (params.periods === undefined)) {
+    return { success: false, reason: 'Pass either endAt or periods', timestamp: new Date().toISOString() };
+  }
+  if (params.periods !== undefined && params.periods !== 1) {
+    return {
+      success: false,
+      reason: `A booking covers one period; that window covers ${params.periods}. Book them one at a time.`,
+      timestamp: new Date().toISOString(),
+    };
+  }
+  const offered = mockBookingAvailability(
+    params.productId,
+    new Date(params.startAt),
+    new Date(Date.parse(params.startAt) + 60_000),
+  ).slots.find((slot) => slot.startAt === new Date(params.startAt).toISOString());
+  const resourceId = params.resourceId ?? (offered && pickFreeResource(offered, qty)?.resourceId);
+  if (!resourceId) {
+    return { success: false, reason: 'No resource is free for that whole time', timestamp: new Date().toISOString() };
+  }
+  const windowEnd = params.endAt ?? offered?.endAt;
+  if (!windowEnd) {
+    return {
+      success: false,
+      reason: `${new Date(params.startAt).toISOString()} is not a bookable slot start for these rules`,
+      timestamp: new Date().toISOString(),
+    };
+  }
+  const resourceName = MOCK_BOOKING_RESOURCES.find(({ id }) => id === resourceId)?.name;
   if (qty > 1) {
     return {
       success: false,
@@ -36,16 +65,14 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
   }
 
   const startAt = new Date(params.startAt);
-  const endAt = new Date(params.endAt);
+  const endAt = new Date(windowEnd);
   const bufferEndAt = new Date(endAt.getTime() + BUFFER_MINUTES * 60_000);
 
   // The mock refuses a taken window like the host does. A mock that always said yes would
   // let a booking screen ship without ever handling the one error it will actually meet.
   const clash = mockLiveBookings().some(
     (entry) =>
-      entry.resourceId === params.resourceId &&
-      new Date(entry.startAt) < bufferEndAt &&
-      new Date(entry.bufferEndAt) > startAt,
+      entry.resourceId === resourceId && new Date(entry.startAt) < bufferEndAt && new Date(entry.bufferEndAt) > startAt,
   );
   if (clash) {
     return {
@@ -60,7 +87,7 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
     // or remove then acted on the wrong row. Scripted tests hit that routinely.
     id: `bk_mock_${(held += 1)}`,
     productId: params.productId,
-    resourceId: params.resourceId,
+    resourceId,
     variantId: params.variantId,
     startAt: startAt.toISOString(),
     endAt: endAt.toISOString(),

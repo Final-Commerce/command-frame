@@ -40,8 +40,10 @@ interface CFBookingAvailability {
   bookingType: BookingType; // rental | appointment | overnight | group
   ratePeriod: BookingRatePeriod; // slot | hour | day | night | week | month | session
   minimumToRun?: number; // label only — a group slot below this MAY be cancelled
-  minStay?: number;
+  minStay?: number; // periods — bound a length picker with these, send the pick as `periods`
   maxStay?: number;
+  maxQtyPerBooking?: number; // places one booking may take — bound a spots stepper with min(this, slot.free)
+  maxPartySize?: number; // people one booking may bring — bound a party picker
   /** Last instant this product can be booked into; absent when nothing bounds it. */
   bookableUntil?: string;
   /** The range you asked for starts past `bookableUntil`. Say "bookings open only up to …"
@@ -56,6 +58,7 @@ interface CFBookingAvailability {
     alreadyStarted: boolean; // the first session is inside the notice: not bookable, every `free` is 0
     startAt: string; // first session's start
     endAt: string; // last session's end
+    sessionTimes: { startAt: string; endAt: string }[]; // every session, in order
     resources: { resourceId: string; free: number; unlimited?: true }[];
     unlimited?: true;
   };

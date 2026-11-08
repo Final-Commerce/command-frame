@@ -59,6 +59,25 @@ describe('holdBooking mock — qty and partySize', () => {
     });
   });
 
+  it('without resourceId holds the first free room, like the host (common pickFreeResource)', async () => {
+    const result = await mockHoldBooking({ ...freeSlot(), resourceId: undefined });
+    expect(result.success).toBe(true);
+    expect(result.booking?.resourceId).toMatch(/^res_room_/);
+  });
+
+  it('periods: 1 ends at the slot; more is refused with the host text; endAt and periods together are refused', async () => {
+    const { endAt, ...start } = freeSlot();
+    expect((await mockHoldBooking({ ...start, periods: 1 })).booking?.endAt).toBe(new Date(endAt).toISOString());
+    expect(await mockHoldBooking({ ...start, periods: 2 })).toMatchObject({
+      success: false,
+      reason: 'A booking covers one period; that window covers 2. Book them one at a time.',
+    });
+    expect(await mockHoldBooking({ ...start, endAt, periods: 1 })).toMatchObject({
+      success: false,
+      reason: 'Pass either endAt or periods',
+    });
+  });
+
   it('addBookingToCart passes the refusal through and adds nothing', async () => {
     const result = await mockAddBookingToCart({ ...freeSlot(), qty: 2 });
     expect(result.success).toBe(false);
