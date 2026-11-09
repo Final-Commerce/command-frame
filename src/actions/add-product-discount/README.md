@@ -40,6 +40,8 @@ Label for the discount (e.g., "Employee Discount"). Defaults to `"Discount"`.
 
 ## Response
 
+A percent discount is stored on the line as `{ value: fraction, isPercent: true, percent }` — `percent` is the number passed (FT-289), so an edit form can show it as entered; a fixed discount has no `percent`.
+
 ### `AddProductDiscountResponse`
 
 ```typescript

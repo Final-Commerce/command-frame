@@ -54,6 +54,8 @@ A label for the discount that will be displayed in the cart and on receipts. Def
 
 ## Response
 
+A percent cart discount is stored as `{ value: fraction, isPercent: true, percent }` — `percent` is the whole percent applied (FT-289); a fixed one has no `percent`. Discounts saved before carry none.
+
 ### `AddCartDiscountResponse`
 
 ```typescript
