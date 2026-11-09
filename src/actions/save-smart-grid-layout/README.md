@@ -2,6 +2,8 @@
 
 Saves a builder SmartGrid layout into the parent application's local smart grid settings, keyed by `gridId`.
 
+**Action label:** a control whose press calls `saveSmartGridLayout` carries `data-final-action="save-smart-grid-layout"`.
+
 ## Parameters
 
 ### `SaveSmartGridLayoutParams`

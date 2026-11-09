@@ -2,6 +2,8 @@
 
 Asks the Manage host to invalidate cached data for a named resource (e.g. React Query invalidation).
 
+**Action label:** a control whose press calls `refreshResource` carries `data-final-action="refresh-resource"`.
+
 ## Parameters
 
 ### `RefreshResourceParams`

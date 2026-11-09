@@ -2,6 +2,8 @@
 
 Sets **when the customer wants the order** — a pizza ordered now for 7 pm, a catering pickup tomorrow at noon. Stored on the order as `scheduledFor`, so it syncs with the order to other stations, and [`getOrders`](../get-orders/README.md) can filter and sort by it.
 
+**Action label:** a control whose press calls `setScheduledFor` carries `data-final-action="set-scheduled-for"`.
+
 No time (`null`, or never set) means **as soon as possible**. `scheduledFor` is separate from `createdAt` (when the order was placed) and `completedAt` (when it reached paid + fulfilled). Nothing in the POS logic acts on it — payment, fulfillment and state rules behave the same whatever the time is. What to do with a scheduled order (hold it off the kitchen board until 30 minutes before, show "due in 12 min") is the flow's choice.
 
 ## Parameters

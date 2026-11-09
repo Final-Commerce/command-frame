@@ -2,6 +2,8 @@
 
 Retrieves the list of outlets (store locations) for the current company.
 
+**Action label:** a control whose press calls `getOutlets` carries `data-final-action="get-outlets"`.
+
 > **Manage-scoped command.** This is a Manage administrative command (outlet/station admin), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
 
 ## Parameters

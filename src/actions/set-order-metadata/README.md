@@ -2,6 +2,8 @@
 
 Sets or removes free-form key/value metadata on an order — e.g. a delivery note or gate code a driver flow on another station reads. (For the order type use [`setOrderType`](../set-order-type/README.md), which `getOrders` can filter by.) Metadata lives on the order itself (`order.metadata`), so it syncs with the order and arrives with its `orders` / `order-updated` events.
 
+**Action label:** a control whose press calls `setOrderMetadata` carries `data-final-action="set-order-metadata"`.
+
 ## Parameters
 
 `params: SetOrderMetadataParams`

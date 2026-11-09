@@ -2,6 +2,8 @@
 
 Shows a confirmation dialog to the user.
 
+**Action label:** a control whose press calls `showConfirmation` carries `data-final-action="show-confirmation"`.
+
 ## Parameters
 
 - `message` (string, required): The confirmation message to display

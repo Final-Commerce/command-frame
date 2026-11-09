@@ -2,6 +2,8 @@
 
 Retrieves a list of products from the parent application's local database. A composite whose `composite.needsDate` is true holds a bookable item: show "By date" instead of a ready Add button and route Add through a date and time picker (`getCompositeAvailability`); its items reading `unavailable: 'by_date'` stay pickable.
 
+**Action label:** a control whose press calls `getProducts` carries `data-final-action="get-products"`.
+
 > **Bookable services are excluded unless you ask for them.** A service is not catalogue stock:
 > it is sold by claiming a time with `addBookingToCart`, and `addProductToCart` refuses it
 > outright. Returned by default it appeared in ordinary product grids, where the obvious gesture —

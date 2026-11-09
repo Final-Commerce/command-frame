@@ -2,6 +2,8 @@
 
 Removes the currently assigned customer from the cart.
 
+**Action label:** a control whose press calls `removeCustomerFromCart` carries `data-final-action="remove-customer-from-cart"`.
+
 ## Parameters
 
 None

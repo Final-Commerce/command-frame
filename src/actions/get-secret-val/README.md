@@ -2,6 +2,8 @@
 
 Retrieves the value of a secret by key. Secrets can be company-level (shared across extensions) or extension-level (scoped to a specific extension).
 
+**Action label:** a control whose press calls `getSecretVal` carries `data-final-action="get-secret-val"`.
+
 ## Parameters
 
 ### `GetSecretValParams`

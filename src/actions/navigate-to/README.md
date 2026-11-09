@@ -2,6 +2,8 @@
 
 Requests the Manage host to navigate the SPA to an in-app path.
 
+**Action label:** a control whose press calls `navigateTo` carries `data-final-action="navigate-to"`.
+
 ## Parameters
 
 ### `NavigateToParams`

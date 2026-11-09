@@ -2,6 +2,8 @@
 
 Labels an order with a type — `takeout`, `pickup`, `delivery`, `dine_in`, or anything the merchant uses. Stored on the order as `orderType`, so it syncs with the order to other stations, and [`getOrders`](../get-orders/README.md) can filter by it.
 
+**Action label:** a control whose press calls `setOrderType` carries `data-final-action="set-order-type"`.
+
 `orderType` is **a label only**: free text, optional, and nothing in the POS logic reads it. Payment, fulfillment and state rules behave the same whatever the type is.
 
 ## Parameters

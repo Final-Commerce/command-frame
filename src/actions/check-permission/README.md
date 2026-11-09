@@ -2,6 +2,8 @@
 
 Read-only query: does the **active user** hold a named permission?
 
+**Action label:** a control whose press calls `checkPermission` carries `data-final-action="check-permission"`.
+
 Truth source is the runtime's hydrated active user — role and permissions come from the synced `users`/`roles` collections. Role-less user types (company owner, final/org staff) are always `allowed: true`, mirroring the runtime's own gating semantics.
 
 ## Parameters

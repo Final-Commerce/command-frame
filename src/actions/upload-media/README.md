@@ -2,6 +2,8 @@
 
 Uploads a file through the Manage host. Payload is base64-encoded body plus metadata.
 
+**Action label:** a control whose press calls `uploadMedia` carries `data-final-action="upload-media"`.
+
 ## Parameters
 
 ### `UploadMediaParams`
