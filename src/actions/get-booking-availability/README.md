@@ -37,7 +37,6 @@ interface GetBookingAvailabilityResponse {
 interface CFBookingAvailability {
   productId: string;
   bookingRulesId: string;
-  bookingType: BookingType; // rental | appointment | overnight | group
   ratePeriod: BookingRatePeriod; // slot | hour | day | night | week | month | session
   minimumToRun?: number; // label only — a group slot below this MAY be cancelled
   minStay?: number; // periods — bound a length picker with these, send the pick as `periods`
