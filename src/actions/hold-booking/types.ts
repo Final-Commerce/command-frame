@@ -17,8 +17,9 @@ export interface HoldBookingParams {
   endAt?: string;
   /**
    * Instead of `endAt`, for date-range rules: how many periods from `startAt` — hours, nights, days, or whole weeks /
-   * months. The host reads the end off its own grid and refuses what the rules refuse (`minStay` / `maxStay`, whole
-   * periods). Pass exactly one of `endAt` and `periods`. A storefront still needs `endAt`.
+   * months. The host reads the end off its own grid and refuses what the rules refuse (`minStayLength` /
+   * `maxStayLength` from `getBookingAvailability`, each with its own unit — "2 nights", "1 week" — and whole periods).
+   * Pass exactly one of `endAt` and `periods`. A storefront still needs `endAt`.
    */
   periods?: number;
   /** The variant being sold, when the flow already knows which one. */
