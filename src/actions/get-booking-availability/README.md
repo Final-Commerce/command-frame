@@ -39,8 +39,10 @@ interface CFBookingAvailability {
   bookingRulesId: string;
   ratePeriod: BookingRatePeriod; // slot | hour | day | night | week | month | session
   minimumToRun?: number; // label only — a group slot below this MAY be cancelled
-  minStay?: number; // periods — bound a length picker with these, send the pick as `periods`
+  minStay?: number; // old shape only, goes with B13 step 9 — read the two below
   maxStay?: number;
+  minStayLength?: BookingDuration; // { count, unit } e.g. { 2, 'night' } — show it; the host refuses a length outside it
+  maxStayLength?: BookingDuration; // e.g. { 1, 'week' } — the unit may differ from the rate period; don't convert it
   maxQtyPerBooking?: number; // places one booking may take — bound a spots stepper with min(this, slot.free)
   maxPartySize?: number; // people one booking may bring — bound a party picker
   /** Last instant this product can be booked into; absent when nothing bounds it. */
