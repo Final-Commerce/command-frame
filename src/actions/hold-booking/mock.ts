@@ -5,7 +5,7 @@ import { ReservationStatus, pickFreeResource } from '@final-commerce/common';
 const BUFFER_MINUTES = 5;
 const HOLD_MINUTES = 10;
 const TAKEN = 'That window has just been taken — pick another slot.';
-const MOCK_ONLY_SINGLE_SLOTS = "[Mock] the mock shop sells single 30-minute slots — pass the slot's endAt";
+export const MOCK_ONLY_SINGLE_SLOTS = "[Mock] the mock shop sells single 30-minute slots — pass the slot's endAt";
 
 let held = 0;
 
