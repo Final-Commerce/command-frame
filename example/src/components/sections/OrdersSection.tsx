@@ -48,6 +48,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
   const [ordersCustomStatusKey, setOrdersCustomStatusKey] = useState<string>('');
   const [ordersAssignedUserId, setOrdersAssignedUserId] = useState<string>('');
   const [ordersUnassigned, setOrdersUnassigned] = useState(false);
+  const [ordersAssignedLabel, setOrdersAssignedLabel] = useState<string>('');
   const [ordersInCart, setOrdersInCart] = useState<string>('');
   const [getOrdersLoading, setGetOrdersLoading] = useState(false);
   const [getOrdersResponse, setGetOrdersResponse] = useState<string>('');
@@ -394,7 +395,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
             />
           </div>
           <div className="form-field">
-            <label>Assigned user ID (optional):</label>
+            <label>Currently assigned user ID (optional):</label>
             <input
               type="text"
               value={ordersAssignedUserId}
@@ -410,6 +411,15 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
               />{' '}
               Only unassigned
             </label>
+          </div>
+          <div className="form-field">
+            <label>Assignment label (optional):</label>
+            <input
+              type="text"
+              value={ordersAssignedLabel}
+              onChange={(e) => setOrdersAssignedLabel(e.target.value)}
+              placeholder="delivery"
+            />
           </div>
           <div className="form-field">
             <label>In a cart (optional):</label>
@@ -447,6 +457,7 @@ export function OrdersSection({ isInIframe }: OrdersSectionProps) {
               if (ordersCustomStatusKey.trim()) params.customStatusKey = ordersCustomStatusKey.trim();
               if (ordersUnassigned) params.assignedUserId = null;
               else if (ordersAssignedUserId.trim()) params.assignedUserId = ordersAssignedUserId.trim();
+              if (ordersAssignedLabel.trim()) params.assignedUserLabel = ordersAssignedLabel.trim();
               if (ordersInCart) params.inCart = ordersInCart === 'true';
 
               const result = await command.getOrders(params);
