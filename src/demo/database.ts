@@ -39,7 +39,7 @@ import {
   resolveUnit,
   toBase,
 } from '@final-commerce/common';
-import { BookingRatePeriod, BookingResourceKind, BookingType, ReservationStatus } from '@final-commerce/common';
+import { BookingRatePeriod, BookingResourceKind, ReservationStatus } from '@final-commerce/common';
 
 export * from './mocks';
 
@@ -1695,7 +1695,6 @@ export const mockBookingAvailability = (
   return {
     productId,
     bookingRulesId: MOCK_BOOKING_RULES_ID,
-    bookingType: BookingType.APPOINTMENT,
     ratePeriod: BookingRatePeriod.SLOT,
     slots,
     timeZone: MOCK_SHOP_TIME_ZONE,

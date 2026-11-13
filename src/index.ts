@@ -58,6 +58,8 @@ import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
 import { recordExternalPayment } from './actions/record-external-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
+import { getCashChange } from './actions/get-cash-change/action';
+import { getOrdersSummary } from './actions/get-orders-summary/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
 import { terminalPayment } from './actions/terminal-payment/action';
 import { extensionPayment } from './actions/extension-payment/action';
@@ -232,6 +234,8 @@ export const command = {
   cashPayment,
   recordExternalPayment,
   getCashRoundingAmount,
+  getCashChange,
+  getOrdersSummary,
   tapToPayPayment,
   terminalPayment,
   extensionPayment,
@@ -619,6 +623,12 @@ export type {
   GetCashRoundingAmountParams,
   GetCashRoundingAmountResponse,
 } from './actions/get-cash-rounding-amount/types';
+export type { GetCashChange, GetCashChangeParams, GetCashChangeResponse } from './actions/get-cash-change/types';
+export type {
+  GetOrdersSummary,
+  GetOrdersSummaryParams,
+  GetOrdersSummaryResponse,
+} from './actions/get-orders-summary/types';
 export type {
   TapToPayPayment,
   TapToPayPaymentParams,

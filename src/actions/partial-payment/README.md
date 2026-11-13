@@ -10,11 +10,12 @@ Initiates a partial/split payment for the current cart.
 
 Although the parameter is typed optional, the handler throws if no `params` object is passed at all — pass at minimum `{ openUI: true }` or `{ amount, isPercent }`.
 
-| Parameter   | Type      | Required | Description                                                                                                                                         |
-| :---------- | :-------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `openUI`    | `boolean` | `false`  | If true, opens the split payment UI. If false, processes the payment with the specified amount.                                                     |
-| `amount`    | `number`  | `false`  | The payment amount, in integer minor currency units (required if openUI is false). Percentages (`isPercent: true`) are unaffected and remain 0-100. |
-| `isPercent` | `boolean` | `false`  | Whether the amount is a percentage (default: false).                                                                                                |
+| Parameter            | Type      | Required | Description                                                                                                                                                                                     |
+| :------------------- | :-------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `openUI`             | `boolean` | `false`  | If true, opens the split payment UI. If false, processes the payment with the specified amount.                                                                                                 |
+| `amount`             | `number`  | `false`  | The payment amount, in integer minor currency units (required if openUI is false). Percentages (`isPercent: true`) are unaffected and remain 0-100.                                             |
+| `isPercent`          | `boolean` | `false`  | Whether the amount is a percentage (default: false).                                                                                                                                            |
+| `refuseAboveBalance` | `boolean` | `false`  | When true the host refuses an amount above the balance due (the same balance `getCashRoundingAmount()` defaults to) or a percent above 100, with its own reason. Absent: no ceiling, as before. |
 
 ## Response
 

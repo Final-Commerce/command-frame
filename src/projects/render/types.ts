@@ -50,6 +50,8 @@ import type {
   CashPayment,
   RecordExternalPayment,
   GetCashRoundingAmount,
+  GetCashChange,
+  GetOrdersSummary,
   TapToPayPayment,
   TerminalPayment,
   ExtensionPayment,
@@ -201,6 +203,8 @@ export interface RenderProviderActions {
   cashPayment: CashPayment;
   recordExternalPayment: RecordExternalPayment;
   getCashRoundingAmount: GetCashRoundingAmount;
+  getCashChange: GetCashChange;
+  getOrdersSummary: GetOrdersSummary;
   tapToPayPayment: TapToPayPayment;
   terminalPayment: TerminalPayment;
   extensionPayment: ExtensionPayment;

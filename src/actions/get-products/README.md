@@ -91,6 +91,8 @@ The maximum number of items to return. Defaults to 100.
 
 ## Response
 
+Each variant carries `stockAtOutlet` (FT-289): the active outlet's stock, read the way `addProductToCart` reads it — the number a sale is checked against (0 when the outlet has no stock row). Show it when `manageStock` is true and bound a quantity stepper with it; do not sum `inventory[]` (it holds every outlet).
+
 ### `GetProductsResponse`
 
 ```typescript

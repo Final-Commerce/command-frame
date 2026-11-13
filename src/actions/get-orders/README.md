@@ -35,6 +35,8 @@ All filters are combined with AND. `paymentState` / `fulfillmentState` read the 
 
 ## Response
 
+Each order carries `itemCount` (FT-289): lines, custom sales, bookings (a composite's booked part counted with its line) and non-revenue items, counted by the host on read — the same count as the cart's `itemCount`. Nothing is stored; payment responses' `order` carries it too.
+
 `Promise<GetOrdersResponse>`
 
 | Field       | Type                                           | Description                                       |
