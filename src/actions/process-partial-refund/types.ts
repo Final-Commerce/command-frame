@@ -135,7 +135,7 @@ export interface ProcessPartialRefundParams {
     /** internalId or variantId, customSaleId, or a booking's own internalId. */
     itemKey: string;
     quantity: number;
-    type?: 'product' | 'customSale' | 'fee' | 'tip' | 'reservation'; // Optional type hint
+    type?: 'product' | 'customSale' | 'fee' | 'tip' | 'reservation' | 'shipping'; // Optional type hint
     /**
      * Per-item stock disposition for a refunded **product** line — the
      * headless equivalent of the old refund popup's per-row restock/damaged
