@@ -10,6 +10,7 @@ describe('getBookingStayEnds mock', () => {
     const result = await mockGetBookingStayEnds({
       productId: MOCK_PRODUCT_HAIRCUT._id!,
       startAt: new Date().toISOString(),
+      untilDay: '2030-01-31',
     });
     expect(result).toMatchObject({ success: false, reason: MOCK_ONLY_SINGLE_SLOTS });
     expect(result.ends).toBeUndefined();

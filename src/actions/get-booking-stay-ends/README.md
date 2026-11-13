@@ -14,6 +14,7 @@ Date-range rules only (hours, nights, days, whole weeks / months). Call it on th
 interface GetBookingStayEndsParams {
   productId: string;
   startAt: string; // the startAt of a slot getBookingAvailability offered — the check-in
+  untilDay: string; // 'YYYY-MM-DD' — last day the calendar shows; ends past it are not returned. Ask again on paging
   resourceId?: string; // omit = any free resource, chosen per end as the hold chooses it
   qty?: number; // places, as you will pass to addBookingToCart; default 1
 }
@@ -40,7 +41,7 @@ interface CFBookingStayEnd {
 ## Example
 
 ```typescript
-const res = await renderClient.getBookingStayEnds({ productId, startAt: checkIn.startAt });
+const res = await renderClient.getBookingStayEnds({ productId, startAt: checkIn.startAt, untilDay: lastShownDay });
 if (!res.success) return showReason(res.reason);
 // enable a day as check-out only if some end has it as lastDayKey; highlight end.coveredSlots
 await renderClient.addBookingToCart({ productId, startAt: checkIn.startAt, endAt: chosen.endAt });
@@ -50,6 +51,7 @@ await renderClient.addBookingToCart({ productId, startAt: checkIn.startAt, endAt
 
 - **Compute nothing.** Enabled check-outs are the `lastDayKey`s of `ends`; the highlighted nights are the chosen end's
   `coveredSlots`. A flow that counts nights or skips closed days itself owns a second copy of the rules.
+- The answer is bounded by `untilDay`: pass the last day on screen, not a year ahead — every end carries its cells.
 - Before adding, say the length (`periods`) — the price is the reservation's `total` once it is in the cart.
 - `addBookingToCart` checks the window again: a window taken in between is refused with a reason. Ask again.
 - Refused on a storefront and in the mock shop, which has no date-range rules.
