@@ -54,6 +54,8 @@ await renderClient.addBookingToCart({ productId, startAt: checkIn.startAt, endAt
 - The answer is bounded by `untilDay`, not a year ahead — every end carries its cells. Leave one page more than you
   show, so a check-in on the last day, a whole week or month gets its ends on the first tap; never pass a day before the
   chosen check-out, or paging back drops it. Ask again with a later day when the cashier pages or steps past it.
+- The shortest allowed stay comes even when it ends past `untilDay` — alone — so a `minStay` longer than the
+  page still books.
 - Before adding, say the length (`periods`) — the price is the reservation's `total` once it is in the cart.
 - `addBookingToCart` checks the window again: a window taken in between is refused with a reason. Ask again.
 - Refused on a storefront and in the mock shop, which has no date-range rules.

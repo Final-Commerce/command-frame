@@ -12,8 +12,8 @@ export interface GetBookingStayEndsParams {
   /**
    * Last shop day an end may fall on, `YYYY-MM-DD` (the format of `getBookingAvailability`'s `fromDay`). Ends past it are
    * not computed. Leave one page more than you show — a check-in on the last day, a whole week or month — and never a day
-   * before the chosen check-out; ask again with a later day when the cashier pages or steps past it. A stay whose
-   * shortest allowed length runs past it is refused with the rule's own reason ("at least 5 nights").
+   * before the chosen check-out; ask again with a later day when the cashier pages or steps past it. The shortest allowed
+   * stay comes even when it ends past it — alone — so a `minStay` longer than what you show still books.
    */
   untilDay: string;
   /** The resource that must serve the whole stay. Omit for "any free one", picked per end exactly as the hold picks it. */
