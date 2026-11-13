@@ -1,6 +1,6 @@
 {
   "name": "@final-commerce/command-frame",
-  "version": "0.14.0",
+  "version": "0.15.0-staging.1",
   "description": "Commands Frame library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
