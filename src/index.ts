@@ -3,6 +3,7 @@ import { exampleFunction } from './actions/example-function/action';
 import { getProducts } from './actions/get-products/action';
 import { getBookingResources } from './actions/get-booking-resources/action';
 import { getBookingAvailability } from './actions/get-booking-availability/action';
+import { getBookingRentalEnds } from './actions/get-booking-rental-ends/action';
 import { getBookings } from './actions/get-bookings/action';
 import { holdBooking } from './actions/hold-booking/action';
 import { addBookingToCart } from './actions/add-booking-to-cart/action';
@@ -178,6 +179,7 @@ export const command = {
   getProducts,
   getBookingResources,
   getBookingAvailability,
+  getBookingRentalEnds,
   getBookings,
   holdBooking,
   addBookingToCart,
@@ -359,6 +361,11 @@ export type {
   GetBookingAvailabilityParams,
   GetBookingAvailabilityResponse,
 } from './actions/get-booking-availability/types';
+export type {
+  GetBookingRentalEnds,
+  GetBookingRentalEndsParams,
+  GetBookingRentalEndsResponse,
+} from './actions/get-booking-rental-ends/types';
 export type { GetBookings, GetBookingsParams, GetBookingsResponse } from './actions/get-bookings/types';
 export type { HoldBooking, HoldBookingParams, HoldBookingResponse } from './actions/hold-booking/types';
 export type {
