@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { MOCK_PRODUCT_HAIRCUT } from '../../demo/database';
-import { mockGetBookingStayEnds } from './mock';
+import { mockGetBookingRentalEnds } from './mock';
 import { MOCK_ONLY_SINGLE_SLOTS } from '../hold-booking/mock';
 
 vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
-describe('getBookingStayEnds mock', () => {
+describe('getBookingRentalEnds mock', () => {
   it('refuses like holdBooking refuses a stay: the mock shop has no date-range rules', async () => {
-    const result = await mockGetBookingStayEnds({
+    const result = await mockGetBookingRentalEnds({
       productId: MOCK_PRODUCT_HAIRCUT._id!,
       startAt: new Date().toISOString(),
       untilDay: '2030-01-31',

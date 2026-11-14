@@ -119,7 +119,7 @@ import type {
   SendSms,
   GetBookingResources,
   GetBookingAvailability,
-  GetBookingStayEnds,
+  GetBookingRentalEnds,
   GetBookings,
   HoldBooking,
   AddBookingToCart,
@@ -150,7 +150,7 @@ export interface RenderProviderActions {
   // same window, and the shop resolves it afterwards like any other double booking.
   getBookingResources: GetBookingResources;
   getBookingAvailability: GetBookingAvailability;
-  getBookingStayEnds: GetBookingStayEnds;
+  getBookingRentalEnds: GetBookingRentalEnds;
   getBookings: GetBookings;
   holdBooking: HoldBooking;
   addBookingToCart: AddBookingToCart;

@@ -64,7 +64,7 @@ import { mockGetOrders } from '../../actions/get-orders/mock';
 import { mockGetProducts } from '../../actions/get-products/mock';
 import { mockGetBookingResources } from '../../actions/get-booking-resources/mock';
 import { mockGetBookingAvailability } from '../../actions/get-booking-availability/mock';
-import { mockGetBookingStayEnds } from '../../actions/get-booking-stay-ends/mock';
+import { mockGetBookingRentalEnds } from '../../actions/get-booking-rental-ends/mock';
 import { mockGetBookings } from '../../actions/get-bookings/mock';
 import { mockHoldBooking } from '../../actions/hold-booking/mock';
 import { mockAddBookingToCart } from '../../actions/add-booking-to-cart/mock';
@@ -198,7 +198,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getProducts: mockGetProducts,
   getBookingResources: mockGetBookingResources,
   getBookingAvailability: mockGetBookingAvailability,
-  getBookingStayEnds: mockGetBookingStayEnds,
+  getBookingRentalEnds: mockGetBookingRentalEnds,
   getBookings: mockGetBookings,
   holdBooking: mockHoldBooking,
   addBookingToCart: mockAddBookingToCart,

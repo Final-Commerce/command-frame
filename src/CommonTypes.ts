@@ -69,7 +69,7 @@ import type {
   BookingSlotResource,
   BookingResource,
   Booking,
-  BookingStayEnd,
+  BookingRentalEnd,
   CartReservation,
   OrderReservation,
   CartAddress,
@@ -145,7 +145,7 @@ export type CFBookingSlot = BookingSlot;
 export type CFBookingSlotResource = BookingSlotResource;
 export type CFBookingResource = BookingResource;
 export type CFBooking = Booking;
-export type CFBookingStayEnd = BookingStayEnd;
+export type CFBookingRentalEnd = BookingRentalEnd;
 /** A service sitting in the cart, and the same sale once it is on an order. A flow that draws a
  *  cart or a receipt needs both by name — reaching into the package's dist for them is not an
  *  interface. */
