@@ -9,7 +9,7 @@ texts) and adds nothing to the cart.
 ```typescript
 interface GetCompositePriceParams {
   variantId: string; // the composite's variant
-  composite: CFCompositePick[]; // the picks so far: { itemId, variantId, quantity?, modifiers?, resourceId? }
+  composite: CFCompositePick[]; // the picks so far: { itemId, variantId, quantity?, modifiers?, resourceId?, picks? }
   compositeSlot?: { startAt: string }; // B41: the date and time bookable picks are for (getCompositeAvailability)
   quantity?: number; // how many composites, as addProductToCart takes it; default 1
 }
@@ -34,6 +34,8 @@ appears **only once every required pick is made**: until then the host refuses w
 `missing` lists what each part still needs — show the reason, "Pick {needed} more {name}" on those parts, and keep Add
 to cart disabled until the answer is `success: true`. Disable "+" on the parts in `fullPartIds`; never count picks
 against `max` yourself. Pass the stepper's `quantity` and show `total` — do not multiply `unitTotal`.
+An inner composite's pick (BOM) carries `picks` — one list per unit — and is checked and priced like
+`addProductToCart`; its own upcharges are inside `total`.
 
 ## Usage
 
