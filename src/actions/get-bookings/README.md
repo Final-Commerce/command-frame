@@ -16,6 +16,7 @@ interface GetBookingsParams {
   resourceId?: string; // everything taking this resource's time
   productId?: string;
   customerId?: string; // this customer's appointments
+  outletId?: string; // only bookings made at this outlet; omit for every outlet
   from?: string; // bookings whose window OVERLAPS this range (ISO 8601)
   to?: string;
   includeExpired?: boolean; // default false: live only (confirmed + unexpired holds)
@@ -45,6 +46,7 @@ interface CFBooking {
   productName?: string; // frozen when booked — a later rename cannot rewrite history
   resourceName?: string;
   customerName?: string;
+  outletId?: string; // where it was booked
 }
 ```
 
@@ -65,3 +67,6 @@ const { bookings } = await renderClient.getBookings({
 - A `held` booking with `expiresAt` in the past occupies nothing, even though the row is still
   there. Leave it to `includeExpired` rather than filtering by status alone.
 - This is a read of local data: it never proves a window is free. Only `holdBooking` does.
+- A till's "on the books" passes its own `outletId` (from `getContext`): a resource shared by two
+  outlets is booked at both, and each till lists its own. Without `outletId` every outlet's
+  bookings come back — what a customer's appointments need.

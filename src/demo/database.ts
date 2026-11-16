@@ -1611,6 +1611,7 @@ const booking = (
   productName: MOCK_PRODUCT_HAIRCUT.name,
   resourceName: MOCK_BOOKING_RESOURCES.find((resource) => resource.id === resourceId)?.name,
   customerName,
+  outletId: MOCK_OUTLET_MAIN.id,
 });
 
 export const MOCK_BOOKINGS: CFBooking[] = [
