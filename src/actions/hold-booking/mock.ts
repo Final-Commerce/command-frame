@@ -1,5 +1,11 @@
 import { HoldBooking, HoldBookingParams, HoldBookingResponse } from './types';
-import { MOCK_BOOKINGS, MOCK_BOOKING_RESOURCES, mockBookingAvailability, mockLiveBookings } from '../../demo/database';
+import {
+  MOCK_BOOKINGS,
+  MOCK_BOOKING_RESOURCES,
+  MOCK_OUTLET,
+  mockBookingAvailability,
+  mockLiveBookings,
+} from '../../demo/database';
 import { ReservationStatus, pickFreeResource } from '@final-commerce/common';
 
 const BUFFER_MINUTES = 5;
@@ -56,6 +62,8 @@ export const mockHoldBooking: HoldBooking = async (params: HoldBookingParams): P
     status: ReservationStatus.HELD,
     expiresAt: new Date(Date.now() + HOLD_MINUTES * 60_000).toISOString(),
     resourceName: MOCK_BOOKING_RESOURCES.find(({ id }) => id === resourceId)?.name,
+    // The host stamps the till's own outlet; `getBookings({ outletId })` lists by it.
+    outletId: MOCK_OUTLET.id,
   };
 
   // Held in the same list availability reads, so the slot really does disappear.
