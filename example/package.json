@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@adyen/adyen-web": "^6.44.0",
-    "@final-commerce-internal/kaching": "1.21.0-staging.4",
+    "@final-commerce-internal/kaching": "1.21.0-staging.5",
     "@final-commerce/command-frame": "0.15.0-staging.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
