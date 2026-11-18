@@ -57,7 +57,7 @@
     "ignoreBranchesMissingTickets": true
   },
   "dependencies": {
-    "@final-commerce/common": "2.12.0-staging.4"
+    "@final-commerce/common": "2.12.0-staging.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
