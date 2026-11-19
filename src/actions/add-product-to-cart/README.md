@@ -203,7 +203,8 @@ Always publishes a `product-added` event on the `cart` topic with the newly adde
 - The host validates, prices (the composite's price + Σ picks' `cost`, in both tax modes) and taxes the line; the cart
   line carries `components[]` — each one's share of ONE composite: the composite's price split by the picked variant's
   current price × units (all $0 → by units), exact to the cent, plus its own upcharge; Σ = line price; frozen at add (B31) — and
-  the items' modifier rows flat in `modifiers[]` with `componentIndex`, their quantity already × the component's units,
+  the items' modifier rows flat in `modifiers[]` with `componentIndex`, their quantity already × the component's pieces
+  (B31: an item sold by the piece × its units, one in g / ml / cl × its pick quantity only, both × the portions above),
   each taxed with its item (B28). A composite has no modifiers of its own (B43): `product.modifiers` is `[]` on it, and
   `modifiers` sent with `composite` are refused.
 - Refused with a `reason`: invalid picks; `composite` on a product that is not a composite; a taxable fee when it is
