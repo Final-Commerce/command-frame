@@ -86,6 +86,7 @@ export const mockAddProductToCart: AddProductToCart = async (
             ? `${product.name} is taxed by its items: a taxable fee on it has no table to inherit`
             : (mockNeedsDateRefusal(product.name, composite, params?.compositeSlot) ??
               compositePicksRefusal(composite, picks) ??
+              mockNestedCompositeRefusal(picks) ??
               undefined);
     const built = reason ?? mockCompositeLine(composite!, picks, ownTax);
     const line =
@@ -257,6 +258,8 @@ export function compositePicksRefusal(composite: CFComposite, picks: CFComposite
     // The picked product's own modifiers, by its own rules (B28).
     const modifiers = mockSelectionsRefusal(choice.modifiers ?? [], pick.modifiers ?? []);
     if (modifiers) return `${choice.name}: ${modifiers}`;
+    const inner = mockInnerPicksRefusal(item, quantity * item.quantity, pick.picks);
+    if (inner) return inner;
     counts.set(part._id, (counts.get(part._id) ?? 0) + quantity);
   }
   for (const part of composite.parts) {
@@ -267,6 +270,28 @@ export function compositePicksRefusal(composite: CFComposite, picks: CFComposite
   }
   return null;
 }
+
+/** The host's BOM 1.8 rule (kaching `resolveComposite.ts` `innerPicksVerdict`), same texts. A copy — change both in one step. */
+function mockInnerPicksRefusal(
+  item: CFComposite['parts'][number]['items'][number],
+  units: number,
+  unitPicks: CFCompositePick['picks'],
+): string | null {
+  if (!item.composite) return unitPicks ? `${item.name} is not a composite: it takes no picks of its own` : null;
+  if (unitPicks?.length !== units)
+    return `${item.name}: send its picks for each of its ${units} (got ${unitPicks?.length ?? 0})`;
+  for (const [unit, picks] of unitPicks.entries()) {
+    const which = units > 1 ? `${item.name} ${unit + 1} of ${units}` : item.name;
+    const reason = compositePicksRefusal({ ...item.composite, needsDate: false }, picks);
+    if (reason) return `${which}: ${reason}`;
+  }
+  return null;
+}
+
+/** The demo host's own limit, not the host's rule: building a nested line means splitting money as kaching does, which
+ *  the mock never copies — so once the picks are valid it refuses in its own words. */
+export const mockNestedCompositeRefusal = (picks: CFCompositePick[]): string | null =>
+  picks.some((pick) => pick.picks?.length) ? 'The demo host does not build a composite inside a composite' : null;
 
 /** The host's modifier rules (kaching `validateModifiers.ts` `validateSelections`), same order and texts, at the demo
  *  outlet; null = valid. A copy — change both in one step. */
@@ -351,6 +376,8 @@ export function mockCompositeLine(
       choice,
       productName: product?.name ?? choice.name,
       taxTable: product?.taxTable || undefined,
+      unlisted:
+        !!(product?.notSoldInPos || variant?.notSoldInPos) && !!(product?.notSoldOnline || variant?.notSoldOnline),
       price: typeof selected === 'number' && Number.isFinite(selected) ? Math.round(selected) : null,
       pickQuantity: pick.quantity ?? 1,
       units: (pick.quantity ?? 1) * item.quantity,
@@ -379,6 +406,7 @@ export function mockCompositeLine(
     quantity: row.units,
     unitPrice: row.item.cost * row.pickQuantity + floors[index],
     ...(ownTax && row.taxTable ? { taxTableId: row.taxTable } : {}),
+    unlisted: row.unlisted,
   }));
   const modifiers = rows.flatMap((row, index) =>
     buildCartLineModifiers(row.choice.modifiers, picks[index].modifiers, row.taxTable).map((modifier) => ({

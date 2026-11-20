@@ -203,7 +203,8 @@ Always publishes a `product-added` event on the `cart` topic with the newly adde
 - The host validates, prices (the composite's price + Σ picks' `cost`, in both tax modes) and taxes the line; the cart
   line carries `components[]` — each one's share of ONE composite: the composite's price split by the picked variant's
   current price × units (all $0 → by units), exact to the cent, plus its own upcharge; Σ = line price; frozen at add (B31) — and
-  the items' modifier rows flat in `modifiers[]` with `componentIndex`, their quantity already × the component's units,
+  the items' modifier rows flat in `modifiers[]` with `componentIndex`, their quantity already × the component's pieces
+  (B31: an item sold by the piece × its units, one in g / ml / cl × its pick quantity only, both × the portions above),
   each taxed with its item (B28). A composite has no modifiers of its own (B43): `product.modifiers` is `[]` on it, and
   `modifiers` sent with `composite` are refused.
 - Refused with a `reason`: invalid picks; `composite` on a product that is not a composite; a taxable fee when it is
@@ -216,3 +217,26 @@ Always publishes a `product-added` event on the `cart` topic with the newly adde
   money and tax. The line's quantity cannot be changed, it never merges with another line, and it is refunded whole
   only; removing it, or any of its holds lapsing, takes the whole line and releases the other holds.
   `removeBookingFromCart` refuses such a booking — remove the composite.
+
+### A composite inside a composite (BOM)
+
+- An item whose `composite` is set names another composite (an "inner" one). Its pick carries `picks: CFCompositePick[][]`
+  — ONE list of picks for EACH unit it brings (pick `quantity` × item `quantity`), each list checked against that inner
+  composite's parts like a top-level `composite`. Preselect each list from the inner composite's `parts[].defaultPick`;
+  the host never fills one in. A wrong count, a bad inner pick or `picks` on an item that is not a composite are refused
+  with a `reason` naming the inner composite ("Paste Trio 2 of 2: Paste: pick 1").
+- Modifiers (B29): an inner pick carries its own `modifiers`, checked by that item's rules like a top-level pick; the
+  inner composite itself takes none (`modifiers: []` on its choice). On the line they are `modifiers[]` rows with
+  `componentIndex` = that item's index in the flat `components[]` and `quantity` × its units in one line composite.
+- Price: the outer composite's price + every pick's upcharge, the inner composite's own picks' upcharges included; the
+  inner composite's own price is never added (it only weighs the split).
+- The line's `components[]` stays flat: the line's own picks first (same indexes as `composite[]`), then each inner
+  composite's picks after it with `parentIndex` = the inner composite's index. Inner units that chose the same picks are
+  ONE component with `quantity` = how many; different picks = separate components. A child's `quantity` and the split
+  are per ONE of its parent; Σ children `unitPrice` = the parent's. `unlisted: true` = never print that component.
+- Stock (B28): only the leaves leave the shelf — × every quantity above them; an inner composite has no stock of its own.
+  Short → "Chicken breast: only 3 left", naming the leaf.
+- Refused today, with a `reason`, never sold by a guess: a booking inside an inner composite (BOM 1.7); with each item's
+  own tax, an unlisted pick inside an inner composite (BOM 1.9).
+- The demo host (mocks) checks the picks but does not build such a line: valid picks are refused with "The demo host
+  does not build a composite inside a composite".

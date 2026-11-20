@@ -33,12 +33,19 @@ export interface AddProductToCartParams {
    * rejected add returns `success: false` with a `reason`. Refused for a product that is not a composite.
    *
    * `composite[].modifiers` are the PICKED ITEM's modifiers (`choices[].modifiers`), taxed at that item's table
-   * (B28); send their quantity per one pick — the host multiplies it by the pick's units. The line comes back with
-   * `components[]` and those rows in its flat `modifiers[]` with `componentIndex`.
+   * (B28); send their quantity per one pick — the host multiplies it by pieces only (B31): an item sold by the piece
+   * by its units, an item in g / ml / cl by the pick's quantity alone, and either by the portions of the inner
+   * composites above it. The line comes back with `components[]` and those rows in its flat `modifiers[]` with
+   * `componentIndex`.
    *
    * A composite has no modifiers of its own (B43): `modifiers` sent with `composite` are refused — every modifier of a
    * composite line is a picked item's and carries `componentIndex`. A taxable `fee` on a composite taxed by its items is
    * refused too: there is no table for it to inherit.
+   *
+   * BOM: a pick of an item whose `composite` is set sends `picks` — one list per unit it brings (quantity × item
+   * quantity), from that inner composite's parts; the host refuses a wrong count with a `reason` and never fills in
+   * defaults. Its picks come back as `components[]` after it, with `parentIndex` (see README). Each inner pick may
+   * carry its own `modifiers` (B29); they come back with `componentIndex` of that inner item.
    */
   composite?: CFCompositePick[];
   /**

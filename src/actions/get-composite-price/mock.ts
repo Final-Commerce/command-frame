@@ -12,6 +12,7 @@ import {
   mockCompositeLine,
   mockFullPartIds,
   mockNeedsDateRefusal,
+  mockNestedCompositeRefusal,
   mockPicksStillNeeded,
 } from '../add-product-to-cart/mock';
 
@@ -44,6 +45,7 @@ export const mockGetCompositePrice: GetCompositePrice = async (
   const line =
     mockNeedsDateRefusal(product.name, composite, params.compositeSlot) ??
     compositePicksRefusal(composite, picks) ??
+    mockNestedCompositeRefusal(picks) ??
     mockCompositeLine(composite, picks, !product.taxTable);
   if (typeof line === 'string') return { success: false, reason: line, missing, fullPartIds, timestamp };
   const shortOfStock = mockCompositeStockRefusal([

@@ -144,6 +144,12 @@ Ask `getCompositeAvailability` for the start times free for all of them, then `g
 `addProductToCart` with `compositeSlot: { startAt }`; there an item without enough seats reads `'fully_booked'`.
 A category item never hands out bookables.
 
+_A composite inside a composite_ (BOM): an item whose variant is a composite's carries `composite` — that composite's
+own `parts`, `basePrice`, `fromPrice` and `defaultPick`s, decided by the host; render it one layer down and collect
+one list of picks per unit (see `addProductToCart`). The outer `fromPrice` already counts the inner one's cheapest
+picks. An item whose composite holds, at some depth, the composite it sits in reads `unavailable: 'contains_itself'`
+(a loop in the data): it is not offered. A category item never hands out a composite.
+
 Each part's `defaultPick` (`{ itemId, variantId }`) is the pick to show
 preselected (B29 = D36): only on a required "pick 1" part (`required`, `min = max = 1`) — its cheapest available item
 (lowest `cost`, ties to the first listed); `null` on every other part, and when the cheapest is a category item. Parts
