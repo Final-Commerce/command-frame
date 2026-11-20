@@ -107,6 +107,7 @@ The library provides a `command` namespace object containing all available comma
 
 - **[goToStationHome](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/go-to-station-home/README.md)** - Navigate to the station home page
 - **[openCashDrawer](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-cash-drawer/README.md)** - Open the cash drawer
+- **[openBarcodeScanner](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-barcode-scanner/README.md)** - Open the device's camera barcode scanner
 - **[print](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/print/README.md)** - Print content to a connected printer or open browser print dialog (supports images, HTML, selectors, and receipts)
 - **[showNotification](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-notification/README.md)** - Show a notification message
 - **[showConfirmation](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-confirmation/README.md)** - Show a confirmation dialog
@@ -509,6 +510,10 @@ Navigates to the station home page.
 
 Opens the cash drawer (if connected to a compatible device).
 
+### [openBarcodeScanner](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/open-barcode-scanner/README.md)
+
+Opens the camera barcode scanner on an Adyen S1F4 Pro or S1F2. The scanned code reaches the register like a hardware scanner's (focused field, otherwise the cart); it is not returned.
+
 ### [showNotification](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/show-notification/README.md)
 
 Shows a notification message to the user.
@@ -894,6 +899,8 @@ import type {
   GoToStationHome,
   OpenCashDrawerResponse,
   OpenCashDrawer,
+  OpenBarcodeScannerResponse,
+  OpenBarcodeScanner,
   ShowNotificationParams,
   ShowNotificationResponse,
   ShowNotification,

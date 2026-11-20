@@ -83,6 +83,7 @@ import { removeCartDiscount } from './actions/remove-cart-discount/action';
 // System Actions
 import { goToStationHome } from './actions/go-to-station-home/action';
 import { openCashDrawer } from './actions/open-cash-drawer/action';
+import { openBarcodeScanner } from './actions/open-barcode-scanner/action';
 import { showNotification } from './actions/show-notification/action';
 import { showConfirmation } from './actions/show-confirmation/action';
 import { authenticateUser } from './actions/authenticate-user/action';
@@ -257,6 +258,7 @@ export const command = {
   // System Actions
   goToStationHome,
   openCashDrawer,
+  openBarcodeScanner,
   showNotification,
   showConfirmation,
   authenticateUser,
@@ -715,6 +717,7 @@ export type { RemoveCartDiscount, RemoveCartDiscountResponse } from './actions/r
 // System Actions
 export type { GoToStationHome, GoToStationHomeResponse } from './actions/go-to-station-home/types';
 export type { OpenCashDrawer, OpenCashDrawerResponse } from './actions/open-cash-drawer/types';
+export type { OpenBarcodeScanner, OpenBarcodeScannerResponse } from './actions/open-barcode-scanner/types';
 export type {
   ShowNotification,
   ShowNotificationParams,
