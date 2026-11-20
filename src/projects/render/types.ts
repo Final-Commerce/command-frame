@@ -134,6 +134,14 @@ import type {
   SetOutlet,
   ResumeCheckout,
   GetCheckoutStatus,
+  GetShopperAccount,
+  RequestShopperCode,
+  SignInShopper,
+  SignOutShopper,
+  GetShopperOrders,
+  GetShopperOrder,
+  SearchAddresses,
+  GetAddressDetails,
   GetMotoConfig,
   GetTimeClockStatus,
 } from '../../index';
@@ -217,6 +225,8 @@ export interface RenderProviderActions {
   attachCheckoutContact: AttachCheckoutContact;
   /** Shipping, on the till (ship-to) and the website alike. The runtime prices; the flow renders. */
   getAddressOptions: GetAddressOptions;
+  searchAddresses: SearchAddresses;
+  getAddressDetails: GetAddressDetails;
   setOrderAddress: SetOrderAddress;
   getShippingOptions: GetShippingOptions;
   selectShippingOption: SelectShippingOption;
@@ -230,6 +240,13 @@ export interface RenderProviderActions {
   resumeCheckout: ResumeCheckout;
   /** Where an online order stands now, by its order password. Storefront-only. */
   getCheckoutStatus: GetCheckoutStatus;
+  /** The shopper account on a store's website (sign in, this store's orders). Storefront-only. */
+  getShopperAccount: GetShopperAccount;
+  requestShopperCode: RequestShopperCode;
+  signInShopper: SignInShopper;
+  signOutShopper: SignOutShopper;
+  getShopperOrders: GetShopperOrders;
+  getShopperOrder: GetShopperOrder;
   getMotoConfig: GetMotoConfig;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;

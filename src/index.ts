@@ -68,12 +68,21 @@ import { chargeMoto } from './actions/charge-moto/action';
 import { startCheckout } from './actions/start-checkout/action';
 import { attachCheckoutContact } from './actions/attach-checkout-contact/action';
 import { getAddressOptions } from './actions/get-address-options/action';
+import { searchAddresses } from './actions/search-addresses/action';
+import { getAddressDetails } from './actions/get-address-details/action';
 import { setOrderAddress } from './actions/set-order-address/action';
 import { getShippingOptions } from './actions/get-shipping-options/action';
 import { selectShippingOption } from './actions/select-shipping-option/action';
 import { setOutlet } from './actions/set-outlet/action';
 import { resumeCheckout } from './actions/resume-checkout/action';
 import { getCheckoutStatus } from './actions/get-checkout-status/action';
+// Shopper account (store websites)
+import { getShopperAccount } from './actions/get-shopper-account/action';
+import { requestShopperCode } from './actions/request-shopper-code/action';
+import { signInShopper } from './actions/sign-in-shopper/action';
+import { signOutShopper } from './actions/sign-out-shopper/action';
+import { getShopperOrders } from './actions/get-shopper-orders/action';
+import { getShopperOrder } from './actions/get-shopper-order/action';
 import { getMotoConfig } from './actions/get-moto-config/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
@@ -242,12 +251,20 @@ export const command = {
   startCheckout,
   attachCheckoutContact,
   getAddressOptions,
+  searchAddresses,
+  getAddressDetails,
   setOrderAddress,
   getShippingOptions,
   selectShippingOption,
   setOutlet,
   resumeCheckout,
   getCheckoutStatus,
+  getShopperAccount,
+  requestShopperCode,
+  signInShopper,
+  signOutShopper,
+  getShopperOrders,
+  getShopperOrder,
   getMotoConfig,
   // Customer Actions
   addCustomerNote,
@@ -698,6 +715,46 @@ export type {
   CheckoutOrderStatus,
   CheckoutCancelReason,
 } from './actions/get-checkout-status/types';
+export type {
+  GetShopperAccount,
+  GetShopperAccountParams,
+  GetShopperAccountResponse,
+  ShopperCheckoutBox,
+  ShopperAccountView,
+  ShopperAddressView,
+} from './actions/get-shopper-account/types';
+export type {
+  RequestShopperCode,
+  RequestShopperCodeParams,
+  RequestShopperCodeResponse,
+} from './actions/request-shopper-code/types';
+export type { SignInShopper, SignInShopperParams, SignInShopperResponse } from './actions/sign-in-shopper/types';
+export type { SignOutShopper, SignOutShopperParams, SignOutShopperResponse } from './actions/sign-out-shopper/types';
+export type {
+  SearchAddresses,
+  SearchAddressesParams,
+  SearchAddressesResponse,
+  AddressSuggestion,
+} from './actions/search-addresses/types';
+export type {
+  GetAddressDetails,
+  GetAddressDetailsParams,
+  GetAddressDetailsResponse,
+  AddressDetails,
+} from './actions/get-address-details/types';
+export type {
+  GetShopperOrders,
+  GetShopperOrdersParams,
+  GetShopperOrdersResponse,
+  ShopperOrderView,
+} from './actions/get-shopper-orders/types';
+export type {
+  GetShopperOrder,
+  GetShopperOrderParams,
+  GetShopperOrderResponse,
+  ShopperOrderDetailView,
+  ShopperOrderItemView,
+} from './actions/get-shopper-order/types';
 export type { GetMotoConfig, GetMotoConfigResponse, MotoUnavailableReason } from './actions/get-moto-config/types';
 // Customer Actions
 export type {
