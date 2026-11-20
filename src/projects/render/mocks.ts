@@ -81,6 +81,7 @@ import { mockGetRemainingRefundableQuantities } from '../../actions/get-remainin
 import { mockGoToStationHome } from '../../actions/go-to-station-home/mock';
 import { mockInitiateRefund } from '../../actions/initiate-refund/mock';
 import { mockOpenCashDrawer } from '../../actions/open-cash-drawer/mock';
+import { mockOpenBarcodeScanner } from '../../actions/open-barcode-scanner/mock';
 import { mockParkOrder } from '../../actions/park-order/mock';
 import { mockPartialPayment } from '../../actions/partial-payment/mock';
 import { mockProcessPartialRefund } from '../../actions/process-partial-refund/mock';
@@ -220,6 +221,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   goToStationHome: mockGoToStationHome,
   initiateRefund: mockInitiateRefund,
   openCashDrawer: mockOpenCashDrawer,
+  openBarcodeScanner: mockOpenBarcodeScanner,
   parkOrder: mockParkOrder,
   partialPayment: mockPartialPayment,
   processPartialRefund: mockProcessPartialRefund,
