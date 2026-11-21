@@ -24,7 +24,7 @@ import {
   CFResolvedModifier,
 } from '../../CommonTypes';
 import type { ModifierSelection } from '../get-product-modifier-selections/types';
-import { extendPrice, isValidQuantity, resolveUnit } from '@final-commerce/common';
+import { DEFAULT_UNIT_ID, extendPrice, isValidQuantity, resolveUnit } from '@final-commerce/common';
 
 export const mockAddProductToCart: AddProductToCart = async (
   params?: AddProductToCartParams,
@@ -356,8 +356,9 @@ export const mockFullPartIds = (composite: CFComposite, picks: CFCompositePick[]
 type MockCompositeLine = { price: number; components: CFCartLineComponent[]; modifiers: CFCartLineModifier[] };
 
 /** kaching `buildCompositeLine` (B31): a component's share of ONE composite = the composite price split by the picked
- *  variant's price × units (all 0 → units) + its own upcharge; Σ = price. Item modifiers flat with `componentIndex`
- *  and quantity × the component's units. A copy — change both in one step. */
+ *  variant's price × units (all 0 → units) + its own upcharge; Σ = price. Item modifiers flat with `componentIndex`,
+ *  quantity × pieces (`modifierPiecesPerLine`): an item by the piece × its units, in g / ml / cl × its pick quantity
+ *  (the demo builds no inner composite, so no parent portions). A copy — change both in one step. */
 export function mockCompositeLine(
   composite: CFComposite,
   picks: CFCompositePick[],
@@ -381,6 +382,7 @@ export function mockCompositeLine(
       price: typeof selected === 'number' && Number.isFinite(selected) ? Math.round(selected) : null,
       pickQuantity: pick.quantity ?? 1,
       units: (pick.quantity ?? 1) * item.quantity,
+      soldByThePiece: !variant?.unitId || variant.unitId === DEFAULT_UNIT_ID,
     };
   });
   const unreadable = rows.find((row) => row.price === null);
@@ -411,7 +413,7 @@ export function mockCompositeLine(
   const modifiers = rows.flatMap((row, index) =>
     buildCartLineModifiers(row.choice.modifiers, picks[index].modifiers, row.taxTable).map((modifier) => ({
       ...modifier,
-      quantity: modifier.quantity * row.units,
+      quantity: modifier.quantity * (row.soldByThePiece ? row.units : row.pickQuantity),
       componentIndex: index,
     })),
   );
