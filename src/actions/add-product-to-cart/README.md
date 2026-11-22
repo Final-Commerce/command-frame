@@ -236,7 +236,8 @@ Always publishes a `product-added` event on the `cart` topic with the newly adde
   are per ONE of its parent; Σ children `unitPrice` = the parent's. `unlisted: true` = never print that component.
 - Stock (B28): only the leaves leave the shelf — × every quantity above them; an inner composite has no stock of its own.
   Short → "Chicken breast: only 3 left", naming the leaf.
-- Refused today, with a `reason`, never sold by a guess: a booking inside an inner composite (BOM 1.7); with each item's
-  own tax, an unlisted pick inside an inner composite (BOM 1.9).
+- Refused today, with a `reason`, never sold by a guess: a booking inside an inner composite (BOM 1.7).
+- With each item's own tax, an unlisted pick inside an inner composite is taxed at its own table; with no table its share
+  is untaxed (BOM 1.9).
 - The demo host (mocks) checks the picks but does not build such a line: valid picks are refused with "The demo host
   does not build a composite inside a composite".
