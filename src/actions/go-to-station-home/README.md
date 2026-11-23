@@ -2,6 +2,8 @@
 
 Navigates to the station home page. In hosted (ServiceChannel) mode this delegates to the shell via a host-navigate request; in standalone mode it triggers native navigation directly through the device bridge.
 
+**Action label:** a control whose press calls `goToStationHome` carries `data-final-action="go-to-station-home"`.
+
 ## Parameters
 
 None

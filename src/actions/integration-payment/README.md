@@ -2,6 +2,8 @@
 
 Extension-driven payment for Stripe-style integrations. The extension processes the payment with its provider, then calls `integrationPayment(...)` so kaching can record the resulting transaction + order. Functionally identical to `redeemPayment` on the wire — both delegate to `extensionPayment` — but `integrationPayment` carries `emvData` (required) and `processorFee` typed at the param level.
 
+**Action label:** a control whose press calls `integrationPayment` carries `data-final-action="integration-payment"`.
+
 ## Required fields
 
 | Field     | Type                 | Why required                                                                                                                                                                                                                                                        |

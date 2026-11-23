@@ -2,6 +2,8 @@
 
 Edits an existing custom sale line in the cart of the parent window. Look up the line by the `customSaleId` returned from [`addCustomSale`](../add-custom-sale/README.md); only the fields you pass are changed.
 
+**Action label:** a control whose press calls `editCustomSale` carries `data-final-action="edit-custom-sale"`.
+
 ## Parameters
 
 ### `EditCustomSaleParams`

@@ -8,6 +8,11 @@ export interface PartialPaymentParams {
   isPercent?: boolean;
   /** If true, opens the split payment UI. */
   openUI?: boolean;
+  /**
+   * true: the host refuses an amount above the balance due (the same balance `getCashRoundingAmount()` defaults to) or a
+   * percent above 100, with its own reason. Absent / false: no ceiling, exactly as before.
+   */
+  refuseAboveBalance?: boolean;
 }
 
 export interface PartialPaymentResponse {

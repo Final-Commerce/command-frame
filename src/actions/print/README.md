@@ -2,6 +2,8 @@
 
 Prints a pre-rasterized **image** to the station's printer(s).
 
+**Action label:** a control whose press calls `print` carries `data-final-action="print"`.
+
 > **Only `type: "image"` is supported.** `type: "html"` and `type: "receipt"` are **deprecated** — rasterize your receipt/label markup yourself and print it as an image. `image` is also the only path that carries multi-printer tag routing reliably.
 
 ## Parameters

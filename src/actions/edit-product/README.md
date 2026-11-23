@@ -2,6 +2,8 @@
 
 Updates product metadata (name, description, status, etc.) for an existing product. Does not modify variants -- use `editProductVariants` for that.
 
+**Action label:** a control whose press calls `editProduct` carries `data-final-action="edit-product"`.
+
 > **Manage-only.** This is an administrative command scoped to the Manage app (product catalog admin). It has no kaching POS-runtime handler.
 
 ## Parameters

@@ -56,6 +56,7 @@ The library provides a `command` namespace object containing all available comma
 - **[setVariantUnavailable](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-variant-unavailable/README.md)** - Mark or unmark a variant as unavailable at the active outlet
 - **[getCompositePrice](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-composite-price/README.md)** - Price a composite's current picks before adding it (a picker's running total)
 - **[getCompositeAvailability](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-composite-availability/README.md)** - The start times every bookable pick of a composite is free at (one date picker for the whole composite)
+- **[getBookingRentalEnds](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-booking-rental-ends/README.md)** - The ends a rental from one check-in may have (a range calendar's enabled days and highlight)
 - **[setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)** - Set a product as the active product in the POS interface by variant ID
 
 #### Order Actions
@@ -84,6 +85,8 @@ The library provides a `command` namespace object containing all available comma
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
 - **[recordExternalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/record-external-payment/README.md)** - Record money taken outside the terminal (online, delivery app, voucher) under a label — full balance or a partial amount, optionally with a tip already paid there; no reader, drawer or change
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
+- **[getCashChange](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-change/README.md)** - What a cash tender gives back, computed by the till (after cash rounding)
+- **[getOrdersSummary](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders-summary/README.md)** - Order count, total and completed/refunded shares for the getOrders filters, from the till
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
 - **[startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)** - Take an ONLINE payment on a published website: create the server-priced order and mount the provider's hosted card fields (the only tender available on a storefront)

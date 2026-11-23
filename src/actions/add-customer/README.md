@@ -2,6 +2,8 @@
 
 Adds a new customer to the local database in the parent application.
 
+**Action label:** a control whose press calls `addCustomer` carries `data-final-action="add-customer"`.
+
 ## Parameters
 
 ### `AddCustomerParams`

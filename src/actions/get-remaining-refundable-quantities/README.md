@@ -2,6 +2,8 @@
 
 Gets the remaining refundable quantities for all line items, custom sales, cart fees, and tips in the active order.
 
+**Action label:** a control whose press calls `getRemainingRefundableQuantities` carries `data-final-action="get-remaining-refundable-quantities"`.
+
 ## Parameters
 
 | Field     | Type     | Required | Description                                                                                                                                                                 |

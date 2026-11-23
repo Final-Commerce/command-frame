@@ -2,6 +2,8 @@
 
 Returns the active station document for the current POS context, or `null`.
 
+**Action label:** a control whose press calls `getActiveStation` carries `data-final-action="get-active-station"`.
+
 ## Parameters
 
 None.

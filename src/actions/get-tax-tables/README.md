@@ -2,6 +2,8 @@
 
 Returns tax tables configured for the current company (tables and linked rate metadata).
 
+**Action label:** a control whose press calls `getTaxTables` carries `data-final-action="get-tax-tables"`.
+
 ## Parameters
 
 None.

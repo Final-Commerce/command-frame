@@ -2,6 +2,8 @@
 
 Removes the note from a specific product line item in the cart, or from the current active product context if `internalId` is omitted.
 
+**Action label:** a control whose press calls `removeProductNote` carries `data-final-action="remove-product-note"`.
+
 ## Parameters
 
 ### `RemoveProductNoteParams`
