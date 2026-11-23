@@ -1,3 +1,7 @@
 #!/usr/bin/env sh
 
+# CI (the publish workflow) pushes its own version/back-merge commits; the
+# local quality gate must not block the pipeline's push.
+[ -n "$CI" ] && exit 0
+
 npx gate-done
