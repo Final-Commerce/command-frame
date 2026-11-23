@@ -2,7 +2,7 @@ import { GetCustomTableData, GetCustomTableDataParams, GetCustomTableDataRespons
 import { MOCK_CUSTOM_TABLE_DATA } from "../../demo/mocks/custom-tables";
 
 /**
- * The host's read (kaching get-custom-table-data/handler.ts, customTables.ts:99-113): the table's rows, offset 0 and
+ * The host's read: the table's rows, offset 0 and
  * limit 100 by default, so a row upsertCustomTableData wrote is read back. The mock filters by plain field equality only
  * and refuses query operators rather than guess them.
  */

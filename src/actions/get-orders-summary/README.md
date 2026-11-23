@@ -26,4 +26,4 @@ interface GetOrdersSummaryResponse {
 
 - The buckets read the legacy `status`, exactly as the first-party orders screen did; `percentOfOrders` is rounded to a
   whole percent by the till (0 when nothing matches).
-- The command-frame mock refuses (`The orders summary is computed by the till`).
+- The command-frame mock refuses with `{ success: false, reason }` (`The orders summary is computed by the till`).
