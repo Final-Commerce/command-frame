@@ -382,6 +382,7 @@ export function mockCompositeLine(
       price: typeof selected === 'number' && Number.isFinite(selected) ? Math.round(selected) : null,
       pickQuantity: pick.quantity ?? 1,
       units: (pick.quantity ?? 1) * item.quantity,
+      unit: variant?.unitId ? resolveUnit(variant.unitId) : undefined,
       soldByThePiece: !variant?.unitId || variant.unitId === DEFAULT_UNIT_ID,
     };
   });
@@ -408,6 +409,7 @@ export function mockCompositeLine(
     quantity: row.units,
     unitPrice: row.item.cost * row.pickQuantity + floors[index],
     ...(ownTax && row.taxTable ? { taxTableId: row.taxTable } : {}),
+    ...(row.unit ? { unit: row.unit } : {}),
     unlisted: row.unlisted,
   }));
   const modifiers = rows.flatMap((row, index) =>
