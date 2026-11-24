@@ -8,7 +8,7 @@ export interface GetCompositeAvailabilityParams {
   composite?: CFCompositePick[];
   /** First shop day, `YYYY-MM-DD` in the shop's zone. Defaults to today. */
   fromDay?: string;
-  /** How many shop days from `fromDay`. Defaults to 1. */
+  /** How many shop days from `fromDay`. Defaults to 1. On a website at most 60 per call: ask again for later days. */
   days?: number;
 }
 
