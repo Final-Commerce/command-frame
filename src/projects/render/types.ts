@@ -143,6 +143,13 @@ import type {
   SearchAddresses,
   GetAddressDetails,
   GetMotoConfig,
+  GetLoyalty,
+  FindLoyaltyMember,
+  StartLoyaltyCheck,
+  ConfirmLoyaltyCheck,
+  JoinLoyalty,
+  ApplyLoyaltyReward,
+  RemoveLoyaltyReward,
   GetTimeClockStatus,
 } from '../../index';
 
@@ -248,6 +255,15 @@ export interface RenderProviderActions {
   getShopperOrders: GetShopperOrders;
   getShopperOrder: GetShopperOrder;
   getMotoConfig: GetMotoConfig;
+  // Loyalty (Engage): the host asks Engage with its own sign-in and puts what it answers on the
+  // cart itself; a flow never handles a token, a hold's label or a customer's email or phone.
+  getLoyalty: GetLoyalty;
+  findLoyaltyMember: FindLoyaltyMember;
+  startLoyaltyCheck: StartLoyaltyCheck;
+  confirmLoyaltyCheck: ConfirmLoyaltyCheck;
+  joinLoyalty: JoinLoyalty;
+  applyLoyaltyReward: ApplyLoyaltyReward;
+  removeLoyaltyReward: RemoveLoyaltyReward;
   addNonRevenueItem: AddNonRevenueItem;
   addCustomerNote: AddCustomerNote;
   removeCustomerNote: RemoveCustomerNote;
