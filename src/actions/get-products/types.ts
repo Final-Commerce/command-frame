@@ -17,6 +17,10 @@ export interface GetProductsParams {
    *   getProducts({ query: { productType: { $in: ['simple', 'variable', 'booking'] } } })  // both
    *
    * Any query naming `productType` is used exactly as written.
+   *
+   * On a website the query runs on the server: at most 50 categories and 50 tags in one query, and a
+   * name/sku search of at most 128 characters. Past that the server refuses and the host answers from
+   * its local copy instead.
    */
   query?: {
     // MongoDB query fields
