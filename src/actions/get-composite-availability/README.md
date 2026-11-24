@@ -5,6 +5,8 @@ and time picker for the whole composite. When `composite.needsDate` is true you 
 and `getCompositePrice` refuse such a composite without `compositeSlot`. Pass `compositeSlot` to `getCompositePrice` once a
 time is picked; before that show the composite's price without calling it. Ask again whenever the picks change.
 
+**Action label:** a control whose press calls `getCompositeAvailability` carries `data-final-action="get-composite-availability"`.
+
 The host reads each bookable's slots from its own booking rows and keeps the starts where each one has the seats its
 picks need (the item's `quantity` × the pick's `quantity`): the seats of one resource, otherwise of several resources
 together. A pick naming a `resourceId` counts that resource only.

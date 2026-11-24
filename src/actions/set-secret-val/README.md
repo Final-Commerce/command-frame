@@ -2,6 +2,8 @@
 
 Creates or updates a secret value by key. Secrets can be company-level (shared across extensions) or extension-level (scoped to a specific extension).
 
+**Action label:** a control whose press calls `setSecretVal` carries `data-final-action="set-secret-val"`.
+
 ## Parameters
 
 ### `SetSecretValParams`

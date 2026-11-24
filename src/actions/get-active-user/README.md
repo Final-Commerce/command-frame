@@ -2,6 +2,8 @@
 
 Returns the employee (active user) signed into the POS, or `null`.
 
+**Action label:** a control whose press calls `getActiveUser` carries `data-final-action="get-active-user"`.
+
 ## Parameters
 
 None.

@@ -56,6 +56,7 @@ The library provides a `command` namespace object containing all available comma
 - **[setVariantUnavailable](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-variant-unavailable/README.md)** - Mark or unmark a variant as unavailable at the active outlet
 - **[getCompositePrice](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-composite-price/README.md)** - Price a composite's current picks before adding it (a picker's running total)
 - **[getCompositeAvailability](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-composite-availability/README.md)** - The start times every bookable pick of a composite is free at (one date picker for the whole composite)
+- **[getBookingRentalEnds](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-booking-rental-ends/README.md)** - The ends a rental from one check-in may have (a range calendar's enabled days and highlight)
 - **[setActiveProduct](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-active-product/README.md)** - Set a product as the active product in the POS interface by variant ID
 
 #### Order Actions
@@ -82,10 +83,14 @@ The library provides a `command` namespace object containing all available comma
 - **[deleteParkedOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/delete-parked-order/README.md)** - Delete a parked order
 - **[voidOrder](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/void-order/README.md)** - Cancel an open (not-yet-completed) order: a pure void when nothing was captured, an automatic full refund of captured split legs when a deposit was taken; completed orders are rejected (`ORDER_NOT_VOIDABLE`) and go through the refund flow
 - **[cashPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/cash-payment/README.md)** - Pay with cash (required minor-unit amount; `tenderedAmount` for flow-owned change)
-- **[recordExternalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/record-external-payment/README.md)** - Record money taken outside the terminal (online, delivery app, voucher) under a label — full balance or a partial amount; no reader, drawer, change or tip
+- **[recordExternalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/record-external-payment/README.md)** - Record money taken outside the terminal (online, delivery app, voucher) under a label — full balance or a partial amount, optionally with a tip already paid there; no reader, drawer or change
 - **[getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)** - Preview the cash-rounded charge for an amount
+- **[getCashChange](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-change/README.md)** - What a cash tender gives back, computed by the till (after cash rounding)
+- **[getOrdersSummary](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders-summary/README.md)** - Order count, total and completed/refunded shares for the getOrders filters, from the till
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
+- **[startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)** - Take an ONLINE payment on a published website: create the server-priced order and mount the provider's hosted card fields (the only tender available on a storefront)
+- **[resumeCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-checkout/README.md)** - Finish an online checkout the shopper was redirected away from (3-D Secure, bank apps, wallets); call it on every page load of your checkout screen
 - **[getMotoConfig](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-moto-config/README.md)** - The Adyen client key, environment and country a flow needs to mount card fields for `chargeMoto` (host-injected; never bake a key into a build)
 - **[getLoyalty](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-loyalty/README.md)** - The programme, the member on this sale, whether they can join, staff or customer mode, and the rewards on the cart (Engage)
 - **[findLoyaltyMember](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/find-loyalty-member/README.md)** - Staff mode: find a card by its number, a phone or an email and make it the member on this sale
@@ -452,7 +457,7 @@ Pays (part of) the current cart with cash. `amount` (minor units) is required �
 
 ### [recordExternalPayment](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/record-external-payment/README.md)
 
-Records a labelled payment of type `external` for money taken elsewhere. Omit `amount` to settle the whole balance; pass one for a partial leg. The order is paid and moves through the state machine like any tender; supports `checkoutFulfillmentTarget`. Not the Custom Payments extension's billed `custom` tender.
+Records a labelled payment of type `external` for money taken elsewhere. Omit `amount` to settle the whole balance; pass one for a partial leg. The order is paid and moves through the state machine like any tender; supports `checkoutFulfillmentTarget`. An optional `tip: { amount, tipTo? }` records a tip already paid there, on top of `amount`. Not the Custom Payments extension's billed `custom` tender.
 
 ### [getCashRoundingAmount](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-rounding-amount/README.md)
 
@@ -465,6 +470,14 @@ Creates a hosted payment link for the current cart and texts or emails it to the
 ### [chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)
 
 Charges a keyed (card-not-present) MOTO sale for the current cart. Card fields are provider-encrypted (CSE) and opaque to the POS. Minimum charge is 50 minor units; `idempotencyKey` is held by the caller across retries, reuse it to replay, use a new one after changing the amount. Adyen-only.
+
+### [startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)
+
+Takes an **online** payment on a published website. Creates a server-priced order from the current cart (the page never sends a price) and mounts the provider's hosted card fields into an element named by a **CSS selector** — not a DOM node, which cannot cross the `postMessage` boundary. It resolves when the shopper _can_ pay, not when they have: the outcome arrives on the [`checkout`](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/checkout/README.md) topic, where `payment-completed` is an authorisation rather than a settlement. This is the only tender available on a storefront; the till tenders above are refused there.
+
+### [resumeCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-checkout/README.md)
+
+Finishes an online checkout the shopper was **redirected away from**. 3-D Secure and every redirect payment method send the shopper to their bank or wallet and back to your `returnUrl` as a fresh page load, at which point the charge is still not complete: the provider has handed the browser a one-time result in the URL that has to go back to the provider. `startCheckout` ran in the page that is now gone and cannot do it. Call this unconditionally when your checkout or confirmation screen mounts — on an ordinary visit it answers `{ resumed: false }` and does nothing. It also recovers the one-time `orderPassword` the redirect destroyed, and publishes the outcome on the [`checkout`](https://github.com/Final-Commerce/command-frame/blob/main/src/pubsub/topics/checkout/README.md) topic exactly as if the shopper had never left.
 
 ### [getMotoConfig](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-moto-config/README.md)
 

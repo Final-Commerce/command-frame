@@ -13,10 +13,16 @@ export interface GetOrdersParams {
   /** Only orders placed at this outlet (`posData.outlet`). Without it, orders from every outlet in the company are returned. */
   outletId?: string;
   /**
-   * Only orders assigned to this user (`assignedUser.userId`), e.g. a driver's deliveries.
-   * `null`: only orders nobody is assigned to yet (e.g. deliveries awaiting a driver).
+   * Only orders this user is assigned to now (a current `assignedUser` entry), e.g. a driver's deliveries.
+   * `null`: only orders nobody is assigned to now (e.g. deliveries awaiting a driver).
    */
   assignedUserId?: string | null;
+  /**
+   * Narrows the assignee test to assignments with this label, e.g. 'delivery': with `assignedUserId`, that
+   * user must hold the order under this label; with `assignedUserId: null`, nobody holds it under this label;
+   * alone, someone holds it under this label. `null` means unlabeled assignments.
+   */
+  assignedUserLabel?: string | null;
   /**
    * true: only orders loaded in a cart; false: only orders that aren't. Reads `order.inCart` when the order
    * carries it, otherwise the legacy reading (fulfillment 'draft' / status 'in-cart').

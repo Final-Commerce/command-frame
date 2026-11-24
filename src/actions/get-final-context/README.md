@@ -2,6 +2,8 @@
 
 Retrieves the final context information from the parent application, specifically the project name.
 
+**Action label:** a control whose press calls `getFinalContext` carries `data-final-action="get-final-context"`.
+
 ## Parameters
 
 None

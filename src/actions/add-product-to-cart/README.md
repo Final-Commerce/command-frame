@@ -2,6 +2,8 @@
 
 Adds a product to the cart in the parent application. This atomic action handles product selection, application of options (discounts, fees, notes), and addition to the cart in a single step. `quantity` may be fractional when the variant carries a `unit` (1.509 kg is a sale) — build quantity inputs from `unit.precision`, never as a hardcoded integer stepper. A composite (`product.composite`) is added with its `composite` picks; when `composite.needsDate` is true it holds a bookable item and you MUST show a date and time picker first (`getCompositeAvailability`) and pass the chosen `compositeSlot: { startAt }` — without it the add is refused with a `reason`.
 
+**Action label:** a control whose press calls `addProductToCart` carries `data-final-action="add-product-to-cart"`.
+
 ## Parameters
 
 ### `AddProductToCartParams`
@@ -132,7 +134,7 @@ not created.
 
 - `"variantId is required"` — `variantId` was not provided.
 - `` `Variant with ID ${variantId} not found` `` — no product/variant matches the given `variantId`.
-- `` `${name} is not sold in POS` `` — the product or the chosen variant has `notSoldInPos: true`.
+- `` `${name} is not sold in POS` `` — on a till, the product or the chosen variant has `notSoldInPos: true`. On a storefront the flag is `notSoldOnline` and the text `` `${name} is not sold online` ``.
 - `"Product is out of stock"` — the variant is not unlimited-stock and has 0 or negative stock.
 - `"Variant not found in product"`, `"Failed to build active product"`, `"Product creation failed"`, `"Product lost during processing"` — internal state-consistency guards; should not occur under normal use.
 

@@ -23,6 +23,10 @@ export interface GetProductModifierSelectionsResponse {
   rows: CFProdModifierBreakdown[];
   /** Sum of `rows[].amount` for THIS line, in minor units. */
   modifiersTotal: number;
+  /** The whole line as the cart prices it (item, its discounts, fees and modifiers), in minor units. */
+  lineTotal: number;
+  /** The same for ONE unit, for an "each" price. */
+  unitTotal: number;
   timestamp: string;
 }
 

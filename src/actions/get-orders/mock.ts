@@ -1,3 +1,4 @@
+import { currentAssignees } from '@final-commerce/common';
 import { GetOrders, GetOrdersParams, GetOrdersResponse } from './types';
 import {
   MOCK_ORDERS,
@@ -24,6 +25,7 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       fulfillmentState,
       outletId,
       assignedUserId,
+      assignedUserLabel,
       inCart,
       orderType,
       customStatusId,
@@ -67,10 +69,12 @@ export const mockGetOrders: GetOrders = async (params?: GetOrdersParams): Promis
       orders = orders.filter((o) => o.posData?.outlet === outletId);
     }
 
-    if (assignedUserId) {
-      orders = orders.filter((o) => o.assignedUser?.userId === assignedUserId);
-    } else if (assignedUserId === null) {
-      orders = orders.filter((o) => o.assignedUser == null);
+    if (assignedUserId || assignedUserId === null || assignedUserLabel !== undefined) {
+      orders = orders.filter((o) => {
+        const holders = currentAssignees(o, assignedUserLabel);
+        if (assignedUserId === null) return holders.length === 0;
+        return assignedUserId ? holders.some((a) => a.userId === assignedUserId) : holders.length > 0;
+      });
     }
 
     if (orderType !== undefined) {

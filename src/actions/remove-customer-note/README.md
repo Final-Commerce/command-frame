@@ -2,6 +2,8 @@
 
 Removes a note from a customer's record using only the note's `_id`. The host (kaching) finds the customer that owns the note in the local database, updates the customer document, and refreshes active/selected customer state when applicable.
 
+**Action label:** a control whose press calls `removeCustomerNote` carries `data-final-action="remove-customer-note"`.
+
 You do **not** pass `customerId`; use the note id returned when the note was created (for example from [`addCustomerNote`](../add-customer-note/README.md) or from `getCustomers` / active customer `notes`).
 
 ## Parameters

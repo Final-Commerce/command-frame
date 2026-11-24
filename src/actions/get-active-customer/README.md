@@ -2,6 +2,8 @@
 
 Retrieves the customer currently assigned to the POS session (active cart context), or `null` if none.
 
+**Action label:** a control whose press calls `getActiveCustomer` carries `data-final-action="get-active-customer"`.
+
 ## Parameters
 
 None.

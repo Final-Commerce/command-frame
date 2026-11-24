@@ -2,6 +2,8 @@
 
 Opens the cash drawer (if connected to a compatible device).
 
+**Action label:** a control whose press calls `openCashDrawer` carries `data-final-action="open-cash-drawer"`.
+
 ## Parameters
 
 None

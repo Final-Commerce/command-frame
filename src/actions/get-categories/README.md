@@ -2,6 +2,8 @@
 
 Retrieves a list of categories from the parent application's local database.
 
+**Action label:** a control whose press calls `getCategories` carries `data-final-action="get-categories"`.
+
 ## Parameters
 
 ### `GetCategoriesParams`

@@ -8,6 +8,7 @@ export const mockGetBookings: GetBookings = async (params?: GetBookingsParams): 
   if (params?.resourceId) bookings = bookings.filter((entry) => entry.resourceId === params.resourceId);
   if (params?.productId) bookings = bookings.filter((entry) => entry.productId === params.productId);
   if (params?.customerId) bookings = bookings.filter((entry) => entry.customerId === params.customerId);
+  if (params?.outletId) bookings = bookings.filter((entry) => entry.outletId === params.outletId);
   if (params?.from) {
     const from = new Date(params.from);
     bookings = bookings.filter((entry) => new Date(entry.bufferEndAt) > from);

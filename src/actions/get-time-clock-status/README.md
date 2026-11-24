@@ -3,6 +3,8 @@
 Returns the active employee's current time-clock state: clocked out, clocked
 in, or on break, and since when.
 
+**Action label:** a control whose press calls `getTimeClockStatus` carries `data-final-action="get-time-clock-status"`.
+
 **This command is READ-ONLY by design.** There are no `clockIn` / `clockOut`
 / `startBreak` / `endBreak` commands in this library; time clock actions
 themselves are not part of this contract. Use this to read the current state
