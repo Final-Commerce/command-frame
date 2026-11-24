@@ -18,6 +18,10 @@ export interface StartCheckoutContact {
   phone?: string;
 }
 
+/**
+ * Checks out the current cart. The server takes at most 100 cart lines, 10 booked slots, and
+ * 10,000 of one item per line; a bigger cart is refused at checkout, so split it before then.
+ */
 export interface StartCheckoutParams {
   /**
    * OPTIONAL, because checkout starts when the shopper ARRIVES rather than when
