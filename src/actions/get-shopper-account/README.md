@@ -10,8 +10,8 @@ const { signedIn, shopper, addresses, boxes } = await renderClient.getShopperAcc
 Show `boxes` on the contact step as they come (label and default), and send their values with
 `attachCheckoutContact`:
 
-- a guest gets "Track this order and check out faster next time" (`accountOptIn`) and the news box
-  (`marketingOptIn`);
+- a guest gets "Track this order and check out faster next time" (`accountOptIn`); news is not offered
+  to a guest, whose email is not verified;
 - a signed-in shopper gets the news box and "Save this address" (`saveAddress`, ticked).
 
 `addresses` (signed in only) lets a shopper pick another saved address; each has a ready `line`.
