@@ -27,7 +27,7 @@ leaves the sale or the cart is cleared, and settles it with the order when the s
 ```typescript
 interface ApplyLoyaltyRewardParams {
   rewardId?: string; // a reward of the member on this sale
-  grantId?: string; // an offer on their card
+  grantId?: string; // a coupon on their card (`member.offers`), or waiting on the customer on the sale (`loyalty.offers`)
   code?: string; // a coupon code; needs no member
 }
 ```

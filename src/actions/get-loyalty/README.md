@@ -7,8 +7,8 @@ changed.
 
 Engage keeps the programme, every balance and every coupon. The host asks Hub with the sign-in it
 already holds, Hub asks Engage, and the host puts what Engage answers on the cart itself, so a flow
-never handles a token, a key, a hold's id or a customer's email or phone. With no programme running, `program` is null: hide the
-loyalty button.
+never handles a token, a key, a hold's id or a customer's email or phone. With no programme running, `program` is null;
+with no coupons on either (`coupons` false), hide the loyalty button.
 
 ## Parameters
 
@@ -31,7 +31,9 @@ interface GetLoyaltyResponse {
 
 interface CFLoyaltyState {
   program: CFLoyaltyProgram | null;
+  coupons?: boolean; // coupons are on: the customer on the sale is looked up for theirs, programme or not
   member: CFLoyaltyMember | null; // name, number, balance, headline, next, rewards (with `available`), offers
+  offers?: CFLoyaltyOffer[]; // coupons waiting on the sale's customer when they have no card
   canJoin: boolean;
   mode: 'staff' | 'customer';
   checkPending: boolean; // customer mode: a code is waiting to be typed back
@@ -43,12 +45,14 @@ interface CFLoyaltyState {
 
 ```typescript
 const { loyalty } = await renderClient.getLoyalty();
-if (!loyalty.program) return null; // no programme: no button
+if (!loyalty.program && !loyalty.coupons) return null; // neither: no button
 
 if (loyalty.member) {
   showCard(loyalty.member.headline, loyalty.member.next);
   loyalty.member.rewards.filter((r) => r.available).forEach(showUseButton);
 }
+// Coupons waiting on them: on their card, or on them as a customer when they have none.
+[...(loyalty.member?.offers ?? []), ...(loyalty.offers ?? [])].forEach(showCouponButton); // applyLoyaltyReward({ grantId })
 ```
 
 ## Who is in front of the screen
@@ -66,6 +70,10 @@ if (loyalty.member) {
 
 ## Notes
 
+- A coupon with a minimum spend (`discount.minSpendMinor`) goes on only once the sale reaches it
+  (what the customer spends, not a gift card loaded on the sale), and comes off again if the cart
+  drops under it. A customer's coupons and rewards come off the cart when they leave the sale or the
+  cashier puts someone else on it.
 - Earning and redeeming need no command: Engage earns from the saved sale and redeems the rewards on
   it on its own. A refund takes back what the sale earned and gives back the rewards used on it.
   Don't keep balances, stamps or points in custom tables.

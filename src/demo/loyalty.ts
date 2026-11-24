@@ -165,7 +165,9 @@ export function mockLoyaltyState(): CFLoyaltyState {
   const proved = MOCK_LOYALTY.check?.confirmed ?? false;
   return {
     program: MOCK_LOYALTY_PROGRAM,
+    coupons: true,
     member: member ? mockMemberView(member) : null,
+    offers: [],
     canJoin: !member && (MOCK_LOYALTY.mode === 'staff' ? Boolean(MOCK_CART.customer) : proved),
     mode: MOCK_LOYALTY.mode,
     checkPending: Boolean(MOCK_LOYALTY.check && !MOCK_LOYALTY.check.confirmed),
@@ -178,6 +180,7 @@ export function mockSetSaleMember(m: MockMember | null): void {
   mockPublishEvent('loyalty', 'member-changed', {
     member: m ? mockMemberView(m) : null,
     canJoin: mockLoyaltyState().canJoin,
+    offers: [],
   });
 }
 
@@ -210,8 +213,19 @@ function unusable(d: CFLoyaltyDiscount): string | null {
   if (d.kind === 'amount_off' && !(Number.isInteger(d.valueMinor) && (d.valueMinor ?? 0) > 0)) return 'no amount';
   if (d.kind === 'percent_off' && !(d.percent != null && d.percent > 0 && d.percent <= 100)) return 'no percentage';
   if (d.maxValueMinor != null && !(Number.isInteger(d.maxValueMinor) && d.maxValueMinor > 0)) return 'no cap';
+  if (d.minSpendMinor != null && !(Number.isInteger(d.minSpendMinor) && d.minSpendMinor >= 0)) return 'no minimum';
   return null;
 }
+
+/** What the customer spends, as the host measures a minimum: the subtotal without non-revenue items (a gift card load). */
+const mockSaleSpend = (): number => {
+  const nonRevenue = (MOCK_CART.nonRevenueItems ?? []).reduce((sum, item) => {
+    if (typeof item.amount === 'number') return sum + Math.round(item.amount);
+    const parsed = parseFloat(String(item.amount));
+    return Number.isFinite(parsed) ? sum + Math.round(parsed * 100) : sum;
+  }, 0);
+  return Math.max(0, (MOCK_CART.subtotal ?? 0) - nonRevenue);
+};
 
 /**
  * Put a discount on the mock cart the way the host does. The cart has one discount slot: an amount
@@ -226,6 +240,12 @@ export function mockApplyToCart(
   ids: { rewardId: string | null; offerId: string | null },
 ): CFLoyaltyApplied | CFLoyaltyOutcome {
   if (unusable(d)) return mockLoyaltyRefusal('unavailable', `${name} can't go on this sale. Carry on without it.`);
+  const spend = mockSaleSpend();
+  if (d.minSpendMinor && spend < d.minSpendMinor)
+    return mockLoyaltyRefusal(
+      'nothing_to_discount',
+      `${name} needs a sale of at least ${(d.minSpendMinor / 100).toFixed(2)}. Add ${((d.minSpendMinor - spend) / 100).toFixed(2)} more to use it.`,
+    );
   const redemptionId = `lr_mock${(redemptions += 1).toString(16).padStart(8, '0')}`;
   // The reward's own name, like the host; the host names the hold in the order's metadata.
   const label = name;
@@ -252,7 +272,7 @@ export function mockApplyToCart(
     const refused =
       d.maxValueMinor != null
         ? toCart({
-            value: Math.min(Math.round(((MOCK_CART.subtotal ?? 0) * percent) / 100), d.maxValueMinor),
+            value: Math.min(Math.round((spend * percent) / 100), d.maxValueMinor),
             isPercent: false,
           })
         : toCart({ value: percent / 100, isPercent: true });
