@@ -54,13 +54,13 @@ export interface GetProductsParams {
   includeUnlisted?: boolean;
   /** Defaults to 0. */
   offset?: number;
-  /** Defaults to 100. */
+  /** Defaults to 100. On a website at most 250: the public API refuses more and the host falls back to its local copy. */
   limit?: number;
 }
 
 export interface GetProductsResponse {
   products: CFProduct[];
-  /** Total number of products matching the query, ignoring offset/limit. Optional — hosts that cannot cheaply compute the total may omit it. */
+  /** Total number of products matching the query, ignoring offset/limit. Returned on a website; a POS omits it. */
   total?: number;
   timestamp: string;
 }
