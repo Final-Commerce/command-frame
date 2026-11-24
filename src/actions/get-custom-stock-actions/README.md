@@ -2,6 +2,8 @@
 
 Returns the stock adjustment actions the current company created for itself (in the back office or via the hub API).
 
+**Action label:** a control whose press calls `getCustomStockActions` carries `data-final-action="get-custom-stock-actions"`.
+
 ## Parameters
 
 None.

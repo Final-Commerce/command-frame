@@ -2,6 +2,8 @@
 
 Void or cancel an order that hasn't been completed: an open order, or a paid order that was never fulfilled (e.g. paid and sent to the kitchen, not yet handed over). For orders with captured payments, refunds the original tenders atomically; for orders with nothing captured, transitions to voided state.
 
+**Action label:** a control whose press calls `voidOrder` carries `data-final-action="void-order"`.
+
 ## Parameters
 
 | Name      | Type   | Required | Description                                                                                                                                                                                                                                        |

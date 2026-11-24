@@ -14,6 +14,11 @@ export interface GetRemainingRefundableQuantitiesResponse {
    */
   cartFees: Record<string, number>;
   /**
+   * The order's shipping: `1` = still refundable, `0` = already refunded or the order has none.
+   * Refunded with `itemKey: 'shipping'`, all or nothing.
+   */
+  shipping: number;
+  /**
    * Remaining refundable tips, keyed by the paying method's
    * `transactionId` — the same key `processPartialRefund` takes for
    * `type: 'tip'` items. Only payment methods that carry a tip appear.

@@ -1,10 +1,11 @@
 import { TapToPayPayment, TapToPayPaymentParams, TapToPayPaymentResponse } from './types';
-import { applyMockPayment, MOCK_CART } from '../../demo/database';
+import { applyMockPayment, assertMockPaymentNotDeclined, MOCK_CART } from '../../demo/database';
 
 export const mockTapToPayPayment: TapToPayPayment = async (
   params?: TapToPayPaymentParams,
 ): Promise<TapToPayPaymentResponse> => {
   console.log('[Mock] tapToPayPayment called', params);
+  assertMockPaymentNotDeclined('tapToPay', false);
 
   // Simulate Tap to Pay interaction
   window.alert('Demo: Processing Tap to Pay...\n(Please tap card or device on screen)');

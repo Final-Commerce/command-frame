@@ -45,7 +45,7 @@ export const mockAddBookingToCart: AddBookingToCart = async (
     bookingId: booking.id,
     productId: params.productId,
     variantId: variant?._id ?? null,
-    resourceId: params.resourceId,
+    resourceId: booking.resourceId,
     name: product.name,
     resourceName: booking.resourceName,
     price,

@@ -2,6 +2,8 @@
 
 Selects all remaining refundable items (line items, custom sales, cart fees, and tips) for a full refund.
 
+**Action label:** a control whose press calls `selectAllRefundItems` carries `data-final-action="select-all-refund-items"`.
+
 ## Parameters
 
 ### `SelectAllRefundItemsParams`

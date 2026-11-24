@@ -2,6 +2,8 @@
 
 Returns all custom extensions associated with the current company from the local database.
 
+**Action label:** a control whose press calls `getCurrentCompanyCustomExtensions` carries `data-final-action="get-current-company-custom-extensions"`.
+
 ## Parameters
 
 ### `GetCurrentCompanyCustomExtensionsParams`

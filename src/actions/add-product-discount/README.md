@@ -2,6 +2,8 @@
 
 Adds a discount to a product in the cart. Applies to a specific line item when `internalId` is given, or to the current active product context otherwise.
 
+**Action label:** a control whose press calls `addProductDiscount` carries `data-final-action="add-product-discount"`.
+
 ## Parameters
 
 ### `AddProductDiscountParams`
@@ -37,6 +39,8 @@ Defaults to `false`.
 Label for the discount (e.g., "Employee Discount"). Defaults to `"Discount"`.
 
 ## Response
+
+A percent discount is stored on the line as `{ value: fraction, isPercent: true, percent }` — `percent` is the number passed (FT-289), so an edit form can show it as entered; a fixed discount has no `percent`.
 
 ### `AddProductDiscountResponse`
 

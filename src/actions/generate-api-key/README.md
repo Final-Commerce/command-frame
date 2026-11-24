@@ -2,6 +2,8 @@
 
 Generates an API key for the specified company.
 
+**Action label:** a control whose press calls `generateAPIKey` carries `data-final-action="generate-api-key"`.
+
 **Manage-scoped command.** This is a Manage administrative command (company/API-key admin), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
 
 ## Parameters

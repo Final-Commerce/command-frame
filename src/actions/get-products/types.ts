@@ -34,22 +34,22 @@ export interface GetProductsParams {
     externalId?: string;
     /**
      * Product-level flag filter. `true` = only products flagged `notSoldInPos`; `false` = only
-     * products NOT flagged (a missing field counts as not flagged). Naming it switches off the
-     * default `notSoldInPos` exclusion, so `true` works without `includeUnlisted`.
+     * products NOT flagged (a missing field counts as not flagged). On a till, naming it switches off
+     * the default exclusion, so `true` works without `includeUnlisted`.
      */
     notSoldInPos?: boolean;
-    /** Product-level flag filter: `true` = flagged `notSoldOnline`; `false` = sold online (missing counts). */
+    /** Product-level flag filter: `true` = flagged `notSoldOnline`; `false` = sold online (missing counts). On a storefront, naming it switches off the default exclusion. */
     notSoldOnline?: boolean;
     // Text search (searches across name, sku)
     // This is handled by the handler, not directly in query
     [key: string]: any;
   };
   /**
-   * Products flagged `notSoldInPos` are left out unless this is `true` (default `false`) or the
-   * query names `notSoldInPos`. They still cannot be sold: `addProductToCart` / `addBookingToCart`
-   * refuse a product or a variant flagged `notSoldInPos`. Without it, flagged variants are also
-   * stripped from `variants[]` and a product whose every variant is flagged is left out — whatever
-   * `query.notSoldInPos` says.
+   * The sales-channel flag follows the host channel: `notSoldInPos` on a till, `notSoldOnline` on a
+   * storefront. Products with that flag are left out unless this is `true` (default `false`) or the
+   * query names that flag. They still cannot be sold: `addProductToCart` / `addBookingToCart` refuse a
+   * product or a variant with it. Without it, flagged variants are also stripped from `variants[]`
+   * and a product whose every variant is flagged is left out — whatever the query says.
    */
   includeUnlisted?: boolean;
   /** Defaults to 0. */

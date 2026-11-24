@@ -24,6 +24,10 @@ export const mockRecordExternalPayment: RecordExternalPayment = async (
   if (amount > balanceDue) {
     throw new Error(`recordExternalPayment: amount ${amount} exceeds the balance due ${balanceDue}`);
   }
+  const tip = params.tip?.amount ?? 0;
+  if (params.tip !== undefined && (!Number.isInteger(tip) || tip <= 0)) {
+    throw new Error('recordExternalPayment: tip.amount must be a positive integer (minor units)');
+  }
 
   const order = applyMockPayment(amount, 'external', label);
   const remainingBalance = MOCK_CART.remainingBalance ?? 0;
@@ -31,6 +35,7 @@ export const mockRecordExternalPayment: RecordExternalPayment = async (
   return {
     success: true,
     amount,
+    tip,
     label,
     paymentType: 'external',
     change: 0,

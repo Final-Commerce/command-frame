@@ -2,6 +2,8 @@
 
 Adds a discount to the entire cart in the parent application. Cart discounts apply to the cart subtotal and affect all items in the cart.
 
+**Action label:** a control whose press calls `addCartDiscount` carries `data-final-action="add-cart-discount"`.
+
 ## Parameters
 
 ### `AddCartDiscountParams`
@@ -51,6 +53,8 @@ A label for the discount that will be displayed in the cart and on receipts. Def
 - "Promotion"
 
 ## Response
+
+A percent cart discount is stored as `{ value: fraction, isPercent: true, percent }` — `percent` is the whole percent applied (FT-289); a fixed one has no `percent`. Discounts saved before carry none.
 
 ### `AddCartDiscountResponse`
 

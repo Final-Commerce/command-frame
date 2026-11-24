@@ -50,6 +50,8 @@ import type {
   CashPayment,
   RecordExternalPayment,
   GetCashRoundingAmount,
+  GetCashChange,
+  GetOrdersSummary,
   TapToPayPayment,
   TerminalPayment,
   ExtensionPayment,
@@ -117,6 +119,7 @@ import type {
   SendSms,
   GetBookingResources,
   GetBookingAvailability,
+  GetBookingRentalEnds,
   GetBookings,
   HoldBooking,
   AddBookingToCart,
@@ -124,6 +127,16 @@ import type {
   CancelBooking,
   CreatePaymentLink,
   ChargeMoto,
+  StartCheckout,
+  AttachCheckoutContact,
+  GetAddressOptions,
+  SetOrderAddress,
+  GetShippingOptions,
+  SelectShippingOption,
+  GetOutlets,
+  SetOutlet,
+  ResumeCheckout,
+  GetCheckoutStatus,
   GetMotoConfig,
   GetLoyalty,
   FindLoyaltyMember,
@@ -144,6 +157,7 @@ export interface RenderProviderActions {
   // same window, and the shop resolves it afterwards like any other double booking.
   getBookingResources: GetBookingResources;
   getBookingAvailability: GetBookingAvailability;
+  getBookingRentalEnds: GetBookingRentalEnds;
   getBookings: GetBookings;
   holdBooking: HoldBooking;
   addBookingToCart: AddBookingToCart;
@@ -198,6 +212,8 @@ export interface RenderProviderActions {
   cashPayment: CashPayment;
   recordExternalPayment: RecordExternalPayment;
   getCashRoundingAmount: GetCashRoundingAmount;
+  getCashChange: GetCashChange;
+  getOrdersSummary: GetOrdersSummary;
   tapToPayPayment: TapToPayPayment;
   terminalPayment: TerminalPayment;
   extensionPayment: ExtensionPayment;
@@ -205,6 +221,28 @@ export interface RenderProviderActions {
   integrationPayment: IntegrationPayment;
   createPaymentLink: CreatePaymentLink;
   chargeMoto: ChargeMoto;
+  /**
+   * ONLINE checkout — served only by the storefront runtime (a published
+   * website). The till tenders above are refused there, and this is refused on
+   * a register, because the two declare different things to the card networks.
+   */
+  startCheckout: StartCheckout;
+  attachCheckoutContact: AttachCheckoutContact;
+  /** Shipping, on the till (ship-to) and the website alike. The runtime prices; the flow renders. */
+  getAddressOptions: GetAddressOptions;
+  setOrderAddress: SetOrderAddress;
+  getShippingOptions: GetShippingOptions;
+  selectShippingOption: SelectShippingOption;
+  getOutlets: GetOutlets;
+  setOutlet: SetOutlet;
+  /**
+   * The RETURN LEG of an online checkout, after a redirect payment method or
+   * 3-D Secure sent the shopper away and back. Storefront-only, like
+   * `startCheckout`, and safe to call on every page load.
+   */
+  resumeCheckout: ResumeCheckout;
+  /** Where an online order stands now, by its order password. Storefront-only. */
+  getCheckoutStatus: GetCheckoutStatus;
   getMotoConfig: GetMotoConfig;
   // Loyalty (Engage): the host asks Engage with its own sign-in and puts what it answers on the
   // cart itself; a flow never handles a token, a hold's label or a customer's email or phone.

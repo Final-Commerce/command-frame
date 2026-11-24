@@ -2,6 +2,8 @@
 
 Adjusts the inventory/stock level for a specific product variant.
 
+**Action label:** a control whose press calls `adjustInventory` carries `data-final-action="adjust-inventory"`.
+
 ## Parameters
 
 - `amount` (string, required): The amount to adjust (as a string to preserve precision)

@@ -2,6 +2,8 @@
 
 > **DEPRECATED** — the host-side refund popup is disabled (kaching ≥1.9.5-preprod.4); this command no longer opens any UI. It still stages the given/active order and, with no `orderId`, arms barcode refund-scan routing. Build the refund UI in your flow with `getRefundPlan`, `getRemainingRefundableQuantities`, `processPartialRefund`, and `redeemRefund`.
 
+**Action label:** a control whose press calls `initiateRefund` carries `data-final-action="initiate-refund"`.
+
 Stages the specified order (or the currently active order) as the refund target. Historically this opened the host's refund popup — it no longer does.
 
 ## Parameters

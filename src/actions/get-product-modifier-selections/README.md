@@ -6,6 +6,8 @@ changed from a flow; a line's selections are supplied via
 `addProductToCart({ modifiers })` and edited with
 `setProductModifierSelections` (full replacement, re-validated).
 
+**Action label:** a control whose press calls `getProductModifierSelections` carries `data-final-action="get-product-modifier-selections"`.
+
 ## Parameters
 
 ```typescript

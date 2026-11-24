@@ -1,3 +1,4 @@
+import { currentAssignees } from '@final-commerce/common';
 import { describe, it, expect, vi } from 'vitest';
 import { getOrders } from './action';
 import { mockGetOrders } from './mock';
@@ -62,8 +63,8 @@ describe('getOrders mock', () => {
     const all = await mockGetOrders({});
     const unassigned = await mockGetOrders({ assignedUserId: null });
 
-    expect(unassigned.orders.every((o) => o.assignedUser == null)).toBe(true);
-    expect(unassigned.orders.length).toBe(all.orders.filter((o) => o.assignedUser == null).length);
+    expect(unassigned.orders.every((o) => currentAssignees(o).length === 0)).toBe(true);
+    expect(unassigned.orders.length).toBe(all.orders.filter((o) => currentAssignees(o).length === 0).length);
   });
 
   it('filters by outlet', async () => {
