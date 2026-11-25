@@ -50,6 +50,14 @@ import { mockGetOutlets } from '../../actions/get-outlets/mock';
 import { mockSetOutlet } from '../../actions/set-outlet/mock';
 import { mockResumeCheckout } from '../../actions/resume-checkout/mock';
 import { mockGetCheckoutStatus } from '../../actions/get-checkout-status/mock';
+import { mockGetShopperAccount } from '../../actions/get-shopper-account/mock';
+import { mockRequestShopperCode } from '../../actions/request-shopper-code/mock';
+import { mockSignInShopper } from '../../actions/sign-in-shopper/mock';
+import { mockSignOutShopper } from '../../actions/sign-out-shopper/mock';
+import { mockGetShopperOrders } from '../../actions/get-shopper-orders/mock';
+import { mockSearchAddresses } from '../../actions/search-addresses/mock';
+import { mockGetAddressDetails } from '../../actions/get-address-details/mock';
+import { mockGetShopperOrder } from '../../actions/get-shopper-order/mock';
 import { mockGetMotoConfig } from '../../actions/get-moto-config/mock';
 import { mockGetLoyalty } from '../../actions/get-loyalty/mock';
 import { mockFindLoyaltyMember } from '../../actions/find-loyalty-member/mock';
@@ -185,6 +193,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   startCheckout: mockStartCheckout,
   attachCheckoutContact: mockAttachCheckoutContact,
   getAddressOptions: mockGetAddressOptions,
+  searchAddresses: mockSearchAddresses,
+  getAddressDetails: mockGetAddressDetails,
   setOrderAddress: mockSetOrderAddress,
   getShippingOptions: mockGetShippingOptions,
   selectShippingOption: mockSelectShippingOption,
@@ -192,6 +202,12 @@ export const RENDER_MOCKS: RenderProviderActions = {
   setOutlet: mockSetOutlet,
   resumeCheckout: mockResumeCheckout,
   getCheckoutStatus: mockGetCheckoutStatus,
+  getShopperAccount: mockGetShopperAccount,
+  requestShopperCode: mockRequestShopperCode,
+  signInShopper: mockSignInShopper,
+  signOutShopper: mockSignOutShopper,
+  getShopperOrders: mockGetShopperOrders,
+  getShopperOrder: mockGetShopperOrder,
   getMotoConfig: mockGetMotoConfig,
   getLoyalty: mockGetLoyalty,
   findLoyaltyMember: mockFindLoyaltyMember,
