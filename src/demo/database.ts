@@ -35,7 +35,10 @@ import {
 import {
   cheapestCompositeItem,
   cheapestCompositePrice,
+  DEFAULT_UNIT_ID,
   extendPrice,
+  formatInUnit,
+  poolDemand,
   resolveUnit,
   toBase,
 } from '@final-commerce/common';
@@ -1022,26 +1025,28 @@ export const MOCK_CATALOG_VISIBILITY: MockCatalogVisibility[] = [];
 /**
  * The host's cart stock check for composites (kaching `compositeStockRefusal`), over the demo shelves — a copy: what the
  * cart takes of each component's variant (plain lines and components × their line quantity) against its shelf here.
- * The demo has no pools or units, so it counts per variant; untracked and backordered variants are never short.
+ * The demo has no pools, so it counts per variant — in base units (common `poolDemand`), as the host does; its shelf
+ * reads in the variant's own unit. Untracked and backordered variants are never short.
  */
 export function mockCompositeStockRefusal(
-  products: { variantId: string; quantity: number; components?: CFCartLineComponent[] }[],
+  products: {
+    variantId: string;
+    quantity: number;
+    unit?: CFCartLineComponent['unit'];
+    components?: CFCartLineComponent[];
+  }[],
 ): string | null {
   const components = products.flatMap((product) => product.components ?? []);
-  const demand = new Map<string, number>();
-  for (const product of products) {
-    if (product.components)
-      for (const component of product.components)
-        demand.set(component.variantId, (demand.get(component.variantId) ?? 0) + component.quantity * product.quantity);
-    else demand.set(product.variantId, (demand.get(product.variantId) ?? 0) + product.quantity);
-  }
+  const demand = poolDemand(products);
   for (const component of components) {
     const variant = MOCK_PRODUCTS.flatMap((product) => product.variants).find(
       (candidate) => candidate._id === component.variantId,
     );
     if (!variant?.manageStock || variant.allowBackorder) continue;
     const left = variant.inventory?.find((row) => row.outletId === MOCK_OUTLET.id)?.stock ?? 0;
-    if ((demand.get(component.variantId) ?? 0) > left) return `${component.name}: only ${left} left`;
+    const { unit } = component;
+    if ((demand.get(component.variantId) ?? 0) > (unit ? toBase(left, unit) : left))
+      return `${component.name}: only ${unit && unit.unitId !== DEFAULT_UNIT_ID ? `${formatInUnit(left, unit)} ${unit.abbreviation}` : left} left`;
   }
   return null;
 }
