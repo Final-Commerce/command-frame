@@ -59,6 +59,13 @@ import { mockSearchAddresses } from '../../actions/search-addresses/mock';
 import { mockGetAddressDetails } from '../../actions/get-address-details/mock';
 import { mockGetShopperOrder } from '../../actions/get-shopper-order/mock';
 import { mockGetMotoConfig } from '../../actions/get-moto-config/mock';
+import { mockGetLoyalty } from '../../actions/get-loyalty/mock';
+import { mockFindLoyaltyMember } from '../../actions/find-loyalty-member/mock';
+import { mockStartLoyaltyCheck } from '../../actions/start-loyalty-check/mock';
+import { mockConfirmLoyaltyCheck } from '../../actions/confirm-loyalty-check/mock';
+import { mockJoinLoyalty } from '../../actions/join-loyalty/mock';
+import { mockApplyLoyaltyReward } from '../../actions/apply-loyalty-reward/mock';
+import { mockRemoveLoyaltyReward } from '../../actions/remove-loyalty-reward/mock';
 import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
 import { mockDeleteParkedOrder } from '../../actions/delete-parked-order/mock';
@@ -202,6 +209,13 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getShopperOrders: mockGetShopperOrders,
   getShopperOrder: mockGetShopperOrder,
   getMotoConfig: mockGetMotoConfig,
+  getLoyalty: mockGetLoyalty,
+  findLoyaltyMember: mockFindLoyaltyMember,
+  startLoyaltyCheck: mockStartLoyaltyCheck,
+  confirmLoyaltyCheck: mockConfirmLoyaltyCheck,
+  joinLoyalty: mockJoinLoyalty,
+  applyLoyaltyReward: mockApplyLoyaltyReward,
+  removeLoyaltyReward: mockRemoveLoyaltyReward,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
   voidOrder: mockVoidOrder,
