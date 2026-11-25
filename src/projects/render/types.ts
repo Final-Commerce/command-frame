@@ -62,6 +62,7 @@ import type {
   RemoveCustomerFromCart,
   GoToStationHome,
   OpenCashDrawer,
+  OpenBarcodeScanner,
   ShowNotification,
   ShowConfirmation,
   AuthenticateUser,
@@ -277,6 +278,7 @@ export interface RenderProviderActions {
   removeCartDiscount: RemoveCartDiscount;
   goToStationHome: GoToStationHome;
   openCashDrawer: OpenCashDrawer;
+  openBarcodeScanner: OpenBarcodeScanner;
   showNotification: ShowNotification;
   showConfirmation: ShowConfirmation;
   authenticateUser: AuthenticateUser;
