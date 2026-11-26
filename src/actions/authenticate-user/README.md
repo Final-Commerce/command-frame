@@ -3,6 +3,8 @@
 Authenticates a user against one of a set of authorized roles, for gating a
 privileged action. Supports two modes:
 
+**Action label:** a control whose press calls `authenticateUser` carries `data-final-action="authenticate-user"`.
+
 - **Modal (default):** kaching opens its built-in PIN modal; the cashier enters
   a PIN and the command resolves once verification completes.
 - **Headless:** the flow supplies a `userId` + `pin` and kaching validates them

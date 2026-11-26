@@ -2,6 +2,8 @@
 
 Loads the order for the given `orderId`, sets it as the active order, and resets refund details to a fresh state. (The host-side refund popup is disabled as of kaching 1.9.5-preprod.4 — no UI opens; flows own the refund UI.)
 
+**Action label:** a control whose press calls `setActiveRefund` carries `data-final-action="set-active-refund"`.
+
 ## Parameters
 
 | Field     | Type     | Required |

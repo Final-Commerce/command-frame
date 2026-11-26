@@ -2,6 +2,8 @@
 
 Records a refund of one or more order payments onto a gift-card or redeem tender.
 
+**Action label:** a control whose press calls `redeemRefund` carries `data-final-action="redeem-refund"`.
+
 ## Parameters
 
 `params: RedeemRefundParams`

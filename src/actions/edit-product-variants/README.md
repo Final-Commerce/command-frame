@@ -2,6 +2,8 @@
 
 Performs batch variant operations on a product: add new variants, update existing ones, or delete variants.
 
+**Action label:** a control whose press calls `editProductVariants` carries `data-final-action="edit-product-variants"`.
+
 > **Manage-scoped command.** This is a Manage administrative command (product catalog management), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
 
 ## Parameters

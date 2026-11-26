@@ -42,6 +42,7 @@ import type {
   ReleaseFromCart,
   SetOrderType,
   SetScheduledFor,
+  SetTaxOverride,
   SetOrderStatus,
   GetOrderStatuses,
   DeleteParkedOrder,
@@ -50,6 +51,8 @@ import type {
   CashPayment,
   RecordExternalPayment,
   GetCashRoundingAmount,
+  GetCashChange,
+  GetOrdersSummary,
   TapToPayPayment,
   TerminalPayment,
   ExtensionPayment,
@@ -118,6 +121,7 @@ import type {
   SendSms,
   GetBookingResources,
   GetBookingAvailability,
+  GetBookingRentalEnds,
   GetBookings,
   HoldBooking,
   AddBookingToCart,
@@ -163,6 +167,7 @@ export interface RenderProviderActions {
   // same window, and the shop resolves it afterwards like any other double booking.
   getBookingResources: GetBookingResources;
   getBookingAvailability: GetBookingAvailability;
+  getBookingRentalEnds: GetBookingRentalEnds;
   getBookings: GetBookings;
   holdBooking: HoldBooking;
   addBookingToCart: AddBookingToCart;
@@ -209,6 +214,7 @@ export interface RenderProviderActions {
   releaseFromCart: ReleaseFromCart;
   setOrderType: SetOrderType;
   setScheduledFor: SetScheduledFor;
+  setTaxOverride: SetTaxOverride;
   setOrderStatus: SetOrderStatus;
   getOrderStatuses: GetOrderStatuses;
   deleteParkedOrder: DeleteParkedOrder;
@@ -217,6 +223,8 @@ export interface RenderProviderActions {
   cashPayment: CashPayment;
   recordExternalPayment: RecordExternalPayment;
   getCashRoundingAmount: GetCashRoundingAmount;
+  getCashChange: GetCashChange;
+  getOrdersSummary: GetOrdersSummary;
   tapToPayPayment: TapToPayPayment;
   terminalPayment: TerminalPayment;
   extensionPayment: ExtensionPayment;

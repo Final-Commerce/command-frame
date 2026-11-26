@@ -3,6 +3,7 @@ import { exampleFunction } from './actions/example-function/action';
 import { getProducts } from './actions/get-products/action';
 import { getBookingResources } from './actions/get-booking-resources/action';
 import { getBookingAvailability } from './actions/get-booking-availability/action';
+import { getBookingRentalEnds } from './actions/get-booking-rental-ends/action';
 import { getBookings } from './actions/get-bookings/action';
 import { holdBooking } from './actions/hold-booking/action';
 import { addBookingToCart } from './actions/add-booking-to-cart/action';
@@ -51,6 +52,7 @@ import { assignOrderUser } from './actions/assign-order-user/action';
 import { releaseFromCart } from './actions/release-from-cart/action';
 import { setOrderType } from './actions/set-order-type/action';
 import { setScheduledFor } from './actions/set-scheduled-for/action';
+import { setTaxOverride } from './actions/set-tax-override/action';
 import { setOrderStatus } from './actions/set-order-status/action';
 import { getOrderStatuses } from './actions/get-order-statuses/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
@@ -58,6 +60,8 @@ import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
 import { recordExternalPayment } from './actions/record-external-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
+import { getCashChange } from './actions/get-cash-change/action';
+import { getOrdersSummary } from './actions/get-orders-summary/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
 import { terminalPayment } from './actions/terminal-payment/action';
 import { extensionPayment } from './actions/extension-payment/action';
@@ -194,6 +198,7 @@ export const command = {
   getProducts,
   getBookingResources,
   getBookingAvailability,
+  getBookingRentalEnds,
   getBookings,
   holdBooking,
   addBookingToCart,
@@ -243,6 +248,7 @@ export const command = {
   releaseFromCart,
   setOrderType,
   setScheduledFor,
+  setTaxOverride,
   setOrderStatus,
   getOrderStatuses,
   deleteParkedOrder,
@@ -250,6 +256,8 @@ export const command = {
   cashPayment,
   recordExternalPayment,
   getCashRoundingAmount,
+  getCashChange,
+  getOrdersSummary,
   tapToPayPayment,
   terminalPayment,
   extensionPayment,
@@ -390,6 +398,11 @@ export type {
   GetBookingAvailabilityParams,
   GetBookingAvailabilityResponse,
 } from './actions/get-booking-availability/types';
+export type {
+  GetBookingRentalEnds,
+  GetBookingRentalEndsParams,
+  GetBookingRentalEndsResponse,
+} from './actions/get-booking-rental-ends/types';
 export type { GetBookings, GetBookingsParams, GetBookingsResponse } from './actions/get-bookings/types';
 export type { HoldBooking, HoldBookingParams, HoldBookingResponse } from './actions/hold-booking/types';
 export type {
@@ -633,6 +646,8 @@ export type {
   SetScheduledForParams,
   SetScheduledForResponse,
 } from './actions/set-scheduled-for/types';
+export type { SetTaxOverride, SetTaxOverrideParams, SetTaxOverrideResponse } from './actions/set-tax-override/types';
+export { SET_TAX_OVERRIDE_NOTE_MAX } from './actions/set-tax-override/types';
 export type { SetOrderStatus, SetOrderStatusParams, SetOrderStatusResponse } from './actions/set-order-status/types';
 export type { GetOrderStatuses, GetOrderStatusesResponse } from './actions/get-order-statuses/types';
 export type {
@@ -654,6 +669,12 @@ export type {
   GetCashRoundingAmountParams,
   GetCashRoundingAmountResponse,
 } from './actions/get-cash-rounding-amount/types';
+export type { GetCashChange, GetCashChangeParams, GetCashChangeResponse } from './actions/get-cash-change/types';
+export type {
+  GetOrdersSummary,
+  GetOrdersSummaryParams,
+  GetOrdersSummaryResponse,
+} from './actions/get-orders-summary/types';
 export type {
   TapToPayPayment,
   TapToPayPaymentParams,

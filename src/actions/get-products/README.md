@@ -2,6 +2,8 @@
 
 Retrieves a list of products: from the host's local database on a POS, and from the Final POS public API on a website (the local copy fills in the details). A composite whose `composite.needsDate` is true holds a bookable item: show "By date" instead of a ready Add button and route Add through a date and time picker (`getCompositeAvailability`); its items reading `unavailable: 'by_date'` stay pickable.
 
+**Action label:** a control whose press calls `getProducts` carries `data-final-action="get-products"`.
+
 > **Bookable services are excluded unless you ask for them.** A service is not catalogue stock:
 > it is sold by claiming a time with `addBookingToCart`, and `addProductToCart` refuses it
 > outright. Returned by default it appeared in ordinary product grids, where the obvious gesture —
@@ -90,6 +92,8 @@ The maximum number of items to return. Defaults to 100.
 **Note:** The handler automatically excludes deleted products.
 
 ## Response
+
+Each variant carries `stockAtOutlet` (FT-289): the active outlet's stock, read the way `addProductToCart` reads it — the number a sale is checked against (0 when the outlet has no stock row). Show it when `manageStock` is true and bound a quantity stepper with it; do not sum `inventory[]` (it holds every outlet).
 
 ### `GetProductsResponse`
 

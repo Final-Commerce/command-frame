@@ -6,6 +6,8 @@ per-source and order-level — so a flow can present accurate refund options
 per-tender caps will drift from the engine and get rejected at submit time;
 query this instead.
 
+**Action label:** a control whose press calls `getRefundPlan` carries `data-final-action="get-refund-plan"`.
+
 ## Parameters
 
 `params?: GetRefundPlanParams`

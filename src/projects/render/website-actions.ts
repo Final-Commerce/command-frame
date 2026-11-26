@@ -31,6 +31,7 @@ export const WEBSITE_ACTIONS = [
   'getCompositePrice',
   'getCompositeAvailability',
   'getBookingAvailability',
+  'getBookingRentalEnds',
   'addBookingToCart',
   'removeBookingFromCart',
   'getAddressOptions',

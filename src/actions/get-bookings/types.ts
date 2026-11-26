@@ -6,6 +6,8 @@ export interface GetBookingsParams {
   productId?: string;
   /** This customer's appointments. */
   customerId?: string;
+  /** Only bookings made at this outlet — a till's own day. Omit for every outlet (a customer's appointments anywhere). */
+  outletId?: string;
   /** Bookings whose window overlaps this range, ISO 8601. */
   from?: string;
   to?: string;

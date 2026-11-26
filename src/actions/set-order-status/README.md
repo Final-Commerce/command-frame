@@ -2,6 +2,8 @@
 
 Sets an order's **custom status** — one of the running flow's [order statuses](../get-order-statuses/README.md), e.g. `In kitchen`, `Ready for pickup`, `Out for delivery`. Stored on the order as `customStatus: { id, key, label, setAt, setBy }`, separately from `displayState`, and synced to every station.
 
+**Action label:** a control whose press calls `setOrderStatus` carries `data-final-action="set-order-status"`.
+
 A status can be **bound to a fulfillment state**: setting it moves the order there through the normal state machine (same rules as [`applyTransition`](../apply-transition/README.md)). A status can also **require a payment state**: setting it fails until the order has been paid accordingly — a status never moves money; take payment with a payment command first. A status with neither is just a label.
 
 ## Parameters

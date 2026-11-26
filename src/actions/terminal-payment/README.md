@@ -2,6 +2,8 @@
 
 Initiates a terminal payment for the current cart.
 
+**Action label:** a control whose press calls `terminalPayment` carries `data-final-action="terminal-payment"`.
+
 ## Parameters
 
 `params?: TerminalPaymentParams`

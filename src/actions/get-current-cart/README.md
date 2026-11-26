@@ -2,6 +2,8 @@
 
 Retrieves the current cart object with all its contents including products, custom sales, discounts, fees, totals, and customer information.
 
+**Action label:** a control whose press calls `getCurrentCart` carries `data-final-action="get-current-cart"`.
+
 ## Parameters
 
 None.
@@ -26,7 +28,11 @@ import { type CFActiveCart, type CFActiveProduct } from '@final-commerce/command
 
 ## Paid orders
 
-Once the order in this cart has any payment on it — a split leg, a part payment, or paid in full — its items, amounts and customer can no longer be changed: adding, removing or re-quantifying products, custom sales, modifiers, discounts, fees, non-revenue items, bookings, changing or removing the customer, and `clearCart` are all refused. `itemsLocked: true` says so up front, so a flow can disable those controls instead of waiting for the refusal. The order can still be released ([`releaseFromCart`](../release-from-cart/README.md)), paid, voided, and labelled (notes, type, status, assignee, metadata). A completed sale never locks the next one.
+Once the order in this cart has any payment on it — a split leg, a part payment, or paid in full — its items, amounts and customer can no longer be changed: adding, removing or re-quantifying products, custom sales, modifiers, discounts, fees, non-revenue items, bookings, turning tax off or on ([`setTaxOverride`](../set-tax-override/README.md)), changing or removing the customer, and `clearCart` are all refused.
+
+## Untaxed lines
+
+A product, booking or custom sale whose tax was turned off with [`setTaxOverride`](../set-tax-override/README.md) carries `taxOverride` — `{ type: 'not_charged', source: 'staff', userId, at, stationId, note? }` — and is already priced with no tax. `cart.taxOverride` is set when tax is off for the whole sale (every line is then untaxed, including ones added later). No `taxOverride` means the line is taxed as usual. Show an untaxed line's tax as `$0.00 — tax not charged` on receipts. `itemsLocked: true` says so up front, so a flow can disable those controls instead of waiting for the refusal. The order can still be released ([`releaseFromCart`](../release-from-cart/README.md)), paid, voided, and labelled (notes, type, status, assignee, metadata). A completed sale never locks the next one.
 
 ## Cart Object Structure
 

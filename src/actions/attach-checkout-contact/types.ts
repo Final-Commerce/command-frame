@@ -29,7 +29,11 @@ export interface AttachCheckoutContactParams {
    * `getShopperAccount`): links this email to a shopper account at this store. Omitted = not ticked.
    */
   accountOptIn?: boolean;
-  /** The news box ("Email me news and offers"): this store's consent, true or false. Omitted = not asked. */
+  /**
+   * The news box ("Email me news and offers"): this store's consent, true or false. Omitted = not asked.
+   * Recorded for a signed-in shopper only (a guest's email is not verified); `getShopperAccount` offers
+   * the box only then.
+   */
   marketingOptIn?: boolean;
   /**
    * The "Save this address" box (signed-in shoppers): once the order is paid, its shipping address is

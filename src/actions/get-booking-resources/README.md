@@ -4,6 +4,8 @@ Lists the bookable resources — the people, rooms, tables or machines whose tim
 product is sold as. Read from the host's local database, so it works offline and answers
 instantly.
 
+**Action label:** a control whose press calls `getBookingResources` carries `data-final-action="get-booking-resources"`.
+
 Pass `productId` to get only the resources that actually perform that service: a salon's
 "Beard trim" may be done by two of its four staff, and offering the other two produces a
 booking the shop cannot honour.
