@@ -1,49 +1,51 @@
-import { CustomersEventType, CustomersEventPayload } from "./customers/types";
-import { OrdersEventType, OrdersEventPayload } from "./orders/types";
-import { RefundsEventType, RefundsEventPayload } from "./refunds/types";
-import { ProductsEventType, ProductsEventPayload } from "./products/types";
-import { CartEventType, CartEventPayload } from "./cart/types";
-import { PaymentsEventType, PaymentsEventPayload } from "./payments/types";
-import { CheckoutEventType, CheckoutEventPayload } from "./checkout/types";
-import { SplitPaymentsEventType, SplitPaymentsEventPayload } from "./split-payments/types";
-import { CustomTablesEventPayload, CustomTablesEventType } from "./custom-tables/types";
-import { PrintEventType, PrintEventPayload } from "./print/types";
-import { OutletEventType, OutletEventPayload } from "./outlet/types";
-import { StationEventType, StationEventPayload } from "./station/types";
-import { SessionEventType, SessionEventPayload } from "./session/types";
-import { UsersEventType, UsersEventPayload } from "./users/types";
-import { VariantsEventType, VariantsEventPayload } from "./variants/types";
-import { TransactionsEventType, TransactionsEventPayload } from "./transactions/types";
-import { CategoriesEventType, CategoriesEventPayload } from "./categories/types";
-import { AttributesEventType, AttributesEventPayload } from "./attributes/types";
-import { BookingsEventType, BookingsEventPayload } from "./bookings/types";
+import { CustomersEventType, CustomersEventPayload } from './customers/types';
+import { OrdersEventType, OrdersEventPayload } from './orders/types';
+import { RefundsEventType, RefundsEventPayload } from './refunds/types';
+import { ProductsEventType, ProductsEventPayload } from './products/types';
+import { CartEventType, CartEventPayload } from './cart/types';
+import { PaymentsEventType, PaymentsEventPayload } from './payments/types';
+import { CheckoutEventType, CheckoutEventPayload } from './checkout/types';
+import { SplitPaymentsEventType, SplitPaymentsEventPayload } from './split-payments/types';
+import { CustomTablesEventPayload, CustomTablesEventType } from './custom-tables/types';
+import { PrintEventType, PrintEventPayload } from './print/types';
+import { OutletEventType, OutletEventPayload } from './outlet/types';
+import { StationEventType, StationEventPayload } from './station/types';
+import { SessionEventType, SessionEventPayload } from './session/types';
+import { UsersEventType, UsersEventPayload } from './users/types';
+import { VariantsEventType, VariantsEventPayload } from './variants/types';
+import { TransactionsEventType, TransactionsEventPayload } from './transactions/types';
+import { CategoriesEventType, CategoriesEventPayload } from './categories/types';
+import { AttributesEventType, AttributesEventPayload } from './attributes/types';
+import { BookingsEventType, BookingsEventPayload } from './bookings/types';
+import { LoyaltyEventType, LoyaltyEventPayload } from './loyalty/types';
 
 export interface TopicEventPayloadMap {
-    customers: Record<CustomersEventType, CustomersEventPayload>;
-    orders: Record<OrdersEventType, OrdersEventPayload>;
-    refunds: Record<RefundsEventType, RefundsEventPayload>;
-    products: Record<ProductsEventType, ProductsEventPayload>;
-    cart: Record<CartEventType, CartEventPayload>;
-    payments: Record<PaymentsEventType, PaymentsEventPayload>;
-    /**
-     * ONLINE checkout only (a published website), where the POS `payments`
-     * topic never fires: `payments` reports a till tender settling in front of
-     * a cashier, while a web shopper's outcome arrives asynchronously and can
-     * only ever be an authorisation until the provider's webhook lands.
-     */
-    checkout: Record<CheckoutEventType, CheckoutEventPayload>;
-    "split-payments": Record<SplitPaymentsEventType, SplitPaymentsEventPayload>;
-    customTables: Record<CustomTablesEventType, CustomTablesEventPayload>;
-    print: Record<PrintEventType, PrintEventPayload>;
-    outlet: Record<OutletEventType, OutletEventPayload>;
-    station: Record<StationEventType, StationEventPayload>;
-    session: Record<SessionEventType, SessionEventPayload>;
-    users: Record<UsersEventType, UsersEventPayload>;
-    variants: Record<VariantsEventType, VariantsEventPayload>;
-    transactions: Record<TransactionsEventType, TransactionsEventPayload>;
-    categories: Record<CategoriesEventType, CategoriesEventPayload>;
-    attributes: Record<AttributesEventType, AttributesEventPayload>;
-    // Registered in the publisher since bookings shipped, but missing here — so a host could not
-    // publish an occupancy change without casting past its own protocol.
-    bookings: Record<BookingsEventType, BookingsEventPayload>;
+  customers: Record<CustomersEventType, CustomersEventPayload>;
+  orders: Record<OrdersEventType, OrdersEventPayload>;
+  refunds: Record<RefundsEventType, RefundsEventPayload>;
+  products: Record<ProductsEventType, ProductsEventPayload>;
+  cart: Record<CartEventType, CartEventPayload>;
+  payments: Record<PaymentsEventType, PaymentsEventPayload>;
+  /**
+   * ONLINE checkout only (a published website), where the POS `payments`
+   * topic never fires: `payments` reports a till tender settling in front of
+   * a cashier, while a web shopper's outcome arrives asynchronously and can
+   * only ever be an authorisation until the provider's webhook lands.
+   */
+  checkout: Record<CheckoutEventType, CheckoutEventPayload>;
+  'split-payments': Record<SplitPaymentsEventType, SplitPaymentsEventPayload>;
+  customTables: Record<CustomTablesEventType, CustomTablesEventPayload>;
+  print: Record<PrintEventType, PrintEventPayload>;
+  outlet: Record<OutletEventType, OutletEventPayload>;
+  station: Record<StationEventType, StationEventPayload>;
+  session: Record<SessionEventType, SessionEventPayload>;
+  users: Record<UsersEventType, UsersEventPayload>;
+  variants: Record<VariantsEventType, VariantsEventPayload>;
+  transactions: Record<TransactionsEventType, TransactionsEventPayload>;
+  categories: Record<CategoriesEventType, CategoriesEventPayload>;
+  attributes: Record<AttributesEventType, AttributesEventPayload>;
+  // Registered in the publisher since bookings shipped, but missing here — so a host could not
+  // publish an occupancy change without casting past its own protocol.
+  bookings: Record<BookingsEventType, BookingsEventPayload>;
+  loyalty: Record<LoyaltyEventType, LoyaltyEventPayload>;
 }

@@ -2,6 +2,8 @@
 
 Sets the discount on the currently active product context (does not touch the cart directly). Replaces any discount already on the active product — it does not stack with a previous call.
 
+**Action label:** a control whose press calls `setActiveProductDiscount` carries `data-final-action="set-active-product-discount"`.
+
 ## Parameters
 
 ### `SetActiveProductDiscountParams`

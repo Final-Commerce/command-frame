@@ -2,6 +2,8 @@
 
 Shows a notification message to the user.
 
+**Action label:** a control whose press calls `showNotification` carries `data-final-action="show-notification"`.
+
 ## Parameters
 
 ### `ShowNotificationParams`

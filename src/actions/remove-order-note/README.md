@@ -2,6 +2,8 @@
 
 Clears the note from the current order/cart.
 
+**Action label:** a control whose press calls `removeOrderNote` carries `data-final-action="remove-order-note"`.
+
 ## Parameters
 
 None

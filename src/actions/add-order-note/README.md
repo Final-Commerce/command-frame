@@ -2,6 +2,8 @@
 
 Adds a note to the current order/cart. This replaces any existing order note — the cart holds a single note field, not an accumulating list.
 
+**Action label:** a control whose press calls `addOrderNote` carries `data-final-action="add-order-note"`.
+
 ## Parameters
 
 - `note` (string, required): The note text to add to the order

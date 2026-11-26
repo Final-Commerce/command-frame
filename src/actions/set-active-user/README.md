@@ -2,6 +2,8 @@
 
 Loads a user by `userId` and sets them as the active POS user (where the host supports it).
 
+**Action label:** a control whose press calls `setActiveUser` carries `data-final-action="set-active-user"`.
+
 ## Parameters
 
 | Field    | Type     | Required |

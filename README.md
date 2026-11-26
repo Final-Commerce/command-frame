@@ -96,7 +96,7 @@ const context = await client.getContext();
 The pub/sub system allows iframe extensions to subscribe to topics and receive real-time events published by the POS host (kaching). Subscriptions are **page-scoped** -- they fire only while the iframe is mounted on the current page.
 
 - **[Pub/Sub Documentation](./src/pubsub/README.md)**
-- **Topics:** Cart (16), Customers (8), Orders (7), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (4), Variants (2), Transactions (2), Categories (2), Attributes (2), Split Payments (1).
+- **Topics:** Cart (16), Customers (8), Orders (7), Payments (2), Products (4), Refunds (4), Print (3), Custom Tables (3), Outlet (2), Station (2), Session (2), Users (4), Variants (2), Transactions (2), Categories (2), Attributes (2), Split Payments (1), Loyalty (3).
 
 ```typescript
 import { topics } from '@final-commerce/command-frame';
@@ -146,6 +146,16 @@ Each client comes with built-in mock data for local development.
 ```typescript
 const client = new RenderClient({ mockMode: true, debug: true });
 ```
+
+**Declines — mock only.** A test that needs to see how a flow treats a refusal sets `declines` in the dataset; a real till never reads it:
+
+```typescript
+setMockDatabase({ declines: { payments: ['terminal', 'tapToPay'], refunds: true, customTableWrites: true } });
+```
+
+- `payments`: those card commands reject with `CLOUD_PAYMENT_FAILED: Card declined` (cloud terminal) or `NATIVE_PAYMENT_FAILED: Card declined`.
+- `refunds: true`: `processPartialRefund` rejects with `Cloud refund failed`.
+- `customTableWrites: true`: `upsertCustomTableData` and `deleteCustomTableData` reject with `Table "<name>" not found`.
 
 ### Debugging
 
