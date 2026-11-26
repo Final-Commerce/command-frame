@@ -79,6 +79,15 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
   const [statusKey, setStatusKey] = useState<string>('');
   const setStatus = useCommandRunner(isInIframe);
 
+  // Set Tax Override (FT-315)
+  const [taxLineId, setTaxLineId] = useState<string>('');
+  const [taxNote, setTaxNote] = useState<string>('');
+  const taxOverride = useCommandRunner(isInIframe);
+  const runTaxOverride = (taxOff: boolean) =>
+    taxOverride.run(() =>
+      command.setTaxOverride({ internalId: optionalId(taxLineId), taxOff, note: taxNote.trim() || undefined }),
+    );
+
   return (
     <div className="section-content">
       {/* Release From Cart */}
@@ -367,6 +376,43 @@ export function OrderManagementSection({ isInIframe }: OrderManagementSectionPro
           {setStatus.loading ? 'Saving...' : 'Set Order Status'}
         </button>
         <Result response={setStatus.response} />
+      </CommandSection>
+
+      {/* Set Tax Override */}
+      <CommandSection title="Set Tax Override">
+        <p className="section-description">
+          Turns all tax off, or back on, for one cart line or the whole sale, before payment. Leave the line ID blank
+          for the whole sale; otherwise use a product's or booking's internalId, or a custom sale's id, from
+          getCurrentCart. Tax-inclusive prices stay the same.
+        </p>
+        <div className="form-group">
+          <div className="form-field">
+            <label>Line ID (optional):</label>
+            <input
+              type="text"
+              value={taxLineId}
+              onChange={(e) => setTaxLineId(e.target.value)}
+              placeholder="whole sale"
+            />
+          </div>
+          <div className="form-field">
+            <label>Note (optional, tax off only):</label>
+            <input
+              type="text"
+              value={taxNote}
+              onChange={(e) => setTaxNote(e.target.value)}
+              placeholder="Status card"
+              maxLength={500}
+            />
+          </div>
+        </div>
+        <button onClick={() => runTaxOverride(true)} disabled={taxOverride.loading} className="btn btn--primary">
+          {taxOverride.loading ? 'Saving...' : 'Tax Off'}
+        </button>{' '}
+        <button onClick={() => runTaxOverride(false)} disabled={taxOverride.loading} className="btn btn--primary">
+          {taxOverride.loading ? 'Saving...' : 'Tax On'}
+        </button>
+        <Result response={taxOverride.response} />
       </CommandSection>
     </div>
   );
