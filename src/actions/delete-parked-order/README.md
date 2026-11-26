@@ -2,6 +2,8 @@
 
 Deletes a parked order. This is a state transition, not a database delete: the order moves to `voided` × `cancelled` state and remains in the database (the legacy `status` field is stamped, not the record itself). Only succeeds on an order currently in `parked` status.
 
+**Action label:** a control whose press calls `deleteParkedOrder` carries `data-final-action="delete-parked-order"`.
+
 ## Parameters
 
 - `orderId` (string, required): The ID of the parked order to delete

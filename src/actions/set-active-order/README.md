@@ -2,6 +2,8 @@
 
 Sets an order as the active order in the store by fetching it from the database using the order ID.
 
+**Action label:** a control whose press calls `setActiveOrder` carries `data-final-action="set-active-order"`.
+
 ## Parameters
 
 ```typescript

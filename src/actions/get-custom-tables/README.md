@@ -2,6 +2,8 @@
 
 Retrieves a list of all custom tables from the parent application's local database.
 
+**Action label:** a control whose press calls `getCustomTables` carries `data-final-action="get-custom-tables"`.
+
 ## Parameters
 
 This command does not accept any parameters.

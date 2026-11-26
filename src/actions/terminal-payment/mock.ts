@@ -1,5 +1,5 @@
 import { TerminalPayment, TerminalPaymentParams, TerminalPaymentResponse } from './types';
-import { applyMockPayment, MOCK_CART } from '../../demo/database';
+import { applyMockPayment, assertMockPaymentNotDeclined, MOCK_CART } from '../../demo/database';
 
 export const mockTerminalPayment: TerminalPayment = async (
   params?: TerminalPaymentParams,
@@ -7,6 +7,7 @@ export const mockTerminalPayment: TerminalPayment = async (
   console.log('[Mock] terminalPayment called', params);
 
   const connectionType = params?.paymentType || 'Cloud';
+  assertMockPaymentNotDeclined('terminal', connectionType === 'Cloud');
 
   // Simulate terminal interaction
   window.alert(

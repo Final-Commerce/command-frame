@@ -2,6 +2,8 @@
 
 Retrieves a list of orders from the system with optional filtering, sorting, and pagination.
 
+**Action label:** a control whose press calls `getOrders` carries `data-final-action="get-orders"`.
+
 ## Parameters
 
 `params?: GetOrdersParams`
@@ -32,6 +34,8 @@ Retrieves a list of orders from the system with optional filtering, sorting, and
 All filters are combined with AND. `paymentState` / `fulfillmentState` read the state-machine fields, which are more precise than the legacy `status` (e.g. legacy `parked` also covers unpaid orders that are in progress). Orders saved before the state machine have no state fields and don't match these two filters. See the [Order state machine reference](../../../docs/order-state-machine.md) for every state.
 
 ## Response
+
+Each order carries `itemCount` (FT-289): lines, custom sales, bookings (a composite's booked part counted with its line) and non-revenue items, counted by the host on read — the same count as the cart's `itemCount`. Nothing is stored; payment responses' `order` carries it too.
 
 `Promise<GetOrdersResponse>`
 

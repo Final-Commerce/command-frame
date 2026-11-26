@@ -2,6 +2,8 @@
 
 Deletes a product from the catalog.
 
+**Action label:** a control whose press calls `deleteProduct` carries `data-final-action="delete-product"`.
+
 > **Manage-scoped command.** This is a Manage administrative command (product catalog management), not a kaching POS-runtime command — there is no kaching command-frame handler for it.
 
 ## Parameters
