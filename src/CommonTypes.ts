@@ -82,6 +82,7 @@ import type {
   CartLineComponent,
   OrderLineItemComponent,
 } from '@final-commerce/common/pos-types';
+import type { TaxOverride } from '@final-commerce/common';
 
 // Enums — re-exported from common (single source). CurrencyCode keeps its name;
 // CFProductType/CFUserTypes alias common's ProductType/UserTypes. Note: common's
@@ -193,6 +194,11 @@ export type CFActiveOrder = ActiveOrder;
 export type CFActiveCustomSales = ActiveCustomSales;
 export type CFNonRevenueItem = NonRevenueItem;
 export type CFActiveCart = ActiveCart;
+/**
+ * Tax turned off at the till (FT-315): on a cart line / order line / booking / custom sale it means that
+ * line is untaxed; on the cart or the order it means the whole sale is. Set and cleared with `setTaxOverride`.
+ */
+export type CFTaxOverride = TaxOverride;
 export type CFCartAddress = CartAddress;
 export type CFCartShipping = CartShipping;
 export type CFActivePark = ActivePark;

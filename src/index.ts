@@ -51,6 +51,7 @@ import { assignOrderUser } from './actions/assign-order-user/action';
 import { releaseFromCart } from './actions/release-from-cart/action';
 import { setOrderType } from './actions/set-order-type/action';
 import { setScheduledFor } from './actions/set-scheduled-for/action';
+import { setTaxOverride } from './actions/set-tax-override/action';
 import { setOrderStatus } from './actions/set-order-status/action';
 import { getOrderStatuses } from './actions/get-order-statuses/action';
 import { deleteParkedOrder } from './actions/delete-parked-order/action';
@@ -242,6 +243,7 @@ export const command = {
   releaseFromCart,
   setOrderType,
   setScheduledFor,
+  setTaxOverride,
   setOrderStatus,
   getOrderStatuses,
   deleteParkedOrder,
@@ -631,6 +633,12 @@ export type {
   SetScheduledForParams,
   SetScheduledForResponse,
 } from './actions/set-scheduled-for/types';
+export type {
+  SetTaxOverride,
+  SetTaxOverrideParams,
+  SetTaxOverrideResponse,
+} from './actions/set-tax-override/types';
+export { SET_TAX_OVERRIDE_NOTE_MAX } from './actions/set-tax-override/types';
 export type { SetOrderStatus, SetOrderStatusParams, SetOrderStatusResponse } from './actions/set-order-status/types';
 export type { GetOrderStatuses, GetOrderStatusesResponse } from './actions/get-order-statuses/types';
 export type {

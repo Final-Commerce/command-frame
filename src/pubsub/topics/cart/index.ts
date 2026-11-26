@@ -89,6 +89,11 @@ export const cartTopic: TopicDefinition = {
             id: "product-note-removed",
             name: "Product Note Removed",
             description: "Published when a note is removed from a product in the cart"
+        },
+        {
+            id: "tax-override-changed",
+            name: "Tax Override Changed",
+            description: "Published when tax is turned off or back on for a cart line or the whole sale (setTaxOverride)"
         }
     ]
 };

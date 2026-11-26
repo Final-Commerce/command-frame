@@ -75,6 +75,7 @@ The library provides a `command` namespace object containing all available comma
 - **[setOrderMetadata](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-metadata/README.md)** - Set or remove free-form key/value metadata on an order or the live cart (e.g. a delivery note); syncs with the order
 - **[setOrderType](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-type/README.md)** - Label an order (or the live cart) with a free-text type such as `delivery`; display and `getOrders` filtering only, no logic
 - **[setScheduledFor](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-scheduled-for/README.md)** - When the customer wants the order (e.g. a pizza for 7 pm), on an order or the live cart; `null` = as soon as possible; `getOrders` filters and sorts by it
+- **[setTaxOverride](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-tax-override/README.md)** - Turn all tax off (or back on) for one cart line or the whole sale before payment; recorded as `taxOverride` (not charged, by staff, who/when/where) on the lines and the order
 - **[setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)** - Set one of the flow's custom order statuses on an order (by key); bound statuses move the fulfillment state, and can require a payment state
 - **[getOrderStatuses](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-order-statuses/README.md)** - The running flow's custom order statuses
 - **[assignOrderUser](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/assign-order-user/README.md)** - Assign a user (e.g. the driver) to an order, or unassign; one assignee at a time, synced with the order
@@ -423,6 +424,10 @@ Sets `order.orderType` — free text (`takeout`, `pickup`, `delivery`, …) or `
 ### [setScheduledFor](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-scheduled-for/README.md)
 
 Sets `order.scheduledFor` — when the customer wants the order, an ISO 8601 date-time stored in UTC, or `null` for as soon as possible — on an order by id or on the live cart, carried onto the order when it's created. `getOrders` filters by it (`scheduled`, `scheduledFrom`, `scheduledTo`) and sorts by it (`sortBy: 'scheduledFor'`); nothing in the POS logic acts on it, and the paid-order lock doesn't apply.
+
+### [setTaxOverride](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-tax-override/README.md)
+
+Turns all tax off — or back on — for one cart line (`internalId`) or the whole sale, before payment. Recorded as `taxOverride` `{ type: 'not_charged', source: 'staff', userId, at, stationId, note? }` on each untaxed line (products, bookings, custom sales) and on the cart/order in whole-sale mode, where lines added later come in untaxed too. The line keeps its product and tax group; tax-inclusive prices stay the same. Refused once the order has a payment on it (`itemsLocked`). Publishes cart `tax-override-changed`.
 
 ### [setOrderStatus](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/set-order-status/README.md)
 
@@ -877,6 +882,9 @@ import type {
   SetScheduledForParams,
   SetScheduledForResponse,
   SetScheduledFor,
+  SetTaxOverrideParams,
+  SetTaxOverrideResponse,
+  SetTaxOverride,
   SetOrderStatusParams,
   SetOrderStatusResponse,
   SetOrderStatus,

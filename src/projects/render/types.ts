@@ -42,6 +42,7 @@ import type {
   ReleaseFromCart,
   SetOrderType,
   SetScheduledFor,
+  SetTaxOverride,
   SetOrderStatus,
   GetOrderStatuses,
   DeleteParkedOrder,
@@ -208,6 +209,7 @@ export interface RenderProviderActions {
   releaseFromCart: ReleaseFromCart;
   setOrderType: SetOrderType;
   setScheduledFor: SetScheduledFor;
+  setTaxOverride: SetTaxOverride;
   setOrderStatus: SetOrderStatus;
   getOrderStatuses: GetOrderStatuses;
   deleteParkedOrder: DeleteParkedOrder;
