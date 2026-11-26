@@ -42,7 +42,7 @@ If a state looks wrong on the money side, the fix is a money operation (or a dat
 | `refunded`           | Refunded                 | ✅       | All captured money was returned. **Final** — the payment state never changes again.                               |
 | `voided`             | _(displays "Cancelled")_ | ✅       | The order's money side was nullified without a capture-and-refund cycle (e.g. a parked order deleted). **Final.** |
 
-## 4. Fulfillment states (9)
+## 4. Fulfillment states (10)
 
 | State (internal id)   | Label               | Terminal | Meaning                                                                          |
 | --------------------- | ------------------- | -------- | -------------------------------------------------------------------------------- |
@@ -52,6 +52,7 @@ If a state looks wrong on the money side, the fix is a money operation (or a dat
 | `in_progress`         | In Progress         |          | Being prepared / worked on.                                                      |
 | `partially_fulfilled` | Partially Fulfilled |          | Some items handed over, some not.                                                |
 | `fulfilled`           | Fulfilled           | ✅       | Everything handed over / delivered.                                              |
+| `return_pending`      | Return Accepted     |          | The store accepted the shopper's return; goods coming back, no money moved yet.  |
 | `partially_returned`  | Partially Returned  |          | Some items came back.                                                            |
 | `returned`            | Returned            | ✅       | Everything came back.                                                            |
 | `cancelled`           | Cancelled           | ✅       | Called off.                                                                      |
@@ -62,7 +63,7 @@ If a state looks wrong on the money side, the fix is a money operation (or a dat
 
 ## 5. Display labels — what people see
 
-Every one of the 63 possible pairs resolves to a label. Precedence:
+Every one of the 70 possible pairs resolves to a label. Precedence:
 
 1. **Explicit pair label** (table below).
 2. **Terminal money fact** — once money is finally settled, the label follows the money alone: any `refunded × *` pair reads **"Refunded"**, any `voided × *` pair reads **"Cancelled"**.
@@ -82,6 +83,8 @@ Every one of the 63 possible pairs resolves to a label. Precedence:
 | paid × fulfilled                        | **Completed**                   |
 | partially_refunded × fulfilled          | **Partially Refunded**          |
 | partially_refunded × partially_returned | **Partially Refunded**          |
+| paid × return_pending                   | **Return Accepted**             |
+| partially_refunded × return_pending     | **Return Accepted**             |
 | refunded × _anything_                   | **Refunded**                    |
 | voided × _anything_                     | **Cancelled**                   |
 
@@ -206,7 +209,7 @@ order.inCart?: { active: boolean; stationId: string | null; since: string }
 
 What it changes:
 
-- **Leaving and coming back doesn't need parking.** `releaseFromCart` saves the order as it is (state unchanged) and frees the terminal; `resumeOrder` brings it back on any station. `resumeOrder` refuses orders already in a cart and finished ones (completed, refunded, partially refunded, voided, cancelled, returned) and orders with a payment in flight.
+- **Leaving and coming back doesn't need parking.** `releaseFromCart` saves the order as it is (state unchanged) and frees the terminal; `resumeOrder` brings it back on any station. `resumeOrder` refuses orders already in a cart and finished ones (completed, refunded, partially refunded, voided, cancelled, returned, return accepted) and orders with a payment in flight.
 - **Orders in a cart carry their edits** — including ones that already took money. Items added or removed after a resume are saved onto the order when it next leaves the cart. An edit can't take the total below what was already paid: that operation is refused (`guard: 'paid-exceeds-edited-total'`) until the difference is refunded.
 - **Edits made elsewhere stick.** The assignee, custom status, order type and metadata change only through their own commands (`assignOrderUser`, `setOrderStatus`, `setOrderType`, `setOrderMetadata`), which save straight to the order. Payments, park and transitions never write them back, so a driver assigned from another station isn't undone when the register holding the order takes payment.
 - **Stale flags are released** when they can be known stale: `clearCart` releases the order it discards, `resumeOrder` / `resumeParkedOrder` release the saved order they replace in the cart, and when a station starts a new session it releases orders it flagged before that session opened (crash, closed terminal).

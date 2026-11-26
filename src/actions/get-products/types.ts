@@ -17,6 +17,10 @@ export interface GetProductsParams {
    *   getProducts({ query: { productType: { $in: ['simple', 'variable', 'booking'] } } })  // both
    *
    * Any query naming `productType` is used exactly as written.
+   *
+   * On a website the query runs on the server: at most 50 categories and 50 tags in one query, and a
+   * name/sku search of at most 128 characters. Past that the server refuses and the host answers from
+   * its local copy instead.
    */
   query?: {
     // MongoDB query fields
@@ -54,13 +58,13 @@ export interface GetProductsParams {
   includeUnlisted?: boolean;
   /** Defaults to 0. */
   offset?: number;
-  /** Defaults to 100. */
+  /** Defaults to 100. On a website at most 250: the public API refuses more and the host falls back to its local copy. */
   limit?: number;
 }
 
 export interface GetProductsResponse {
   products: CFProduct[];
-  /** Total number of products matching the query, ignoring offset/limit. Optional — hosts that cannot cheaply compute the total may omit it. */
+  /** Total number of products matching the query, ignoring offset/limit. Returned on a website; a POS omits it. */
   total?: number;
   timestamp: string;
 }

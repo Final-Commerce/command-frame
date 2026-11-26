@@ -21,23 +21,23 @@ topics.unsubscribe('customers', subscriptionId);
 
 ## Available Topics
 
-| Topic                                               | Description                                                            | Events    | Documentation                                     |
-| --------------------------------------------------- | ---------------------------------------------------------------------- | --------- | ------------------------------------------------- |
-| [customers](./topics/customers/README.md)           | Customer lifecycle events                                              | 8 events  | [View Details](./topics/customers/README.md)      |
-| [orders](./topics/orders/README.md)                 | Order lifecycle events                                                 | 5 events  | [View Details](./topics/orders/README.md)         |
-| [refunds](./topics/refunds/README.md)               | Refund lifecycle events                                                | 4 events  | [View Details](./topics/refunds/README.md)        |
-| [products](./topics/products/README.md)             | Product sync events                                                    | 4 events  | [View Details](./topics/products/README.md)       |
-| [cart](./topics/cart/README.md)                     | Cart operation events                                                  | 16 events | [View Details](./topics/cart/README.md)           |
-| [payments](./topics/payments/README.md)             | Payment processing events (till tenders)                               | 2 events  | [View Details](./topics/payments/README.md)       |
+| Topic                                               | Description                                                                 | Events    | Documentation                                     |
+| --------------------------------------------------- | --------------------------------------------------------------------------- | --------- | ------------------------------------------------- |
+| [customers](./topics/customers/README.md)           | Customer lifecycle events                                                   | 8 events  | [View Details](./topics/customers/README.md)      |
+| [orders](./topics/orders/README.md)                 | Order lifecycle events                                                      | 5 events  | [View Details](./topics/orders/README.md)         |
+| [refunds](./topics/refunds/README.md)               | Refund lifecycle events                                                     | 4 events  | [View Details](./topics/refunds/README.md)        |
+| [products](./topics/products/README.md)             | Product sync events                                                         | 4 events  | [View Details](./topics/products/README.md)       |
+| [cart](./topics/cart/README.md)                     | Cart operation events                                                       | 16 events | [View Details](./topics/cart/README.md)           |
+| [payments](./topics/payments/README.md)             | Payment processing events (till tenders)                                    | 2 events  | [View Details](./topics/payments/README.md)       |
 | [checkout](./topics/checkout/README.md)             | Online (website) checkout events — the storefront counterpart of `payments` | 3 events  | [View Details](./topics/checkout/README.md)       |
-| [split-payments](./topics/split-payments/README.md) | In-progress split-payment session updates (mirror of the host's slice) | 1 event   | [View Details](./topics/split-payments/README.md) |
-| [custom-tables](./topics/custom-tables/README.md)   | Custom table row lifecycle events                                      | 3 events  | [View Details](./topics/custom-tables/README.md)  |
-| [print](./topics/print/README.md)                   | Print action events                                                    | 3 events  | [View Details](./topics/print/README.md)          |
-| [outlet](./topics/outlet/README.md)                 | Active outlet context                                                  | 2 events  | [View Details](./topics/outlet/README.md)         |
-| [station](./topics/station/README.md)               | Active station context                                                 | 2 events  | [View Details](./topics/station/README.md)        |
-| [session](./topics/session/README.md)               | Register session context                                               | 2 events  | [View Details](./topics/session/README.md)        |
-| [users](./topics/users/README.md)                   | Active POS user context                                                | 2 events  | [View Details](./topics/users/README.md)          |
-| [loyalty](./topics/loyalty/README.md)               | The member on this sale and the rewards on the cart (Engage)           | 3 events  | [View Details](./topics/loyalty/README.md)        |
+| [split-payments](./topics/split-payments/README.md) | In-progress split-payment session updates (mirror of the host's slice)      | 1 event   | [View Details](./topics/split-payments/README.md) |
+| [custom-tables](./topics/custom-tables/README.md)   | Custom table row lifecycle events                                           | 3 events  | [View Details](./topics/custom-tables/README.md)  |
+| [print](./topics/print/README.md)                   | Print action events                                                         | 3 events  | [View Details](./topics/print/README.md)          |
+| [outlet](./topics/outlet/README.md)                 | Active outlet context                                                       | 2 events  | [View Details](./topics/outlet/README.md)         |
+| [station](./topics/station/README.md)               | Active station context                                                      | 2 events  | [View Details](./topics/station/README.md)        |
+| [session](./topics/session/README.md)               | Register session context                                                    | 2 events  | [View Details](./topics/session/README.md)        |
+| [users](./topics/users/README.md)                   | Active POS user context                                                     | 2 events  | [View Details](./topics/users/README.md)          |
+| [loyalty](./topics/loyalty/README.md)               | The member on this sale and the rewards on the cart (Engage)                | 3 events  | [View Details](./topics/loyalty/README.md)        |
 
 ## API Reference
 

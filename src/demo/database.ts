@@ -39,7 +39,7 @@ import {
   resolveUnit,
   toBase,
 } from '@final-commerce/common';
-import { BookingRatePeriod, BookingResourceKind, ReservationStatus } from '@final-commerce/common';
+import { BookingRatePeriod, BookingResourceKind, BookingType, ReservationStatus } from '@final-commerce/common';
 
 export * from './mocks';
 
@@ -1311,14 +1311,14 @@ const mockTopicSubscribers: Record<string, MockEventCallback[]> = {};
 
 export let MOCK_DECLINES: MockDeclines = {};
 
-/** MOCK ONLY: the dataset's `declines.payments` switch, failing with the till processor's text (kaching `dispatchPay.ts:208-220`). */
+/** MOCK ONLY: the dataset's `declines.payments` switch, failing with the till payment processor's text. */
 export const assertMockPaymentNotDeclined = (paymentType: 'terminal' | 'tapToPay', cloud: boolean) => {
   if (!MOCK_DECLINES.payments?.includes(paymentType)) return;
   console.warn(`[Mock] ${paymentType}Payment declined — the mock dataset sets declines.payments`);
   throw new Error(`${cloud ? 'CLOUD_PAYMENT_FAILED' : 'NATIVE_PAYMENT_FAILED'}: Card declined`);
 };
 
-/** MOCK ONLY: the dataset's `declines.customTableWrites` switch, refusing with the till's text (kaching `customTables.ts:131,291`). */
+/** MOCK ONLY: the dataset's `declines.customTableWrites` switch, refusing with the till's unknown-table text. */
 export const assertMockCustomTableWriteNotDeclined = (tableName: string) => {
   if (!MOCK_DECLINES.customTableWrites) return;
   console.warn('[Mock] custom table write refused — the mock dataset sets declines.customTableWrites');
@@ -1696,6 +1696,7 @@ export const mockBookingAvailability = (
   return {
     productId,
     bookingRulesId: MOCK_BOOKING_RULES_ID,
+    bookingType: BookingType.APPOINTMENT,
     ratePeriod: BookingRatePeriod.SLOT,
     slots,
     timeZone: MOCK_SHOP_TIME_ZONE,

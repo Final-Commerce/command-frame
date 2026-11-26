@@ -44,6 +44,12 @@ export interface GetCheckoutStatusResponse {
    */
   cancelReason?: CheckoutCancelReason;
   receiptId: string | null;
+  /**
+   * The shopper account line for the confirmation page: "Added to your orders" when signed in, else
+   * (any guest who gave an email) a prompt to get a code; for `sign-in`, call requestShopperCode() with
+   * no params and it goes to that email. Ready to display.
+   */
+  account?: { label: string; action: 'none' | 'sign-in' };
   timestamp: string;
 }
 

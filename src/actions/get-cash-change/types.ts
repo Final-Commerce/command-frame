@@ -5,20 +5,22 @@ export interface GetCashChangeParams {
   amount?: number;
 }
 
+/** Refused (`success: false` + `reason`) for a missing, fractional or negative amount; the numbers are then absent. */
 export interface GetCashChangeResponse {
   success: boolean;
+  reason?: string;
   /** The amount tendered against, before cash rounding (MINOR units). */
-  amountDue: number;
+  amountDue?: number;
   /** After the company's cash-rounding setting — what `cashPayment` charges for cash (MINOR units). */
-  roundedAmountDue: number;
+  roundedAmountDue?: number;
   /** `roundedAmountDue − amountDue`, signed (MINOR units). 0 without a cash-rounding setting. */
-  cashRounding: number;
+  cashRounding?: number;
   /** Echo of the tender (MINOR units). */
-  tenderedAmount: number;
+  tenderedAmount?: number;
   /** ≥ 0: the change `cashPayment({ tenderedAmount })` returns for this tender. 0 while the tender is short. */
-  change: number;
+  change?: number;
   /** ≥ 0: how much the tender is short of `roundedAmountDue`. 0 when it covers it. */
-  remaining: number;
+  remaining?: number;
   timestamp: string;
 }
 
