@@ -79,4 +79,5 @@ export type CartEventType =
   | 'product-fee-removed'
   | 'product-note-added'
   | 'product-note-removed'
-  | 'product-modifiers-updated';
+  | 'product-modifiers-updated'
+  | 'tax-override-changed';
