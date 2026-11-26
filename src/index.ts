@@ -3,6 +3,7 @@ import { exampleFunction } from './actions/example-function/action';
 import { getProducts } from './actions/get-products/action';
 import { getBookingResources } from './actions/get-booking-resources/action';
 import { getBookingAvailability } from './actions/get-booking-availability/action';
+import { getBookingRentalEnds } from './actions/get-booking-rental-ends/action';
 import { getBookings } from './actions/get-bookings/action';
 import { holdBooking } from './actions/hold-booking/action';
 import { addBookingToCart } from './actions/add-booking-to-cart/action';
@@ -58,6 +59,8 @@ import { voidOrder } from './actions/void-order/action';
 import { cashPayment } from './actions/cash-payment/action';
 import { recordExternalPayment } from './actions/record-external-payment/action';
 import { getCashRoundingAmount } from './actions/get-cash-rounding-amount/action';
+import { getCashChange } from './actions/get-cash-change/action';
+import { getOrdersSummary } from './actions/get-orders-summary/action';
 import { tapToPayPayment } from './actions/tap-to-pay-payment/action';
 import { terminalPayment } from './actions/terminal-payment/action';
 import { extensionPayment } from './actions/extension-payment/action';
@@ -84,6 +87,14 @@ import { signOutShopper } from './actions/sign-out-shopper/action';
 import { getShopperOrders } from './actions/get-shopper-orders/action';
 import { getShopperOrder } from './actions/get-shopper-order/action';
 import { getMotoConfig } from './actions/get-moto-config/action';
+// Loyalty (Engage)
+import { getLoyalty } from './actions/get-loyalty/action';
+import { findLoyaltyMember } from './actions/find-loyalty-member/action';
+import { startLoyaltyCheck } from './actions/start-loyalty-check/action';
+import { confirmLoyaltyCheck } from './actions/confirm-loyalty-check/action';
+import { joinLoyalty } from './actions/join-loyalty/action';
+import { applyLoyaltyReward } from './actions/apply-loyalty-reward/action';
+import { removeLoyaltyReward } from './actions/remove-loyalty-reward/action';
 // Customer Actions
 import { addCustomerNote } from './actions/add-customer-note/action';
 import { removeCustomerNote } from './actions/remove-customer-note/action';
@@ -185,6 +196,7 @@ export const command = {
   getProducts,
   getBookingResources,
   getBookingAvailability,
+  getBookingRentalEnds,
   getBookings,
   holdBooking,
   addBookingToCart,
@@ -241,6 +253,8 @@ export const command = {
   cashPayment,
   recordExternalPayment,
   getCashRoundingAmount,
+  getCashChange,
+  getOrdersSummary,
   tapToPayPayment,
   terminalPayment,
   extensionPayment,
@@ -266,6 +280,14 @@ export const command = {
   getShopperOrders,
   getShopperOrder,
   getMotoConfig,
+  // Loyalty (Engage)
+  getLoyalty,
+  findLoyaltyMember,
+  startLoyaltyCheck,
+  confirmLoyaltyCheck,
+  joinLoyalty,
+  applyLoyaltyReward,
+  removeLoyaltyReward,
   // Customer Actions
   addCustomerNote,
   removeCustomerNote,
@@ -372,6 +394,11 @@ export type {
   GetBookingAvailabilityParams,
   GetBookingAvailabilityResponse,
 } from './actions/get-booking-availability/types';
+export type {
+  GetBookingRentalEnds,
+  GetBookingRentalEndsParams,
+  GetBookingRentalEndsResponse,
+} from './actions/get-booking-rental-ends/types';
 export type { GetBookings, GetBookingsParams, GetBookingsResponse } from './actions/get-bookings/types';
 export type { HoldBooking, HoldBookingParams, HoldBookingResponse } from './actions/hold-booking/types';
 export type {
@@ -636,6 +663,12 @@ export type {
   GetCashRoundingAmountParams,
   GetCashRoundingAmountResponse,
 } from './actions/get-cash-rounding-amount/types';
+export type { GetCashChange, GetCashChangeParams, GetCashChangeResponse } from './actions/get-cash-change/types';
+export type {
+  GetOrdersSummary,
+  GetOrdersSummaryParams,
+  GetOrdersSummaryResponse,
+} from './actions/get-orders-summary/types';
 export type {
   TapToPayPayment,
   TapToPayPaymentParams,
@@ -756,6 +789,33 @@ export type {
   ShopperOrderItemView,
 } from './actions/get-shopper-order/types';
 export type { GetMotoConfig, GetMotoConfigResponse, MotoUnavailableReason } from './actions/get-moto-config/types';
+export type { GetLoyalty, GetLoyaltyParams, GetLoyaltyResponse } from './actions/get-loyalty/types';
+export type {
+  FindLoyaltyMember,
+  FindLoyaltyMemberParams,
+  FindLoyaltyMemberResponse,
+} from './actions/find-loyalty-member/types';
+export type {
+  StartLoyaltyCheck,
+  StartLoyaltyCheckParams,
+  StartLoyaltyCheckResponse,
+} from './actions/start-loyalty-check/types';
+export type {
+  ConfirmLoyaltyCheck,
+  ConfirmLoyaltyCheckParams,
+  ConfirmLoyaltyCheckResponse,
+} from './actions/confirm-loyalty-check/types';
+export type { JoinLoyalty, JoinLoyaltyParams, JoinLoyaltyResponse } from './actions/join-loyalty/types';
+export type {
+  ApplyLoyaltyReward,
+  ApplyLoyaltyRewardParams,
+  ApplyLoyaltyRewardResponse,
+} from './actions/apply-loyalty-reward/types';
+export type {
+  RemoveLoyaltyReward,
+  RemoveLoyaltyRewardParams,
+  RemoveLoyaltyRewardResponse,
+} from './actions/remove-loyalty-reward/types';
 // Customer Actions
 export type {
   AddCustomerNote,
@@ -913,6 +973,7 @@ export { transactionsTopic } from './pubsub/topics/transactions';
 export { categoriesTopic } from './pubsub/topics/categories';
 export { attributesTopic } from './pubsub/topics/attributes';
 export { bookingsTopic } from './pubsub/topics/bookings';
+export { loyaltyTopic } from './pubsub/topics/loyalty';
 // Export Pub/Sub Event Types
 export type {
   // Customer event payloads
@@ -1049,6 +1110,16 @@ export type {
   BookingsEventType,
   BookingsEventPayload,
 } from './pubsub/topics/bookings/types';
+export type {
+  LoyaltyMemberChangedPayload,
+  LoyaltyMemberChangedEvent,
+  LoyaltyRewardAppliedPayload,
+  LoyaltyRewardAppliedEvent,
+  LoyaltyRewardRemovedPayload,
+  LoyaltyRewardRemovedEvent,
+  LoyaltyEventType,
+  LoyaltyEventPayload,
+} from './pubsub/topics/loyalty/types';
 export type {
   CategoryCreatedPayload,
   CategoryCreatedEvent,

@@ -2,6 +2,8 @@
 
 Inserts new data or updates existing data in a specific custom table in the parent application's local database. If the data contains an `_id` field, it updates the existing record; otherwise, it creates a new one.
 
+**Action label:** a control whose press calls `upsertCustomTableData` carries `data-final-action="upsert-custom-table-data"`.
+
 ## Parameters
 
 ### `UpsertCustomTableDataParams<T>`

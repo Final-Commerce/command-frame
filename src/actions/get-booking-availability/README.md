@@ -5,6 +5,8 @@ the device** out of the merchant's rule set, the outlet's opening hours, the tur
 bookings and everything already taken — it is not a stored list you can read from the local
 database, and it changes the moment somebody else books.
 
+**Action label:** a control whose press calls `getBookingAvailability` carries `data-final-action="get-booking-availability"`.
+
 Ask for the range the user is looking at (a day, a week, a month) and re-ask after any hold or
 cancel. No connection needed — the rules and the holds are synced down, and the grid is
 computed from them locally. A till with no network can display existing bookings
@@ -35,11 +37,16 @@ interface GetBookingAvailabilityResponse {
 interface CFBookingAvailability {
   productId: string;
   bookingRulesId: string;
-  bookingType: BookingType; // rental | appointment | overnight | group
-  ratePeriod: BookingRatePeriod; // slot | day | night | week | month
+  bookingType?: BookingType; // deprecated — read ratePeriod; removed in the next release
+  ratePeriod: BookingRatePeriod; // the price unit — label it; don't classify the rules with it
+  bookingMethod?: 'time-slots' | 'sessions' | 'date-ranges'; // how the rules are booked — branch the picker on this
   minimumToRun?: number; // label only — a group slot below this MAY be cancelled
-  minStay?: number;
-  maxStay?: number;
+  minStay?: number; // deprecated — read minStayLength
+  maxStay?: number; // deprecated — read maxStayLength
+  minStayLength?: BookingDuration; // { count, unit } e.g. { 2, 'night' } — show it; the host refuses a length outside it
+  maxStayLength?: BookingDuration; // e.g. { 1, 'week' } — the unit may differ from the rate period; don't convert it
+  maxQtyPerBooking?: number; // the rule's cap on places per booking — show it; bound a stepper by maxQtyNow, not by this
+  maxPartySize?: number; // people one booking may bring — bound a party picker
   /** Last instant this product can be booked into; absent when nothing bounds it. */
   bookableUntil?: string;
   /** The range you asked for starts past `bookableUntil`. Say "bookings open only up to …"
@@ -47,6 +54,19 @@ interface CFBookingAvailability {
    *  not in the UI: comparing a day against the window is a rule. */
   beyondWindow?: boolean;
   slots: CFBookingSlot[];
+  timeZone?: string | null; // the clock to print on — outlet's, else company's; null when none configured
+  days?: string[]; // the shop days this answer covers — what a day picker lists
+  /** Session rules sold as a course only. Book it with `addBookingToCart({ ..., startAt, endAt, course: true })`
+   *  using these `startAt`/`endAt`. `free` per resource = the fewest places left over ALL sessions. */
+  course?: {
+    sessions: number;
+    alreadyStarted: boolean; // the first session is inside the notice: not bookable, every `free` is 0
+    startAt: string; // first session's start
+    endAt: string; // last session's end
+    sessionTimes: { startAt: string; endAt: string }[]; // every session, in order
+    resources: { resourceId: string; free: number; unlimited?: true }[];
+    maxQtyNow?: number; // the most places ONE booking of the whole course can take now — bound a stepper by this; absent = nothing bounds it
+  };
 }
 
 interface CFBookingSlot {
@@ -57,7 +77,12 @@ interface CFBookingSlot {
   capacity: number; // seats across every serving resource
   booked: number;
   free: number;
-  resources: { resourceId: string; name: string; capacity: number; booked: number; free: number }[];
+  maxQtyNow?: number; // the most places ONE booking can take now (largest per-resource free, capped by maxQtyPerBooking) — bound a stepper by this; absent = nothing bounds it. free is the SUM over resources
+  resources: { resourceId: string; name: string; capacity: number; booked: number; free: number; unlimited?: true }[];
+  /** A session rule with no spots limit: `capacity` and `free` read UNLIMITED_PLACES (Number.MAX_SAFE_INTEGER), so
+   *  `free > 0` keeps working. Show "no limit" when this is true — never print the number. */
+  unlimited?: true;
+  dayKey?: string; // the SHOP's day, 'YYYY-MM-DD' — never derive it
 }
 ```
 
@@ -90,6 +115,7 @@ new Intl.DateTimeFormat([], {
   whole afternoon. A start time you invent will be refused.
 - `free === 0` means taken; `canStart === false` means the window exists but a stay may not begin
   there (arrival days).
+- Bound a places stepper by `slot.maxQtyNow` (or `course.maxQtyNow`), never by `free` — `free` is the sum over every resource, and one booking sits on one.
 - `bufferEndAt` is when the resource is genuinely free again. Do not draw the next slot from `endAt`.
 - **Do not work out which day a slot is on.** `slot.dayKey` says it, stamped in the zone the grid
   was built in. The same instant is Monday in Vancouver and Tuesday in Auckland, so a client that

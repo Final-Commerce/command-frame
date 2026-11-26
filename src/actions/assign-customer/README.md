@@ -2,6 +2,8 @@
 
 Assigns an existing customer to the current active session/cart in the parent application.
 
+**Action label:** a control whose press calls `assignCustomer` carries `data-final-action="assign-customer"`.
+
 ## Parameters
 
 ### `AssignCustomerParams`

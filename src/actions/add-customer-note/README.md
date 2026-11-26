@@ -2,6 +2,8 @@
 
 Adds a note to a customer's record.
 
+**Action label:** a control whose press calls `addCustomerNote` carries `data-final-action="add-customer-note"`.
+
 ## Parameters
 
 - `note` (string, required): The note text to add

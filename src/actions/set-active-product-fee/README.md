@@ -2,6 +2,8 @@
 
 Sets the fee on the currently active product. This replaces any fee already set on the active product — the active product holds at most one fee via this action, so calling it again overwrites the previous fee rather than adding a second one.
 
+**Action label:** a control whose press calls `setActiveProductFee` carries `data-final-action="set-active-product-fee"`.
+
 ## Parameters
 
 ### `SetActiveProductFeeParams`

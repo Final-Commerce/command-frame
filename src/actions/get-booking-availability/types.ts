@@ -20,7 +20,7 @@ export interface GetBookingAvailabilityParams {
    * Omit both this and `from`/`to` to get today at the shop.
    */
   fromDay?: string;
-  /** How many shop days from `fromDay`. Default 1. */
+  /** How many shop days from `fromDay`. Default 1. On a website at most 60 per call: ask again for later days. */
   days?: number;
   /** Narrow the answer to one resource — "only Marco", "only room 4". */
   resourceId?: string;

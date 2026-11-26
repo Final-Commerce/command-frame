@@ -2,6 +2,8 @@
 
 Assigns a user to an order — e.g. the delivery driver — or unassigns it, with an optional `label` saying why (`'delivery'`, `'kitchen'`, anything). The order keeps a record of everyone who had it in `assignedUser`, a list of `{ userId, assignedAt, label?, unassignedAt? }` entries, oldest first, separate from `posData.employee` (the user who rang the order up). Entries without `unassignedAt` are the current assignees — at most one per label: assigning someone new under a label ends the current assignee with that label (their entry stays, with `unassignedAt` set) and adds the new one. The assignment syncs with the order, so other stations see it in their `orders` / `order-updated` events.
 
+**Action label:** a control whose press calls `assignOrderUser` carries `data-final-action="assign-order-user"`.
+
 ## Parameters
 
 `params: AssignOrderUserParams`

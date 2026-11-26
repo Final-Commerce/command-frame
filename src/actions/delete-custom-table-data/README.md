@@ -2,6 +2,8 @@
 
 Deletes a specific record from a custom table in the parent application's local database.
 
+**Action label:** a control whose press calls `deleteCustomTableData` carries `data-final-action="delete-custom-table-data"`.
+
 ## Parameters
 
 ### `DeleteCustomTableDataParams`

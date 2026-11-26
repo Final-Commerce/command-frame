@@ -2,6 +2,8 @@
 
 Retrieves the currently selected/active product in the POS interface. Returns the product that is currently being viewed or interacted with by the user.
 
+**Action label:** a control whose press calls `getActiveProduct` carries `data-final-action="get-active-product"`.
+
 ## Parameters
 
 None.

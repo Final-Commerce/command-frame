@@ -2,6 +2,8 @@
 
 Sets the active customer on the POS by loading the customer document from local data using `customerId`.
 
+**Action label:** a control whose press calls `setActiveCustomer` carries `data-final-action="set-active-customer"`.
+
 ## Parameters
 
 | Field        | Type     | Required | Description     |

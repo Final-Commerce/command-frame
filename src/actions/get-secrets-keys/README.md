@@ -2,6 +2,8 @@
 
 Retrieves the list of secret keys available to the extension. Secrets can be company-level (shared across extensions) or extension-level (scoped to a specific extension).
 
+**Action label:** a control whose press calls `getSecretsKeys` carries `data-final-action="get-secrets-keys"`.
+
 ## Parameters
 
 ### `GetSecretsKeysParams`

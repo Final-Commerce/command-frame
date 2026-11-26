@@ -2,6 +2,8 @@
 
 Retrieves the field definitions (schema) for a specific custom table from the parent application's local database.
 
+**Action label:** a control whose press calls `getCustomTableFields` carries `data-final-action="get-custom-table-fields"`.
+
 ## Parameters
 
 ### `GetCustomTableFieldsParams`

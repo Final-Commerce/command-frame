@@ -5,6 +5,8 @@ existing `POST /receipt/send/:companyId/:id` endpoint. Omitting all params texts
 order's receipt to the active customer. The phone
 must be E.164 (the endpoint rejects other formats). Online only.
 
+**Action label:** a control whose press calls `sendSms` carries `data-final-action="send-sms"`.
+
 ## Parameters
 
 - `phone` (string, optional): Recipient phone in E.164 format (e.g. `+15555550123`). Defaults to the active customer's phone.

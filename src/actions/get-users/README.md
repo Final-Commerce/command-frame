@@ -2,6 +2,8 @@
 
 Retrieves a list of users (employees) for the current company from the parent application's local database.
 
+**Action label:** a control whose press calls `getUsers` carries `data-final-action="get-users"`.
+
 ## Parameters
 
 ### `GetUsersParams`

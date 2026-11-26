@@ -36,6 +36,8 @@ import { mockCalculateRefundTotal } from '../../actions/calculate-refund-total/m
 import { mockCashPayment } from '../../actions/cash-payment/mock';
 import { mockRecordExternalPayment } from '../../actions/record-external-payment/mock';
 import { mockGetCashRoundingAmount } from '../../actions/get-cash-rounding-amount/mock';
+import { mockGetCashChange } from '../../actions/get-cash-change/mock';
+import { mockGetOrdersSummary } from '../../actions/get-orders-summary/mock';
 import { mockCreatePaymentLink } from '../../actions/create-payment-link/mock';
 import { mockChargeMoto } from '../../actions/charge-moto/mock';
 import { mockStartCheckout } from '../../actions/start-checkout/mock';
@@ -57,6 +59,13 @@ import { mockSearchAddresses } from '../../actions/search-addresses/mock';
 import { mockGetAddressDetails } from '../../actions/get-address-details/mock';
 import { mockGetShopperOrder } from '../../actions/get-shopper-order/mock';
 import { mockGetMotoConfig } from '../../actions/get-moto-config/mock';
+import { mockGetLoyalty } from '../../actions/get-loyalty/mock';
+import { mockFindLoyaltyMember } from '../../actions/find-loyalty-member/mock';
+import { mockStartLoyaltyCheck } from '../../actions/start-loyalty-check/mock';
+import { mockConfirmLoyaltyCheck } from '../../actions/confirm-loyalty-check/mock';
+import { mockJoinLoyalty } from '../../actions/join-loyalty/mock';
+import { mockApplyLoyaltyReward } from '../../actions/apply-loyalty-reward/mock';
+import { mockRemoveLoyaltyReward } from '../../actions/remove-loyalty-reward/mock';
 import { mockGetTimeClockStatus } from '../../actions/get-time-clock-status/mock';
 import { mockClearCart } from '../../actions/clear-cart/mock';
 import { mockDeleteParkedOrder } from '../../actions/delete-parked-order/mock';
@@ -70,6 +79,7 @@ import { mockGetOrders } from '../../actions/get-orders/mock';
 import { mockGetProducts } from '../../actions/get-products/mock';
 import { mockGetBookingResources } from '../../actions/get-booking-resources/mock';
 import { mockGetBookingAvailability } from '../../actions/get-booking-availability/mock';
+import { mockGetBookingRentalEnds } from '../../actions/get-booking-rental-ends/mock';
 import { mockGetBookings } from '../../actions/get-bookings/mock';
 import { mockHoldBooking } from '../../actions/hold-booking/mock';
 import { mockAddBookingToCart } from '../../actions/add-booking-to-cart/mock';
@@ -176,6 +186,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   cashPayment: mockCashPayment,
   recordExternalPayment: mockRecordExternalPayment,
   getCashRoundingAmount: mockGetCashRoundingAmount,
+  getCashChange: mockGetCashChange,
+  getOrdersSummary: mockGetOrdersSummary,
   createPaymentLink: mockCreatePaymentLink,
   chargeMoto: mockChargeMoto,
   startCheckout: mockStartCheckout,
@@ -197,6 +209,13 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getShopperOrders: mockGetShopperOrders,
   getShopperOrder: mockGetShopperOrder,
   getMotoConfig: mockGetMotoConfig,
+  getLoyalty: mockGetLoyalty,
+  findLoyaltyMember: mockFindLoyaltyMember,
+  startLoyaltyCheck: mockStartLoyaltyCheck,
+  confirmLoyaltyCheck: mockConfirmLoyaltyCheck,
+  joinLoyalty: mockJoinLoyalty,
+  applyLoyaltyReward: mockApplyLoyaltyReward,
+  removeLoyaltyReward: mockRemoveLoyaltyReward,
   clearCart: mockClearCart,
   deleteParkedOrder: mockDeleteParkedOrder,
   voidOrder: mockVoidOrder,
@@ -209,6 +228,7 @@ export const RENDER_MOCKS: RenderProviderActions = {
   getProducts: mockGetProducts,
   getBookingResources: mockGetBookingResources,
   getBookingAvailability: mockGetBookingAvailability,
+  getBookingRentalEnds: mockGetBookingRentalEnds,
   getBookings: mockGetBookings,
   holdBooking: mockHoldBooking,
   addBookingToCart: mockAddBookingToCart,

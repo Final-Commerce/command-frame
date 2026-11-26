@@ -39,18 +39,21 @@ export const mockAddBookingToCart: AddBookingToCart = async (
   const booking = held.booking;
 
   const price = variant?.price ?? product.minPrice ?? 0;
+  // Every place is charged (README: `total = price × quantity`); the mock shop sells single slots, so one period.
+  const quantity = params.qty ?? 1;
+  const total = price * quantity;
 
   const reservation: CFCartReservation = {
     internalId: `res_${booking.id}`,
     bookingId: booking.id,
     productId: params.productId,
     variantId: variant?._id ?? null,
-    resourceId: params.resourceId,
+    resourceId: booking.resourceId,
     name: product.name,
     resourceName: booking.resourceName,
     price,
-    quantity: 1,
-    total: price,
+    quantity,
+    total,
     taxTableId: product.taxTable,
     startAt: booking.startAt,
     endAt: booking.endAt,
@@ -61,8 +64,8 @@ export const mockAddBookingToCart: AddBookingToCart = async (
   if (!MOCK_CART.reservations) MOCK_CART.reservations = [];
   MOCK_CART.reservations.push(reservation);
 
-  MOCK_CART.subtotal += price;
-  MOCK_CART.total += price;
+  MOCK_CART.subtotal += total;
+  MOCK_CART.total += total;
   MOCK_CART.amountToBeCharged = MOCK_CART.total;
   MOCK_CART.remainingBalance = MOCK_CART.total;
 
