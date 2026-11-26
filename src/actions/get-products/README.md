@@ -1,6 +1,6 @@
 # getProducts
 
-Retrieves a list of products from the parent application's local database. A composite whose `composite.needsDate` is true holds a bookable item: show "By date" instead of a ready Add button and route Add through a date and time picker (`getCompositeAvailability`); its items reading `unavailable: 'by_date'` stay pickable.
+Retrieves a list of products: from the host's local database on a POS, and from the Final POS public API on a website (the local copy fills in the details). A composite whose `composite.needsDate` is true holds a bookable item: show "By date" instead of a ready Add button and route Add through a date and time picker (`getCompositeAvailability`); its items reading `unavailable: 'by_date'` stay pickable.
 
 **Action label:** a control whose press calls `getProducts` carries `data-final-action="get-products"`.
 
@@ -87,6 +87,8 @@ The number of items to skip. Defaults to 0.
 
 The maximum number of items to return. Defaults to 100.
 
+**On a website, at most 250 per call.** A website asks the Final POS public API, which rejects a `limit` above 250 (`POST /v1/storefront/products`, documented at api.finalpos.com). The host then answers from its local copy instead, with no `total` and possibly missing the newest products. Page with `offset` and read `total` rather than asking for everything at once. A POS reads its local database and has no cap.
+
 **Note:** The handler automatically excludes deleted products.
 
 ## Response
@@ -157,7 +159,7 @@ radio: picking another item replaces the pick. Show these; do not recompute pric
 
 #### `total` (number, optional)
 
-Total number of products matching the query, ignoring `offset`/`limit`. Optional — hosts that cannot cheaply compute the total may omit it (the kaching host currently does not return it).
+Total number of products matching the query, ignoring `offset`/`limit`. Optional: kaching returns it on a website (from the server's count) and omits it on a POS.
 
 #### `timestamp` (string)
 
@@ -445,7 +447,7 @@ The handler does not catch or swallow errors. If the underlying query fails (e.g
 
 ## Notes
 
-- Results are limited to 100 products per request by default
+- Results are limited to 100 products per request by default; a website accepts at most 250 per request
 - Deleted products (`isDeleted: true`) are automatically excluded
 - Only products with `status: 'active'` are returned — draft and inactive products are excluded, even if requested via `query.status`
 - Products with the channel's flag (`notSoldInPos` on a till, `notSoldOnline` on a storefront) are excluded unless `includeUnlisted: true`; so are products whose every variant has it, and flagged variants are stripped from `variants[]`

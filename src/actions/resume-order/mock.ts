@@ -4,7 +4,7 @@ import { restoreMockCartFromOrder } from '../resume-parked-order/mock';
 
 // Mirrors the host's rule (see README): anything not already in a cart and not finished.
 const BLOCKED_PAYMENT = new Set(['refunded', 'partially_refunded', 'voided', 'payment_pending']);
-const FINISHED_FULFILLMENT = new Set(['cancelled', 'returned', 'partially_returned']);
+const FINISHED_FULFILLMENT = new Set(['cancelled', 'returned', 'partially_returned', 'return_pending']);
 
 export const mockResumeOrder: ResumeOrder = async (params?: ResumeOrderParams): Promise<ResumeOrderResponse> => {
   console.log('[Mock] resumeOrder called', params);

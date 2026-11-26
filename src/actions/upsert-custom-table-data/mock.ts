@@ -4,7 +4,7 @@ import { assertMockCustomTableWriteNotDeclined, mockPublishEvent } from '../../d
 import { generateMongoID } from '@final-commerce/common';
 
 /**
- * The host's upsert (kaching upsert-custom-table-data/handler.ts, customTables.ts:120-271): an `_id` of an existing row
+ * The host's upsert: an `_id` of an existing row
  * updates it, anything else inserts (a given `_id` kept as-is); `createdAt`/`updatedAt` are the host's; the row is
  * stored, so getCustomTableData reads it back. Not modelled: the table's field schema — the host drops keys that are
  * not fields of the table and refuses an unknown table; the mock stores every key.

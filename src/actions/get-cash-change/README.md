@@ -37,4 +37,5 @@ const { change, remaining } = await command.getCashChange({ tenderedAmount: tend
 ## Notes
 
 - Call it on each keypad change (debounced); never compute change in the flow.
-- The command-frame mock refuses (`Cash change is computed by the till`) — there is no money in the mock.
+- Refused with `{ success: false, reason }` for a missing, fractional or negative amount; the numbers are then absent.
+- The command-frame mock refuses the same way (`Cash change is computed by the till`) — there is no money in the mock.

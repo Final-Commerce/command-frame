@@ -37,6 +37,7 @@ interface GetBookingAvailabilityResponse {
 interface CFBookingAvailability {
   productId: string;
   bookingRulesId: string;
+  bookingType?: BookingType; // deprecated — read ratePeriod; removed in the next release
   ratePeriod: BookingRatePeriod; // the price unit — label it; don't classify the rules with it
   bookingMethod?: 'time-slots' | 'sessions' | 'date-ranges'; // how the rules are booked — branch the picker on this
   minimumToRun?: number; // label only — a group slot below this MAY be cancelled
