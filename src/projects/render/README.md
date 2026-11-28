@@ -88,6 +88,8 @@ The library provides a `command` namespace object containing all available comma
 - **[getCashChange](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-cash-change/README.md)** - What a cash tender gives back, computed by the till (after cash rounding)
 - **[getOrdersSummary](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-orders-summary/README.md)** - Order count, total and completed/refunded shares for the getOrders filters, from the till
 - **[createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)** - Create a hosted payment link for the current cart and text/email it to the customer (Adyen-only)
+- **[getSubscriptionPlans](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-subscription-plans/README.md)** - The active subscription plans (own price per period) and their lines' products as this till serves them
+- **[createSubscription](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-subscription/README.md)** - Subscribe a customer to a plan with period 1's composite picks; starts `incomplete`, charges nothing
 - **[chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)** - Charge a keyed (card-not-present) MOTO sale for the current cart (Adyen-only)
 - **[startCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/start-checkout/README.md)** - Take an ONLINE payment on a published website: create the server-priced order and mount the provider's hosted card fields (the only tender available on a storefront)
 - **[resumeCheckout](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/resume-checkout/README.md)** - Finish an online checkout the shopper was redirected away from (3-D Secure, bank apps, wallets); call it on every page load of your checkout screen
@@ -466,6 +468,14 @@ Previews the company's cash-rounding setting for an amount (defaults to the cart
 ### [createPaymentLink](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-payment-link/README.md)
 
 Creates a hosted payment link for the current cart and texts or emails it to the customer. Exactly one of `email`/`phone` is required. The station creates the order (`unpaid × in_progress`) before the link is requested; the cart is cleared on success, and voided-but-kept on a failed send so the cashier can retry. Adyen-only.
+
+### [getSubscriptionPlans](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/get-subscription-plans/README.md)
+
+The merchant's active subscription plans — lines, the plan's own `unitAmount` per period, `recurring` — and the lines' products exactly as `getProducts` serves them here. A line whose variant is in none of the products cannot be sold on this till.
+
+### [createSubscription](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/create-subscription/README.md)
+
+Subscribes a customer (`customerId`, never taken from the cart) to a plan, with `picksSnapshot` — period 1's composite picks per portion. Returns `subscriptionId` and `status` (`incomplete` until period 1 is paid); charges nothing and makes no order.
 
 ### [chargeMoto](https://github.com/Final-Commerce/command-frame/blob/main/src/actions/charge-moto/README.md)
 

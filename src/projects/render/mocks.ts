@@ -51,6 +51,8 @@ import { mockSetOutlet } from '../../actions/set-outlet/mock';
 import { mockResumeCheckout } from '../../actions/resume-checkout/mock';
 import { mockGetCheckoutStatus } from '../../actions/get-checkout-status/mock';
 import { mockGetShopperAccount } from '../../actions/get-shopper-account/mock';
+import { mockGetSubscriptionPlans } from '../../actions/get-subscription-plans/mock';
+import { mockCreateSubscription } from '../../actions/create-subscription/mock';
 import { mockRequestShopperCode } from '../../actions/request-shopper-code/mock';
 import { mockSignInShopper } from '../../actions/sign-in-shopper/mock';
 import { mockSignOutShopper } from '../../actions/sign-out-shopper/mock';
@@ -203,6 +205,8 @@ export const RENDER_MOCKS: RenderProviderActions = {
   resumeCheckout: mockResumeCheckout,
   getCheckoutStatus: mockGetCheckoutStatus,
   getShopperAccount: mockGetShopperAccount,
+  getSubscriptionPlans: mockGetSubscriptionPlans,
+  createSubscription: mockCreateSubscription,
   requestShopperCode: mockRequestShopperCode,
   signInShopper: mockSignInShopper,
   signOutShopper: mockSignOutShopper,

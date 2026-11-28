@@ -4,6 +4,7 @@
  */
 
 import type { CFOrderStatusDefinition } from '../common-types/order-state';
+import type { SubscriptionPlanView } from '../actions/get-subscription-plans/types';
 import {
   CFActiveCompany,
   CFActiveUser,
@@ -1028,6 +1029,17 @@ export const MOCK_PRODUCTS = [
   MOCK_PRODUCT_HAIRCUT,
 ];
 export const MOCK_ORDERS = [MOCK_ORDER_1, MOCK_ORDER_2, MOCK_ORDER_3, MOCK_ORDER_4];
+/** A plan on the demo composite, as `getSubscriptionPlans` serves it: its own weekly price, not the sum of its lines. */
+export const MOCK_SUBSCRIPTION_PLANS: SubscriptionPlanView[] = [
+  {
+    _id: 'plan_paste_week',
+    name: 'Paste Trio - 3 a week',
+    lines: [{ variantId: MOCK_PRODUCT_PASTE_TRIO.variants[0]._id, quantity: 3 }],
+    unitAmount: 7500,
+    currency: CurrencyCode.USD,
+    recurring: { interval: 'week', intervalCount: 1 },
+  },
+];
 /** Nothing hidden by default; `setMockDatabase({ catalogVisibility })` hides products at an outlet. */
 export const MOCK_CATALOG_VISIBILITY: MockCatalogVisibility[] = [];
 
