@@ -135,6 +135,8 @@ import type {
   ResumeCheckout,
   GetCheckoutStatus,
   GetShopperAccount,
+  GetSubscriptionPlans,
+  CreateSubscription,
   RequestShopperCode,
   SignInShopper,
   SignOutShopper,
@@ -242,6 +244,8 @@ export interface RenderProviderActions {
   getCheckoutStatus: GetCheckoutStatus;
   /** The shopper account on a store's website (sign in, this store's orders). Storefront-only. */
   getShopperAccount: GetShopperAccount;
+  getSubscriptionPlans: GetSubscriptionPlans;
+  createSubscription: CreateSubscription;
   requestShopperCode: RequestShopperCode;
   signInShopper: SignInShopper;
   signOutShopper: SignOutShopper;

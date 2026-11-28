@@ -78,6 +78,8 @@ import { resumeCheckout } from './actions/resume-checkout/action';
 import { getCheckoutStatus } from './actions/get-checkout-status/action';
 // Shopper account (store websites)
 import { getShopperAccount } from './actions/get-shopper-account/action';
+import { getSubscriptionPlans } from './actions/get-subscription-plans/action';
+import { createSubscription } from './actions/create-subscription/action';
 import { requestShopperCode } from './actions/request-shopper-code/action';
 import { signInShopper } from './actions/sign-in-shopper/action';
 import { signOutShopper } from './actions/sign-out-shopper/action';
@@ -260,6 +262,8 @@ export const command = {
   resumeCheckout,
   getCheckoutStatus,
   getShopperAccount,
+  getSubscriptionPlans,
+  createSubscription,
   requestShopperCode,
   signInShopper,
   signOutShopper,
@@ -723,6 +727,18 @@ export type {
   ShopperAccountView,
   ShopperAddressView,
 } from './actions/get-shopper-account/types';
+export type {
+  GetSubscriptionPlans,
+  GetSubscriptionPlansParams,
+  GetSubscriptionPlansResponse,
+  SubscriptionPlanView,
+} from './actions/get-subscription-plans/types';
+export type {
+  CreateSubscription,
+  CreateSubscriptionParams,
+  CreateSubscriptionResponse,
+  SubscriptionPicksLine,
+} from './actions/create-subscription/types';
 export type {
   RequestShopperCode,
   RequestShopperCodeParams,
